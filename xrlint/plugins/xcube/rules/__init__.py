@@ -5,5 +5,5 @@ registry = RuleRegistry()
 
 
 def import_rules() -> RuleRegistry:
-    import_submodules("xrlint.rules")
+    import_submodules("xrlint.plugins.xcube.rules")
     return registry

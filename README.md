@@ -25,6 +25,8 @@ The rule naming conventions for xrlint are the same as or ESLint:
 
 - implement plugin mgt
 - add more tests, +coverage
+- use `RuleMeta.desc`, it is currently undefined 
+- use `RuleMeta.type`, it is currently unused
 - use `RuleTest.expected`, it is currently unused
 - add more rules
 - document each rule

@@ -4,7 +4,7 @@ from xrlint.util.registry import Registry
 
 
 class RegistryTest(TestCase):
-    def test_it(self):
+    def test_register_and_lookup(self):
         r = Registry[int]()
         self.assertEqual({}, r.as_dict())
         r.register("a", 1)

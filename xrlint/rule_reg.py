@@ -7,6 +7,7 @@ from xrlint.util.registry import Registry
 
 
 class RuleRegistry(Registry[Rule]):
+    # noinspection PyShadowingBuiltins
     def define_rule(
         self,
         name: str | None = None,

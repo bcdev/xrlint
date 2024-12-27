@@ -1,4 +1,6 @@
 from xrlint.cli.engine import CliEngine
+from xrlint.config import Config
+from xrlint.config import EffectiveConfig
 from xrlint.formatter import Formatter
 from xrlint.formatter import FormatterMeta
 from xrlint.formatter import FormatterContext
@@ -16,7 +18,10 @@ from xrlint.node import AttrNode
 from xrlint.node import DatasetNode
 from xrlint.node import DataArrayNode
 from xrlint.node import Node
+from xrlint.plugin import Plugin
+from xrlint.plugin import PluginMeta
 from xrlint.rule import Rule
+from xrlint.rule import RuleConfig
 from xrlint.rule import RuleContext
 from xrlint.rule import RuleMeta
 from xrlint.rule import RuleOp
