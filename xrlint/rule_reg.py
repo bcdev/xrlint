@@ -14,6 +14,8 @@ class RuleRegistry(Registry[Rule]):
         version: str | None = None,
         schema: dict[str, Any] | list[dict[str, Any]] | bool | None = None,
         type: Literal["problem", "suggestion"] | None = None,
+        description: str | None = None,
+        docs_url: str | None = None,
     ) -> Callable[[Any], Type[RuleOp]]:
         def decorator(verifier_class: Any) -> Type[RuleOp]:
             if not isclass(verifier_class) or not issubclass(verifier_class, RuleOp):
@@ -24,6 +26,8 @@ class RuleRegistry(Registry[Rule]):
             meta = RuleMeta(
                 name=name or to_kebab_case(verifier_class.__name__),
                 version=version,
+                description=description,
+                docs_url=docs_url,
                 type=type if type is not None else "problem",
                 schema=schema,
             )

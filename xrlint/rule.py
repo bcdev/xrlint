@@ -71,6 +71,12 @@ class RuleMeta(ToDictMixin):
     version: str = "0.0.0"
     """Rule version. Defaults to `0.0.0`."""
 
+    description: str | None = None
+    """Rule description."""
+
+    docs_url: str | None = None
+    """Rule documentation URL."""
+
     schema: dict[str, Any] | list[dict[str, Any]] | bool | None = None
     """JSON Schema used to specify and validate the rule verifier's 
     options.
