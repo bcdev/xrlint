@@ -23,17 +23,14 @@ The rule naming conventions for xrlint are the same as or ESLint:
 
 # TODO
 
-- plugins!
+- implement plugin mgt
 - add more tests, +coverage
 - use `RuleTest.expected`, it is currently unused
 - add more rules
 - document each rule
 - add docs / api docs
+- add CI
 - generate rule ref
-- refactorings
-  - `LinterMessage` -> `Message`
-  - `LinterResult` -> `Result`
-  - switch to abs imports (rel only in cases)
 
 # Ideas
 

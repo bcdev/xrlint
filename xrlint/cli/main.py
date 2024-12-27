@@ -1,7 +1,7 @@
 import click
 
 # Warning: do not import heavy stuff here,
-# Option "--help" will be slow otherwise!
+# Option "--help" can be slow otherwise!
 from xrlint.version import VERSION
 from xrlint.cli.constants import DEFAULT_MAX_WARNINGS
 from xrlint.cli.constants import DEFAULT_OUTPUT_FORMAT
@@ -53,7 +53,7 @@ def main(
     files: list[str] | None,
 ):
     """Lint the given FILES."""
-    from .engine import CliEngine
+    from xrlint.cli.engine import CliEngine
 
     cli_engine = CliEngine(
         no_default_config=no_default_config,

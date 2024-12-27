@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Any
 
 
-from xrlint.config import EffectiveConfig
+from xrlint.config import EffectiveConfig, Config
 from xrlint.util.formatting import format_message_type_of
 from xrlint.util.importutil import import_value
 
@@ -25,10 +25,13 @@ def read_config(config_path: str | Path | PathLike[str]) -> EffectiveConfig:
     else:
         raise ValueError(f"unsupported configuration file format: {config_path}")
 
-    return EffectiveConfig.from_value(config_like)
+    try:
+        return EffectiveConfig.from_value(config_like)
+    except (ValueError, TypeError) as e:
+        raise type(e)(f"configuration in {config_path}: {e}") from e
 
 
-def _read_config_yaml(config_path):
+def _read_config_yaml(config_path) -> Any:
     import fsspec
     import yaml
 
@@ -36,7 +39,7 @@ def _read_config_yaml(config_path):
         return yaml.load(f, Loader=yaml.SafeLoader)
 
 
-def _read_config_json(config_path):
+def _read_config_json(config_path) -> Any:
     import fsspec
     import json
 
@@ -44,16 +47,16 @@ def _read_config_json(config_path):
         return json.load(f)
 
 
-def _read_config_python(config_path):
+def _read_config_python(config_path) -> Config:
     dir_path, module_name, _ext = _split_config_path(config_path)
-    return import_value(module_name, attr_name="config", dir_path=dir_path)
+    return import_value(module_name, "config", Config, dir_path=dir_path, default=None)
 
 
 def _split_config_path(config_path: Any) -> tuple[str, str, str]:
     text = str(config_path)
     index = text.replace("\\", "/").rfind("/")
     if index >= 0:
-        parent, filename = text[:index], text[index + 1]
+        parent, filename = text[:index], text[index + 1 :]
     else:
         parent, filename = "", text
     basename_and_ext = filename.rsplit(".", maxsplit=1)

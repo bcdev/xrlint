@@ -2,6 +2,10 @@ import importlib
 import pathlib
 from typing import Any
 
+from xrlint.util.formatting import format_message_type_of
+
+_UNDEFINED = object()
+
 
 def import_submodules(package_name: str, dry_run: bool = False) -> list[str]:
 
@@ -38,22 +42,39 @@ def import_submodules(package_name: str, dry_run: bool = False) -> list[str]:
 def import_value(
     module_name: str,
     attr_name: str,
-    eval_callable: bool = True,
+    attr_type: type | tuple[type, ...],
+    /,
     dir_path: str | None = None,
+    default: Any = _UNDEFINED,
 ) -> Any:
     import importlib
     import sys
 
     old_path: list[str] | None = None
     if dir_path is not None:
+        dir_path = dir_path or "."
         old_path = sys.path
         sys.path = [dir_path] + old_path
 
     try:
         config_module = importlib.import_module(module_name)
-        value = getattr(config_module, attr_name)
-        if eval_callable and callable(value):
-            value = value()
+        if default is not _UNDEFINED:
+            value = getattr(config_module, attr_name, default)
+            if isinstance(attr_type, tuple):
+                attr_type = attr_type + (type(default),)
+            else:
+                attr_type = (
+                    attr_type,
+                    type(default),
+                )
+        else:
+            value = getattr(config_module, attr_name)
+        if not isinstance(value, attr_type):
+            raise TypeError(
+                format_message_type_of(
+                    f"value of attribute {module_name}.{attr_name}", value, attr_type
+                )
+            )
         return value
     finally:
         if old_path is not None:
