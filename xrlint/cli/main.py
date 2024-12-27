@@ -23,7 +23,15 @@ from xrlint.cli.constants import CONFIG_DEFAULT_BASENAME
         f"Use this configuration, overriding {CONFIG_DEFAULT_BASENAME}.*"
         f" config options if present"
     ),
-    metavar="String",
+    metavar="PATH",
+)
+@click.option(
+    "-f",
+    "--format",
+    "output_format",
+    help=f"Use a specific output format - default: {DEFAULT_OUTPUT_FORMAT}",
+    default=DEFAULT_OUTPUT_FORMAT,
+    metavar="NAME",
 )
 @click.option(
     "--max-warnings",
@@ -34,13 +42,7 @@ from xrlint.cli.constants import CONFIG_DEFAULT_BASENAME
     ),
     type=int,
     default=DEFAULT_MAX_WARNINGS,
-)
-@click.option(
-    "-f",
-    "--format",
-    "output_format",
-    help=f"Use a specific output format - default: {DEFAULT_OUTPUT_FORMAT}",
-    default=DEFAULT_OUTPUT_FORMAT,
+    metavar="COUNT",
 )
 @click.argument("files", nargs=-1)
 @click.version_option(VERSION)

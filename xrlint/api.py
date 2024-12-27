@@ -20,6 +20,9 @@ from xrlint.node import DataArrayNode
 from xrlint.node import Node
 from xrlint.plugin import Plugin
 from xrlint.plugin import PluginMeta
+from xrlint.processor import Processor
+from xrlint.processor import ProcessorMeta
+from xrlint.processor import ProcessorOp
 from xrlint.rule import Rule
 from xrlint.rule import RuleConfig
 from xrlint.rule import RuleContext

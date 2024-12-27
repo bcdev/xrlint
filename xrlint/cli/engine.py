@@ -58,6 +58,7 @@ class CliEngine:
         for file_path in self.files:
             config = self.config.resolve_for_path(file_path)
             if config is not None:
+                # TODO: use config.processor
                 linter = Linter(config=config, _registry=self.rule_registry)
                 result = linter.verify_dataset(file_path)
             else:

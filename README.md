@@ -28,6 +28,7 @@ The rule naming conventions for xrlint are the same as or ESLint:
 - use `RuleMeta.desc`, it is currently undefined 
 - use `RuleMeta.type`, it is currently unused
 - use `RuleTest.expected`, it is currently unused
+- use `Processor`, it is currently unused
 - add more rules
 - document each rule
 - add docs / api docs
