@@ -2,8 +2,10 @@ from unittest import TestCase
 
 import xarray as xr
 
+from xrlint.config import Config
 from xrlint.linter import Linter
 from xrlint.message import Message
+from xrlint.plugin import Plugin, PluginMeta
 from xrlint.result import Result
 from xrlint.node import (
     AttrsNode,
@@ -51,8 +53,13 @@ class LinterVerifyTest(TestCase):
                 if len(node.dataset.data_vars) == 0:
                     ctx.report(f"Dataset does not have data variables")
 
-        self.registry = registry
-        self.linter = Linter(_registry=registry)
+        config = Config(
+            plugins={
+                "test": Plugin(meta=PluginMeta(name="test"), rules=registry.as_dict())
+            },
+        )
+
+        self.linter = Linter(config=config)
         super().setUp()
 
     def test_rules_are_ok(self):
@@ -63,15 +70,16 @@ class LinterVerifyTest(TestCase):
                 "data-var-dim-must-have-coord",
                 "dataset-without-data-vars",
             ],
-            list(self.registry.as_dict().keys()),
+            list(self.linter._config.plugins["test"].rules.keys()),
         )
 
     def test_linter_respects_rule_severity_error(self):
         result = self.linter.verify_dataset(
-            xr.Dataset(), rules={"dataset-without-data-vars": 2}
+            xr.Dataset(), rules={"test/dataset-without-data-vars": 2}
         )
         self.assertEqual(
             Result(
+                result.config,
                 file_path="<file>",
                 warning_count=0,
                 error_count=1,
@@ -82,7 +90,7 @@ class LinterVerifyTest(TestCase):
                     Message(
                         message="Dataset does not have data variables",
                         node_path="dataset",
-                        rule_id="dataset-without-data-vars",
+                        rule_id="test/dataset-without-data-vars",
                         severity=2,
                     )
                 ],
@@ -92,10 +100,11 @@ class LinterVerifyTest(TestCase):
 
     def test_linter_respects_rule_severity_warn(self):
         result = self.linter.verify_dataset(
-            xr.Dataset(), rules={"dataset-without-data-vars": 1}
+            xr.Dataset(), rules={"test/dataset-without-data-vars": 1}
         )
         self.assertEqual(
             Result(
+                result.config,
                 file_path="<file>",
                 warning_count=1,
                 error_count=0,
@@ -106,7 +115,7 @@ class LinterVerifyTest(TestCase):
                     Message(
                         message="Dataset does not have data variables",
                         node_path="dataset",
-                        rule_id="dataset-without-data-vars",
+                        rule_id="test/dataset-without-data-vars",
                         severity=1,
                     )
                 ],
@@ -116,10 +125,11 @@ class LinterVerifyTest(TestCase):
 
     def test_linter_respects_rule_severity_off(self):
         result = self.linter.verify_dataset(
-            xr.Dataset(), rules={"dataset-without-data-vars": 0}
+            xr.Dataset(), rules={"test/dataset-without-data-vars": 0}
         )
         self.assertEqual(
             Result(
+                result.config,
                 file_path="<file>",
                 warning_count=0,
                 error_count=0,
@@ -159,14 +169,15 @@ class LinterVerifyTest(TestCase):
         result = self.linter.verify_dataset(
             dataset,
             rules={
-                "no-space-in-attr-name": "error",
-                "no-empty-attrs": "warn",
-                "data-var-dim-must-have-coord": "error",
-                "dataset-without-data-vars": "warn",
+                "test/no-space-in-attr-name": "error",
+                "test/no-empty-attrs": "warn",
+                "test/data-var-dim-must-have-coord": "error",
+                "test/dataset-without-data-vars": "warn",
             },
         )
         self.assertEqual(
             Result(
+                result.config,
                 file_path="chl-tsm.zarr",
                 warning_count=1,
                 error_count=3,
@@ -177,13 +188,13 @@ class LinterVerifyTest(TestCase):
                     Message(
                         message="Attribute name with space: 'created at'",
                         node_path="dataset.attrs['created at']",
-                        rule_id="no-space-in-attr-name",
+                        rule_id="test/no-space-in-attr-name",
                         severity=2,
                     ),
                     Message(
                         message="Empty attributes",
                         node_path="dataset.data_vars['tsm'].attrs",
-                        rule_id="no-empty-attrs",
+                        rule_id="test/no-empty-attrs",
                         severity=1,
                     ),
                     Message(
@@ -193,7 +204,7 @@ class LinterVerifyTest(TestCase):
                             "coordinate variable"
                         ),
                         node_path="dataset.data_vars['chl']",
-                        rule_id="data-var-dim-must-have-coord",
+                        rule_id="test/data-var-dim-must-have-coord",
                         severity=2,
                     ),
                     Message(
@@ -203,7 +214,7 @@ class LinterVerifyTest(TestCase):
                             "coordinate variable"
                         ),
                         node_path="dataset.data_vars['tsm']",
-                        rule_id="data-var-dim-must-have-coord",
+                        rule_id="test/data-var-dim-must-have-coord",
                         severity=2,
                     ),
                 ],

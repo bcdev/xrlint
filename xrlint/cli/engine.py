@@ -9,6 +9,7 @@ from xrlint.formatter import FormatterContext
 from xrlint.formatters import import_formatters
 from xrlint.linter import Linter
 from xrlint.message import Message
+from xrlint.plugin import Plugin, PluginMeta
 from xrlint.result import Result
 from xrlint.rules import import_rules
 
@@ -27,42 +28,44 @@ class CliEngine:
         self.config_path = config_path
         self.output_format = output_format
         self.files = files
-        self.config = ConfigList()
-
-        self.rule_registry = import_rules()
-        self.formatter_registry = import_formatters()
+        self.core_config = Config(
+            plugins={
+                "core": Plugin(
+                    meta=PluginMeta(name="core"), rules=import_rules().as_dict()
+                ),
+            }
+        )
+        self.config_list = ConfigList([self.core_config])
 
     def load_config(self):
-        if self.config is not None:
-            return
-
-        config = None
+        config_list = None
 
         if self.config_path:
             try:
-                config = read_config(config_path=self.config_path)
+                config_list = read_config(config_path=self.config_path)
             except FileNotFoundError:
                 raise click.ClickException(f"File not found: {self.config_path}")
         elif not self.no_default_config:
             for f in CONFIG_DEFAULT_FILENAMES:
                 try:
-                    config = read_config(config_path=f)
+                    config_list = read_config(config_path=f)
                 except FileNotFoundError:
                     pass
 
-        if config is not None:
-            self.config = config
+        if config_list is not None:
+            self.config_list = ConfigList([self.core_config] + config_list.configs)
 
     def verify_datasets(self) -> list[Result]:
         results: list[Result] = []
         for file_path in self.files:
-            config = self.config.resolve_for_path(file_path)
+            config = self.config_list.resolve_for_path(file_path)
             if config is not None:
                 # TODO: use config.processor
-                linter = Linter(config=config, _registry=self.rule_registry)
+                linter = Linter(config=config)
                 result = linter.verify_dataset(file_path)
             else:
                 result = Result.new(
+                    config=config,
                     file_path=file_path,
                     messages=[
                         Message(
@@ -78,7 +81,7 @@ class CliEngine:
         output_format = (
             self.output_format if self.output_format else DEFAULT_OUTPUT_FORMAT
         )
-        formatter = self.formatter_registry.lookup(output_format)
+        formatter = import_formatters().lookup(output_format)
         if formatter is None:
             raise click.ClickException(f"unknown format {output_format!r}")
         # TODO: pass format-specific args/kwargs

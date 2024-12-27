@@ -5,8 +5,10 @@ import xarray as xr
 
 from xrlint.config import Config
 from xrlint.config import merge_configs
-from xrlint.rule_reg import RuleRegistry
-from xrlint.rule import Rule, RuleConfig, RuleOp
+from xrlint.plugin import Plugin
+from xrlint.rule import Rule
+from xrlint.rule import RuleConfig
+from xrlint.rule import RuleOp
 from xrlint.result import Result
 
 # noinspection PyProtectedMember
@@ -20,16 +22,10 @@ class Linter:
 
     def __init__(
         self,
-        _registry: RuleRegistry | None = None,
         config: Config | dict[str, Any] | None = None,
         **config_kwargs,
     ):
-        if _registry is None:
-            from xrlint.rules import import_rules
-
-            _registry = import_rules()
         self._config = merge_configs(config, config_kwargs)
-        self._registry = _registry
 
     def verify_dataset(
         self,
@@ -61,29 +57,11 @@ class Linter:
             rules = config.rules or {}
             for rule_id, rule_config in rules.items():
                 with context.use_state(rule_id=rule_id):
-                    self._apply_rule(context, rule_id, rule_config)
+                    _apply_rule(context, rule_id, rule_config)
 
-        return Result.new(file_path=context.file_path, messages=context.messages)
-
-    def _apply_rule(
-        self,
-        context: RuleContextImpl,
-        rule_id: str,
-        rule_config: RuleConfig,
-    ):
-        rule = self._registry.lookup(rule_id)
-        if rule is None:
-            context.report(f"unknown rule", fatal=True)
-            return
-
-        if rule_config.severity == 0:
-            # rule is off
-            return
-
-        with context.use_state(severity=rule_config.severity):
-            # noinspection PyArgumentList
-            verifier: RuleOp = rule.op_class(*rule_config.args, **rule_config.kwargs)
-            verify_dataset(verifier, context)
+        return Result.new(
+            config=config, file_path=context.file_path, messages=context.messages
+        )
 
 
 def open_dataset(
@@ -93,6 +71,27 @@ def open_dataset(
         return xr.open_dataset(source, **(opener_options or {})), None
     except (OSError, TypeError, ValueError) as e:
         return None, e
+
+
+def _apply_rule(
+    context: RuleContextImpl,
+    rule_id: str,
+    rule_config: RuleConfig,
+):
+    try:
+        rule = context.config.get_rule(rule_id)
+    except ValueError as e:
+        context.report(f"{e}", fatal=True)
+        return
+
+    if rule_config.severity == 0:
+        # rule is off
+        return
+
+    with context.use_state(severity=rule_config.severity):
+        # noinspection PyArgumentList
+        verifier: RuleOp = rule.op_class(*rule_config.args, **rule_config.kwargs)
+        verify_dataset(verifier, context)
 
 
 def _parse_rule_config(_rule: Rule, rule_spec: Any) -> RuleConfig:

@@ -30,6 +30,10 @@ class RuleContextImpl(RuleContext):
         self.node: Node | None = None
 
     @property
+    def config(self) -> Config:
+        return self._config
+
+    @property
     def settings(self) -> dict[str, Any]:
         assert self._config is not None
         return self._config.settings or {}

@@ -28,8 +28,12 @@ class Json(xrl.FormatterOp):
         context: xrl.FormatterContext,
         results: list[xrl.Result],
     ) -> str:
+        omitted_props = {"config"}
         results_json = {
-            "results": [r.to_dict() for r in results],
+            "results": [
+                {k: v for k, v in r.to_dict().items() if k not in omitted_props}
+                for r in results
+            ],
         }
         if self.with_meta:
             rules_meta = xrl.get_rules_meta_for_results(results)

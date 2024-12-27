@@ -1,6 +1,7 @@
 from unittest import TestCase
 
 import xrlint.api as xrl
+from xrlint.config import Config
 from xrlint.formatters.json import Json
 
 
@@ -11,6 +12,7 @@ class JsonTest(TestCase):
             context=xrl.FormatterContext(),
             results=[
                 xrl.Result(
+                    Config(),
                     file_path="test.nc",
                     messages=[
                         xrl.Message(message="what", severity=2),

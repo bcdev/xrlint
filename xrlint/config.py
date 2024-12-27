@@ -12,6 +12,7 @@ from xrlint.util.merge import (
 )
 
 if TYPE_CHECKING:
+    from xrlint.rule import Rule
     from xrlint.rule import RuleConfig
     from xrlint.plugin import Plugin
     from xrlint.processor import ProcessorOp
@@ -96,6 +97,25 @@ class Config(ToDictMixin):
             )
             else []
         )
+
+    def get_rule(self, rule_id: str) -> "Rule":
+        if "/" in rule_id:
+            plugin_name, rule_name = rule_id.split("/", maxsplit=1)
+        else:
+            plugin_name, rule_name = "core", rule_id
+
+        from xrlint.plugin import Plugin
+        from xrlint.rule import Rule
+
+        plugin: Plugin | None = (self.plugins or {}).get(plugin_name)
+        if plugin is None:
+            raise ValueError(f"unknown plugin {plugin_name!r}")
+
+        rule: Rule | None = (plugin.rules or {}).get(rule_name)
+        if rule is None:
+            raise ValueError(f"unknown rule {rule_id!r}")
+
+        return rule
 
     def merge(self, config_obj: "Config", name: str = None) -> "Config":
         return Config(

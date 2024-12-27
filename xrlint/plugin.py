@@ -15,7 +15,7 @@ class PluginMeta:
     name: str
     """Plugin name."""
 
-    version: str
+    version: str = "0.0.0"
     """Plugin version."""
 
 

@@ -3,6 +3,7 @@ import html
 
 from tabulate import tabulate
 
+from xrlint.config import Config
 from xrlint.constants import SEVERITY_CODE_TO_NAME
 from xrlint.constants import SEVERITY_ERROR
 from xrlint.constants import SEVERITY_WARN
@@ -13,9 +14,12 @@ from xrlint.util.formatting import format_problems
 from xrlint.util.todict import ToDictMixin
 
 
-@dataclass(kw_only=True)
+@dataclass()
 class Result(ToDictMixin):
     """The aggregated information of linting a dataset."""
+
+    config: Config
+    """Configuration."""
 
     file_path: str
     """The absolute path to the file of this result. 
@@ -43,8 +47,8 @@ class Result(ToDictMixin):
     """The number of warnings. This includes fixable warnings."""
 
     @classmethod
-    def new(cls, file_path: str, messages: list[Message]):
-        result = Result(file_path=file_path, messages=messages)
+    def new(cls, config: Config, file_path: str, messages: list[Message]):
+        result = Result(config, file_path=file_path, messages=messages)
         for m in messages:
             result.warning_count += 1 if m.severity == SEVERITY_WARN else 0
             result.error_count += 1 if m.severity == SEVERITY_ERROR else 0
@@ -80,18 +84,11 @@ class Result(ToDictMixin):
         return self.to_html()
 
 
-def get_rules_meta_for_results(
-    results: list[Result], _registry: RuleRegistry | None = None
-) -> dict[str, RuleMeta]:
-    if _registry is None:
-        from xrlint.rules import import_rules
-
-        _registry = import_rules()
+def get_rules_meta_for_results(results: list[Result]) -> dict[str, RuleMeta]:
     rules_meta = {}
-    for r in results:
-        for m in r.messages:
-            if m.rule_id:
-                rule = _registry.lookup(m.rule_id)
-                if rule is not None:
-                    rules_meta[m.rule_id] = rule.meta
+    for result in results:
+        for message in result.messages:
+            if message.rule_id:
+                rule = result.config.get_rule(message.rule_id)
+                rules_meta[message.rule_id] = rule.meta
     return rules_meta
