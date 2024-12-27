@@ -27,7 +27,7 @@ class CliEngine:
         self.config_path = config_path
         self.output_format = output_format
         self.files = files
-        self.config = ConfigList([Config()])
+        self.config = ConfigList()
 
         self.rule_registry = import_rules()
         self.formatter_registry = import_formatters()
