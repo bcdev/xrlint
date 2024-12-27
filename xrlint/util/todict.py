@@ -14,11 +14,11 @@ def to_dict(obj: Any) -> Any:
     }
 
 
-def _convert_value(v: Any) -> Any:
-    if hasattr(v, "to_dict") and callable(v.to_dict):
-        return v.to_dict()
-    elif isinstance(v, dict):
-        return {k: _convert_value(v2) for k, v2 in v.items()}
-    elif isinstance(v, (tuple, list)):
-        return [_convert_value(v2) for v2 in v]
-    return v
+def _convert_value(value: Any) -> Any:
+    if hasattr(value, "to_dict") and callable(value.to_dict):
+        return value.to_dict()
+    elif isinstance(value, dict):
+        return {k: _convert_value(v) for k, v in value.items()}
+    elif isinstance(value, (tuple, list)):
+        return [_convert_value(v) for v in value]
+    return value

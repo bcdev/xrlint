@@ -1,7 +1,7 @@
-# xrlint - A linter for datasets
+# XRLint - A linter for datasets
 
 
-xrlint is a [linter](https://en.wikipedia.org/wiki/Lint_(software)) 
+XRLint is a [linter](https://en.wikipedia.org/wiki/Lint_(software)) 
 tool and library for [xarray]() datasets.
 
 Its design is heavily inspired by [ESLint](https://eslint.org/).
@@ -9,7 +9,7 @@ Its design is heavily inspired by [ESLint](https://eslint.org/).
 
 ## Rule naming
 
-The rule naming conventions for xrlint are the same as or ESLint:
+The rule naming conventions for XRLint are the same as or ESLint:
 
 * Use dashes between words (kebab-case).
 * If your rule only disallows something, 
