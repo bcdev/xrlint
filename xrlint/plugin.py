@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 from xrlint.config import Config
 from xrlint.rule import Rule
@@ -10,12 +10,19 @@ from xrlint.util.importutil import import_value
 
 @dataclass(frozen=True, kw_only=True)
 class PluginMeta:
+    """XRLint plugin metadata."""
+
     name: str
+    """Plugin name."""
+
     version: str
+    """Plugin version."""
 
 
 @dataclass(frozen=True, kw_only=True)
 class Plugin:
+    """An XRLint plugin."""
+
     meta: PluginMeta
     """Information about the plugin."""
 
