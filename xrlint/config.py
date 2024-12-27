@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 import fnmatch
-from typing import Any, TYPE_CHECKING
+from typing import Any, TYPE_CHECKING, Union
 
 from xrlint.util.formatting import format_message_type_of
 from xrlint.util.todict import ToDictMixin
@@ -53,7 +53,7 @@ class Config(ToDictMixin):
     the dataset opener.
     """
 
-    processor: "ProcessorOp" | str | None = None
+    processor: Union["ProcessorOp", str, None] = None
     """processor - Either an object compatible with the `ProcessorOp` 
     interface or a string indicating the name of a processor inside 
     of a plugin (i.e., `"pluginName/processorName"`).
@@ -208,7 +208,7 @@ class Config(ToDictMixin):
             )
 
     @classmethod
-    def _parse_processor(cls, config_dict: dict) -> "ProcessorOp" | str | None:
+    def _parse_processor(cls, config_dict: dict) -> Union["ProcessorOp", str, None]:
         from xrlint.processor import ProcessorOp
 
         processor = config_dict.get("processor")
