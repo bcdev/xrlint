@@ -14,45 +14,104 @@ from xrlint.util.merge import (
 if TYPE_CHECKING:
     from xrlint.rule import RuleConfig
     from xrlint.plugin import Plugin
+    from xrlint.processor import ProcessorOp
 
 
 @dataclass(frozen=True, kw_only=True)
 class Config(ToDictMixin):
-    """Configuration object."""
+    """Configuration object.
+    A configuration object contains all the information XRLint
+    needs to execute on a set of dataset files.
+    """
 
     name: str | None = None
-    rules: dict[str, "RuleConfig"] | None = None
-    plugins: dict[str, "Plugin"] | None = None
-    settings: dict[str, Any] | None = None
-    linter_options: dict[str, Any] | None = None
-    opener_options: dict[str, Any] | None = None
+    """A name for the configuration object. 
+    This is used in error messages and config inspector to help identify 
+    which configuration object is being used. 
+    """
 
     files: list[str] | None = None
+    """An array of glob patterns indicating the files that the 
+    configuration object should apply to. If not specified, 
+    the configuration object applies to all files matched 
+    by any other configuration object.
+    """
+
     ignores: list[str] | None = None
+    """An array of glob patterns indicating the files that the 
+    configuration object should not apply to. If not specified, 
+    the configuration object applies to all files matched by `files`. 
+    If `ignores` is used without any other keys in the configuration 
+    object, then the patterns act as _global ignores_.
+    """
+
+    linter_options: dict[str, Any] | None = None
+    """An object containing options related to the linting process."""
+
+    opener_options: dict[str, Any] | None = None
+    """An object containing options that are passed to 
+    the dataset opener.
+    """
+
+    processor: "ProcessorOp" | str | None = None
+    """processor - Either an object compatible with the `ProcessorOp` 
+    interface or a string indicating the name of a processor inside 
+    of a plugin (i.e., `"pluginName/processorName"`).
+    """
+
+    plugins: dict[str, "Plugin"] | None = None
+    """An object containing a name-value mapping of plugin names to 
+    plugin objects. When `files` is specified, these plugins are only 
+    available to the matching files.
+    """
+
+    rules: dict[str, "RuleConfig"] | None = None
+    """An object containing the configured rules. 
+    When `files` or `ignores` are specified, these rule configurations 
+    are only available to the matching files.
+    """
+
+    settings: dict[str, Any] | None = None
+    """An object containing name-value pairs of information 
+    that should be available to all rules.
+    """
 
     @property
-    def empty(self) -> bool:
-        """`True` if this configuration object is empty.
-        Empty means, it doesn't add configuration anything.
+    def global_ignores(self) -> list[str]:
+        """Get the _global ignores_ of this configuration.
+
+        Returns: A list of global ignore patterns or an empty list
+        if none are configured.
         """
-        return not (
-            self.rules or self.settings or self.linter_options or self.opener_options
+        return (
+            self.ignores
+            if self.ignores
+            and not (
+                self.files
+                or self.rules
+                or self.plugins
+                or self.settings
+                or self.linter_options
+                or self.opener_options
+            )
+            else []
         )
 
     def merge(self, config_obj: "Config", name: str = None) -> "Config":
         return Config(
             name=name,
-            rules=self._merge_rule_dicts(self.rules, config_obj.rules),
-            plugins=self._merge_plugin_dicts(self.plugins, config_obj.plugins),
-            settings=self._merge_settings(self.rules, config_obj.settings),
-            linter_options=self._merge_settings(
-                self.linter_options, config_obj.linter_options
-            ),
-            opener_options=self._merge_settings(
-                self.opener_options, config_obj.opener_options
-            ),
             files=self._merge_pattern_lists(self.files, config_obj.files),
             ignores=self._merge_pattern_lists(self.ignores, config_obj.ignores),
+            linter_options=self._merge_options(
+                self.linter_options, config_obj.linter_options
+            ),
+            opener_options=self._merge_options(
+                self.opener_options, config_obj.opener_options
+            ),
+            processor=merge_values(self.processor, config_obj.processor),  # TBD!
+            plugins=self._merge_plugin_dicts(self.plugins, config_obj.plugins),
+            rules=self._merge_rule_dicts(self.rules, config_obj.rules),
+            settings=self._merge_options(self.rules, config_obj.settings),
         )
 
     @classmethod
@@ -66,23 +125,25 @@ class Config(ToDictMixin):
         if not value:
             return Config()
 
-        rules = cls._parse_rules(value)
-        plugins = cls._parse_plugins(value)
-        settings = cls._parse_settings("settings", value)
-        linter_options = cls._parse_settings("linter_options", value)
-        opener_options = cls._parse_settings("opener_options", value)
         files = cls._parse_pattern_list(value, "files")
         ignores = cls._parse_pattern_list(value, "ignores")
+        linter_options = cls._parse_options("linter_options", value)
+        opener_options = cls._parse_options("opener_options", value)
+        processor = cls._parse_processor(value)
+        plugins = cls._parse_plugins(value)
+        rules = cls._parse_rules(value)
+        settings = cls._parse_options("settings", value)
 
         return Config(
             name=value.get("name"),
-            rules=rules,
-            plugins=plugins,
-            settings=settings,
-            linter_options=linter_options,
-            opener_options=opener_options,
             files=files,
             ignores=ignores,
+            linter_options=linter_options,
+            opener_options=opener_options,
+            processor=processor,
+            plugins=plugins,
+            rules=rules,
+            settings=settings,
         )
 
     @classmethod
@@ -105,6 +166,18 @@ class Config(ToDictMixin):
         return merge_dicts(rules1, rules2, merge_items=merge_items)
 
     @classmethod
+    def _merge_pattern_lists(
+        cls, patterns1: list[str] | None, patterns2: list[str] | None
+    ) -> list[str] | None:
+        return merge_set_lists(patterns1, patterns2)
+
+    @classmethod
+    def _merge_options(
+        cls, settings1: dict[str, Any] | None, settings2: dict[str, Any] | None
+    ) -> dict[str, Any] | None:
+        return merge_dicts(settings1, settings2, merge_items=merge_values)
+
+    @classmethod
     def _merge_plugin_dicts(
         cls,
         plugins1: dict[str, "Plugin"] | None,
@@ -116,53 +189,6 @@ class Config(ToDictMixin):
             return p2
 
         return merge_dicts(plugins1, plugins2, merge_items=merge_items)
-
-    @classmethod
-    def _merge_settings(
-        cls, settings1: dict[str, Any] | None, settings2: dict[str, Any] | None
-    ) -> dict[str, Any] | None:
-        return merge_dicts(settings1, settings2, merge_items=merge_values)
-
-    @classmethod
-    def _merge_pattern_lists(
-        cls, patterns1: list[str] | None, patterns2: list[str] | None
-    ) -> list[str] | None:
-        return merge_set_lists(patterns1, patterns2)
-
-    @classmethod
-    def _parse_rules(cls, config_dict: dict) -> dict[str, "RuleConfig"]:
-        from xrlint.rule import RuleConfig
-
-        rules = config_dict.get("rules")
-        if isinstance(rules, dict):
-            return {rn: RuleConfig.from_value(rc) for rn, rc in rules.items()}
-        if rules is not None:
-            raise TypeError(
-                format_message_type_of("rules configuration", rules, "dict")
-            )
-
-    @classmethod
-    def _parse_plugins(cls, config_dict: dict) -> dict[str, "Plugin"]:
-        from xrlint.plugin import Plugin
-
-        plugins = config_dict.get("plugins")
-        if isinstance(plugins, dict):
-            return {k: Plugin.from_value(v) for k, v in plugins.items()}
-        if plugins is not None:
-            raise TypeError(
-                format_message_type_of("plugins configuration", plugins, "dict")
-            )
-
-    @classmethod
-    def _parse_settings(cls, name: str, config_dict: dict) -> dict[str, Any]:
-        settings = config_dict.get("settings")
-        if isinstance(settings, dict):
-            for k, v in settings.items():
-                if not isinstance(k, str):
-                    raise TypeError(format_message_type_of(f"{name} keys", k, str))
-            return {k: v for k, v in settings.items()}
-        if settings is not None:
-            raise TypeError(format_message_type_of(name, settings, "dict[str,Any]"))
 
     @classmethod
     def _parse_pattern_list(cls, config_dict: dict, name) -> list[str]:
@@ -180,6 +206,54 @@ class Config(ToDictMixin):
             raise TypeError(
                 format_message_type_of(f"pattern in {name} configuration", pattern, str)
             )
+
+    @classmethod
+    def _parse_processor(cls, config_dict: dict) -> "ProcessorOp" | str | None:
+        from xrlint.processor import ProcessorOp
+
+        processor = config_dict.get("processor")
+        if processor is None or isinstance(processor, (str, ProcessorOp)):
+            return processor
+        raise TypeError(
+            format_message_type_of(
+                "processor configuration", processor, "ProcessorOp|str|None"
+            )
+        )
+
+    @classmethod
+    def _parse_plugins(cls, config_dict: dict) -> dict[str, "Plugin"]:
+        from xrlint.plugin import Plugin
+
+        plugins = config_dict.get("plugins")
+        if isinstance(plugins, dict):
+            return {k: Plugin.from_value(v) for k, v in plugins.items()}
+        if plugins is not None:
+            raise TypeError(
+                format_message_type_of("plugins configuration", plugins, "dict")
+            )
+
+    @classmethod
+    def _parse_rules(cls, config_dict: dict) -> dict[str, "RuleConfig"]:
+        from xrlint.rule import RuleConfig
+
+        rules = config_dict.get("rules")
+        if isinstance(rules, dict):
+            return {rn: RuleConfig.from_value(rc) for rn, rc in rules.items()}
+        if rules is not None:
+            raise TypeError(
+                format_message_type_of("rules configuration", rules, "dict")
+            )
+
+    @classmethod
+    def _parse_options(cls, name: str, config_dict: dict) -> dict[str, Any]:
+        settings = config_dict.get("settings")
+        if isinstance(settings, dict):
+            for k, v in settings.items():
+                if not isinstance(k, str):
+                    raise TypeError(format_message_type_of(f"{name} keys", k, str))
+            return {k: v for k, v in settings.items()}
+        if settings is not None:
+            raise TypeError(format_message_type_of(name, settings, "dict[str,Any]"))
 
 
 def merge_configs(
@@ -204,16 +278,20 @@ class ConfigList:
     def resolve_for_path(self, path: str) -> Config | None:
         # Step 1: Check against global ignores
         global_ignores = set()
+        effective_configs = []
         for c in self.configs:
-            if c.ignores and c.empty:  # global ignores
-                global_ignores.update(c.ignores)
+            ignores = c.global_ignores
+            if ignores:
+                global_ignores.update(ignores)
+            else:
+                effective_configs.append(c)
         for p in global_ignores:
             if fnmatch.fnmatch(path, p):
                 return None
 
         # Step 2: Check against global ignores
         config = Config()
-        for c in self.configs:
+        for c in effective_configs:
             matches = True
             if c.ignores:
                 for p in c.ignores:

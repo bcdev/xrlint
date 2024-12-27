@@ -28,14 +28,16 @@ class ConfigObjTest(TestCase):
         ):
             Config.from_value(())
 
-    def test_empty_true(self):
-        self.assertEqual(True, Config().empty)
-        self.assertEqual(True, Config(name="Empty?").empty)
-        self.assertEqual(True, Config(rules={}).empty)
-        self.assertEqual(True, Config(settings={}).empty)
-        self.assertEqual(True, Config(files=[]).empty)
-        self.assertEqual(True, Config(ignores=[]).empty)
-
-    def test_empty_false(self):
-        self.assertEqual(False, Config(rules={"x": RuleConfig(0)}).empty)
-        self.assertEqual(False, Config(settings={"a": 17}).empty)
+    def test_global_ignores(self):
+        ignores = ["*.tiff", "*.txt"]
+        self.assertEqual(ignores, Config(ignores=ignores).global_ignores)
+        self.assertEqual(ignores, Config(ignores=ignores, name="Empty?").global_ignores)
+        self.assertEqual(ignores, Config(ignores=ignores, rules={}).global_ignores)
+        self.assertEqual(ignores, Config(ignores=ignores, settings={}).global_ignores)
+        self.assertEqual(ignores, Config(ignores=ignores, files=[]).global_ignores)
+        self.assertEqual([], Config(rules={"x": RuleConfig(0)}).global_ignores)
+        self.assertEqual([], Config(settings={"a": 17}).global_ignores)
+        self.assertEqual([], Config(ignores=ignores, settings={"a": 17}).global_ignores)
+        self.assertEqual(
+            [], Config(ignores=ignores, rules={"x": RuleConfig(0)}).global_ignores
+        )
