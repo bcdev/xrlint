@@ -6,10 +6,10 @@ expected_api = [
     "AttrsNode",
     "CliEngine",
     "Config",
+    "ConfigList",
     "DataArrayNode",
     "DatasetNode",
     "EditInfo",
-    "EffectiveConfig",
     "Formatter",
     "FormatterContext",
     "FormatterMeta",
@@ -39,8 +39,6 @@ expected_api = [
 class ApiTest(TestCase):
     def test_api_is_complete(self):
         import xrlint.api as xrl
-
-        # from xrlint import api as xrlint_api
 
         keys = sorted(
             k

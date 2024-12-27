@@ -1,11 +1,11 @@
-DEFAULT_OUTPUT_FORMAT = "simple"
-DEFAULT_MAX_WARNINGS = -1
-
 CONFIG_EXTENSIONS = ".yml", ".yaml", ".json", ".py"
 
-DEFAULT_CONFIG_BASENAME = "xrlintrc"
-DEFAULT_CONFIG_FILENAMES = [
-    f".xrlintrc.yaml",
-    f".xrlintrc.json",
-    f"xrlintrc.py",  # no dot, because filename must be a valid module name
+CONFIG_DEFAULT_BASENAME = "xrlint.config"
+CONFIG_DEFAULT_FILENAMES = [
+    f"{CONFIG_DEFAULT_BASENAME}.yaml",
+    f"{CONFIG_DEFAULT_BASENAME}.json",
+    f"{CONFIG_DEFAULT_BASENAME}.py",
 ]
+
+DEFAULT_OUTPUT_FORMAT = "simple"
+DEFAULT_MAX_WARNINGS = -1

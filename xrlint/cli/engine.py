@@ -1,13 +1,14 @@
 import click
 
 from xrlint.cli.config import read_config
-from xrlint.cli.constants import DEFAULT_CONFIG_FILENAMES
+from xrlint.cli.constants import CONFIG_DEFAULT_FILENAMES
 from xrlint.cli.constants import DEFAULT_OUTPUT_FORMAT
 from xrlint.config import Config
-from xrlint.config import EffectiveConfig
+from xrlint.config import ConfigList
 from xrlint.formatter import FormatterContext
 from xrlint.formatters import import_formatters
 from xrlint.linter import Linter
+from xrlint.message import Message
 from xrlint.result import Result
 from xrlint.rules import import_rules
 
@@ -26,7 +27,7 @@ class CliEngine:
         self.config_path = config_path
         self.output_format = output_format
         self.files = files
-        self.config = EffectiveConfig(common=Config())
+        self.config = ConfigList([Config()])
 
         self.rule_registry = import_rules()
         self.formatter_registry = import_formatters()
@@ -35,23 +36,22 @@ class CliEngine:
         if self.config is not None:
             return
 
-        config = EffectiveConfig(common=Config())
+        config = None
 
         if self.config_path:
             try:
-                c = read_config(config_path=self.config_path)
-                config = config.merge(c)
+                config = read_config(config_path=self.config_path)
             except FileNotFoundError:
                 raise click.ClickException(f"File not found: {self.config_path}")
         elif not self.no_default_config:
-            for f in DEFAULT_CONFIG_FILENAMES:
+            for f in CONFIG_DEFAULT_FILENAMES:
                 try:
-                    c = read_config(config_path=f)
-                    config = config.merge(c)
+                    config = read_config(config_path=f)
                 except FileNotFoundError:
                     pass
 
-        self.config = EffectiveConfig.from_value(config)
+        if config is not None:
+            self.config = config
 
     def verify_datasets(self) -> list[Result]:
         results: list[Result] = []
@@ -60,7 +60,17 @@ class CliEngine:
             if config is not None:
                 linter = Linter(config=config, _registry=self.rule_registry)
                 result = linter.verify_dataset(file_path)
-                results.append(result)
+            else:
+                result = Result.new(
+                    file_path=file_path,
+                    messages=[
+                        Message(
+                            message="No configuration matches this file", severity=2
+                        )
+                    ],
+                )
+            results.append(result)
+
         return results
 
     def format_results(self, results: list[Result]) -> str:

@@ -1,6 +1,6 @@
 from xrlint.cli.engine import CliEngine
 from xrlint.config import Config
-from xrlint.config import EffectiveConfig
+from xrlint.config import ConfigList
 from xrlint.formatter import Formatter
 from xrlint.formatter import FormatterMeta
 from xrlint.formatter import FormatterContext

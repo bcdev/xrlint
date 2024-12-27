@@ -198,65 +198,47 @@ def merge_configs(
 
 
 @dataclass(frozen=True)
-class EffectiveConfig:
-    common: Config = field(default_factory=Config)
-    specific: list[Config] = field(default_factory=list)
+class ConfigList:
+    configs: list[Config] = field(default_factory=list)
 
     def resolve_for_path(self, path: str) -> Config | None:
-        config = self.common or Config()
-        for p in self.common.ignores or []:
+        # Step 1: Check against global ignores
+        global_ignores = set()
+        for c in self.configs:
+            if c.ignores and c.empty:  # global ignores
+                global_ignores.update(c.ignores)
+        for p in global_ignores:
             if fnmatch.fnmatch(path, p):
                 return None
-        for c in self.specific or []:
-            ignored = False
-            for p in c.ignores or []:
-                if fnmatch.fnmatch(path, p):
-                    ignored = True
-                    break
-            if not ignored:
-                for p in c.files or []:
-                    if fnmatch.fnmatch(path, p):
-                        config = config.merge(c)
+
+        # Step 2: Check against global ignores
+        config = Config()
+        for c in self.configs:
+            matches = True
+            if c.ignores:
+                for p in c.ignores:
+                    matches = fnmatch.fnmatch(path, p)
+                    if not matches:
+                        break
+            if matches:
+                if c.files:
+                    for p in c.files:
+                        matches = fnmatch.fnmatch(path, p)
+                        if matches:
+                            break
+            if matches:
+                config = config.merge(c)
+
         return config
 
-    def merge(self, other: "EffectiveConfig") -> "EffectiveConfig":
-        return EffectiveConfig(
-            self.common.merge(other.common), specific=(self.specific + other.specific)
-        )
-
     @classmethod
-    def from_value(cls, value: Any) -> "EffectiveConfig":
-        if value is None:
-            return EffectiveConfig()
-        if isinstance(value, EffectiveConfig):
+    def from_value(cls, value: Any) -> "ConfigList":
+        if isinstance(value, ConfigList):
             return value
-        if isinstance(value, Config):
-            return EffectiveConfig(value)
-        if isinstance(value, dict):
-            return EffectiveConfig(Config.from_value(value))
         if isinstance(value, list):
-            return cls.from_list(value)
+            return ConfigList([Config.from_value(c) for c in value])
         raise TypeError(
             format_message_type_of(
-                "configuration", value, "Config|ConfigObj|dict|list[dict]"
+                "configuration list", value, "ConfigList|list[Config|dict]"
             )
         )
-
-    @classmethod
-    def from_list(cls, value: list[Any]) -> "EffectiveConfig":
-        if not value:
-            return EffectiveConfig()
-        common = Config()
-        specific = []
-        Config.from_value(value[0])
-        for config_value in value:
-            config = Config.from_value(config_value)
-            if config.files:
-                specific.append(config)
-            elif config.ignores and not config.files and config.empty:
-                common = common.merge(config)
-            elif config.ignores or config.files:
-                specific.append(config)
-            else:
-                common = common.merge(config)
-        return EffectiveConfig(common, specific=specific)
