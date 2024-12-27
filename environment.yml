@@ -1,0 +1,25 @@
+name: xrlint
+channels:
+  - conda-forge
+dependencies:
+  - python >=3.10
+  # Library Dependencies
+  - click
+  - fsspec
+  - numpy
+  - pandas
+  - pyaml
+  - tabulate
+  - xarray
+  - zarr
+  # Dev Dependencies
+  - black
+  - flake8
+  - jupyterlab
+  - mkdocs
+  - mkdocs-material
+  - mkdocstrings
+  - mkdocstrings-python
+  - pytest
+  - pytest-cov
+  - requests-mock

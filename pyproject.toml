@@ -1,0 +1,76 @@
+[build-system]
+requires = ["setuptools >= 61.2.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "xrlint"
+dynamic = ["version", "readme"]
+authors = [
+  {name = "Norman Fomferra (Brockmann Consult GmbH)"}
+]
+description = "A linter for xarray datasets."
+keywords = [
+  "xarray"
+]
+license = {text = "MIT"}
+requires-python = ">=3.10"
+dependencies = [
+  "click",
+  "fsspec",
+  "numpy",
+  "pandas",
+  "pyaml",
+  "tabulate",
+  "xarray",
+  "zarr"
+]
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Intended Audience :: Science/Research",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Software Development",
+  "Topic :: Scientific/Engineering",
+  "Typing :: Typed",
+  "Operating System :: Microsoft :: Windows",
+  "Operating System :: POSIX",
+  "Operating System :: Unix",
+  "Operating System :: MacOS",
+]
+
+[tool.setuptools.dynamic]
+version = {attr = "xrlint.__version__"}
+readme = {file = "README.md", content-type = "text/markdown"}
+
+[tool.setuptools.packages.find]
+exclude = [
+  "tests",
+  "docs"
+]
+
+[project.optional-dependencies]
+dev = [
+  "black",
+  "flake8",
+  "pytest",
+  "pytest-cov",
+  "twine",
+  "build",
+  "hatch"
+]
+doc = [
+  "mkdocs",
+  "mkdocs-material",
+  "mkdocstrings",
+  "mkdocstrings-python"
+]
+
+[project.urls]
+Documentation = "https://bcdev.github.io/xrlint"
+Repository = "https://github.com/bcdev/xrlint"
+Changelog = "https://github.com/bcdev/xrlint/blob/main/CHANGES.md"
+Issues = "https://github.com/bcdev/xrlint/issues"
