@@ -8,10 +8,13 @@ from xrlint.formatters import registry
 @registry.define_formatter(
     name="json",
     version="1.0.0",
-    schema=[
-        schema("integer", minimum=0, maximum=8, default=4),
-        schema("boolean", default=False),
-    ],
+    schema=schema(
+        "object",
+        properties=dict(
+            indent=schema("integer", minimum=0, maximum=8, default=2),
+            with_meta=schema("boolean", default=False),
+        ),
+    ),
 )
 class Json(xrl.FormatterOp):
 
@@ -30,7 +33,9 @@ class Json(xrl.FormatterOp):
         }
         if self.with_meta:
             rules_meta = xrl.get_rules_meta_for_results(results)
-            results_json.update({
-                "rules_meta": [rm.to_dict() for rm in rules_meta.values()],
-            })
+            results_json.update(
+                {
+                    "rules_meta": [rm.to_dict() for rm in rules_meta.values()],
+                }
+            )
         return json.dumps(results_json, indent=self.indent)

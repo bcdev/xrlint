@@ -1,8 +1,18 @@
 import xrlint.api as xrl
 from xrlint.formatters import registry
+from xrlint.util.schema import schema
 
 
-@registry.define_formatter(name="html", version="1.0.0")
+@registry.define_formatter(
+    name="html",
+    version="1.0.0",
+    schema=schema(
+        "object",
+        properties=dict(
+            with_meta=schema("boolean", default=False),
+        ),
+    ),
+)
 class Html(xrl.FormatterOp):
 
     def __init__(self, with_meta: bool = False):
