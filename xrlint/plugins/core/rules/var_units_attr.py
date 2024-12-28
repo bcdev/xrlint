@@ -1,5 +1,5 @@
 import xrlint.api as xrl
-from xrlint.rules import registry
+from xrlint.plugins.core.rules import registry
 
 
 @registry.define_rule(name="var-units-attr", version="1.0.0")

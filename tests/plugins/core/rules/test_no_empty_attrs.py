@@ -1,5 +1,5 @@
 import xrlint.api as xrl
-from xrlint.rules.no_empty_attrs import NoEmptyAttrs
+from xrlint.plugins.core.rules.no_empty_attrs import NoEmptyAttrs
 
 import xarray as xr
 

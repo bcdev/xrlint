@@ -31,4 +31,3 @@ from xrlint.rule import RuleOp
 from xrlint.rule_reg import RuleRegistry
 from xrlint.rule_tester import RuleTest
 from xrlint.rule_tester import RuleTester
-from xrlint.rules import import_rules

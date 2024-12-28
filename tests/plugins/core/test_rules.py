@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from xrlint.rules import import_rules
+from xrlint.plugins.core.rules import import_rules
 
 
 class ImportRulesTest(TestCase):

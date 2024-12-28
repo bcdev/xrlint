@@ -45,7 +45,6 @@ def import_value(
     attr_type: type | tuple[type, ...],
     /,
     dir_path: str | None = None,
-    default: Any = _UNDEFINED,
 ) -> Any:
     import importlib
     import sys
@@ -58,24 +57,27 @@ def import_value(
 
     try:
         config_module = importlib.import_module(module_name)
-        if default is not _UNDEFINED:
-            value = getattr(config_module, attr_name, default)
-            if isinstance(attr_type, tuple):
-                attr_type = attr_type + (type(default),)
+        attr_value = getattr(config_module, attr_name)
+        if not isinstance(attr_value, attr_type):
+            if callable(attr_value):
+                attr_value = attr_value()
+                if not isinstance(attr_value, attr_type):
+                    raise TypeError(
+                        format_message_type_of(
+                            f"return value of {module_name}.{attr_name}()",
+                            attr_value,
+                            attr_type,
+                        )
+                    )
             else:
-                attr_type = (
-                    attr_type,
-                    type(default),
+                raise TypeError(
+                    format_message_type_of(
+                        f"value of attribute {module_name}.{attr_name}",
+                        attr_value,
+                        attr_type,
+                    )
                 )
-        else:
-            value = getattr(config_module, attr_name)
-        if not isinstance(value, attr_type):
-            raise TypeError(
-                format_message_type_of(
-                    f"value of attribute {module_name}.{attr_name}", value, attr_type
-                )
-            )
-        return value
+        return attr_value
     finally:
         if old_path is not None:
             sys.path = old_path

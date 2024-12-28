@@ -35,7 +35,6 @@ expected_api = [
     "Suggestion",
     "get_rules_meta_for_results",
     "import_formatters",
-    "import_rules",
 ]
 
 

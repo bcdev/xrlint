@@ -1,5 +1,5 @@
 import xrlint.api as xrl
-from xrlint.rules.dataset_title_attr import DatasetTitleAttr
+from xrlint.plugins.core.rules.dataset_title_attr import DatasetTitleAttr
 import xarray as xr
 
 

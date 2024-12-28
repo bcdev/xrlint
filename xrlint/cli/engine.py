@@ -11,7 +11,6 @@ from xrlint.linter import Linter
 from xrlint.message import Message
 from xrlint.plugin import Plugin, PluginMeta
 from xrlint.result import Result
-from xrlint.rules import import_rules
 
 
 class CliEngine:
@@ -24,17 +23,13 @@ class CliEngine:
         output_format: str = DEFAULT_OUTPUT_FORMAT,
         files: list[str] | None = None,
     ):
+        from xrlint.plugins.core import plugin as core_plugin
+
         self.no_default_config = no_default_config
         self.config_path = config_path
         self.output_format = output_format
         self.files = files
-        self.core_config = Config(
-            plugins={
-                "core": Plugin(
-                    meta=PluginMeta(name="core"), rules=import_rules().as_dict()
-                ),
-            }
-        )
+        self.core_config = Config(plugins={"core": core_plugin()})
         self.config_list = ConfigList([self.core_config])
 
     def load_config(self):

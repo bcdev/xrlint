@@ -1,5 +1,5 @@
 import xrlint.api as xrl
-from xrlint.rules.var_units_attr import VarUnitsAttr
+from xrlint.plugins.core.rules.var_units_attr import VarUnitsAttr
 import xarray as xr
 
 
