@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 import fnmatch
-from typing import Any, TYPE_CHECKING
+from typing import Any, TYPE_CHECKING, Union
 
 from xrlint.util.formatting import format_message_type_of
 from xrlint.util.todict import ToDictMixin
@@ -12,6 +12,7 @@ from xrlint.util.merge import (
 )
 
 if TYPE_CHECKING:
+    from xrlint.rule import Rule
     from xrlint.rule import RuleConfig
     from xrlint.plugin import Plugin
     from xrlint.processor import ProcessorOp
@@ -53,7 +54,7 @@ class Config(ToDictMixin):
     the dataset opener.
     """
 
-    processor: "ProcessorOp" | str | None = None
+    processor: Union["ProcessorOp", str, None] = None
     """processor - Either an object compatible with the `ProcessorOp` 
     interface or a string indicating the name of a processor inside 
     of a plugin (i.e., `"pluginName/processorName"`).
@@ -96,6 +97,25 @@ class Config(ToDictMixin):
             )
             else []
         )
+
+    def get_rule(self, rule_id: str) -> "Rule":
+        if "/" in rule_id:
+            plugin_name, rule_name = rule_id.split("/", maxsplit=1)
+        else:
+            plugin_name, rule_name = "core", rule_id
+
+        from xrlint.plugin import Plugin
+        from xrlint.rule import Rule
+
+        plugin: Plugin | None = (self.plugins or {}).get(plugin_name)
+        if plugin is None:
+            raise ValueError(f"unknown plugin {plugin_name!r}")
+
+        rule: Rule | None = (plugin.rules or {}).get(rule_name)
+        if rule is None:
+            raise ValueError(f"unknown rule {rule_id!r}")
+
+        return rule
 
     def merge(self, config_obj: "Config", name: str = None) -> "Config":
         return Config(
@@ -208,7 +228,7 @@ class Config(ToDictMixin):
             )
 
     @classmethod
-    def _parse_processor(cls, config_dict: dict) -> "ProcessorOp" | str | None:
+    def _parse_processor(cls, config_dict: dict) -> Union["ProcessorOp", str, None]:
         from xrlint.processor import ProcessorOp
 
         processor = config_dict.get("processor")

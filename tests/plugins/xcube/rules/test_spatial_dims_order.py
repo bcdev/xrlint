@@ -1,9 +1,10 @@
 import numpy as np
 
-import xrlint.api as xrl
 from xrlint.plugins.xcube.rules.spatial_dims_order import SpatialDimsOrder
 
 import xarray as xr
+
+from xrlint.testing import RuleTester, RuleTest
 
 
 def make_dataset(dims: tuple[str, str, str]):
@@ -37,17 +38,17 @@ invalid_dataset_3 = make_dataset(("time", "lon", "lat"))
 invalid_dataset_4 = make_dataset(("lon", "lat", "time"))
 
 
-SpatialDimsOrderTest = xrl.RuleTester.define_test(
+SpatialDimsOrderTest = RuleTester.define_test(
     "spatial-dims-order",
     SpatialDimsOrder,
     valid=[
-        xrl.RuleTest(dataset=valid_dataset_1),
-        xrl.RuleTest(dataset=valid_dataset_2),
+        RuleTest(dataset=valid_dataset_1),
+        RuleTest(dataset=valid_dataset_2),
     ],
     invalid=[
-        xrl.RuleTest(dataset=invalid_dataset_1),
-        xrl.RuleTest(dataset=invalid_dataset_2),
-        xrl.RuleTest(dataset=invalid_dataset_3),
-        xrl.RuleTest(dataset=invalid_dataset_4),
+        RuleTest(dataset=invalid_dataset_1),
+        RuleTest(dataset=invalid_dataset_2),
+        RuleTest(dataset=invalid_dataset_3),
+        RuleTest(dataset=invalid_dataset_4),
     ],
 )

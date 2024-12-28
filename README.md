@@ -1,7 +1,7 @@
-# xrlint - A linter for datasets
+# XRLint - A linter for datasets
 
 
-xrlint is a [linter](https://en.wikipedia.org/wiki/Lint_(software)) 
+XRLint is a [linter](https://en.wikipedia.org/wiki/Lint_(software)) 
 tool and library for [xarray]() datasets.
 
 Its design is heavily inspired by [ESLint](https://eslint.org/).
@@ -9,7 +9,7 @@ Its design is heavily inspired by [ESLint](https://eslint.org/).
 
 ## Rule naming
 
-The rule naming conventions for xrlint are the same as or ESLint:
+The rule naming conventions for XRLint are the same as or ESLint:
 
 * Use dashes between words (kebab-case).
 * If your rule only disallows something, 
@@ -23,9 +23,8 @@ The rule naming conventions for xrlint are the same as or ESLint:
 
 # TODO
 
-- implement plugin mgt
 - add more tests, +coverage
-- use `RuleMeta.desc`, it is currently undefined 
+- use `RuleMeta.description`, it is currently unused 
 - use `RuleMeta.type`, it is currently unused
 - use `RuleTest.expected`, it is currently unused
 - use `Processor`, it is currently unused
@@ -66,12 +65,6 @@ types that can read the data from a file path.
       root element `verify.root()` and starts traversal of 
       child elements.
 
-## Library design
-
-Exporting stuff from `xrlint`
-  - import all api in `xrlint.__init__.py`
-  - run `del sys.modules[x]` for all submodules to be hidden
-    bit take care of `cli`
 
 ## Config design
 

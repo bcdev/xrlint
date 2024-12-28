@@ -1,7 +1,8 @@
-import xrlint.api as xrl
-from xrlint.rules.no_empty_attrs import NoEmptyAttrs
+from xrlint.plugins.core.rules.no_empty_attrs import NoEmptyAttrs
 
 import xarray as xr
+
+from xrlint.testing import RuleTest, RuleTester
 
 valid_dataset_1 = xr.Dataset(attrs=dict(title="empty"))
 valid_dataset_2 = xr.Dataset(
@@ -17,16 +18,16 @@ invalid_dataset_2.x.attrs = {}
 invalid_dataset_3.v.attrs = {}
 
 
-NoEmptyAttrsTest = xrl.RuleTester.define_test(
+NoEmptyAttrsTest = RuleTester.define_test(
     "no-empty-attrs",
     NoEmptyAttrs,
     valid=[
-        xrl.RuleTest(dataset=valid_dataset_1),
-        xrl.RuleTest(dataset=valid_dataset_2),
+        RuleTest(dataset=valid_dataset_1),
+        RuleTest(dataset=valid_dataset_2),
     ],
     invalid=[
-        xrl.RuleTest(dataset=invalid_dataset_1),
-        xrl.RuleTest(dataset=invalid_dataset_2),
-        xrl.RuleTest(dataset=invalid_dataset_3),
+        RuleTest(dataset=invalid_dataset_1),
+        RuleTest(dataset=invalid_dataset_2),
+        RuleTest(dataset=invalid_dataset_3),
     ],
 )

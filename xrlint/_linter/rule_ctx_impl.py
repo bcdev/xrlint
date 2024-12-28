@@ -7,8 +7,8 @@ from xrlint.config import Config
 from xrlint.constants import MISSING_FILE_PATH
 from xrlint.constants import SEVERITY_ERROR
 from xrlint.node import Node
-from xrlint.message import Message
-from xrlint.message import Suggestion
+from xrlint.result import Message
+from xrlint.result import Suggestion
 from xrlint.rule import RuleContext
 
 
@@ -28,6 +28,10 @@ class RuleContextImpl(RuleContext):
         self.rule_id: str | None = None
         self.severity: Literal[1, 2] = SEVERITY_ERROR
         self.node: Node | None = None
+
+    @property
+    def config(self) -> Config:
+        return self._config
 
     @property
     def settings(self) -> dict[str, Any]:

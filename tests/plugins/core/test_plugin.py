@@ -1,16 +1,16 @@
 from unittest import TestCase
 
-from xrlint.rules import import_rules
+from xrlint.plugins.core import export_plugin
 
 
-class ImportRulesTest(TestCase):
-    def test_import_rules(self):
-        registry = import_rules()
+class PluginTest(TestCase):
+    def test_plugin(self):
+        _plugin = export_plugin()
         self.assertEqual(
             {
                 "dataset-title-attr",
                 "no-empty-attrs",
                 "var-units-attr",
             },
-            set(registry.as_dict().keys()),
+            set(_plugin.rules.keys()),
         )

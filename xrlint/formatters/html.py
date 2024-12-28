@@ -1,10 +1,11 @@
-import xrlint.api as xrl
+from xrlint.formatter import FormatterOp, FormatterContext
 from xrlint.formatters import registry
+from xrlint.result import Result, get_rules_meta_for_results
 from xrlint.util.schema import schema
 
 
 @registry.define_formatter(
-    name="html",
+    "html",
     version="1.0.0",
     schema=schema(
         "object",
@@ -13,15 +14,15 @@ from xrlint.util.schema import schema
         ),
     ),
 )
-class Html(xrl.FormatterOp):
+class Html(FormatterOp):
 
     def __init__(self, with_meta: bool = False):
         self.with_meta = with_meta
 
     def format(
         self,
-        context: xrl.FormatterContext,
-        results: list[xrl.Result],
+        context: FormatterContext,
+        results: list[Result],
     ) -> str:
         text = []
         n = len(results)
@@ -37,7 +38,7 @@ class Html(xrl.FormatterOp):
         text.append("</div>\n")
 
         if self.with_meta:
-            rules_meta = xrl.get_rules_meta_for_results(results)
+            rules_meta = get_rules_meta_for_results(results)
             text.append('<div role="rules_meta">\n')
             text.append("<h3>Rules</h3>\n")
             for rm in rules_meta.values():

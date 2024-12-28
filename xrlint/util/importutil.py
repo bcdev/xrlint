@@ -1,10 +1,8 @@
 import importlib
 import pathlib
-from typing import Any
+from typing import TypeVar, Type, Callable, Any
 
 from xrlint.util.formatting import format_message_type_of
-
-_UNDEFINED = object()
 
 
 def import_submodules(package_name: str, dry_run: bool = False) -> list[str]:
@@ -39,43 +37,35 @@ def import_submodules(package_name: str, dry_run: bool = False) -> list[str]:
     return qual_module_names
 
 
-def import_value(
+T = TypeVar("T")
+
+
+def import_exported_value(
     module_name: str,
-    attr_name: str,
-    attr_type: type | tuple[type, ...],
-    /,
-    dir_path: str | None = None,
-    default: Any = _UNDEFINED,
-) -> Any:
-    import importlib
-    import sys
+    name: str,
+    factory: Callable[[Any], T],
+) -> T:
+    export_function_name = f"export_{name}"
+    config_module = importlib.import_module(module_name)
+    export_function = getattr(config_module, export_function_name)
+    return eval_exported_value(export_function_name, export_function, factory)
 
-    old_path: list[str] | None = None
-    if dir_path is not None:
-        dir_path = dir_path or "."
-        old_path = sys.path
-        sys.path = [dir_path] + old_path
 
-    try:
-        config_module = importlib.import_module(module_name)
-        if default is not _UNDEFINED:
-            value = getattr(config_module, attr_name, default)
-            if isinstance(attr_type, tuple):
-                attr_type = attr_type + (type(default),)
-            else:
-                attr_type = (
-                    attr_type,
-                    type(default),
-                )
-        else:
-            value = getattr(config_module, attr_name)
-        if not isinstance(value, attr_type):
-            raise TypeError(
-                format_message_type_of(
-                    f"value of attribute {module_name}.{attr_name}", value, attr_type
-                )
+def eval_exported_value(
+    export_function_name: str, export_function: Any, factory: Callable[[Any], T]
+) -> T:
+    if not callable(export_function):
+        raise TypeError(
+            format_message_type_of(
+                export_function_name,
+                export_function,
+                "function",
             )
-        return value
-    finally:
-        if old_path is not None:
-            sys.path = old_path
+        )
+    export_value = export_function()
+    try:
+        return factory(export_value)
+    except (ValueError, TypeError) as e:
+        raise type(e)(
+            f"return value of {export_function_name}(): {e}",
+        )

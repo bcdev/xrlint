@@ -1,7 +1,7 @@
-from ..node import AttrNode
-from ..node import AttrsNode
-from ..node import DataArrayNode
-from ..node import DatasetNode
+from xrlint.node import AttrNode
+from xrlint.node import AttrsNode
+from xrlint.node import DataArrayNode
+from xrlint.node import DatasetNode
 from xrlint.rule import RuleOp
 from .rule_ctx_impl import RuleContextImpl
 

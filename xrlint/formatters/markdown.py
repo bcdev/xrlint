@@ -1,14 +1,15 @@
-import xrlint.api as xrl
+from xrlint.formatter import FormatterOp, FormatterContext
 from xrlint.formatters import registry
+from xrlint.result import Result
 
 
-@registry.define_formatter(name="markdown", version="1.0.0")
-class Markdown(xrl.FormatterOp):
+@registry.define_formatter("markdown", version="1.0.0")
+class Markdown(FormatterOp):
 
     def format(
         self,
-        context: xrl.FormatterContext,
-        results: list[xrl.Result],
+        context: FormatterContext,
+        results: list[Result],
     ) -> str:
         # TODO: implement "markdown" format
         raise NotImplementedError()

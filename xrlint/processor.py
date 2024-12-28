@@ -5,7 +5,7 @@ from typing import Type
 
 import xarray as xr
 
-from xrlint.message import Message
+from xrlint.result import Message
 
 
 class ProcessorOp(ABC):

@@ -1,19 +1,20 @@
-import xrlint.api as xrl
 from xrlint.constants import SEVERITY_CODE_TO_NAME
-from xrlint.util.formatting import format_problems
+from xrlint.formatter import FormatterOp, FormatterContext
 from xrlint.formatters import registry
+from xrlint.result import Result
+from xrlint.util.formatting import format_problems
 
 
 from tabulate import tabulate
 
 
-@registry.define_formatter(name="simple", version="1.0.0")
-class Simple(xrl.FormatterOp):
+@registry.define_formatter("simple", version="1.0.0")
+class Simple(FormatterOp):
 
     def format(
         self,
-        context: xrl.FormatterContext,
-        results: list[xrl.Result],
+        context: FormatterContext,
+        results: list[Result],
     ) -> str:
         text = []
         for r in results:

@@ -6,6 +6,7 @@ import fsspec
 
 from xrlint.config import ConfigList
 from xrlint.util.formatting import format_message_type_of
+from xrlint.util.importutil import eval_exported_value
 
 
 def read_config(config_path: str | Path | PathLike[str]) -> ConfigList:
@@ -51,10 +52,15 @@ def _read_config_python(config_path) -> Any:
     with fsspec.open(config_path, mode="r") as f:
         code = f.read()
 
-    attr_name = "configs"
+    export_function_name = "export_config"
     _locals = {}
     exec(code, None, _locals)
+
     try:
-        return _locals[attr_name]
+        export_function = _locals[export_function_name]
     except KeyError:
-        raise AttributeError(f"missing attribute {attr_name!r}")
+        raise AttributeError(f"missing attribute {export_function_name!r}")
+
+    return eval_exported_value(
+        export_function_name, export_function, ConfigList.from_value
+    )

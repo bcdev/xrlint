@@ -6,10 +6,13 @@ import xarray as xr
 
 from xrlint.constants import SEVERITY_ERROR
 from xrlint.linter import Linter
+from xrlint.plugin import Plugin
+from xrlint.plugin import PluginMeta
+from xrlint.result import Message
 from xrlint.result import Result
-from xrlint.rule import Rule, RuleMeta, RuleOp
-from xrlint.rule_reg import RuleRegistry
-from xrlint.message import Message
+from xrlint.rule import Rule
+from xrlint.rule import RuleMeta
+from xrlint.rule import RuleOp
 from xrlint.util.naming import to_snake_case
 from xrlint.util.formatting import format_problems
 
@@ -146,8 +149,8 @@ class RuleTester:
 
     def _test_rule(
         self,
-        name: str,
-        verifier_class: Type[RuleOp],
+        rule_name: str,
+        rule_op_class: Type[RuleOp],
         test: RuleTest,
         test_id: str,
         test_mode: Literal["valid", "invalid"],
@@ -156,11 +159,23 @@ class RuleTester:
         # on the currently configured severity.
         # There is also no way for a rule to obtain the severity.
         severity = SEVERITY_ERROR
-        linter = self._create_linter(name, verifier_class)
+        linter = Linter(**self._config)
         result = linter.verify_dataset(
             test.dataset,
+            plugins={
+                "test": (
+                    Plugin(
+                        meta=PluginMeta(name="test"),
+                        rules={
+                            rule_name: Rule(
+                                meta=RuleMeta(name=rule_name), op_class=rule_op_class
+                            )
+                        },
+                    )
+                )
+            },
             rules={
-                name: (
+                f"test/{rule_name}": (
                     [severity, *(test.args or ()), (test.kwargs or {})]
                     if test.args or test.kwargs
                     else severity
@@ -172,19 +187,7 @@ class RuleTester:
         if assert_ok(result):
             return None
         else:
-            return _format_error_message(name, test_id, test_mode, result)
-
-    def _create_linter(self, name, verifier_class):
-        registry = RuleRegistry()
-        registry.register(
-            name,
-            Rule(meta=RuleMeta(name=name), op_class=verifier_class),
-        )
-        linter = Linter(
-            _registry=registry,
-            **self._config,
-        )
-        return linter
+            return _format_error_message(rule_name, test_id, test_mode, result)
 
 
 def _assert_valid(r: Result):

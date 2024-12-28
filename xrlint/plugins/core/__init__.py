@@ -6,11 +6,11 @@ from xrlint.util.importutil import import_submodules
 def export_plugin() -> Plugin:
     from .rules import plugin
 
-    import_submodules("xrlint.plugins.xcube.rules")
+    import_submodules("xrlint.plugins.core.rules")
 
-    plugin.configs["xcube-recommended"] = Config.from_value(
+    plugin.configs["recommended"] = Config.from_value(
         {
-            "name": "xcube-recommended",
+            "name": "recommended",
             "rules": {f"{rule_id}": "error" for rule_id, rule in plugin.rules.items()},
         }
     )

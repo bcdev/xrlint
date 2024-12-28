@@ -1,21 +1,25 @@
 from unittest import TestCase
 
-import xrlint.api as xrl
+from xrlint.config import Config
+from xrlint.formatter import FormatterContext
 from xrlint.formatters.json import Json
+from xrlint.result import Message
+from xrlint.result import Result
 
 
 class JsonTest(TestCase):
     def test_it(self):
         json_formatter = Json(2)
         text = json_formatter.format(
-            context=xrl.FormatterContext(),
+            context=FormatterContext(),
             results=[
-                xrl.Result(
+                Result(
+                    Config(),
                     file_path="test.nc",
                     messages=[
-                        xrl.Message(message="what", severity=2),
-                        xrl.Message(message="is", fatal=True),
-                        xrl.Message(message="happening?", severity=1),
+                        Message(message="what", severity=2),
+                        Message(message="is", fatal=True),
+                        Message(message="happening?", severity=1),
                     ],
                 )
             ],
