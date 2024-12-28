@@ -15,7 +15,7 @@ class FormatterRegistryTest(TestCase):
             def format(self, *args, **kwargs) -> str:
                 """Dummy"""
 
-        my_rule = registry.registrations.get("my-format")
+        my_rule = registry.get("my-format")
         self.assertIsInstance(my_rule, Formatter)
         self.assertEqual("my-format", my_rule.meta.name)
         self.assertEqual(None, my_rule.meta.version)
@@ -40,9 +40,8 @@ class FormatterRegistryTest(TestCase):
             def format(self, *args, **kwargs) -> str:
                 """Dummy"""
 
-        registrations = registry.registrations
-        fmt_names = list(registrations.keys())
-        fmt1, fmt2, fmt3 = list(registrations.values())
+        fmt_names = list(registry.keys())
+        fmt1, fmt2, fmt3 = list(registry.values())
         self.assertEqual(["my-fmt-a", "my-fmt-b", "my-fmt-c"], fmt_names)
         self.assertIsInstance(fmt1, Formatter)
         self.assertIsInstance(fmt2, Formatter)

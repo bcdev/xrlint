@@ -1,4 +1,5 @@
 from abc import abstractmethod, ABC
+from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Any, Callable, Type
 
@@ -56,9 +57,10 @@ class Formatter:
     """The class that implements the format operation."""
 
 
-class FormatterRegistry:
+class FormatterRegistry(Mapping[str, Formatter]):
+
     def __init__(self):
-        self.registrations = {}
+        self._registrations = {}
 
     def define_formatter(
         self,
@@ -80,7 +82,16 @@ class FormatterRegistry:
                 version=version,
                 schema=schema,
             )
-            self.registrations[meta.name] = Formatter(meta=meta, op_class=op_class)
+            self._registrations[meta.name] = Formatter(meta=meta, op_class=op_class)
             return op_class
 
         return _define_formatter
+
+    def __getitem__(self, key: str) -> Formatter:
+        return self._registrations[key]
+
+    def __len__(self) -> int:
+        return len(self._registrations)
+
+    def __iter__(self):
+        return iter(self._registrations)

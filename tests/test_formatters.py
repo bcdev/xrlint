@@ -13,5 +13,5 @@ class ImportFormattersTest(TestCase):
                 "markdown",
                 "simple",
             },
-            set(registry.registrations.keys()),
+            set(registry.keys()),
         )

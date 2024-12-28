@@ -1,3 +1,5 @@
+import sys
+
 import click
 
 # Warning: do not import heavy stuff here,
@@ -8,7 +10,7 @@ from xrlint.cli.constants import DEFAULT_OUTPUT_FORMAT
 from xrlint.cli.constants import CONFIG_DEFAULT_BASENAME
 
 
-@click.command()
+@click.command(name="xrlint")
 @click.option(
     f"--no-default-config",
     "no_default_config",
@@ -51,7 +53,7 @@ def main(
     no_default_config: bool,
     config_path: str | None,
     max_warnings: int,
-    output_format: str | None,
+    output_format: str,
     files: list[str] | None,
 ):
     """Lint the given FILES."""
@@ -75,6 +77,4 @@ def main(
 
 
 if __name__ == "__main__":
-    import sys
-
     sys.exit(main())

@@ -8,18 +8,18 @@ from xrlint.result import Result
 
 
 class JsonTest(TestCase):
-    def test_it(self):
-        json_formatter = Json(2)
-        text = json_formatter.format(
+    def test_json(self):
+        formatter = Json(2)
+        text = formatter.format(
             context=FormatterContext(),
             results=[
                 Result(
                     Config(),
                     file_path="test.nc",
                     messages=[
-                        Message(message="what", severity=2),
+                        Message(message="what", rule_id="rule-1", severity=2),
                         Message(message="is", fatal=True),
-                        Message(message="happening?", severity=1),
+                        Message(message="happening?", rule_id="rule-2", severity=1),
                     ],
                 )
             ],
@@ -33,6 +33,7 @@ class JsonTest(TestCase):
                 '      "messages": [\n'
                 "        {\n"
                 '          "message": "what",\n'
+                '          "rule_id": "rule-1",\n'
                 '          "severity": 2\n'
                 "        },\n"
                 "        {\n"
@@ -41,6 +42,7 @@ class JsonTest(TestCase):
                 "        },\n"
                 "        {\n"
                 '          "message": "happening?",\n'
+                '          "rule_id": "rule-2",\n'
                 '          "severity": 1\n'
                 "        }\n"
                 "      ],\n"

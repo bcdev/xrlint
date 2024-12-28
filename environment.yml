@@ -6,12 +6,9 @@ dependencies:
   # Library Dependencies
   - click
   - fsspec
-  - numpy
-  - pandas
   - pyaml
   - tabulate
   - xarray
-  - zarr
   # Dev Dependencies
   - black
   - flake8
@@ -23,3 +20,8 @@ dependencies:
   - pytest
   - pytest-cov
   - requests-mock
+  # Testing Datasets
+  - pandas
+  - netcdf4
+  - numpy
+  - zarr

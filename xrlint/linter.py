@@ -64,10 +64,14 @@ class Linter:
 
 
 def open_dataset(
-    source: str, opener_options: dict[str, Any] | None
+    file_path: str, opener_options: dict[str, Any] | None
 ) -> tuple[xr.Dataset, None] | tuple[None, Exception]:
+    engine = opener_options.pop("engine", None)
+    if engine is None and file_path.endswith(".zarr"):
+        engine = "zarr"
+
     try:
-        return xr.open_dataset(source, **(opener_options or {})), None
+        return xr.open_dataset(file_path, engine=engine, **(opener_options or {})), None
     except (OSError, TypeError, ValueError) as e:
         return None, e
 

@@ -17,12 +17,9 @@ requires-python = ">=3.10"
 dependencies = [
   "click",
   "fsspec",
-  "numpy",
-  "pandas",
   "pyaml",
   "tabulate",
   "xarray",
-  "zarr"
 ]
 classifiers = [
   "Development Status :: 5 - Production/Stable",
@@ -52,15 +49,25 @@ exclude = [
   "docs"
 ]
 
+[project.scripts]
+xrlint = "xrlint.cli.main:main"
+
 [project.optional-dependencies]
 dev = [
+  # Development tools
   "black",
   "flake8",
   "pytest",
   "pytest-cov",
   "twine",
   "build",
-  "hatch"
+  "hatch",
+  # Dataset testing
+  "numpy",
+  "pandas",
+  "zarr",
+  # Dataset testing
+  "jupyterlab"
 ]
 doc = [
   "mkdocs",
