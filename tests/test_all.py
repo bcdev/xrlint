@@ -35,7 +35,6 @@ expected_api = [
     "core_plugin",
     "formatter_registry",
     "get_rules_meta_for_results",
-    "import_formatters",
 ]
 
 

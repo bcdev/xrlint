@@ -1,11 +1,11 @@
 from unittest import TestCase
 
-from xrlint.formatters import import_formatters
+from xrlint.formatters import export_formatters
 
 
 class ImportFormattersTest(TestCase):
     def test_import_formatters(self):
-        registry = import_formatters()
+        registry = export_formatters()
         self.assertEqual(
             {
                 "html",

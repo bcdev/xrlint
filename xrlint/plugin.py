@@ -5,7 +5,7 @@ from xrlint.config import Config
 from xrlint.rule import Rule, RuleOp, register_rule
 from xrlint.processor import Processor
 from xrlint.util.formatting import format_message_type_of
-from xrlint.util.importutil import import_value
+from xrlint.util.importutil import import_exported_value
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -40,7 +40,7 @@ class Plugin:
         if isinstance(value, Plugin):
             return value
         if isinstance(value, str):
-            return import_value(value, "plugin", Plugin)
+            return import_exported_value(value, "plugin", Plugin)
         raise TypeError(format_message_type_of("plugin", value, "Plugin|str"))
 
     def define_rule(

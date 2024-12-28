@@ -6,7 +6,7 @@ from xrlint.cli.constants import DEFAULT_OUTPUT_FORMAT
 from xrlint.config import Config
 from xrlint.config import ConfigList
 from xrlint.formatter import FormatterContext
-from xrlint.formatters import import_formatters
+from xrlint.formatters import export_formatters
 from xrlint.linter import Linter
 from xrlint.message import Message
 from xrlint.plugin import Plugin, PluginMeta
@@ -23,7 +23,7 @@ class CliEngine:
         output_format: str = DEFAULT_OUTPUT_FORMAT,
         files: list[str] | None = None,
     ):
-        from xrlint.plugins.core import plugin as core_plugin
+        from xrlint.plugins.core import export_plugin as core_plugin
 
         self.no_default_config = no_default_config
         self.config_path = config_path
@@ -76,7 +76,7 @@ class CliEngine:
         output_format = (
             self.output_format if self.output_format else DEFAULT_OUTPUT_FORMAT
         )
-        formatter = import_formatters().get(output_format)
+        formatter = export_formatters().get(output_format)
         if formatter is None:
             raise click.ClickException(f"unknown format {output_format!r}")
         # TODO: pass format-specific args/kwargs

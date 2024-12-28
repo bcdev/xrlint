@@ -1,10 +1,8 @@
 import importlib
 import pathlib
-from typing import Any
+from typing import TypeVar, Type
 
 from xrlint.util.formatting import format_message_type_of
-
-_UNDEFINED = object()
 
 
 def import_submodules(package_name: str, dry_run: bool = False) -> list[str]:
@@ -39,45 +37,32 @@ def import_submodules(package_name: str, dry_run: bool = False) -> list[str]:
     return qual_module_names
 
 
-def import_value(
+T = TypeVar("T")
+
+
+def import_exported_value(
     module_name: str,
-    attr_name: str,
-    attr_type: type | tuple[type, ...],
-    /,
-    dir_path: str | None = None,
-) -> Any:
-    import importlib
-    import sys
-
-    old_path: list[str] | None = None
-    if dir_path is not None:
-        dir_path = dir_path or "."
-        old_path = sys.path
-        sys.path = [dir_path] + old_path
-
-    try:
-        config_module = importlib.import_module(module_name)
-        attr_value = getattr(config_module, attr_name)
-        if not isinstance(attr_value, attr_type):
-            if callable(attr_value):
-                attr_value = attr_value()
-                if not isinstance(attr_value, attr_type):
-                    raise TypeError(
-                        format_message_type_of(
-                            f"return value of {module_name}.{attr_name}()",
-                            attr_value,
-                            attr_type,
-                        )
-                    )
-            else:
-                raise TypeError(
-                    format_message_type_of(
-                        f"value of attribute {module_name}.{attr_name}",
-                        attr_value,
-                        attr_type,
-                    )
-                )
-        return attr_value
-    finally:
-        if old_path is not None:
-            sys.path = old_path
+    name: str,
+    return_type: Type[T],
+) -> T:
+    config_module = importlib.import_module(module_name)
+    export_name = f"export_{name}"
+    export_function = getattr(config_module, export_name)
+    if not callable(export_function):
+        raise TypeError(
+            format_message_type_of(
+                f"{module_name}.{export_name}",
+                export_function,
+                "function",
+            )
+        )
+    export_value = export_function()
+    if not isinstance(export_value, return_type):
+        raise TypeError(
+            format_message_type_of(
+                f"return value of {module_name}.{export_name}()",
+                export_value,
+                return_type,
+            )
+        )
+    return export_value

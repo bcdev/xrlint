@@ -1,11 +1,11 @@
 from unittest import TestCase
 
-from xrlint.plugins.core import plugin
+from xrlint.plugins.core import export_plugin
 
 
 class PluginTest(TestCase):
     def test_plugin(self):
-        _plugin = plugin()
+        _plugin = export_plugin()
         self.assertEqual(
             {
                 "dataset-title-attr",

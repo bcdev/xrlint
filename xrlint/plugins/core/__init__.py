@@ -3,7 +3,7 @@ from xrlint.plugin import Plugin
 from xrlint.util.importutil import import_submodules
 
 
-def plugin() -> Plugin:
+def export_plugin() -> Plugin:
     from .rules import plugin
 
     import_submodules("xrlint.plugins.core.rules")

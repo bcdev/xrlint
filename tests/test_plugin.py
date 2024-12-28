@@ -6,6 +6,7 @@ from xrlint.rule import Rule, RuleOp
 
 class PluginDefineRuleDecoratorTest(TestCase):
 
+    # noinspection PyUnusedLocal
     def test_decorator(self):
 
         plugin = Plugin(meta=PluginMeta(name="test"))
