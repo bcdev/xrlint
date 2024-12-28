@@ -7,6 +7,8 @@ build
 .pytest_cache
 __pycache__
 *.egg-info
+.coverage
+htmlcov/
 
 # Jupyter
 .ipynb_checkpoints
