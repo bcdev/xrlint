@@ -40,7 +40,7 @@ class Plugin:
         if isinstance(value, Plugin):
             return value
         if isinstance(value, str):
-            return import_exported_value(value, "plugin", Plugin)
+            return import_exported_value(value, "plugin", Plugin.from_value)
         raise TypeError(format_message_type_of("plugin", value, "Plugin|str"))
 
     def define_rule(

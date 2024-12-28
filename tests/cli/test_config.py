@@ -34,17 +34,18 @@ json_text = """
 """
 
 py_text = """
-from xrlint.config import Config
-from xrlint.rule import RuleConfig
-
-configs = [Config(
-    name="py-test",
-    rules={
-      "rule-1": RuleConfig(2),
-      "rule-2": RuleConfig(1),
-      "rule-3": RuleConfig(2, kwargs={"max_size": 500})
-    }
-)]
+def export_config(): 
+    from xrlint.config import Config
+    from xrlint.rule import RuleConfig
+    
+    return [Config(
+        name="py-test",
+        rules={
+          "rule-1": RuleConfig(2),
+          "rule-2": RuleConfig(1),
+          "rule-3": RuleConfig(2, kwargs={"max_size": 500})
+        }
+    )]
 """
 
 

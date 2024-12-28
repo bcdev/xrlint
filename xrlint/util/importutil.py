@@ -1,6 +1,6 @@
 import importlib
 import pathlib
-from typing import TypeVar, Type
+from typing import TypeVar, Type, Callable, Any
 
 from xrlint.util.formatting import format_message_type_of
 
@@ -43,26 +43,29 @@ T = TypeVar("T")
 def import_exported_value(
     module_name: str,
     name: str,
-    return_type: Type[T],
+    factory: Callable[[Any], T],
 ) -> T:
+    export_function_name = f"export_{name}"
     config_module = importlib.import_module(module_name)
-    export_name = f"export_{name}"
-    export_function = getattr(config_module, export_name)
+    export_function = getattr(config_module, export_function_name)
+    return eval_exported_value(export_function_name, export_function, factory)
+
+
+def eval_exported_value(
+    export_function_name: str, export_function: Any, factory: Callable[[Any], T]
+) -> T:
     if not callable(export_function):
         raise TypeError(
             format_message_type_of(
-                f"{module_name}.{export_name}",
+                export_function_name,
                 export_function,
                 "function",
             )
         )
     export_value = export_function()
-    if not isinstance(export_value, return_type):
-        raise TypeError(
-            format_message_type_of(
-                f"return value of {module_name}.{export_name}()",
-                export_value,
-                return_type,
-            )
+    try:
+        return factory(export_value)
+    except (ValueError, TypeError) as e:
+        raise type(e)(
+            f"return value of {export_function_name}(): {e}",
         )
-    return export_value
