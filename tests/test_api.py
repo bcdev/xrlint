@@ -29,7 +29,6 @@ expected_api = [
     "RuleContext",
     "RuleMeta",
     "RuleOp",
-    "RuleRegistry",
     "RuleTest",
     "RuleTester",
     "Suggestion",

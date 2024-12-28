@@ -8,7 +8,6 @@ from xrlint.constants import SEVERITY_CODE_TO_NAME
 from xrlint.constants import SEVERITY_ERROR
 from xrlint.constants import SEVERITY_WARN
 from xrlint.rule import RuleMeta
-from xrlint.rule_reg import RuleRegistry
 from xrlint.message import Message
 from xrlint.util.formatting import format_problems
 from xrlint.util.todict import ToDictMixin

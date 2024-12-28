@@ -15,27 +15,27 @@ from xrlint.node import (
 )
 from xrlint.rule import RuleContext
 from xrlint.rule import RuleOp
-from xrlint.rule_reg import RuleRegistry
 
 
 class LinterVerifyTest(TestCase):
 
     def setUp(self):
-        registry = RuleRegistry()
 
-        @registry.define_rule(name="no-space-in-attr-name")
+        plugin = Plugin(meta=PluginMeta(name="test"))
+
+        @plugin.define_rule("no-space-in-attr-name")
         class AttrVer(RuleOp):
             def attr(self, ctx: RuleContext, node: AttrNode):
                 if " " in node.name:
                     ctx.report(f"Attribute name with space: {node.name!r}")
 
-        @registry.define_rule(name="no-empty-attrs")
+        @plugin.define_rule("no-empty-attrs")
         class AttrsVer(RuleOp):
             def attrs(self, ctx: RuleContext, node: AttrsNode):
                 if not node.attrs:
                     ctx.report("Empty attributes")
 
-        @registry.define_rule(name="data-var-dim-must-have-coord")
+        @plugin.define_rule("data-var-dim-must-have-coord")
         class DataArrayVer(RuleOp):
             def data_array(self, ctx: RuleContext, node: DataArrayNode):
                 if node.in_data_vars():
@@ -47,18 +47,13 @@ class LinterVerifyTest(TestCase):
                                 f" is missing a coordinate variable"
                             )
 
-        @registry.define_rule(name="dataset-without-data-vars")
+        @plugin.define_rule("dataset-without-data-vars")
         class DatasetVer(RuleOp):
             def dataset(self, ctx: RuleContext, node: DatasetNode):
                 if len(node.dataset.data_vars) == 0:
                     ctx.report(f"Dataset does not have data variables")
 
-        config = Config(
-            plugins={
-                "test": Plugin(meta=PluginMeta(name="test"), rules=registry.as_dict())
-            },
-        )
-
+        config = Config(plugins={"test": plugin})
         self.linter = Linter(config=config)
         super().setUp()
 

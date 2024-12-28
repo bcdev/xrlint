@@ -28,6 +28,5 @@ from xrlint.rule import RuleConfig
 from xrlint.rule import RuleContext
 from xrlint.rule import RuleMeta
 from xrlint.rule import RuleOp
-from xrlint.rule_reg import RuleRegistry
 from xrlint.rule_tester import RuleTest
 from xrlint.rule_tester import RuleTester

@@ -1,7 +1,7 @@
 # noinspection PyUnresolvedReferences
 from xrlint.api import *
-from xrlint.plugins.core.rules import import_rules
+from xrlint.plugins.core import plugin
 from xrlint.formatters import import_formatters
 
-import_rules()
+plugin()
 import_formatters()
