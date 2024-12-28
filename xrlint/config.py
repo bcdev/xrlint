@@ -2,6 +2,7 @@ from dataclasses import dataclass, field
 import fnmatch
 from typing import Any, TYPE_CHECKING, Union
 
+from xrlint.constants import CORE_PLUGIN_NAME
 from xrlint.util.formatting import format_message_type_of
 from xrlint.util.todict import ToDictMixin
 from xrlint.util.merge import (
@@ -102,7 +103,7 @@ class Config(ToDictMixin):
         if "/" in rule_id:
             plugin_name, rule_name = rule_id.split("/", maxsplit=1)
         else:
-            plugin_name, rule_name = "core", rule_id
+            plugin_name, rule_name = CORE_PLUGIN_NAME, rule_id
 
         from xrlint.plugin import Plugin
         from xrlint.rule import Rule

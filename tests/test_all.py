@@ -33,7 +33,7 @@ expected_api = [
     "RuleTester",
     "Suggestion",
     "core_plugin",
-    "formatter_registry",
+    "formats",
     "get_rules_meta_for_results",
 ]
 

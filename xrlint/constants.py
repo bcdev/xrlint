@@ -15,3 +15,5 @@ SEVERITY_ENUM: dict[int | str, int] = SEVERITY_NAME_TO_CODE | {
 SEVERITY_ENUM_TEXT = ", ".join(f"{k!r}" for k in SEVERITY_ENUM.keys())
 
 MISSING_FILE_PATH = "<file>"
+
+CORE_PLUGIN_NAME = "_core"
