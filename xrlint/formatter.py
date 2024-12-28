@@ -34,9 +34,14 @@ class FormatterOp(ABC):
 
 @dataclass(frozen=True, kw_only=True)
 class FormatterMeta:
+    """Formatter metadata."""
+
     name: str
-    version: str
+    """Formatter name."""
+    version: str = "0.0.0"
+    """Formatter version."""
     schema: dict[str, Any] | list[dict[str, Any]] | bool | None = None
+    """Formatter options schema."""
 
 
 @dataclass(frozen=True, kw_only=True)

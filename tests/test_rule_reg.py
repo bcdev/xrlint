@@ -13,7 +13,7 @@ class DefineRuleDecoratorTest(TestCase):
         class MyRule(RuleOp):
             pass
 
-        my_rule = registry.lookup("my-rule")
+        my_rule = registry.get("my-rule")
         self.assertIsInstance(my_rule, Rule)
         self.assertEqual("my-rule", my_rule.meta.name)
         self.assertEqual(None, my_rule.meta.version)

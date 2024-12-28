@@ -76,7 +76,7 @@ class CliEngine:
         output_format = (
             self.output_format if self.output_format else DEFAULT_OUTPUT_FORMAT
         )
-        formatter = import_formatters().lookup(output_format)
+        formatter = import_formatters().get(output_format)
         if formatter is None:
             raise click.ClickException(f"unknown format {output_format!r}")
         # TODO: pass format-specific args/kwargs

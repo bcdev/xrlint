@@ -1,32 +1,39 @@
-from collections.abc import Mapping, dict_items
-from typing import Generic, TypeVar, Iterator
+from collections.abc import Mapping
+from typing import Generic, TypeVar
 
-RegistryItem = TypeVar("RegistryItem")
+T = TypeVar("T")
 
 
-class Registry(Generic[RegistryItem], Mapping[str, RegistryItem]):
-
+class Registry(Generic[T], Mapping[str, T]):
     def __init__(self):
-        self._items: dict[str, RegistryItem] = {}
+        self._dict: dict[str, T] = {}
 
-    def __getitem__(self, key: str, /):
-        return self._items[key]
+    def register(self, key: str, value: T):
+        self._dict[key] = value
 
-    def __len__(self) -> int:
-        return len(self._items)
+    def as_dict(self) -> dict[str, T]:
+        return dict(self._dict)
 
-    def __iter__(self):
-        return iter(self._items)
+    def get(self, key: str) -> T | None:
+        return self._dict.get(key)
+
+    def keys(self):
+        return self._dict.keys()
+
+    def values(self):
+        return self._dict.values()
 
     def items(self):
-        return self._items.items()
+        return self._dict.items()
 
-    def as_dict(self) -> dict[str, RegistryItem]:
-        return dict(self._items)
+    def __contains__(self, key: str):
+        return key in self._dict
 
-    def register(self, name: str, item: RegistryItem):
-        # warn if exists?
-        self._items[name] = item
+    def __getitem__(self, key: str):
+        return self._dict[key]
 
-    def lookup(self, name: str) -> RegistryItem | None:
-        return self._items.get(name)
+    def __len__(self) -> int:
+        return len(self._dict)
+
+    def __iter__(self):
+        return iter(self._dict)

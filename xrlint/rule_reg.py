@@ -16,15 +16,16 @@ class RuleRegistry(Registry[Rule]):
         type: Literal["problem", "suggestion"] | None = None,
         description: str | None = None,
         docs_url: str | None = None,
-    ) -> Callable[[Any], Type[RuleOp]]:
-        def decorator(verifier_class: Any) -> Type[RuleOp]:
-            if not isclass(verifier_class) or not issubclass(verifier_class, RuleOp):
+        op_class: Type[RuleOp] | None = None,
+    ) -> Callable[[Any], Type[RuleOp]] | None:
+        def _register_rule(_op_class: Any) -> Type[RuleOp]:
+            if not isclass(_op_class) or not issubclass(_op_class, RuleOp):
                 raise TypeError(
                     f"component decorated by define_rule()"
                     f" must be a subclass of {RuleOp.__name__}"
                 )
             meta = RuleMeta(
-                name=name or to_kebab_case(verifier_class.__name__),
+                name=name or to_kebab_case(_op_class.__name__),
                 version=version,
                 description=description,
                 docs_url=docs_url,
@@ -35,9 +36,13 @@ class RuleRegistry(Registry[Rule]):
                 meta.name,
                 Rule(
                     meta=meta,
-                    op_class=verifier_class,
+                    op_class=_op_class,
                 ),
             )
-            return verifier_class
+            return _op_class
 
-        return decorator
+        if op_class is None:
+            # decorator case
+            return _register_rule
+
+        _register_rule(op_class)

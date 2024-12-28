@@ -15,7 +15,7 @@ class DefineFormatterDecoratorTest(TestCase):
             def format(self, *args, **kwargs) -> str:
                 """Dummy"""
 
-        my_rule = registry.lookup("my-format")
+        my_rule = registry.get("my-format")
         self.assertIsInstance(my_rule, Formatter)
         self.assertEqual("my-format", my_rule.meta.name)
         self.assertEqual(None, my_rule.meta.version)
