@@ -23,11 +23,13 @@ The rule naming conventions for XRLint are the same as or ESLint:
 
 # TODO
 
+- introduce `dataset_options` config:
+-   `opener: OpenerOp`
+-   `opener_options: dict[str, Any]`
 - add more tests, +coverage
-- use `RuleMeta.description`, it is currently unused 
 - use `RuleMeta.type`, it is currently unused
 - use `RuleTest.expected`, it is currently unused
-- use `Processor`, it is currently unused
+- use `processor: ProcessorOp` config, it is currently unused
 - add more rules
 - document each rule
 - add docs / api docs

@@ -42,8 +42,11 @@ class Html(FormatterOp):
             text.append('<div role="rules_meta">\n')
             text.append("<h3>Rules</h3>\n")
             for rm in rules_meta.values():
-                # TODO - output rule description
-                text.append(f"<p>{rm.name}, version {rm.version}</p>\n")
+                text.append(f"<p>Rule <strong>{rm.name}</strong>, version {rm.version}</p>\n")
+                if rm.description:
+                    text.append(f"<p>{rm.description}</p>\n")
+                if rm.docs_url:
+                    text.append(f"<p><a href=\"{rm.docs_url}\">Rule documentation</a></p>\n")
             text.append("</div>\n")
 
         return "".join(text)
