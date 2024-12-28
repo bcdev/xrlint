@@ -1,6 +1,7 @@
 import json
 
-import xrlint.api as xrl
+from xrlint.formatter import FormatterOp, FormatterContext
+from xrlint.result import Result, get_rules_meta_for_results
 from xrlint.util.schema import schema
 from xrlint.formatters import registry
 
@@ -16,7 +17,7 @@ from xrlint.formatters import registry
         ),
     ),
 )
-class Json(xrl.FormatterOp):
+class Json(FormatterOp):
 
     def __init__(self, indent: int = 2, with_meta: bool = False):
         super().__init__()
@@ -25,8 +26,8 @@ class Json(xrl.FormatterOp):
 
     def format(
         self,
-        context: xrl.FormatterContext,
-        results: list[xrl.Result],
+        context: FormatterContext,
+        results: list[Result],
     ) -> str:
         omitted_props = {"config"}
         results_json = {
@@ -36,7 +37,7 @@ class Json(xrl.FormatterOp):
             ],
         }
         if self.with_meta:
-            rules_meta = xrl.get_rules_meta_for_results(results)
+            rules_meta = get_rules_meta_for_results(results)
             results_json.update(
                 {
                     "rules_meta": [rm.to_dict() for rm in rules_meta.values()],

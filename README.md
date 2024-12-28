@@ -66,12 +66,6 @@ types that can read the data from a file path.
       root element `verify.root()` and starts traversal of 
       child elements.
 
-## Library design
-
-Exporting stuff from `xrlint`
-  - import all api in `xrlint.__init__.py`
-  - run `del sys.modules[x]` for all submodules to be hidden
-    bit take care of `cli`
 
 ## Config design
 

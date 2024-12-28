@@ -1,7 +1,7 @@
-import xrlint.api as xrl
 from xrlint.plugins.core.rules.var_units_attr import VarUnitsAttr
 import xarray as xr
 
+from xrlint.rule_tester import RuleTester, RuleTest
 
 valid_dataset_1 = xr.Dataset()
 valid_dataset_2 = xr.Dataset(
@@ -19,16 +19,16 @@ invalid_dataset_2.v.attrs = {"units": ""}
 invalid_dataset_3.v.attrs = {"units": 1}
 
 
-VarUnitsAttrTest = xrl.RuleTester.define_test(
+VarUnitsAttrTest = RuleTester.define_test(
     "var-units-attr",
     VarUnitsAttr,
     valid=[
-        xrl.RuleTest(dataset=valid_dataset_1),
-        xrl.RuleTest(dataset=valid_dataset_2),
+        RuleTest(dataset=valid_dataset_1),
+        RuleTest(dataset=valid_dataset_2),
     ],
     invalid=[
-        xrl.RuleTest(dataset=invalid_dataset_1),
-        xrl.RuleTest(dataset=invalid_dataset_2),
-        xrl.RuleTest(dataset=invalid_dataset_3),
+        RuleTest(dataset=invalid_dataset_1),
+        RuleTest(dataset=invalid_dataset_2),
+        RuleTest(dataset=invalid_dataset_3),
     ],
 )

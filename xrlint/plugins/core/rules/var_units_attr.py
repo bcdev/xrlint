@@ -1,10 +1,11 @@
-import xrlint.api as xrl
+from xrlint.node import DataArrayNode
 from xrlint.plugins.core.rules import plugin
+from xrlint.rule import RuleOp, RuleContext
 
 
 @plugin.define_rule("var-units-attr", version="1.0.0")
-class VarUnitsAttr(xrl.RuleOp):
-    def data_array(self, ctx: xrl.RuleContext, node: xrl.DataArrayNode):
+class VarUnitsAttr(RuleOp):
+    def data_array(self, ctx: RuleContext, node: DataArrayNode):
         units = node.data_array.attrs.get("units")
         if units is None:
             ctx.report(f"Missing 'units' attribute in variable {node.name!r}.")

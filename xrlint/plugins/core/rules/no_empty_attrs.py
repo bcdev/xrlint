@@ -1,15 +1,17 @@
-import xrlint.api as xrl
+from xrlint.message import Suggestion
+from xrlint.node import AttrsNode
+from xrlint.rule import RuleContext, RuleOp
 from xrlint.plugins.core.rules import plugin
 
 
 @plugin.define_rule("no-empty-attrs", version="1.0.0")
-class NoEmptyAttrs(xrl.RuleOp):
-    def attrs(self, ctx: xrl.RuleContext, node: xrl.AttrsNode):
+class NoEmptyAttrs(RuleOp):
+    def attrs(self, ctx: RuleContext, node: AttrsNode):
         if not node.attrs:
             ctx.report(
                 "Attributes are empty.",
                 suggestions=[
-                    xrl.Suggestion(
+                    Suggestion(
                         desc="Make sure to add appropriate metadata to dataset nodes."
                     )
                 ],
