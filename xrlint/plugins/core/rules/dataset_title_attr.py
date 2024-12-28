@@ -1,8 +1,8 @@
 import xrlint.api as xrl
-from xrlint.plugins.core.rules import registry
+from xrlint.plugins.core.rules import plugin
 
 
-@registry.define_rule(name="dataset-title-attr", version="1.0.0")
+@plugin.define_rule("dataset-title-attr", version="1.0.0")
 class DatasetTitleAttr(xrl.RuleOp):
     def dataset(self, ctx: xrl.RuleContext, node: xrl.DatasetNode):
         title = node.dataset.attrs.get("title")

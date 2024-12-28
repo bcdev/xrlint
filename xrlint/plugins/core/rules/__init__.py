@@ -1,9 +1,5 @@
-from xrlint.rule_reg import RuleRegistry
-from xrlint.util.importutil import import_submodules
-
-registry = RuleRegistry()
+from xrlint.plugin import Plugin
+from xrlint.plugin import PluginMeta
 
 
-def import_rules() -> RuleRegistry:
-    import_submodules("xrlint.plugins.core.rules")
-    return registry
+plugin = Plugin(meta=PluginMeta(name="core", version="0.0.1"))

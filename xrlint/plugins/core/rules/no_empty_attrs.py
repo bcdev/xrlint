@@ -1,8 +1,8 @@
 import xrlint.api as xrl
-from xrlint.plugins.core.rules import registry
+from xrlint.plugins.core.rules import plugin
 
 
-@registry.define_rule(name="no-empty-attrs", version="1.0.0")
+@plugin.define_rule("no-empty-attrs", version="1.0.0")
 class NoEmptyAttrs(xrl.RuleOp):
     def attrs(self, ctx: xrl.RuleContext, node: xrl.AttrsNode):
         if not node.attrs:

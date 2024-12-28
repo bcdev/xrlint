@@ -1,11 +1,8 @@
 import xrlint.api as xrl
-
-registry = xrl.RuleRegistry()
-
-from xrlint.plugins.xcube.rules import registry
+from xrlint.plugins.xcube.rules import plugin
 
 
-@registry.define_rule(name="spatial-dims-order")
+@plugin.define_rule("spatial-dims-order")
 class SpatialDimsOrder(xrl.RuleOp):
     def data_array(self, ctx: xrl.RuleContext, node: xrl.DataArrayNode):
         if node.in_data_vars():

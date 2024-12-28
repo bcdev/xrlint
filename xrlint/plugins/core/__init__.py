@@ -1,20 +1,18 @@
-import xrlint.api as xrl
+from xrlint.config import Config
+from xrlint.plugin import Plugin
+from xrlint.util.importutil import import_submodules
 
 
-def plugin() -> xrl.Plugin:
-    from .rules import import_rules
+def plugin() -> Plugin:
+    from .rules import plugin
 
-    registry = import_rules()
-    return xrl.Plugin(
-        meta=xrl.PluginMeta(name="core", version="0.0.1"),
-        configs={
-            "recommended": xrl.Config(
-                name="recommended",
-                rules={
-                    f"{rule_id}": xrl.RuleConfig(2)
-                    for rule_id, rule in registry.items()
-                },
-            )
-        },
-        rules=registry.as_dict(),
+    import_submodules("xrlint.plugins.core.rules")
+
+    plugin.configs["recommended"] = Config.from_value(
+        {
+            "name": "recommended",
+            "rules": {f"{rule_id}": "error" for rule_id, rule in plugin.rules.items()},
+        }
     )
+
+    return plugin

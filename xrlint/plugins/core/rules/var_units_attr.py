@@ -1,8 +1,8 @@
 import xrlint.api as xrl
-from xrlint.plugins.core.rules import registry
+from xrlint.plugins.core.rules import plugin
 
 
-@registry.define_rule(name="var-units-attr", version="1.0.0")
+@plugin.define_rule("var-units-attr", version="1.0.0")
 class VarUnitsAttr(xrl.RuleOp):
     def data_array(self, ctx: xrl.RuleContext, node: xrl.DataArrayNode):
         units = node.data_array.attrs.get("units")
