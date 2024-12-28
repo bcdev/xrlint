@@ -4,7 +4,7 @@ from xrlint.plugins.xcube.rules.spatial_dims_order import SpatialDimsOrder
 
 import xarray as xr
 
-from xrlint.rule_tester import RuleTester, RuleTest
+from xrlint.testing import RuleTester, RuleTest
 
 
 def make_dataset(dims: tuple[str, str, str]):

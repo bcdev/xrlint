@@ -89,10 +89,10 @@ from xrlint.rule import RuleMeta
 from xrlint.rule import RuleOp
 
 # noinspection PyUnresolvedReferences
-from xrlint.rule_tester import RuleTest
+from xrlint.testing import RuleTest
 
 # noinspection PyUnresolvedReferences
-from xrlint.rule_tester import RuleTester
+from xrlint.testing import RuleTester
 
 # noinspection PyUnresolvedReferences
 from xrlint.plugins.core import plugin as _import_plugin

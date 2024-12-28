@@ -2,7 +2,7 @@ from xrlint.plugins.core.rules.no_empty_attrs import NoEmptyAttrs
 
 import xarray as xr
 
-from xrlint.rule_tester import RuleTest, RuleTester
+from xrlint.testing import RuleTest, RuleTester
 
 valid_dataset_1 = xr.Dataset(attrs=dict(title="empty"))
 valid_dataset_2 = xr.Dataset(

@@ -4,8 +4,8 @@ import pytest
 import xarray as xr
 
 
-from xrlint.rule_tester import RuleTest
-from xrlint.rule_tester import RuleTester
+from xrlint.testing import RuleTest
+from xrlint.testing import RuleTester
 from xrlint.node import DatasetNode
 from xrlint.rule import RuleContext
 from xrlint.rule import RuleOp
