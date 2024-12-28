@@ -23,9 +23,8 @@ The rule naming conventions for XRLint are the same as or ESLint:
 
 # TODO
 
-- implement plugin mgt
 - add more tests, +coverage
-- use `RuleMeta.desc`, it is currently undefined 
+- use `RuleMeta.description`, it is currently unused 
 - use `RuleMeta.type`, it is currently unused
 - use `RuleTest.expected`, it is currently unused
 - use `Processor`, it is currently unused

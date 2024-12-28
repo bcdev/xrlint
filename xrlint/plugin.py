@@ -2,8 +2,8 @@ from dataclasses import dataclass, field
 from typing import Any, Type, Callable, Literal
 
 from xrlint.config import Config
-from xrlint.rule import Rule, RuleOp, register_rule
 from xrlint.processor import Processor
+from xrlint.rule import Rule, RuleOp, register_rule
 from xrlint.util.formatting import format_message_type_of
 from xrlint.util.importutil import import_exported_value
 

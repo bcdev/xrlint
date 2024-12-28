@@ -5,8 +5,8 @@ from typing import Type, Literal, Any, Callable
 import xarray as xr
 
 from xrlint.constants import SEVERITY_ENUM, SEVERITY_ENUM_TEXT
-from xrlint.message import Suggestion
 from xrlint.node import DatasetNode, DataArrayNode, AttrsNode, AttrNode
+from xrlint.result import Suggestion
 from xrlint.util.formatting import format_message_type_of, format_message_one_of
 from xrlint.util.todict import ToDictMixin
 

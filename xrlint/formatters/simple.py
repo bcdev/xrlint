@@ -1,8 +1,8 @@
 from xrlint.constants import SEVERITY_CODE_TO_NAME
 from xrlint.formatter import FormatterOp, FormatterContext
+from xrlint.formatters import registry
 from xrlint.result import Result
 from xrlint.util.formatting import format_problems
-from xrlint.formatters import registry
 
 
 from tabulate import tabulate

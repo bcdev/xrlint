@@ -61,8 +61,6 @@ def _read_config_python(config_path) -> Any:
     except KeyError:
         raise AttributeError(f"missing attribute {export_function_name!r}")
 
-    print("---------------->", _locals, export_function())
-
     return eval_exported_value(
         export_function_name, export_function, ConfigList.from_value
     )

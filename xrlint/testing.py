@@ -8,12 +8,11 @@ from xrlint.constants import SEVERITY_ERROR
 from xrlint.linter import Linter
 from xrlint.plugin import Plugin
 from xrlint.plugin import PluginMeta
+from xrlint.result import Message
 from xrlint.result import Result
 from xrlint.rule import Rule
-from xrlint.rule import RuleConfig
 from xrlint.rule import RuleMeta
 from xrlint.rule import RuleOp
-from xrlint.message import Message
 from xrlint.util.naming import to_snake_case
 from xrlint.util.formatting import format_problems
 

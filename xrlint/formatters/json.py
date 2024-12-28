@@ -2,8 +2,8 @@ import json
 
 from xrlint.formatter import FormatterOp, FormatterContext
 from xrlint.result import Result, get_rules_meta_for_results
-from xrlint.util.schema import schema
 from xrlint.formatters import registry
+from xrlint.util.schema import schema
 
 
 @registry.define_formatter(

@@ -8,8 +8,7 @@ from xrlint.config import ConfigList
 from xrlint.formatter import FormatterContext
 from xrlint.formatters import export_formatters
 from xrlint.linter import Linter
-from xrlint.message import Message
-from xrlint.plugin import Plugin, PluginMeta
+from xrlint.result import Message
 from xrlint.result import Result
 
 

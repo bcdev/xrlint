@@ -7,8 +7,8 @@ from xrlint.config import Config
 from xrlint.constants import MISSING_FILE_PATH
 from xrlint.constants import SEVERITY_ERROR
 from xrlint.node import Node
-from xrlint.message import Message
-from xrlint.message import Suggestion
+from xrlint.result import Message
+from xrlint.result import Suggestion
 from xrlint.rule import RuleContext
 
 

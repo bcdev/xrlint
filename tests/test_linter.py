@@ -4,7 +4,7 @@ import xarray as xr
 
 from xrlint.config import Config
 from xrlint.linter import Linter
-from xrlint.message import Message
+from xrlint.result import Message
 from xrlint.plugin import Plugin, PluginMeta
 from xrlint.result import Result
 from xrlint.node import (

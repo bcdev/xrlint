@@ -29,13 +29,13 @@ from xrlint.formatters import export_formatters
 from xrlint.linter import Linter
 
 # noinspection PyUnresolvedReferences
-from xrlint.message import Message
+from xrlint.result import Message
 
 # noinspection PyUnresolvedReferences
-from xrlint.message import Suggestion
+from xrlint.result import Suggestion
 
 # noinspection PyUnresolvedReferences
-from xrlint.message import EditInfo
+from xrlint.result import EditInfo
 
 # noinspection PyUnresolvedReferences
 from xrlint.result import Result

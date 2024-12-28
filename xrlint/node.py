@@ -1,6 +1,6 @@
 from abc import ABC
 from dataclasses import dataclass
-from typing import Any, Hashable, Literal, Union
+from typing import Any, Hashable, Union
 
 import xarray as xr
 

@@ -5,11 +5,10 @@ import xarray as xr
 
 from xrlint.config import Config
 from xrlint.config import merge_configs
-from xrlint.plugin import Plugin
+from xrlint.result import Result
 from xrlint.rule import Rule
 from xrlint.rule import RuleConfig
 from xrlint.rule import RuleOp
-from xrlint.result import Result
 
 # noinspection PyProtectedMember
 from xrlint._linter.rule_ctx_impl import RuleContextImpl

@@ -1,7 +1,7 @@
-from xrlint.message import Suggestion
+from xrlint.result import Suggestion
 from xrlint.node import AttrsNode
-from xrlint.rule import RuleContext, RuleOp
 from xrlint.plugins.core.rules import plugin
+from xrlint.rule import RuleContext, RuleOp
 
 
 @plugin.define_rule("no-empty-attrs", version="1.0.0")
