@@ -6,7 +6,7 @@ from xrlint.formatters import registry
 
 
 @registry.define_formatter(
-    name="json",
+    "json",
     version="1.0.0",
     schema=schema(
         "object",

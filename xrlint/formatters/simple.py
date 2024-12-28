@@ -7,7 +7,7 @@ from xrlint.formatters import registry
 from tabulate import tabulate
 
 
-@registry.define_formatter(name="simple", version="1.0.0")
+@registry.define_formatter("simple", version="1.0.0")
 class Simple(xrl.FormatterOp):
 
     def format(

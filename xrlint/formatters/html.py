@@ -4,7 +4,7 @@ from xrlint.util.schema import schema
 
 
 @registry.define_formatter(
-    name="html",
+    "html",
     version="1.0.0",
     schema=schema(
         "object",

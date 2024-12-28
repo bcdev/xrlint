@@ -2,7 +2,7 @@ import xrlint.api as xrl
 from xrlint.formatters import registry
 
 
-@registry.define_formatter(name="markdown", version="1.0.0")
+@registry.define_formatter("markdown", version="1.0.0")
 class Markdown(xrl.FormatterOp):
 
     def format(

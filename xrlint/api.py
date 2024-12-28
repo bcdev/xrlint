@@ -5,7 +5,7 @@ from xrlint.formatter import Formatter
 from xrlint.formatter import FormatterMeta
 from xrlint.formatter import FormatterContext
 from xrlint.formatter import FormatterOp
-from xrlint.formatter_reg import FormatterRegistry
+from xrlint.formatter import FormatterRegistry
 from xrlint.formatters import import_formatters
 from xrlint.linter import Linter
 from xrlint.message import Message
