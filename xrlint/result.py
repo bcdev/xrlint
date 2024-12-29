@@ -85,7 +85,7 @@ class Result(ToDictMixin):
 
     file_path: str
     """The absolute path to the file of this result. 
-    This is the string "<file>" if the file path is unknown 
+    This is the string "<dataset>" if the file path is unknown 
     (when you didn't pass the `file_path` option to the 
     `xrlint.lint_dataset()` method).
     """

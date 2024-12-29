@@ -7,7 +7,7 @@ from xrlint.config import Config
 from xrlint.config import ConfigList
 from xrlint.constants import CORE_PLUGIN_NAME
 from xrlint.formatter import FormatterContext
-from xrlint.formatters import export_formats
+from xrlint.formatters import export_formatters
 from xrlint.linter import Linter
 from xrlint.result import Message
 from xrlint.result import Result
@@ -76,7 +76,7 @@ class CliEngine:
         output_format = (
             self.output_format if self.output_format else DEFAULT_OUTPUT_FORMAT
         )
-        formatter = export_formats().get(output_format)
+        formatter = export_formatters().get(output_format)
         if formatter is None:
             raise click.ClickException(f"unknown format {output_format!r}")
         # TODO: pass format-specific args/kwargs

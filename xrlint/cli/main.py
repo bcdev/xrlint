@@ -4,7 +4,7 @@ import click
 
 # Warning: do not import heavy stuff here,
 # Option "--help" can be slow otherwise!
-from xrlint.version import VERSION
+from xrlint.version import version
 from xrlint.cli.constants import DEFAULT_MAX_WARNINGS
 from xrlint.cli.constants import DEFAULT_OUTPUT_FORMAT
 from xrlint.cli.constants import CONFIG_DEFAULT_BASENAME
@@ -47,7 +47,7 @@ from xrlint.cli.constants import CONFIG_DEFAULT_BASENAME
     metavar="COUNT",
 )
 @click.argument("files", nargs=-1)
-@click.version_option(VERSION)
+@click.version_option(version)
 @click.help_option()
 def main(
     no_default_config: bool,

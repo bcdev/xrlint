@@ -14,6 +14,6 @@ SEVERITY_ENUM: dict[int | str, int] = SEVERITY_NAME_TO_CODE | {
 }
 SEVERITY_ENUM_TEXT = ", ".join(f"{k!r}" for k in SEVERITY_ENUM.keys())
 
-MISSING_FILE_PATH = "<file>"
+MISSING_DATASET_FILE_PATH = "<dataset>"
 
-CORE_PLUGIN_NAME = "_core"
+CORE_PLUGIN_NAME = "__core__"

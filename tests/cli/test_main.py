@@ -4,7 +4,7 @@ from click.testing import CliRunner
 
 
 from xrlint.cli.main import main
-from xrlint.version import VERSION
+from xrlint.version import version
 
 
 class CliMainTest(TestCase):
@@ -26,20 +26,20 @@ class CliMainTest(TestCase):
 
             runner = CliRunner()
             result = runner.invoke(main, files)
-            self.assertEqual(result.exit_code, 0)
             self.assertIn("".join(f"{f} - ok\n" for f in files), result.output)
+            self.assertEqual(result.exit_code, 0)
 
     def test_help(self):
         runner = CliRunner()
         result = runner.invoke(main, ["--help"])
-        self.assertEqual(result.exit_code, 0)
         self.assertIn("Usage: xrlint [OPTIONS] [FILES]...\n", result.output)
+        self.assertEqual(result.exit_code, 0)
 
     def test_version(self):
         runner = CliRunner()
         result = runner.invoke(main, ["--version"])
+        self.assertIn(f"xrlint, version {version}", result.output)
         self.assertEqual(result.exit_code, 0)
-        self.assertIn(f"xrlint, version {VERSION}", result.output)
 
 
 @contextmanager

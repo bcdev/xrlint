@@ -17,6 +17,12 @@ from xrlint.rule import RuleContext
 from xrlint.rule import RuleOp
 
 
+class LinterTest(TestCase):
+    def test_default_config_is_empty(self):
+        linter = Linter()
+        self.assertEqual(Config(), linter.config)
+
+
 class LinterVerifyTest(TestCase):
 
     def setUp(self):
@@ -75,7 +81,7 @@ class LinterVerifyTest(TestCase):
         self.assertEqual(
             Result(
                 result.config,
-                file_path="<file>",
+                file_path="<dataset>",
                 warning_count=0,
                 error_count=1,
                 fatal_error_count=0,
@@ -100,7 +106,7 @@ class LinterVerifyTest(TestCase):
         self.assertEqual(
             Result(
                 result.config,
-                file_path="<file>",
+                file_path="<dataset>",
                 warning_count=1,
                 error_count=0,
                 fatal_error_count=0,
@@ -125,7 +131,7 @@ class LinterVerifyTest(TestCase):
         self.assertEqual(
             Result(
                 result.config,
-                file_path="<file>",
+                file_path="<dataset>",
                 warning_count=0,
                 error_count=0,
                 fatal_error_count=0,

@@ -11,7 +11,9 @@ def export_plugin() -> Plugin:
     plugin.configs["xcube-recommended"] = Config.from_value(
         {
             "name": "xcube-recommended",
-            "rules": {f"{rule_id}": "error" for rule_id, rule in plugin.rules.items()},
+            "rules": {
+                f"xcube/{rule_id}": "error" for rule_id, rule in plugin.rules.items()
+            },
         }
     )
 
