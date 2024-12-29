@@ -23,10 +23,10 @@ from xrlint.formatter import FormatterOp
 from xrlint.formatter import FormatterRegistry
 
 # noinspection PyUnresolvedReferences
-from xrlint.formatters import export_formatters
+from xrlint.linter import Linter
 
 # noinspection PyUnresolvedReferences
-from xrlint.linter import Linter
+from xrlint.linter import new_linter
 
 # noinspection PyUnresolvedReferences
 from xrlint.result import Message
@@ -96,60 +96,3 @@ from xrlint.testing import RuleTester
 
 # noinspection PyUnresolvedReferences
 from xrlint.version import version
-
-###################################################################
-
-# noinspection PyUnresolvedReferences
-from xrlint.plugins.core import export_plugin as import_core_plugin
-
-# noinspection PyUnresolvedReferences
-from xrlint.plugins.xcube import export_plugin as import_xcube_plugin
-
-# noinspection PyUnresolvedReferences
-from xrlint.formatters import export_formatters as import_formatters
-
-core_plugin = import_core_plugin()
-xcube_plugin = import_xcube_plugin()
-formatters = import_formatters()
-
-del import_core_plugin
-del import_xcube_plugin
-del import_formatters
-del export_formatters
-
-
-def new_linter(
-    recommended: bool = True, config: Config | dict | None = None, **config_kwargs
-) -> Linter:
-    """Create a new `Linter` with all built-in plugins configured.
-
-    Args:
-        recommended: `True` (the default) if the recommended rule configurations of
-            the built-in plugins should be used.
-            If set to `False`, you should configure the `rules` option either
-            in `config` or `config_kwargs`. Otherwise, calling `verify_dataset()`
-            will never succeed for any given dataset.
-        config: The `config` keyword argument passed to the `Linter` class
-        config_kwargs: The `config_kwargs` keyword arguments passed to the `Linter` class
-    Returns:
-        A new linter instance
-    """
-    from xrlint.constants import CORE_PLUGIN_NAME
-    from xrlint.config import merge_configs
-
-    base_config = Config(
-        plugins={
-            CORE_PLUGIN_NAME: core_plugin,
-            "xcube": xcube_plugin,
-        },
-        rules=(
-            {
-                **core_plugin.configs["recommended"].rules,
-                **xcube_plugin.configs["xcube-recommended"].rules,
-            }
-            if recommended
-            else None
-        ),
-    )
-
-    return Linter(config=merge_configs(base_config, config), **config_kwargs)

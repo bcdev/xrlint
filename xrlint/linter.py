@@ -4,6 +4,7 @@ from typing import Any
 import xarray as xr
 
 from xrlint.config import Config
+from xrlint.config import get_base_config
 from xrlint.config import merge_configs
 from xrlint.constants import MISSING_DATASET_FILE_PATH
 from xrlint.result import Result
@@ -15,6 +16,28 @@ from xrlint._linter.rule_ctx_impl import RuleContextImpl
 
 # noinspection PyProtectedMember
 from xrlint._linter.verify_impl import verify_dataset
+
+
+def new_linter(
+    recommended: bool = True, config: Config | dict | None = None, **config_kwargs
+) -> "Linter":
+    """Create a new `Linter` with all built-in plugins configured.
+
+    Args:
+        recommended: `True` (the default) if the recommended rule configurations of
+            the built-in plugins should be used.
+            If set to `False`, you should configure the `rules` option either
+            in `config` or `config_kwargs`. Otherwise, calling `verify_dataset()`
+            will never succeed for any given dataset.
+        config: The `config` keyword argument passed to the `Linter` class
+        config_kwargs: The `config_kwargs` keyword arguments passed to the `Linter` class
+    Returns:
+        A new linter instance
+    """
+    return Linter(
+        config=merge_configs(get_base_config(recommended=recommended), config),
+        **config_kwargs,
+    )
 
 
 class Linter:
