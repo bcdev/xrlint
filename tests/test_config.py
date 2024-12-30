@@ -3,7 +3,7 @@ from unittest import TestCase
 import pytest
 
 from xrlint.rule import RuleConfig
-from xrlint.config import Config
+from xrlint.config import Config, ConfigList
 
 
 # noinspection PyMethodMayBeStatic
@@ -52,3 +52,51 @@ class ConfigTest(TestCase):
         self.assertEqual(
             [], Config(ignores=ignores, rules={"x": RuleConfig(0)}).global_ignores
         )
+
+
+class ConfigListTest(TestCase):
+    def test_from_value(self):
+        config_list = ConfigList.from_value([])
+        self.assertIsInstance(config_list, ConfigList)
+        self.assertEqual([], config_list.configs)
+
+        config_list_2 = ConfigList.from_value(config_list)
+        self.assertIs(config_list_2, config_list)
+
+        config_list = ConfigList.from_value([{}])
+        self.assertIsInstance(config_list, ConfigList)
+        self.assertEqual([Config()], config_list.configs)
+
+        with pytest.raises(
+            TypeError,
+            match=(
+                "configuration list must be of type"
+                " ConfigList|list\\[Config|dict\\], but was dict"
+            ),
+        ):
+            ConfigList.from_value({})
+
+    def test_compute_config(self):
+        file_path = "s3://wq-services/datacubes/chl-2.zarr"
+
+        config_list = ConfigList([Config()])
+        self.assertEqual(
+            Config(name="<computed>"), config_list.compute_config(file_path)
+        )
+
+        config_list = ConfigList(
+            [
+                Config(settings={"a": 1, "b": 1}),
+                Config(files=["**/datacubes/*.zarr"], settings={"b": 2}),
+                Config(ignores=["**/chl-*.*"], settings={"a": 2}),
+                Config(ignores=["**/chl-*.txt"]),  # global ignores
+            ]
+        )
+        self.assertEqual(
+            Config(name="<computed>", settings={"a": 1, "b": 2}),
+            config_list.compute_config(file_path),
+        )
+
+        # global ignores
+        file_path = "s3://wq-services/datacubes/chl-2.txt"
+        self.assertEqual(None, config_list.compute_config(file_path))

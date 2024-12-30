@@ -54,7 +54,7 @@ class CliEngine:
     def verify_datasets(self) -> list[Result]:
         results: list[Result] = []
         for file_path in self.files:
-            config = self.config_list.resolve_for_path(file_path)
+            config = self.config_list.compute_config(file_path)
             if config is not None:
                 # TODO: use config.processor
                 linter = Linter(config=config)

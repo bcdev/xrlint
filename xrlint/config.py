@@ -109,11 +109,53 @@ class Config(ToDictMixin):
     that should be available to all rules.
     """
 
+    @classmethod
+    def from_value(cls, value: Any) -> "Config":
+        """Convert given `value` into a `Config` object.
+
+        If `value` is already a `Config` then it is returned as-is.
+
+        Args:
+            value: A `Config` object, a `dict` containing the
+            configuration properties, or `None` which
+            converts into an empty configuration.
+        Returns:
+            A `Config` object.
+        """
+        if isinstance(value, Config):
+            return value
+        if value is None:
+            return Config()
+        if not isinstance(value, dict):
+            raise TypeError(format_message_type_of("configuration", value, "dict"))
+        if not value:
+            return Config()
+
+        files = cls._parse_pattern_list(value, "files")
+        ignores = cls._parse_pattern_list(value, "ignores")
+        linter_options = cls._parse_options("linter_options", value)
+        opener_options = cls._parse_options("opener_options", value)
+        processor = cls._parse_processor(value)
+        plugins = cls._parse_plugins(value)
+        rules = cls._parse_rules(value)
+        settings = cls._parse_options("settings", value)
+
+        return Config(
+            name=value.get("name"),
+            files=files,
+            ignores=ignores,
+            linter_options=linter_options,
+            opener_options=opener_options,
+            processor=processor,
+            plugins=plugins,
+            rules=rules,
+            settings=settings,
+        )
+
     @property
     def global_ignores(self) -> list[str]:
-        """The list of `ignores` patterns from this configuration which
-        are _global ignores_.
-        """
+        # The list of `ignores` patterns from this configuration which
+        # are _global ignores_.
         return (
             self.ignores
             if self.ignores
@@ -147,53 +189,21 @@ class Config(ToDictMixin):
 
         return rule
 
-    def merge(self, config_obj: "Config", name: str = None) -> "Config":
+    def merge(self, config: "Config", name: str = None) -> "Config":
         return Config(
             name=name,
-            files=self._merge_pattern_lists(self.files, config_obj.files),
-            ignores=self._merge_pattern_lists(self.ignores, config_obj.ignores),
+            files=self._merge_pattern_lists(self.files, config.files),
+            ignores=self._merge_pattern_lists(self.ignores, config.ignores),
             linter_options=self._merge_options(
-                self.linter_options, config_obj.linter_options
+                self.linter_options, config.linter_options
             ),
             opener_options=self._merge_options(
-                self.opener_options, config_obj.opener_options
+                self.opener_options, config.opener_options
             ),
-            processor=merge_values(self.processor, config_obj.processor),  # TBD!
-            plugins=self._merge_plugin_dicts(self.plugins, config_obj.plugins),
-            rules=self._merge_rule_dicts(self.rules, config_obj.rules),
-            settings=self._merge_options(self.rules, config_obj.settings),
-        )
-
-    @classmethod
-    def from_value(cls, value: Any) -> "Config":
-        if isinstance(value, Config):
-            return value
-        if value is None:
-            return Config()
-        if not isinstance(value, dict):
-            raise TypeError(format_message_type_of("configuration", value, "dict"))
-        if not value:
-            return Config()
-
-        files = cls._parse_pattern_list(value, "files")
-        ignores = cls._parse_pattern_list(value, "ignores")
-        linter_options = cls._parse_options("linter_options", value)
-        opener_options = cls._parse_options("opener_options", value)
-        processor = cls._parse_processor(value)
-        plugins = cls._parse_plugins(value)
-        rules = cls._parse_rules(value)
-        settings = cls._parse_options("settings", value)
-
-        return Config(
-            name=value.get("name"),
-            files=files,
-            ignores=ignores,
-            linter_options=linter_options,
-            opener_options=opener_options,
-            processor=processor,
-            plugins=plugins,
-            rules=rules,
-            settings=settings,
+            processor=merge_values(self.processor, config.processor),  # TBD!
+            plugins=self._merge_plugin_dicts(self.plugins, config.plugins),
+            rules=self._merge_rule_dicts(self.rules, config.rules),
+            settings=self._merge_options(self.settings, config.settings),
         )
 
     @classmethod
@@ -323,9 +333,43 @@ def merge_configs(
 
 @dataclass(frozen=True)
 class ConfigList:
-    configs: list[Config] = field(default_factory=list)
+    """A holder for a list of `Config` objects."""
 
-    def resolve_for_path(self, path: str) -> Config | None:
+    configs: list[Config] = field(default_factory=list)
+    """The list of `Config` objects."""
+
+    @classmethod
+    def from_value(cls, value: Any) -> "ConfigList":
+        """Convert given `value` into a `ConfigList` object.
+
+        If `value` is already a `ConfigList` then it is returned as-is.
+
+        Args:
+            value: A `ConfigList` object or `list` of values which can be
+            converted into `Config` objects.
+        Returns:
+            A `ConfigList` object.
+        """
+        if isinstance(value, ConfigList):
+            return value
+        if isinstance(value, list):
+            return ConfigList([Config.from_value(c) for c in value])
+        raise TypeError(
+            format_message_type_of(
+                "configuration list", value, "ConfigList|list[Config|dict]"
+            )
+        )
+
+    def compute_config(self, file_path: str) -> Config | None:
+        """Compute the configuration object for the given file path.
+
+        Args:
+            file_path: A dataset file path.
+        Returns:
+            A `Config` object which may be empty, or `None`
+            if `file_path` is not included by any `files` pattern
+            or intentionally ignored by global `ignores`.
+        """
         # Step 1: Check against global ignores
         global_ignores = set()
         effective_configs = []
@@ -336,37 +380,37 @@ class ConfigList:
             else:
                 effective_configs.append(c)
         for p in global_ignores:
-            if fnmatch.fnmatch(path, p):
+            if fnmatch.fnmatch(file_path, p):
                 return None
 
         # Step 2: Check against global ignores
-        config = Config()
+        config = None
         for c in effective_configs:
-            matches = True
+            excluded = False
             if c.ignores:
                 for p in c.ignores:
-                    matches = fnmatch.fnmatch(path, p)
-                    if not matches:
+                    excluded = fnmatch.fnmatch(file_path, p)
+                    if excluded:
                         break
-            if matches:
+            included = not excluded
+            if included:
                 if c.files:
                     for p in c.files:
-                        matches = fnmatch.fnmatch(path, p)
-                        if matches:
+                        included = fnmatch.fnmatch(file_path, p)
+                        if not included:
                             break
-            if matches:
-                config = config.merge(c)
+            if included:
+                config = config.merge(c) if config is not None else c
 
-        return config
-
-    @classmethod
-    def from_value(cls, value: Any) -> "ConfigList":
-        if isinstance(value, ConfigList):
-            return value
-        if isinstance(value, list):
-            return ConfigList([Config.from_value(c) for c in value])
-        raise TypeError(
-            format_message_type_of(
-                "configuration list", value, "ConfigList|list[Config|dict]"
-            )
+        if config is None:
+            return None
+        # Exclude "files" and "ignores" because they have been used
+        return Config(
+            name="<computed>",
+            linter_options=config.linter_options,
+            opener_options=config.opener_options,
+            processor=config.processor,
+            plugins=config.plugins,
+            rules=config.rules,
+            settings=config.settings,
         )
