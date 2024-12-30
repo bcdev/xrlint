@@ -9,6 +9,7 @@ __pycache__
 *.egg-info
 .coverage
 htmlcov/
+site/
 
 # Jupyter
 .ipynb_checkpoints

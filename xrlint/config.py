@@ -111,10 +111,8 @@ class Config(ToDictMixin):
 
     @property
     def global_ignores(self) -> list[str]:
-        """Get the _global ignores_ of this configuration.
-
-        Returns: A list of global ignore patterns or an empty list
-        if none are configured.
+        """The list of `ignores` patterns from this configuration which
+        are _global ignores_.
         """
         return (
             self.ignores

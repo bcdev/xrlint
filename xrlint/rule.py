@@ -113,19 +113,48 @@ class Rule:
 
 @dataclass(frozen=True)
 class RuleConfig:
-    """Rule configuration.
+    """A rule configuration.
 
     Args:
-        severity: 0, 1, 2
-
+        severity: rule severity, one of `2` (error), `1` (warn), or `0` (off)
+        args: rule operation arguments.
+        kwargs: rule operation keyword-arguments.
     """
 
     severity: Literal[0, 1, 2]
+    """Rule severity."""
+
     args: tuple[Any, ...] = field(default_factory=tuple)
+    """Rule operation arguments."""
+
     kwargs: dict[str, Any] = field(default_factory=dict)
+    """Rule operation keyword-arguments."""
 
     @classmethod
     def from_value(cls, value: Any) -> "RuleConfig":
+        """Convert `value` into a `RuleConfig` object.
+
+        A rule configuration value can either be a rule _severity_,
+        or a list where the first element is a rule
+        _severity_ and subsequent elements are rule arguments:
+
+        - _severity_
+        - `[`_severity_`]`
+        - `[`_severity_`,` _arg-1 | kwargs_ `]`
+        - `[`_severity_`,` _arg-1_`,` _arg-2_`,` ...`,` _arg-n | kwargs_`]`
+
+        The rule _severity_ is either
+
+        - one of `"error"`, `"warn"`, `"off"` or
+        - one of `2` (error), `1` (warn), `0` (off)
+
+        Args:
+            value: A rule severity or a list where the first element is a rule
+                severity and subsequent elements are rule arguments.
+                If the value is already of type `RuleConfig`it is returned as-is.
+        Returns:
+            A `RuleConfig` object.
+        """
         if isinstance(value, RuleConfig):
             return value
 
