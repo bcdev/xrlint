@@ -12,7 +12,7 @@ from xrlint.util.merge import (
     merge_values,
 )
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from xrlint.rule import Rule
     from xrlint.rule import RuleConfig
     from xrlint.plugin import Plugin

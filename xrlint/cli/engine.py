@@ -3,10 +3,8 @@ import click
 from xrlint.cli.config import read_config
 from xrlint.cli.constants import CONFIG_DEFAULT_FILENAMES
 from xrlint.cli.constants import DEFAULT_OUTPUT_FORMAT
-from xrlint.config import Config
 from xrlint.config import ConfigList
 from xrlint.config import get_base_config
-from xrlint.constants import CORE_PLUGIN_NAME
 from xrlint.formatter import FormatterContext
 from xrlint.formatters import export_formatters
 from xrlint.linter import Linter
@@ -42,7 +40,7 @@ class CliEngine:
             try:
                 config_list = read_config(config_path=self.config_path)
             except FileNotFoundError:
-                raise click.ClickException(f"file not found: {self.config_path}")
+                raise click.ClickException(f"{self.config_path}: file not found")
         elif not self.no_default_config:
             for f in CONFIG_DEFAULT_FILENAMES:
                 try:
@@ -63,13 +61,9 @@ class CliEngine:
                 result = linter.verify_dataset(file_path)
             else:
                 result = Result.new(
-                    config=config,
-                    file_path=file_path,
-                    messages=[
-                        Message(
-                            message="No configuration matches this file", severity=2
-                        )
-                    ],
+                    config,
+                    file_path,
+                    [Message(message="No configuration matches this file", severity=2)],
                 )
             results.append(result)
 

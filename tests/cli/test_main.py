@@ -46,10 +46,22 @@ class CliMainTest(TestCase):
         self.assertIn("".join(f"{f} - ok\n" for f in self.files), result.output)
         self.assertEqual(result.exit_code, 0)
 
+    def test_default_config(self):
+        with open("xrlint.config.json", "w") as f:
+            f.write("{}")
+        try:
+            runner = CliRunner()
+            result = runner.invoke(main, self.files)
+            print(result.output)
+            # self.assertIn("Error: file not found: pippo.py", result.output)
+            self.assertEqual(result.exit_code, 1)
+        finally:
+            os.remove("xrlint.config.json")
+
     def test_config_missing(self):
         runner = CliRunner()
         result = runner.invoke(main, ["-c", "pippo.py"] + self.files)
-        self.assertIn("Error: file not found: pippo.py", result.output)
+        self.assertIn("Error: pippo.py: file not found", result.output)
         self.assertEqual(result.exit_code, 1)
 
     def test_format(self):

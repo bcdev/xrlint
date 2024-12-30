@@ -76,5 +76,5 @@ def main(
     return 1 if errors > 0 or warnings > max_warnings else 0
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     sys.exit(main())

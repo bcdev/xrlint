@@ -10,7 +10,7 @@ from xrlint.constants import SEVERITY_WARN
 from xrlint.util.formatting import format_problems
 from xrlint.util.todict import ToDictMixin
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from xrlint.config import Config
     from xrlint.rule import RuleMeta
 

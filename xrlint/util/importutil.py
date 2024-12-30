@@ -62,10 +62,21 @@ def eval_exported_value(
                 "function",
             )
         )
-    export_value = export_function()
+
+    try:
+        export_value = export_function()
+    except Exception as e:
+        raise UserCodeException(f"while executing {export_function_name}(): {e}") from e
+
     try:
         return factory(export_value)
     except (ValueError, TypeError) as e:
         raise type(e)(
             f"return value of {export_function_name}(): {e}",
         )
+
+
+class UserCodeException(Exception):
+    """Special exception that is never caught in xrlint,
+    so users can see the stacktrace into their code.
+    """
