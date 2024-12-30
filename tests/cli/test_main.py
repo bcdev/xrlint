@@ -58,6 +58,11 @@ class CliMainTest(TestCase):
         finally:
             os.remove("xrlint.config.json")
 
+    def test_output_file(self):
+        runner = CliRunner()
+        result = runner.invoke(main, ["-o", "memory://report.txt"] + self.files)
+        self.assertEqual(result.exit_code, 0)
+
     def test_config_missing(self):
         runner = CliRunner()
         result = runner.invoke(main, ["-c", "pippo.py"] + self.files)
