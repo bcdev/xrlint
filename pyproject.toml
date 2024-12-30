@@ -67,8 +67,6 @@ dev = [
   "numpy",
   "pandas",
   "zarr",
-  # Dataset testing
-  "jupyterlab"
 ]
 doc = [
   "mkdocs",

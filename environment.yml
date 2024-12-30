@@ -12,7 +12,6 @@ dependencies:
   # Dev Dependencies
   - black
   - flake8
-  - jupyterlab
   - mkdocs
   - mkdocs-material
   - mkdocstrings
