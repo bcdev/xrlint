@@ -2203,8 +2203,8 @@ If the value is already of type <code>RuleConfig</code>it is returned as-is.</p>
 
     <div class="doc doc-contents ">
 
-        <p>The class of the rule verifier.
-Must implement the <code>RuleVerifier</code> interface.</p>
+        <p>The class the implements the rule's verification operation.
+The class must implement the <code>RuleOp</code> interface.</p>
     </div>
 
 </div>
@@ -2409,6 +2409,8 @@ options.</p>
 
 
     <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="abc.ABC">ABC</span></code></p>
 
 
         <p>Define the specific rule verification operation.</p>
@@ -2435,14 +2437,61 @@ options.</p>
 
 
 <h3 id="xrlint.rule.RuleOp.attr" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">attr</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">attr</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span></code>
 
 </h3>
 
 
     <div class="doc doc-contents ">
 
-        <p>Verify the given node.</p>
+        <p>Verify the given attribute node.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>context</code>
+            </td>
+            <td>
+                  <code><span title="xrlint.rule.RuleContext">RuleContext</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The current rule context.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>node</code>
+            </td>
+            <td>
+                  <code><span title="xrlint.node.AttrNode">AttrNode</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The attribute node.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
     </div>
 
@@ -2452,14 +2501,61 @@ options.</p>
 
 
 <h3 id="xrlint.rule.RuleOp.attrs" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">attrs</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">attrs</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span></code>
 
 </h3>
 
 
     <div class="doc doc-contents ">
 
-        <p>Verify the given node.</p>
+        <p>Verify the given attributes node.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>context</code>
+            </td>
+            <td>
+                  <code><span title="xrlint.rule.RuleContext">RuleContext</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The current rule context.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>node</code>
+            </td>
+            <td>
+                  <code><span title="xrlint.node.AttrsNode">AttrsNode</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The attributes node.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
     </div>
 
@@ -2469,14 +2565,61 @@ options.</p>
 
 
 <h3 id="xrlint.rule.RuleOp.data_array" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">data_array</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">data_array</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span></code>
 
 </h3>
 
 
     <div class="doc doc-contents ">
 
-        <p>Verify the given node.</p>
+        <p>Verify the given data array (variable) node.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>context</code>
+            </td>
+            <td>
+                  <code><span title="xrlint.rule.RuleContext">RuleContext</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The current rule context.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>node</code>
+            </td>
+            <td>
+                  <code><span title="xrlint.node.DataArrayNode">DataArrayNode</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The data array (variable) node.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
     </div>
 
@@ -2486,14 +2629,61 @@ options.</p>
 
 
 <h3 id="xrlint.rule.RuleOp.dataset" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">dataset</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">dataset</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span></code>
 
 </h3>
 
 
     <div class="doc doc-contents ">
 
-        <p>Verify the given node.</p>
+        <p>Verify the given dataset node.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>context</code>
+            </td>
+            <td>
+                  <code><span title="xrlint.rule.RuleContext">RuleContext</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The current rule context.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>node</code>
+            </td>
+            <td>
+                  <code><span title="xrlint.node.DatasetNode">DatasetNode</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The dataset node.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
     </div>
 
