@@ -4,7 +4,7 @@ from typing import Any, Literal
 import xarray as xr
 
 from xrlint.config import Config
-from xrlint.constants import MISSING_FILE_PATH
+from xrlint.constants import MISSING_DATASET_FILE_PATH
 from xrlint.constants import SEVERITY_ERROR
 from xrlint.node import Node
 from xrlint.result import Message
@@ -16,14 +16,15 @@ class RuleContextImpl(RuleContext):
     def __init__(
         self,
         config: Config,
-        *,
-        dataset: xr.Dataset | None,
-        file_path: str | None,
+        dataset: xr.Dataset,
+        file_path: str,
     ):
-        assert not (dataset is None and file_path is None)
+        assert config is not None
+        assert dataset is not None
+        assert file_path is not None
         self._config = config
         self._dataset = dataset
-        self._file_path = self._get_file_path(file_path, dataset)
+        self._file_path = file_path
         self.messages: list[Message] = []
         self.rule_id: str | None = None
         self.severity: Literal[1, 2] = SEVERITY_ERROR
@@ -78,14 +79,3 @@ class RuleContextImpl(RuleContext):
         finally:
             for k, v in old_state.items():
                 setattr(self, k, v)
-
-    @staticmethod
-    def _get_file_path(file_path: str | None, dataset: xr.Dataset | None) -> str:
-        if not file_path:
-            if dataset is not None:
-                file_path = dataset.encoding.get("source")
-                if isinstance(file_path, str):
-                    file_path = file_path
-            if not file_path:
-                file_path = MISSING_FILE_PATH
-        return file_path

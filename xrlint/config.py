@@ -19,6 +19,37 @@ if TYPE_CHECKING:
     from xrlint.processor import ProcessorOp
 
 
+def get_base_config(recommended: bool = True):
+    """Create a base configuration for the built-in plugins.
+
+    Args:
+        recommended: `True` (the default) if the recommended
+            rule configurations of the built-in plugins should be used.
+    Returns:
+        A new `Config` object
+    """
+    from xrlint.plugins.core import export_plugin as import_core_plugin
+    from xrlint.plugins.xcube import export_plugin as import_xcube_plugin
+
+    core_plugin = import_core_plugin()
+    xcube_plugin = import_xcube_plugin()
+
+    return Config(
+        plugins={
+            CORE_PLUGIN_NAME: core_plugin,
+            "xcube": xcube_plugin,
+        },
+        rules=(
+            {
+                **core_plugin.configs["recommended"].rules,
+                **xcube_plugin.configs["xcube-recommended"].rules,
+            }
+            if recommended
+            else None
+        ),
+    )
+
+
 @dataclass(frozen=True, kw_only=True)
 class Config(ToDictMixin):
     """Configuration object.

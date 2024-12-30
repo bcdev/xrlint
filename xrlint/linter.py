@@ -4,9 +4,10 @@ from typing import Any
 import xarray as xr
 
 from xrlint.config import Config
+from xrlint.config import get_base_config
 from xrlint.config import merge_configs
+from xrlint.constants import MISSING_DATASET_FILE_PATH
 from xrlint.result import Result
-from xrlint.rule import Rule
 from xrlint.rule import RuleConfig
 from xrlint.rule import RuleOp
 
@@ -17,7 +18,39 @@ from xrlint._linter.rule_ctx_impl import RuleContextImpl
 from xrlint._linter.verify_impl import verify_dataset
 
 
+def new_linter(
+    recommended: bool = True, config: Config | dict | None = None, **config_kwargs
+) -> "Linter":
+    """Create a new `Linter` with all built-in plugins configured.
+
+    Args:
+        recommended: `True` (the default) if the recommended rule configurations of
+            the built-in plugins should be used.
+            If set to `False`, you should configure the `rules` option either
+            in `config` or `config_kwargs`. Otherwise, calling `verify_dataset()`
+            will never succeed for any given dataset.
+        config: The `config` keyword argument passed to the `Linter` class
+        config_kwargs: The `config_kwargs` keyword arguments passed to the `Linter` class
+    Returns:
+        A new linter instance
+    """
+    return Linter(
+        config=merge_configs(get_base_config(recommended=recommended), config),
+        **config_kwargs,
+    )
+
+
 class Linter:
+    """The linter.
+
+    Args:
+        config: The linter's configuration.
+        config_kwargs: Individual linter configuration options.
+            All options of the `Config` object are possible.
+            If `config` is given too, provided
+            given individual linter configuration options
+            merged the ones given in `config`.
+    """
 
     def __init__(
         self,
@@ -25,6 +58,11 @@ class Linter:
         **config_kwargs,
     ):
         self._config = merge_configs(config, config_kwargs)
+
+    @property
+    def config(self) -> Config:
+        """Get this linter's configuration."""
+        return self._config
 
     def verify_dataset(
         self,
@@ -34,6 +72,21 @@ class Linter:
         config: Config | dict[str, Any] | None = None,
         **config_kwargs,
     ) -> Result:
+        """Verify a dataset.
+
+        Args:
+            dataset: The dataset. Can be a `xr.Dataset` instance
+                or a file path from which the dataset will be opened.
+            file_path: Optional file path used for formatting
+                messages. Useful if `dataset` is not a file path.
+            config: Configuration tbe merged with the linter's
+                configuration.
+            config_kwargs: Individual linter configuration options
+                to be merged with `config` if any. The merged result
+                will be merged with the linter's configuration.
+        Returns:
+            Result of the verification.
+        """
         config = merge_configs(self._config, config)
         config = merge_configs(config, config_kwargs)
 
@@ -42,19 +95,25 @@ class Linter:
             ds_source = dataset
             dataset, error = open_dataset(ds_source, config.opener_options or {})
             if not file_path and isinstance(ds_source, (str, Path)):
-                file_path = f"{ds_source}"
+                file_path = str(ds_source)
 
-        context = RuleContextImpl(
-            config,
-            dataset=dataset,
-            file_path=file_path,
-        )
+        if dataset is not None and not file_path:
+            file_path = _get_file_path_for_dataset(dataset)
+
+        context = RuleContextImpl(config, dataset, file_path)
 
         if error:
-            context.report(f"{error}", fatal=True)
-        else:
-            rules = config.rules or {}
-            for rule_id, rule_config in rules.items():
+            context.report(str(error), fatal=True)
+
+        # TODO: report error if no rules configured
+        # if not config.rules:
+        #     error = ValueError("No rules configured")
+        #     context.report(str(error), fatal=True)
+
+        if error is None and config.rules:
+            # TODO: validate config,
+            #   e.g., validate any rule options against rule.meta.schema
+            for rule_id, rule_config in config.rules.items():
                 with context.use_state(rule_id=rule_id):
                     _apply_rule(context, rule_id, rule_config)
 
@@ -66,6 +125,7 @@ class Linter:
 def open_dataset(
     file_path: str, opener_options: dict[str, Any] | None
 ) -> tuple[xr.Dataset, None] | tuple[None, Exception]:
+    """Open a dataset."""
     engine = opener_options.pop("engine", None)
     if engine is None and file_path.endswith(".zarr"):
         engine = "zarr"
@@ -81,6 +141,9 @@ def _apply_rule(
     rule_id: str,
     rule_config: RuleConfig,
 ):
+    """Apply rule given by `rule_id` to dataset given by
+    `context` using rule configuration `rule_config`.
+    """
     try:
         rule = context.config.get_rule(rule_id)
     except ValueError as e:
@@ -97,7 +160,7 @@ def _apply_rule(
         verify_dataset(verifier, context)
 
 
-def _parse_rule_config(_rule: Rule, rule_spec: Any) -> RuleConfig:
-    rule_config = RuleConfig.from_value(rule_spec)
-    # TODO: validate options against rule.meta.schema
-    return rule_config
+def _get_file_path_for_dataset(dataset: xr.Dataset) -> str:
+    source = dataset.encoding.get("source")
+    file_path = source if isinstance(source, str) else ""
+    return file_path or MISSING_DATASET_FILE_PATH

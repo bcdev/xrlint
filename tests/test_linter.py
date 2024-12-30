@@ -3,7 +3,9 @@ from unittest import TestCase
 import xarray as xr
 
 from xrlint.config import Config
+from xrlint.constants import CORE_PLUGIN_NAME
 from xrlint.linter import Linter
+from xrlint.linter import new_linter
 from xrlint.result import Message
 from xrlint.plugin import Plugin, PluginMeta
 from xrlint.result import Result
@@ -15,6 +17,29 @@ from xrlint.node import (
 )
 from xrlint.rule import RuleContext
 from xrlint.rule import RuleOp
+
+
+class LinterTest(TestCase):
+    def test_default_config_is_empty(self):
+        linter = Linter()
+        self.assertEqual(Config(), linter.config)
+
+    def test_new_linter(self):
+        import xrlint.all as xrl
+
+        linter = new_linter()
+        self.assertIsInstance(linter, xrl.Linter)
+        self.assertIsInstance(linter.config.plugins, dict)
+        self.assertEqual({CORE_PLUGIN_NAME, "xcube"}, set(linter.config.plugins.keys()))
+        self.assertIsInstance(linter.config.rules, dict)
+        self.assertIn("dataset-title-attr", linter.config.rules)
+        self.assertIn("xcube/spatial-dims-order", linter.config.rules)
+
+        linter = new_linter(recommended=False)
+        self.assertIsInstance(linter, xrl.Linter)
+        self.assertIsInstance(linter.config.plugins, dict)
+        self.assertEqual({CORE_PLUGIN_NAME, "xcube"}, set(linter.config.plugins.keys()))
+        self.assertEqual(None, linter.config.rules)
 
 
 class LinterVerifyTest(TestCase):
@@ -75,7 +100,7 @@ class LinterVerifyTest(TestCase):
         self.assertEqual(
             Result(
                 result.config,
-                file_path="<file>",
+                file_path="<dataset>",
                 warning_count=0,
                 error_count=1,
                 fatal_error_count=0,
@@ -100,7 +125,7 @@ class LinterVerifyTest(TestCase):
         self.assertEqual(
             Result(
                 result.config,
-                file_path="<file>",
+                file_path="<dataset>",
                 warning_count=1,
                 error_count=0,
                 fatal_error_count=0,
@@ -125,7 +150,7 @@ class LinterVerifyTest(TestCase):
         self.assertEqual(
             Result(
                 result.config,
-                file_path="<file>",
+                file_path="<dataset>",
                 warning_count=0,
                 error_count=0,
                 fatal_error_count=0,

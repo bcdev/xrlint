@@ -23,10 +23,10 @@ from xrlint.formatter import FormatterOp
 from xrlint.formatter import FormatterRegistry
 
 # noinspection PyUnresolvedReferences
-from xrlint.formatters import export_formats
+from xrlint.linter import Linter
 
 # noinspection PyUnresolvedReferences
-from xrlint.linter import Linter
+from xrlint.linter import new_linter
 
 # noinspection PyUnresolvedReferences
 from xrlint.result import Message
@@ -95,13 +95,4 @@ from xrlint.testing import RuleTest
 from xrlint.testing import RuleTester
 
 # noinspection PyUnresolvedReferences
-from xrlint.plugins.core import export_plugin
-
-# noinspection PyUnresolvedReferences
-from xrlint.formatters import export_formats
-
-core_plugin = export_plugin()
-formats = export_formats()
-
-del export_plugin
-del export_formats
+from xrlint.version import version

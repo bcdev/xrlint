@@ -12,6 +12,7 @@ htmlcov/
 
 # Jupyter
 .ipynb_checkpoints
+notebooks/*.zarr/
 
 # Editor directories and files
 .vscode/*

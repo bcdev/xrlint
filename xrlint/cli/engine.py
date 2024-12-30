@@ -5,9 +5,10 @@ from xrlint.cli.constants import CONFIG_DEFAULT_FILENAMES
 from xrlint.cli.constants import DEFAULT_OUTPUT_FORMAT
 from xrlint.config import Config
 from xrlint.config import ConfigList
+from xrlint.config import get_base_config
 from xrlint.constants import CORE_PLUGIN_NAME
 from xrlint.formatter import FormatterContext
-from xrlint.formatters import export_formats
+from xrlint.formatters import export_formatters
 from xrlint.linter import Linter
 from xrlint.result import Message
 from xrlint.result import Result
@@ -22,15 +23,17 @@ class CliEngine:
         config_path: str | None = None,
         output_format: str = DEFAULT_OUTPUT_FORMAT,
         files: list[str] | None = None,
+        recommended: bool = True,
     ):
-        from xrlint.plugins.core import export_plugin
+        from xrlint.plugins.core import export_plugin as import_core_plugin
+        from xrlint.plugins.xcube import export_plugin as import_xcube_plugin
 
         self.no_default_config = no_default_config
         self.config_path = config_path
         self.output_format = output_format
         self.files = files
-        self.core_config = Config(plugins={CORE_PLUGIN_NAME: export_plugin()})
-        self.config_list = ConfigList([self.core_config])
+        self.base_config = get_base_config(recommended=recommended)
+        self.config_list = ConfigList([self.base_config])
 
     def load_config(self):
         config_list = None
@@ -48,7 +51,7 @@ class CliEngine:
                     pass
 
         if config_list is not None:
-            self.config_list = ConfigList([self.core_config] + config_list.configs)
+            self.config_list = ConfigList([self.base_config] + config_list.configs)
 
     def verify_datasets(self) -> list[Result]:
         results: list[Result] = []
@@ -76,7 +79,7 @@ class CliEngine:
         output_format = (
             self.output_format if self.output_format else DEFAULT_OUTPUT_FORMAT
         )
-        formatter = export_formats().get(output_format)
+        formatter = export_formatters().get(output_format)
         if formatter is None:
             raise click.ClickException(f"unknown format {output_format!r}")
         # TODO: pass format-specific args/kwargs

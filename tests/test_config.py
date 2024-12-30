@@ -7,7 +7,18 @@ from xrlint.config import Config
 
 
 # noinspection PyMethodMayBeStatic
-class ConfigObjTest(TestCase):
+class ConfigTest(TestCase):
+    def test_defaults(self):
+        config = Config()
+        self.assertEqual(None, config.name)
+        self.assertEqual(None, config.files)
+        self.assertEqual(None, config.ignores)
+        self.assertEqual(None, config.linter_options)
+        self.assertEqual(None, config.opener_options)
+        self.assertEqual(None, config.processor)
+        self.assertEqual(None, config.plugins)
+        self.assertEqual(None, config.rules)
+
     def test_from_value_ok(self):
         self.assertEqual(Config(), Config.from_value(None))
         self.assertEqual(Config(), Config.from_value({}))

@@ -1,6 +1,5 @@
 from unittest import TestCase
 
-
 expected_api = [
     "AttrNode",
     "AttrsNode",
@@ -32,16 +31,17 @@ expected_api = [
     "RuleTest",
     "RuleTester",
     "Suggestion",
-    "core_plugin",
-    "formats",
     "get_rules_meta_for_results",
+    "new_linter",
+    "version",
 ]
 
 
-class ApiTest(TestCase):
+class AllTest(TestCase):
     def test_api_is_complete(self):
         import xrlint.all as xrl
 
+        # noinspection PyUnresolvedReferences
         keys = sorted(
             k
             for k, v in xrl.__dict__.items()
