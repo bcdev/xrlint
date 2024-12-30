@@ -52,20 +52,40 @@ class RuleContext(ABC):
         """
 
 
-class RuleOp:
+class RuleOp(ABC):
     """Define the specific rule verification operation."""
 
-    def dataset(self, ctx: RuleContext, node: DatasetNode):
-        """Verify the given node."""
+    def dataset(self, context: RuleContext, node: DatasetNode) -> None:
+        """Verify the given dataset node.
 
-    def data_array(self, ctx: RuleContext, node: DataArrayNode):
-        """Verify the given node."""
+        Args:
+            context: The current rule context.
+            node: The dataset node.
+        """
 
-    def attrs(self, ctx: RuleContext, node: AttrsNode):
-        """Verify the given node."""
+    def data_array(self, context: RuleContext, node: DataArrayNode) -> None:
+        """Verify the given data array (variable) node.
 
-    def attr(self, ctx: RuleContext, node: AttrNode):
-        """Verify the given node."""
+        Args:
+            context: The current rule context.
+            node: The data array (variable) node.
+        """
+
+    def attrs(self, context: RuleContext, node: AttrsNode) -> None:
+        """Verify the given attributes node.
+
+        Args:
+            context: The current rule context.
+            node: The attributes node.
+        """
+
+    def attr(self, context: RuleContext, node: AttrNode) -> None:
+        """Verify the given attribute node.
+
+        Args:
+            context: The current rule context.
+            node: The attribute node.
+        """
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -113,8 +133,8 @@ class Rule:
     """Rule metadata of type `RuleMeta`."""
 
     op_class: Type[RuleOp]
-    """The class of the rule verifier.
-    Must implement the `RuleVerifier` interface. 
+    """The class the implements the rule's verification operation.
+    The class must implement the `RuleOp` interface. 
     """
 
 
