@@ -42,7 +42,7 @@ class CliEngine:
             try:
                 config_list = read_config(config_path=self.config_path)
             except FileNotFoundError:
-                raise click.ClickException(f"File not found: {self.config_path}")
+                raise click.ClickException(f"file not found: {self.config_path}")
         elif not self.no_default_config:
             for f in CONFIG_DEFAULT_FILENAMES:
                 try:
@@ -79,8 +79,13 @@ class CliEngine:
         output_format = (
             self.output_format if self.output_format else DEFAULT_OUTPUT_FORMAT
         )
-        formatter = export_formatters().get(output_format)
+        formatters = export_formatters()
+        formatter = formatters.get(output_format)
         if formatter is None:
-            raise click.ClickException(f"unknown format {output_format!r}")
+            raise click.ClickException(
+                f"unknown format {output_format!r}."
+                f" The available formats are"
+                f" {', '.join(repr(k) for k in formatters.keys())}."
+            )
         # TODO: pass format-specific args/kwargs
         return formatter.op_class().format(FormatterContext(False), results)
