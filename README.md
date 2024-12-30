@@ -12,7 +12,8 @@ tool and library for [xarray]() datasets.
 Its design is heavily inspired by [ESLint](https://eslint.org/).
 
 **IMPORTANT NOTE**: This project just started and is under development, 
-there is no stable release yet.
+there is no stable release yet. See 
+[to-do list](docs/todo.md).
 
 ## Features 
 
@@ -31,7 +32,6 @@ The following rule plugins are currently built into the code base:
   [tiny data](https://tutorial.xarray.dev/intermediate/data_cleaning/05.1_intro.html)
   and the 
   [CF-Conventions](https://cfconventions.org/cf-conventions/cf-conventions.html).
-
 - `xcube`: Implementing the rules for 
   [xcube datasets](https://xcube.readthedocs.io/en/latest/cubespec.html).
   Note this plugins will be moved into a separate GitHub repo later 

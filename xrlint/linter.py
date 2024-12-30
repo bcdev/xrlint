@@ -19,7 +19,9 @@ from xrlint._linter.verify_impl import verify_dataset
 
 
 def new_linter(
-    recommended: bool = True, config: Config | dict | None = None, **config_kwargs
+    recommended: bool = True,
+    config: Config | dict | None = None,
+    **config_kwargs: dict[str, Any],
 ) -> "Linter":
     """Create a new `Linter` with all built-in plugins configured.
 
@@ -43,6 +45,9 @@ def new_linter(
 class Linter:
     """The linter.
 
+    You should not use the constructor directly.
+    Instead, use the `new_linter()` function.
+
     Args:
         config: The linter's configuration.
         config_kwargs: Individual linter configuration options.
@@ -55,7 +60,7 @@ class Linter:
     def __init__(
         self,
         config: Config | dict[str, Any] | None = None,
-        **config_kwargs,
+        **config_kwargs: dict[str, Any],
     ):
         self._config = merge_configs(config, config_kwargs)
 
@@ -70,7 +75,7 @@ class Linter:
         *,
         file_path: str | None = None,
         config: Config | dict[str, Any] | None = None,
-        **config_kwargs,
+        **config_kwargs: dict[str, Any],
     ) -> Result:
         """Verify a dataset.
 

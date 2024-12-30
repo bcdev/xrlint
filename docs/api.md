@@ -17,3 +17,19 @@ All described objects can be imported from the `xrlint.all` module.
 ## Class `RuleConfig`
 
 ::: xrlint.rule.RuleConfig
+
+## Class `Rule`
+
+::: xrlint.rule.Rule
+
+## Class `RuleMeta`
+
+::: xrlint.rule.RuleMeta
+
+## Class `RuleOp`
+
+::: xrlint.rule.RuleOp
+
+## Class `RuleContext`
+
+::: xrlint.rule.RuleContext

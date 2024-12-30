@@ -12,7 +12,12 @@ from xrlint.util.todict import ToDictMixin
 
 
 class RuleContext(ABC):
-    """The context passed to the verifier of a rule."""
+    """The context passed to the verifier of a rule.
+
+    You should never create instances of this class yourself.
+    Instances of this interface are passed to the `RuleOp`'s
+    methods.
+    """
 
     @property
     @abstractmethod
@@ -65,6 +70,8 @@ class RuleOp:
 
 @dataclass(frozen=True, kw_only=True)
 class RuleMeta(ToDictMixin):
+    """Rule metadata."""
+
     name: str
     """Rule name. Mandatory."""
 
@@ -114,6 +121,9 @@ class Rule:
 @dataclass(frozen=True)
 class RuleConfig:
     """A rule configuration.
+
+    You should not use the class constructor directly.
+    Instead, use the `RuleConfig.from_value()` function.
 
     Args:
         severity: rule severity, one of `2` (error), `1` (warn), or `0` (off)

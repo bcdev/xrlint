@@ -55,6 +55,9 @@ class Config(ToDictMixin):
     """Configuration object.
     A configuration object contains all the information XRLint
     needs to execute on a set of dataset files.
+
+    You should not use the class constructor directly.
+    Instead, use the `Config.from_value()` function.
     """
 
     name: str | None = None
@@ -79,33 +82,33 @@ class Config(ToDictMixin):
     """
 
     linter_options: dict[str, Any] | None = None
-    """An object containing options related to the linting process."""
+    """A dictionary containing options related to the linting process."""
 
     opener_options: dict[str, Any] | None = None
-    """An object containing options that are passed to 
+    """A dictionary containing options that are passed to 
     the dataset opener.
     """
 
     processor: Union["ProcessorOp", str, None] = None
-    """processor - Either an object compatible with the `ProcessorOp` 
+    """Either an object compatible with the `ProcessorOp` 
     interface or a string indicating the name of a processor inside 
     of a plugin (i.e., `"pluginName/processorName"`).
     """
 
     plugins: dict[str, "Plugin"] | None = None
-    """An object containing a name-value mapping of plugin names to 
+    """A dictionary containing a name-value mapping of plugin names to 
     plugin objects. When `files` is specified, these plugins are only 
     available to the matching files.
     """
 
     rules: dict[str, "RuleConfig"] | None = None
-    """An object containing the configured rules. 
+    """A dictionary containing the configured rules. 
     When `files` or `ignores` are specified, these rule configurations 
     are only available to the matching files.
     """
 
     settings: dict[str, Any] | None = None
-    """An object containing name-value pairs of information 
+    """A dictionary containing name-value pairs of information 
     that should be available to all rules.
     """
 
@@ -117,8 +120,8 @@ class Config(ToDictMixin):
 
         Args:
             value: A `Config` object, a `dict` containing the
-            configuration properties, or `None` which
-            converts into an empty configuration.
+                configuration properties, or `None` which
+                converts into an empty configuration.
         Returns:
             A `Config` object.
         """
@@ -161,16 +164,27 @@ class Config(ToDictMixin):
             if self.ignores
             and not (
                 self.files
-                or self.rules
-                or self.plugins
-                or self.settings
                 or self.linter_options
                 or self.opener_options
+                or self.plugins
+                or self.rules
+                or self.settings
             )
             else []
         )
 
     def get_rule(self, rule_id: str) -> "Rule":
+        """Get the rule for the given rule identifier `rule_id`.
+
+        Args:
+            rule_id: The rule identifier including plugin namespace, if any.
+                Format `<rule-name>` (builtin rules) or `<plugin-name>/<rule-name>`.
+        Returns:
+            A `Rule` object.
+        Raises:
+            ValueError: If either the plugin is unknown in this configuration
+                or the rule name is unknown.
+        """
         if "/" in rule_id:
             plugin_name, rule_name = rule_id.split("/", maxsplit=1)
         else:
@@ -333,7 +347,11 @@ def merge_configs(
 
 @dataclass(frozen=True)
 class ConfigList:
-    """A holder for a list of `Config` objects."""
+    """A holder for a list of `Config` objects.
+
+    You should not use the class constructor directly.
+    Instead, use the `ConfigList.from_value()` function.
+    """
 
     configs: list[Config] = field(default_factory=list)
     """The list of `Config` objects."""
