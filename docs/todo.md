@@ -5,9 +5,9 @@
 - populate `core` plugin by more rules
 - populate `xcube` plugin by more rules
 - add `docs`
-  - configure api docs, use mkdocstrings ref syntax in docstrings
+  - use mkdocstrings ref syntax in docstrings
+  - provide configuration examples (use as tests?)
   - generate markdown rule reference for the docs
-- CI for package publishing
 
 ## Desired
  
@@ -18,12 +18,11 @@
 - implement `autofix` feature
 
 ## Nice to have
- 
-- use `RuleMeta.type`, it is currently unused
-- use `RuleTest.expected`, it is currently unused
-- use `processor: ProcessorOp` config, it is currently unused
-- add missing community standards, 
-  see https://github.com/bcdev/xrlint/community 
+
+Currently unused
+- `RuleMeta.type`
+- `RuleTest.expected`
+- `processor: ProcessorOp` 
 
 # Ideas
 
