@@ -21,7 +21,7 @@ Its design is heavily inspired by [ESLint](https://eslint.org/).
 - `xcube`: Implementing the rules for 
   [xcube datasets](https://xcube.readthedocs.io/en/latest/cubespec.html)
 
-## Currents To-Dos
+## To-Dos
 
 ### Required
 
