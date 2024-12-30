@@ -63,6 +63,7 @@ dev = [
   "build",
   "hatch",
   # Dataset testing
+  "netcdf4",
   "numpy",
   "pandas",
   "zarr",
