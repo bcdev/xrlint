@@ -6,7 +6,7 @@
 # XRLint - A linter for xarray datasets
 
 
-XRLint is a [linter](https://en.wikipedia.org/wiki/Lint_(software)) 
+XRLint is a [linting](https://en.wikipedia.org/wiki/Lint_(software)) 
 tool and library for [xarray]() datasets.
 Its design is heavily inspired by [ESLint](https://eslint.org/).
 
