@@ -3,7 +3,7 @@
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![GitHub License](https://img.shields.io/github/license/bcdev/xrlint)](https://github.com/bcdev/xrlint)
 
-# XRLint - A linter for datasets
+# XRLint - A linter for xarray datasets
 
 
 XRLint is a [linter](https://en.wikipedia.org/wiki/Lint_(software)) 
