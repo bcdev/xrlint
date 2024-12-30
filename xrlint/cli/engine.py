@@ -1,4 +1,5 @@
 import click
+import fsspec
 
 from xrlint.cli.config import read_config
 from xrlint.cli.constants import CONFIG_DEFAULT_FILENAMES
@@ -20,20 +21,19 @@ class CliEngine:
         no_default_config: int = False,
         config_path: str | None = None,
         output_format: str = DEFAULT_OUTPUT_FORMAT,
+        output_path: str | None = None,
         files: list[str] | None = None,
         recommended: bool = True,
     ):
-        from xrlint.plugins.core import export_plugin as import_core_plugin
-        from xrlint.plugins.xcube import export_plugin as import_xcube_plugin
-
         self.no_default_config = no_default_config
         self.config_path = config_path
         self.output_format = output_format
+        self.output_path = output_path
         self.files = files
         self.base_config = get_base_config(recommended=recommended)
         self.config_list = ConfigList([self.base_config])
 
-    def load_config(self):
+    def load_config(self) -> None:
         config_list = None
 
         if self.config_path:
@@ -83,3 +83,10 @@ class CliEngine:
             )
         # TODO: pass format-specific args/kwargs
         return formatter.op_class().format(FormatterContext(False), results)
+
+    def write_report(self, report: str):
+        if not self.output_path:
+            print(report)
+        else:
+            with fsspec.open(self.output_path, mode="w") as f:
+                f.write(report)
