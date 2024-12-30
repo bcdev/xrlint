@@ -25,6 +25,9 @@ def make_dataset(dims: tuple[str, str, str]):
             "tsm": xr.DataArray(
                 np.random.random((n, n, n)), dims=dims, attrs={"units": "mg/m^-3"}
             ),
+            "avg_temp": xr.DataArray(
+                np.random.random(n), dims=dims[0], attrs={"units": "kelvin"}
+            ),
         },
     )
 

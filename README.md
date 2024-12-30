@@ -6,11 +6,23 @@ tool and library for [xarray]() datasets.
 
 Its design is heavily inspired by [ESLint](https://eslint.org/).
 
+## Inbuilt Rules
 
-## Rule naming
+- `core`: Implementing the rules for
+  [tiny data](https://tutorial.xarray.dev/intermediate/data_cleaning/05.1_intro.html)
+  and the 
+  [CF-Conventions](https://cfconventions.org/cf-conventions/cf-conventions.html)
+
+- `xcube`: Implementing the rules for 
+  [xcube datasets](https://xcube.readthedocs.io/en/latest/cubespec.html)
+
+## Contributing Rules
+
+### Rule Naming
 
 The rule naming conventions for XRLint are the same as or ESLint:
 
+* Lower-case only.
 * Use dashes between words (kebab-case).
 * If your rule only disallows something, 
   prefix it with `no-` such as `no-empty-attrs` for disallowing 
@@ -18,8 +30,22 @@ The rule naming conventions for XRLint are the same as or ESLint:
 * If your rule is enforcing the inclusion of something, 
   use a short name without a special prefix.
 * Plugins should add a prefix before their rule names
-  separated by a slash, e.g., `cf-conv/dataset-title`.
+  separated by a slash, e.g., `xcube/spatial-dims-order`.
 
+### Rule Design
+
+* The reasoning behind a rule should be **easy to grasp**. 
+
+* A rule should serve for a **single purpose only**. Try subdividing
+  complex rule logic into multiple rules with simpler logic.
+
+* Each rule should be defined in a dedicated module named after the rule, 
+  i.e., `<plugin>/rules/<rule>`. The module name should be the rule's name
+  with dashes replaced by underscores. 
+
+* Write a comprehensive test for your rule logic using 
+  `xrlint.testing.RuleTester`. It should be defined in a dedicated 
+  test module, i.e., `tests/rules/test_<rule>`.
 
 # TODO
 
@@ -35,8 +61,17 @@ The rule naming conventions for XRLint are the same as or ESLint:
 - add docs / api docs
 - add CI
 - generate rule ref
+- populate `core` plugin
+- populate `xcube` plugin
+- populate `cf` plugin
+- autofixing feature
 
 # Ideas
+
+## Plugins
+
+- `sgrid`: https://sgrid.github.io/sgrid/
+- `ugrid`: https://ugrid-conventions.github.io/ugrid-conventions/
 
 ## Generalize data linting
 

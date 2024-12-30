@@ -20,7 +20,7 @@ class EditInfo(ToDictMixin):
     """Not used yet."""
 
 
-@dataclass(frozen=True, kw_only=True)
+@dataclass(frozen=True)
 class Suggestion(ToDictMixin):
     desc: str
     """Description of the suggestion."""
