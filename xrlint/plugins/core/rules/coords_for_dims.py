@@ -7,7 +7,7 @@ from xrlint.rule import RuleContext, RuleOp
 @plugin.define_rule(
     "coords-for-dims",
     version="1.0.0",
-    description=("Dimensions of data variables should have corresponding coordinates."),
+    description="Dimensions of data variables should have corresponding coordinates.",
 )
 class CoordsForDims(RuleOp):
     def data_array(self, ctx: RuleContext, node: DataArrayNode):

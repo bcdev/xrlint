@@ -3,7 +3,11 @@ from xrlint.plugins.xcube.rules import plugin
 from xrlint.rule import RuleOp, RuleContext
 
 
-@plugin.define_rule("spatial-dims-order")
+@plugin.define_rule(
+    "spatial-dims-order",
+    version="1.0.0",
+    description="Spatial dimensions should have order [...,y,x].",
+)
 class SpatialDimsOrder(RuleOp):
     def data_array(self, ctx: RuleContext, node: DataArrayNode):
         if node.in_data_vars():

@@ -56,14 +56,11 @@ The rule naming conventions for XRLint are the same as or ESLint:
 - use `RuleMeta.type`, it is currently unused
 - use `RuleTest.expected`, it is currently unused
 - use `processor: ProcessorOp` config, it is currently unused
-- add more rules
-- document each rule
 - add docs / api docs
 - add CI
 - generate rule ref
 - populate `core` plugin
 - populate `xcube` plugin
-- populate `cf` plugin
 - autofixing feature
 
 # Ideas
