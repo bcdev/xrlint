@@ -42,7 +42,7 @@ def get_base_config(recommended: bool = True):
         rules=(
             {
                 **core_plugin.configs["recommended"].rules,
-                **xcube_plugin.configs["xcube-recommended"].rules,
+                **xcube_plugin.configs["recommended"].rules,
             }
             if recommended
             else None
