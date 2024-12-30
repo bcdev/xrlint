@@ -20,56 +20,36 @@ Its design is heavily inspired by [ESLint](https://eslint.org/).
 - `xcube`: Implementing the rules for 
   [xcube datasets](https://xcube.readthedocs.io/en/latest/cubespec.html)
 
-## Contributing Rules
+## Currents To-Dos
 
-### Rule Naming
+### Required
 
-The rule naming conventions for XRLint are the same as or ESLint:
+- populate `core` plugin by more rules
+- populate `xcube` plugin by more rules
+- add `docs`
+  - configure api docs, use mkdocstrings ref syntax in docstrings
+  - generate markdown rule reference for the docs
+- CI for package publishing
 
-* Lower-case only.
-* Use dashes between words (kebab-case).
-* If your rule only disallows something, 
-  prefix it with `no-` such as `no-empty-attrs` for disallowing 
-  empty attributes in dataset nodes.
-* If your rule is enforcing the inclusion of something, 
-  use a short name without a special prefix.
-* Plugins should add a prefix before their rule names
-  separated by a slash, e.g., `xcube/spatial-dims-order`.
-
-### Rule Design
-
-* The reasoning behind a rule should be **easy to grasp**. 
-
-* A rule should serve for a **single purpose only**. Try subdividing
-  complex rule logic into multiple rules with simpler logic.
-
-* Each rule should be defined in a dedicated module named after the rule, 
-  i.e., `<plugin>/rules/<rule>`. The module name should be the rule's name
-  with dashes replaced by underscores. 
-
-* Write a comprehensive test for your rule logic using 
-  `xrlint.testing.RuleTester`. It should be defined in a dedicated 
-  test module, i.e., `tests/rules/test_<rule>`.
-
-# TODO
-
+### Desired
+ 
+- add some more tests so we reach 99% coverage
 - introduce `dataset_options` config:
--   `opener: OpenerOp`
--   `opener_options: dict[str, Any]`
-- add more tests, +coverage
+    - `opener: OpenerOp`
+    - `opener_options: dict[str, Any]`
+- implement `autofix` feature
+
+### Nice to have
+ 
 - use `RuleMeta.type`, it is currently unused
 - use `RuleTest.expected`, it is currently unused
 - use `processor: ProcessorOp` config, it is currently unused
-- add docs / api docs
-- add CI
-- generate rule ref
-- populate `core` plugin
-- populate `xcube` plugin
-- autofixing feature
+- add missing community standards, 
+  see https://github.com/bcdev/xrlint/community 
 
-# Ideas
+## Ideas
 
-## Plugins
+### Other plugins
 
 - `sgrid`: https://sgrid.github.io/sgrid/
 - `ugrid`: https://ugrid-conventions.github.io/ugrid-conventions/
@@ -95,26 +75,10 @@ To support the CLI mode, we need different data opener
 types that can read the data from a file path.
 
 1. open data, if given data is a file path: 
-   a. find opener for file path
-   b. open data 
+   - find opener for file path
+   - open data 
 2. verify data
-   a. find root element type and visitor type for data 
-   b. call the root element `accept(verifier)` that verifies the 
-      root element `verify.root()` and starts traversal of 
-      child elements.
-
-
-## Config design
-
-- config
-  - plugins[str, plugin] 
-  - rules[str, rule_config]
-  - settings[str, any]
-  - ...
-  - files
-  - ignores
-
-- plugin
-  - meta
-  - rules[str, rule]
-  - processors
+   - find root element type and visitor type for data 
+   - call the root element `accept(verifier)` that verifies the 
+     root element `verify.root()` and starts traversal of 
+     child elements.
