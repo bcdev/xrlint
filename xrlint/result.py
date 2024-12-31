@@ -34,6 +34,16 @@ class Suggestion(ToDictMixin):
 
     @classmethod
     def from_value(cls, value: Any):
+        """Convert given `value` into a `Suggestion` object.
+
+        If `value` is already a `Suggestion` then it is returned as-is.
+
+        Args:
+            value: A `Suggestion` object or a `str` containing the
+                suggestion text.
+        Returns:
+            A `Suggestion` object.
+        """
         if isinstance(value, Suggestion):
             return value
         if isinstance(value, str):
@@ -156,6 +166,14 @@ class Result(ToDictMixin):
 
 
 def get_rules_meta_for_results(results: list[Result]) -> dict[str, "RuleMeta"]:
+    """Get all rule metadata from the list of `results`.
+
+    Args:
+        results: List of `Result` objects.
+
+    Returns:
+        A dictionary that maps unique rule names to `RuleMeta` objects.
+    """
     rules_meta = {}
     for result in results:
         for message in result.messages:
