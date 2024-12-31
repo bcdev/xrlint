@@ -1,6 +1,6 @@
 from xrlint.node import DataArrayNode
+from xrlint.plugins.xcube.constants import LAT_NAME, LON_NAME, X_NAME, Y_NAME, T_NAME
 from xrlint.plugins.xcube.rules import plugin
-from xrlint.result import Suggestion
 from xrlint.rule import RuleOp, RuleContext
 
 
@@ -8,8 +8,8 @@ from xrlint.rule import RuleOp, RuleContext
     "cube-dims-order",
     version="1.0.0",
     description=(
-        "Order of dimensions in spatio-temporal datacube variables"
-        " should be [time, ..., y, x]."
+        f"Order of dimensions in spatio-temporal datacube variables"
+        f" should be [{T_NAME}, ..., {Y_NAME}, {X_NAME}]."
     ),
 )
 class CubeDimsOrder(RuleOp):
@@ -19,10 +19,10 @@ class CubeDimsOrder(RuleOp):
             indexes = {d: i for i, d in enumerate(node.data_array.dims)}
 
             yx_names = None
-            if "x" in indexes and "y" in indexes:
-                yx_names = ["y", "x"]
-            elif "lon" in indexes and "lat" in indexes:
-                yx_names = ["lat", "lon"]
+            if X_NAME in indexes and Y_NAME in indexes:
+                yx_names = [Y_NAME, X_NAME]
+            elif LON_NAME in indexes and LAT_NAME in indexes:
+                yx_names = [LAT_NAME, LON_NAME]
             else:
                 # TODO: get yx_names/yx_indexes from grid-mapping
                 pass
@@ -31,8 +31,8 @@ class CubeDimsOrder(RuleOp):
                 return
 
             t_name = None
-            if "time" in indexes:
-                t_name = "time"
+            if T_NAME in indexes:
+                t_name = T_NAME
 
             n = len(dims)
             t_index = indexes[t_name] if t_name else None

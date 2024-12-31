@@ -19,7 +19,9 @@ class ExportPluginTest(TestCase):
         self.assertEqual(
             {
                 "cube-dims-order",
+                "grid-mapping-naming",
                 "lat-lon-naming",
+                "single-grid-mapping",
             },
             set(_plugin.rules.keys()),
         )

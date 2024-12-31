@@ -13,6 +13,9 @@ def export_plugin() -> Plugin:
             "name": "recommended",
             "rules": {
                 "xcube/cube-dims-order": "error",
+                "xcube/grid-mapping-naming": "warn",
+                "xcube/lat-lon-naming": "error",
+                "xcube/single-grid-mapping": "error",
             },
         }
     )
