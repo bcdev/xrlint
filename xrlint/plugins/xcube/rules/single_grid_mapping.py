@@ -1,5 +1,5 @@
 from xrlint.node import DatasetNode
-from xrlint.plugins.xcube.constants import LAT_NAME, LON_NAME
+from xrlint.plugins.xcube.constants import LAT_NAME, LON_NAME, GM_NAMES_TEXT
 from xrlint.plugins.xcube.rules import plugin
 from xrlint.plugins.xcube.util import is_spatial_var
 from xrlint.rule import RuleOp, RuleContext
@@ -54,8 +54,8 @@ class SingleGridMapping(RuleOp):
                 "None of the spatial variables provides a grid mapping.",
                 suggestions=[
                     (
-                        "Add a grid mapping coordinate variable named"
-                        " 'spatial_ref' or 'crs' to the dataset."
+                        f"Add a grid mapping coordinate variable named"
+                        f" {GM_NAMES_TEXT} to the dataset."
                     ),
                     (
                         "Set attribute 'grid_mapping' of spatial data variables"

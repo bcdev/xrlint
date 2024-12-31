@@ -52,7 +52,7 @@ class CubeDimsOrder(RuleOp):
                     )
                 # noinspection PyTypeChecker
                 ctx.report(
-                    f"order of dimensions should be"
-                    f" {','.join(expected_dims)}, but was {','.join(dims)}",
+                    f"Order of dimensions should be"
+                    f" {','.join(expected_dims)}, but found {','.join(dims)}.",
                     suggestions=["Use xarray.transpose(...) to reorder dimensions."],
                 )

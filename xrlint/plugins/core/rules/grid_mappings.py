@@ -41,7 +41,7 @@ class GridMappings(RuleOp):
                 if gm_var.dims:
                     ctx.report(
                         f"Grid mapping variable {gm_name!r} should be a scalar,"
-                        f" but has dimension(s) [{', '.join(str(d) for d in gm_var.dims)}]."
+                        f" but has dimension(s) {','.join(str(d) for d in gm_var.dims)}."
                     )
                 # TODO: check if creating a CRS from gm_var.attrs is possible.
                 #   Report otherwise.
