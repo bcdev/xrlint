@@ -19,6 +19,7 @@ class ExportPluginTest(TestCase):
         self.assertEqual(
             {
                 "cube-dims-order",
+                "lat-lon-naming",
             },
             set(_plugin.rules.keys()),
         )
