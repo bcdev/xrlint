@@ -40,7 +40,7 @@ class RuleContext(ABC):
         message: str,
         *,
         fatal: bool | None = None,
-        suggestions: list[Suggestion] | None = None,
+        suggestions: list[Suggestion | str] | None = None,
     ):
         """Report an issue.
 
@@ -48,7 +48,8 @@ class RuleContext(ABC):
             message: mandatory message text
             fatal: True, if a fatal error is reported.
             suggestions: A list of suggestions for the user
-                on how to fix the reported issue.
+                on how to fix the reported issue. Items may
+                be of type `Suggestion` or `str`.
         """
 
 

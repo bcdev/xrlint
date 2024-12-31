@@ -33,7 +33,7 @@ class LinterTest(TestCase):
         self.assertEqual({CORE_PLUGIN_NAME, "xcube"}, set(linter.config.plugins.keys()))
         self.assertIsInstance(linter.config.rules, dict)
         self.assertIn("dataset-title-attr", linter.config.rules)
-        self.assertIn("xcube/spatial-dims-order", linter.config.rules)
+        self.assertIn("xcube/cube-dims-order", linter.config.rules)
 
         linter = new_linter(recommended=False)
         self.assertIsInstance(linter, xrl.Linter)

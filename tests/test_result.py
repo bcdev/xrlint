@@ -2,7 +2,7 @@ from unittest import TestCase
 
 from xrlint.config import Config
 from xrlint.plugin import Plugin, PluginMeta
-from xrlint.result import get_rules_meta_for_results, Result, Message
+from xrlint.result import get_rules_meta_for_results, Result, Message, Suggestion
 from xrlint.rule import RuleOp, RuleMeta
 
 
@@ -76,3 +76,16 @@ class ResultTest(TestCase):
         self.assertIsInstance(html, str)
         self.assertIn("<table>", html)
         self.assertIn("</table>", html)
+
+
+class SuggestionTest(TestCase):
+
+    # noinspection PyUnusedLocal
+    def test_from_value(self):
+        self.assertEqual(
+            Suggestion("Use xr.transpose()"),
+            Suggestion.from_value("Use xr.transpose()"),
+        )
+
+        suggestion = Suggestion("Use xr.transpose()")
+        self.assertIs(suggestion, Suggestion.from_value(suggestion))

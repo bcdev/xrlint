@@ -12,7 +12,7 @@ def export_plugin() -> Plugin:
         {
             "name": "recommended",
             "rules": {
-                f"xcube/{rule_id}": "error" for rule_id, rule in plugin.rules.items()
+                "xcube/cube-dims-order": "error",
             },
         }
     )

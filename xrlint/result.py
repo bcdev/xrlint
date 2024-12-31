@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Literal, TYPE_CHECKING
+from typing import Literal, TYPE_CHECKING, Any
 import html
 
 from tabulate import tabulate
@@ -8,6 +8,7 @@ from xrlint.constants import SEVERITY_CODE_TO_NAME
 from xrlint.constants import SEVERITY_ERROR
 from xrlint.constants import SEVERITY_WARN
 from xrlint.util.formatting import format_problems
+from xrlint.util.formatting import format_message_type_of
 from xrlint.util.todict import ToDictMixin
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -30,6 +31,14 @@ class Suggestion(ToDictMixin):
 
     fix: EditInfo | None = None
     """Not used yet."""
+
+    @classmethod
+    def from_value(cls, value: Any):
+        if isinstance(value, Suggestion):
+            return value
+        if isinstance(value, str):
+            return Suggestion(value)
+        raise TypeError(format_message_type_of("value", value, "Suggestion|str"))
 
 
 @dataclass(kw_only=True)

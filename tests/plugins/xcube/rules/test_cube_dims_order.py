@@ -1,6 +1,6 @@
 import numpy as np
 
-from xrlint.plugins.xcube.rules.spatial_dims_order import SpatialDimsOrder
+from xrlint.plugins.xcube.rules.cube_dims_order import CubeDimsOrder
 
 import xarray as xr
 
@@ -34,24 +34,28 @@ def make_dataset(dims: tuple[str, str, str]):
 
 valid_dataset_1 = make_dataset(("time", "y", "x"))
 valid_dataset_2 = make_dataset(("time", "lat", "lon"))
+valid_dataset_3 = make_dataset(("level", "y", "x"))
 
 invalid_dataset_1 = make_dataset(("time", "x", "y"))
 invalid_dataset_2 = make_dataset(("x", "y", "time"))
 invalid_dataset_3 = make_dataset(("time", "lon", "lat"))
-invalid_dataset_4 = make_dataset(("lon", "lat", "time"))
+invalid_dataset_4 = make_dataset(("lon", "lat", "level"))
+invalid_dataset_5 = make_dataset(("x", "y", "level"))
 
 
-SpatialDimsOrderTest = RuleTester.define_test(
-    "spatial-dims-order",
-    SpatialDimsOrder,
+CubeDimsOrderTest = RuleTester.define_test(
+    "cube-dims-order",
+    CubeDimsOrder,
     valid=[
         RuleTest(dataset=valid_dataset_1),
         RuleTest(dataset=valid_dataset_2),
+        RuleTest(dataset=valid_dataset_3),
     ],
     invalid=[
         RuleTest(dataset=invalid_dataset_1),
         RuleTest(dataset=invalid_dataset_2),
         RuleTest(dataset=invalid_dataset_3),
         RuleTest(dataset=invalid_dataset_4),
+        RuleTest(dataset=invalid_dataset_5),
     ],
 )
