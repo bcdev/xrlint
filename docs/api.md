@@ -14,6 +14,10 @@ All described objects can be imported from the `xrlint.all` module.
 
 ::: xrlint.config.Config
 
+## Class `ConfigList`
+
+::: xrlint.config.ConfigList
+
 ## Class `RuleConfig`
 
 ::: xrlint.rule.RuleConfig
@@ -33,3 +37,16 @@ All described objects can be imported from the `xrlint.all` module.
 ## Class `RuleContext`
 
 ::: xrlint.rule.RuleContext
+
+## Class `Result`
+
+::: xrlint.result.Result
+
+## Class `Message`
+
+::: xrlint.result.Message
+
+## Class `Suggestion`
+
+::: xrlint.result.Suggestion
+

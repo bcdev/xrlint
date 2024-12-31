@@ -364,7 +364,7 @@ class ConfigList:
 
         Args:
             value: A `ConfigList` object or `list` of values which can be
-            converted into `Config` objects.
+                converted into `Config` objects.
         Returns:
             A `ConfigList` object.
         """

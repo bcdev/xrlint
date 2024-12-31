@@ -57,8 +57,11 @@ class RuleContextImpl(RuleContext):
         message: str,
         *,
         fatal: bool | None = None,
-        suggestions: list[Suggestion] | None = None,
+        suggestions: list[Suggestion | str] | None = None,
     ):
+        suggestions = (
+            [Suggestion.from_value(s) for s in suggestions] if suggestions else None
+        )
         m = Message(
             message=message,
             fatal=fatal,

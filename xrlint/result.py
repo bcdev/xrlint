@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Literal, TYPE_CHECKING
+from typing import Literal, TYPE_CHECKING, Any
 import html
 
 from tabulate import tabulate
@@ -8,6 +8,7 @@ from xrlint.constants import SEVERITY_CODE_TO_NAME
 from xrlint.constants import SEVERITY_ERROR
 from xrlint.constants import SEVERITY_WARN
 from xrlint.util.formatting import format_problems
+from xrlint.util.formatting import format_message_type_of
 from xrlint.util.todict import ToDictMixin
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -30,6 +31,24 @@ class Suggestion(ToDictMixin):
 
     fix: EditInfo | None = None
     """Not used yet."""
+
+    @classmethod
+    def from_value(cls, value: Any):
+        """Convert given `value` into a `Suggestion` object.
+
+        If `value` is already a `Suggestion` then it is returned as-is.
+
+        Args:
+            value: A `Suggestion` object or a `str` containing the
+                suggestion text.
+        Returns:
+            A `Suggestion` object.
+        """
+        if isinstance(value, Suggestion):
+            return value
+        if isinstance(value, str):
+            return Suggestion(value)
+        raise TypeError(format_message_type_of("value", value, "Suggestion|str"))
 
 
 @dataclass(kw_only=True)
@@ -147,6 +166,14 @@ class Result(ToDictMixin):
 
 
 def get_rules_meta_for_results(results: list[Result]) -> dict[str, "RuleMeta"]:
+    """Get all rule metadata from the list of `results`.
+
+    Args:
+        results: List of `Result` objects.
+
+    Returns:
+        A dictionary that maps unique rule names to `RuleMeta` objects.
+    """
     rules_meta = {}
     for result in results:
         for message in result.messages:
