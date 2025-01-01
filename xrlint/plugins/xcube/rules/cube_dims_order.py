@@ -24,7 +24,8 @@ class CubeDimsOrder(RuleOp):
             elif LON_NAME in indexes and LAT_NAME in indexes:
                 yx_names = [LAT_NAME, LON_NAME]
             else:
-                # TODO: get yx_names/yx_indexes from grid-mapping
+                # Note, we could get yx_names also from grid-mapping,
+                # which would be more generic.
                 pass
             if yx_names is None:
                 # This rule only applies to spatial dimensions
