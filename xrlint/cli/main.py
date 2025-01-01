@@ -98,6 +98,9 @@ def main(
     """
     from xrlint.cli.engine import CliEngine
 
+    if not files:
+        raise click.ClickException("No dataset files provided.")
+
     cli_engine = CliEngine(
         no_default_config=no_default_config,
         config_path=config_path,
@@ -113,9 +116,12 @@ def main(
     report = cli_engine.format_results(results)
     cli_engine.write_report(report)
 
-    errors = sum(r.error_count for r in results)
-    warnings = sum(r.warning_count for r in results)
-    return 1 if errors > 0 or warnings > max_warnings else 0
+    error_status = sum(r.error_count for r in results) > 0
+    max_warn_status = sum(r.warning_count for r in results) > max_warnings
+    if max_warn_status and not error_status:
+        click.echo("maximum number of warnings exceeded.")
+    if max_warn_status or error_status:
+        raise click.exceptions.Exit(1)
 
 
 if __name__ == "__main__":  # pragma: no cover

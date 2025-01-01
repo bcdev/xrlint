@@ -19,7 +19,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from xrlint.processor import ProcessorOp
 
 
-def get_core_config(recommended: bool = True):
+def get_core_config(recommended: bool = False):
     """Create a base configuration for the built-in plugins.
 
     Args:
@@ -328,14 +328,8 @@ def merge_configs(
     config1: Config | dict[str, Any] | None,
     config2: Config | dict[str, Any] | None,
 ) -> Config:
-    if config1 is not None:
-        config1 = Config.from_value(config1)
-    else:
-        config1 = Config()
-    if config2 is not None:
-        config2 = Config.from_value(config2)
-    else:
-        config2 = Config()
+    config1 = Config.from_value(config1)
+    config2 = Config.from_value(config2)
     return config1.merge(config2)
 
 

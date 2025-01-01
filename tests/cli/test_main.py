@@ -1,6 +1,7 @@
 import os
 import tempfile
 import shutil
+from contextlib import contextmanager
 from unittest import TestCase
 
 from click.testing import CliRunner
@@ -13,6 +14,9 @@ from xrlint.version import version
 # noinspection PyTypeChecker
 class CliMainTest(TestCase):
     files = ["dataset1.zarr", "dataset1.nc", "dataset2.zarr", "dataset2.nc"]
+
+    ok_config_yaml = "- rules:\n    dataset-title-attr: error\n"
+    fail_config_yaml = "- rules:\n    no-empty-attrs: error\n"
 
     datasets = dict(
         dataset1=xr.Dataset(attrs={"title": "Test 1"}),
@@ -42,21 +46,44 @@ class CliMainTest(TestCase):
         os.chdir(cls.last_cwd)
         shutil.rmtree(cls.temp_dir)
 
+    def test_no_files(self):
+        runner = CliRunner()
+        result = runner.invoke(main)
+        self.assertIn("No dataset files provided.", result.output)
+        self.assertEqual(1, result.exit_code)
+
     def test_files_no_rules(self):
         runner = CliRunner()
         result = runner.invoke(main, self.files)
         self.assertIn("No rules configured or applicable.", result.output)
-        self.assertEqual(result.exit_code, 0)
+        self.assertEqual(1, result.exit_code)
 
-    def test_files_one_rule_by_config_file(self):
-        with open("xrlint.config.yaml", "w") as f:
-            f.write('- rules:\n    "no-empty-attrs": error\n')
-        runner = CliRunner()
-        result = runner.invoke(main, self.files)
-        self.assertIn("".join(f"\n{f} - ok\n" for f in self.files), result.output)
-        self.assertEqual(result.exit_code, 0)
+    def test_files_one_rule(self):
+        with text_file("xrlint.config.yaml", self.ok_config_yaml):
+            runner = CliRunner()
+            result = runner.invoke(main, self.files)
+            # self.assertIn("Attributes are empty.", result.output)
+            # self.assertIn("no-empty-attrs", result.output)
 
-    def test_files_one_rule_by_rule_option(self):
+            self.assertEqual(
+                "\n"
+                "dataset1.zarr - ok\n\n"
+                "dataset1.nc - ok\n\n"
+                "dataset2.zarr - ok\n\n"
+                "dataset2.nc - ok\n\n"
+                "no problems\n\n",
+                result.output,
+            )
+            self.assertEqual(0, result.exit_code)
+
+        with text_file("xrlint.config.yaml", self.fail_config_yaml):
+            runner = CliRunner()
+            result = runner.invoke(main, self.files)
+            self.assertIn("Attributes are empty.", result.output)
+            self.assertIn("no-empty-attrs", result.output)
+            self.assertEqual(1, result.exit_code)
+
+    def test_files_with_rule_option(self):
         runner = CliRunner()
         result = runner.invoke(
             main,
@@ -66,10 +93,11 @@ class CliMainTest(TestCase):
             ]
             + self.files,
         )
-        self.assertIn("".join(f"\n{f} - ok\n" for f in self.files), result.output)
-        self.assertEqual(result.exit_code, 0)
+        self.assertIn("Attributes are empty.", result.output)
+        self.assertIn("no-empty-attrs", result.output)
+        self.assertEqual(1, result.exit_code)
 
-    def test_files_one_rule_by_plugin_and_rule_options(self):
+    def test_files_with_plugin_and_rule_options(self):
         runner = CliRunner()
         result = runner.invoke(
             main,
@@ -83,32 +111,35 @@ class CliMainTest(TestCase):
         )
         self.assertIn("No spatial data variables found.", result.output)
         self.assertIn("xcube/any-spatial-data-var", result.output)
-        self.assertEqual(result.exit_code, 0)
+        self.assertEqual(1, result.exit_code)
 
-    def test_output_file(self):
-        runner = CliRunner()
-        result = runner.invoke(main, ["-o", "memory://report.txt"] + self.files)
-        self.assertEqual(result.exit_code, 0)
+    def test_files_with_output_file(self):
+        with text_file("xrlint.config.yaml", self.ok_config_yaml):
+            runner = CliRunner()
+            result = runner.invoke(main, ["-o", "memory://report.txt"] + self.files)
+            self.assertEqual("", result.output)
+            self.assertEqual(0, result.exit_code)
 
-    def test_config_missing(self):
+    def test_files_but_config_file_missing(self):
         runner = CliRunner()
         result = runner.invoke(main, ["-c", "pippo.py"] + self.files)
         self.assertIn("Error: pippo.py: file not found", result.output)
-        self.assertEqual(result.exit_code, 1)
+        self.assertEqual(1, result.exit_code)
 
-    def test_format(self):
-        runner = CliRunner()
-        result = runner.invoke(main, ["-f", "json"] + self.files)
-        self.assertIn('"results": [\n', result.output)
-        self.assertEqual(result.exit_code, 0)
+    def test_files_with_format_option(self):
+        with text_file("xrlint.config.yaml", self.ok_config_yaml):
+            runner = CliRunner()
+            result = runner.invoke(main, ["-f", "json"] + self.files)
+            self.assertIn('"results": [\n', result.output)
+            self.assertEqual(0, result.exit_code)
 
-    def test_unknown_format(self):
+    def test_files_with_invalid_format_option(self):
         runner = CliRunner()
         result = runner.invoke(main, ["-f", "foo"] + self.files)
         self.assertIn(
             "Error: unknown format 'foo'. The available formats are '", result.output
         )
-        self.assertEqual(result.exit_code, 1)
+        self.assertEqual(1, result.exit_code)
 
 
 # noinspection PyTypeChecker
@@ -125,3 +156,13 @@ class CliMainMetaTest(TestCase):
         result = runner.invoke(main, ["--version"])
         self.assertIn(f"xrlint, version {version}", result.output)
         self.assertEqual(result.exit_code, 0)
+
+
+@contextmanager
+def text_file(file_name: str, content: str):
+    with open(file_name, mode="w") as f:
+        f.write(content)
+    try:
+        yield
+    finally:
+        os.remove(file_name)
