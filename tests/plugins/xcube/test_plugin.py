@@ -18,6 +18,7 @@ class ExportPluginTest(TestCase):
         _plugin = export_plugin()
         self.assertEqual(
             {
+                "any-spatial-data-var",
                 "cube-dims-order",
                 "grid-mapping-naming",
                 "lat-lon-naming",
