@@ -27,6 +27,7 @@ The following rule plugins are currently built into the code base:
   [CF-Conventions](https://cfconventions.org/cf-conventions/cf-conventions.html).
 - `xcube`: Implementing the rules for 
   [xcube datasets](https://xcube.readthedocs.io/en/latest/cubespec.html).
-  Note this plugins will be moved into a separate GitHub repo later 
+  Note, this plugin is fully optional. You must manually configure 
+  it to apply its rules. It may be moved into a separate GitHub repo 
   once XRLint is mature enough. 
 
