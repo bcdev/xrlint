@@ -10,9 +10,11 @@ from xrlint.rule import RuleOp, RuleContext
 )
 class VarUnitsAttr(RuleOp):
     def data_array(self, ctx: RuleContext, node: DataArrayNode):
-        units = node.data_array.attrs.get("units")
+        data_array = node.data_array
+        units = data_array.attrs.get("units")
         if units is None:
-            ctx.report(f"Missing 'units' attribute in variable {node.name!r}.")
+            if "grid_mapping_name" not in data_array.attrs:
+                ctx.report(f"Missing 'units' attribute in variable {node.name!r}.")
         elif not isinstance(units, str):
             ctx.report(f"Invalid 'units' attribute in variable {node.name!r}.")
         elif not units:

@@ -1,7 +1,5 @@
 from xrlint.plugins.xcube.rules.single_grid_mapping import SingleGridMapping
 
-
-
 import numpy as np
 import xarray as xr
 
