@@ -1,7 +1,6 @@
-import numpy as np
-
 from xrlint.plugins.xcube.rules.single_grid_mapping import SingleGridMapping
 
+import numpy as np
 import xarray as xr
 
 from xrlint.testing import RuleTester, RuleTest
@@ -38,16 +37,24 @@ def make_dataset():
     )
 
 
-valid_dataset_1 = make_dataset()
-valid_dataset_2 = valid_dataset_1.rename({"crs": "spatial_ref"})
-valid_dataset_3 = valid_dataset_1.drop_vars("crs")
-valid_dataset_4 = xr.Dataset()
+valid_dataset_1 = xr.Dataset(attrs=dict(title="Empty"))
+valid_dataset_2 = make_dataset()
+valid_dataset_3 = make_dataset().rename({"crs": "spatial_ref"})
+valid_dataset_4 = make_dataset().drop_vars("crs")
+valid_dataset_5 = (
+    make_dataset()
+    .rename_dims({"x": "lon", "y": "lat"})
+    .rename_vars({"x": "lon", "y": "lat"})
+    .drop_vars("crs")
+)
+del valid_dataset_5.chl.attrs["grid_mapping"]
+del valid_dataset_5.tsm.attrs["grid_mapping"]
 
-invalid_dataset_1 = valid_dataset_1.copy(deep=True)
+invalid_dataset_1 = make_dataset().copy(deep=True)
 invalid_dataset_1.tsm.attrs["grid_mapping"] = "crs2"
-
-# TODO - add more
-
+invalid_dataset_2 = make_dataset().copy(deep=True)
+del invalid_dataset_2.chl.attrs["grid_mapping"]
+del invalid_dataset_2.tsm.attrs["grid_mapping"]
 
 SingleGridMappingTest = RuleTester.define_test(
     "single-grid-mapping",
@@ -57,9 +64,10 @@ SingleGridMappingTest = RuleTester.define_test(
         RuleTest(dataset=valid_dataset_2),
         RuleTest(dataset=valid_dataset_3),
         RuleTest(dataset=valid_dataset_4),
+        RuleTest(dataset=valid_dataset_5),
     ],
     invalid=[
         RuleTest(dataset=invalid_dataset_1),
-        # TODO - add more
+        RuleTest(dataset=invalid_dataset_2),
     ],
 )
