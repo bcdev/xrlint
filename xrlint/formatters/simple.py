@@ -17,11 +17,13 @@ class Simple(FormatterOp):
         results: list[Result],
     ) -> str:
         text = []
+        error_count = 0
+        warning_count = 0
         for r in results:
             if not r.messages:
-                text.append(f"{r.file_path} - ok\n")
+                text.append(f"\n{r.file_path} - ok\n")
             else:
-                text.append(f"{r.file_path}:\n\n")
+                text.append(f"\n{r.file_path}:\n")
                 r_data = []
                 for m in r.messages:
                     r_data.append(
@@ -33,6 +35,10 @@ class Simple(FormatterOp):
                         ]
                     )
                 text.append(tabulate(r_data, headers=(), tablefmt="plain"))
-                text.append(format_problems(r.error_count, r.warning_count))
                 text.append("\n")
+                error_count += r.error_count
+                warning_count += r.warning_count
+        text.append("\n")
+        text.append(format_problems(error_count, warning_count))
+        text.append("\n")
         return "".join(text)

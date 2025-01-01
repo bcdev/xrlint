@@ -19,7 +19,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from xrlint.processor import ProcessorOp
 
 
-def get_base_config(recommended: bool = True):
+def get_core_config(recommended: bool = True):
     """Create a base configuration for the built-in plugins.
 
     Args:

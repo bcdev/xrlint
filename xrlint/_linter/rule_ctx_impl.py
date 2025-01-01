@@ -16,11 +16,10 @@ class RuleContextImpl(RuleContext):
     def __init__(
         self,
         config: Config,
-        dataset: xr.Dataset,
+        dataset: xr.Dataset | None,
         file_path: str,
     ):
         assert config is not None
-        assert dataset is not None
         assert file_path is not None
         self._config = config
         self._dataset = dataset

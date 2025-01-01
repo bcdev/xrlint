@@ -28,6 +28,26 @@ from xrlint.cli.constants import CONFIG_DEFAULT_BASENAME
     metavar="PATH",
 )
 @click.option(
+    "--plugin",
+    "plugin_specs",
+    help=(
+        f"Specify plugins. MODULE is the name of Python module"
+        f" that defines an 'export_plugin()' function."
+    ),
+    metavar="MODULE",
+    multiple=True,
+)
+@click.option(
+    "--rule",
+    "rule_specs",
+    help=(
+        f"Specify rules. SPEC must have format"
+        f" '<rule-name>: <rule-config>' (note the space character)."
+    ),
+    metavar="SPEC",
+    multiple=True,
+)
+@click.option(
     "-f",
     "--format",
     "output_format",
@@ -59,10 +79,12 @@ from xrlint.cli.constants import CONFIG_DEFAULT_BASENAME
 def main(
     no_default_config: bool,
     config_path: str | None,
+    plugin_specs: tuple[str, ...],
+    rule_specs: tuple[str, ...],
     max_warnings: int,
     output_format: str,
     output_file: str | None,
-    files: list[str] | None,
+    files: tuple[str, ...],
 ):
     """Lint the given dataset FILES.
 
@@ -79,13 +101,15 @@ def main(
     cli_engine = CliEngine(
         no_default_config=no_default_config,
         config_path=config_path,
+        plugin_specs=plugin_specs,
+        rule_specs=rule_specs,
         files=files,
         output_format=output_format,
         output_path=output_file,
     )
 
-    cli_engine.load_config()
-    results = cli_engine.verify_datasets()
+    config_list = cli_engine.load_config()
+    results = cli_engine.verify_datasets(config_list)
     report = cli_engine.format_results(results)
     cli_engine.write_report(report)
 

@@ -10,8 +10,12 @@ def export_plugin() -> Plugin:
 
     plugin.configs["recommended"] = Config.from_value(
         {
-            "name": "recommended",
+            "name": "xcube-recommended",
+            "plugins": {
+                "xcube": plugin,
+            },
             "rules": {
+                "xcube/any-spatial-data-var": "error",
                 "xcube/cube-dims-order": "error",
                 "xcube/grid-mapping-naming": "warn",
                 "xcube/lat-lon-naming": "error",

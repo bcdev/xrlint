@@ -16,7 +16,9 @@ class CliMainTest(TestCase):
 
     datasets = dict(
         dataset1=xr.Dataset(attrs={"title": "Test 1"}),
-        dataset2=xr.Dataset(attrs={"title": "Test 2"}),
+        dataset2=xr.Dataset(
+            attrs={"title": "Test 2"}, data_vars={"v": xr.DataArray([1, 2, 3])}
+        ),
     )
 
     temp_dir: str
@@ -43,28 +45,45 @@ class CliMainTest(TestCase):
     def test_files_no_rules(self):
         runner = CliRunner()
         result = runner.invoke(main, self.files)
-        self.assertIn("No rules configured", result.output)
+        self.assertIn("No rules configured or applicable.", result.output)
         self.assertEqual(result.exit_code, 0)
 
-    def test_files_one_rule(self):
+    def test_files_one_rule_by_config_file(self):
         with open("xrlint.config.yaml", "w") as f:
-            f.write("- rules:\n" '    "no-empty-attrs": error\n')
+            f.write('- rules:\n    "no-empty-attrs": error\n')
         runner = CliRunner()
         result = runner.invoke(main, self.files)
-        self.assertIn("".join(f"{f} - ok\n" for f in self.files), result.output)
+        self.assertIn("".join(f"\n{f} - ok\n" for f in self.files), result.output)
         self.assertEqual(result.exit_code, 0)
 
-    def test_default_config(self):
-        with open("xrlint.config.json", "w") as f:
-            f.write("{}")
-        try:
-            runner = CliRunner()
-            result = runner.invoke(main, self.files)
-            print(result.output)
-            # self.assertIn("Error: file not found: pippo.py", result.output)
-            self.assertEqual(result.exit_code, 1)
-        finally:
-            os.remove("xrlint.config.json")
+    def test_files_one_rule_by_rule_option(self):
+        runner = CliRunner()
+        result = runner.invoke(
+            main,
+            [
+                "--rule",
+                "no-empty-attrs: error",
+            ]
+            + self.files,
+        )
+        self.assertIn("".join(f"\n{f} - ok\n" for f in self.files), result.output)
+        self.assertEqual(result.exit_code, 0)
+
+    def test_files_one_rule_by_plugin_and_rule_options(self):
+        runner = CliRunner()
+        result = runner.invoke(
+            main,
+            [
+                "--plugin",
+                "xrlint.plugins.xcube",
+                "--rule",
+                "xcube/any-spatial-data-var: error",
+            ]
+            + self.files,
+        )
+        self.assertIn("No spatial data variables found.", result.output)
+        self.assertIn("xcube/any-spatial-data-var", result.output)
+        self.assertEqual(result.exit_code, 0)
 
     def test_output_file(self):
         runner = CliRunner()
