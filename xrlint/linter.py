@@ -112,7 +112,6 @@ class Linter:
         if error:
             context.report(str(error), fatal=True)
 
-        # TODO: report error if no rules configured
         if not config.rules:
             error = ValueError("No rules configured")
             context.report(str(error), fatal=True)

@@ -29,34 +29,17 @@ def get_base_config(recommended: bool = True):
         A new `Config` object
     """
     core_plugin = get_core_plugin()
-    # xcube_plugin = get_xcube_plugin()
     return Config(
         plugins={
             CORE_PLUGIN_NAME: core_plugin,
-            # TODO: remove xcube plugin
-            # "xcube": xcube_plugin,
         },
-        rules=(
-            {
-                **core_plugin.configs["recommended"].rules,
-                # TODO: remove xcube config
-                # **xcube_plugin.configs["recommended"].rules,
-            }
-            if recommended
-            else None
-        ),
+        rules=core_plugin.configs["recommended"].rules if recommended else None,
     )
 
 
-def get_core_plugin():
+def get_core_plugin() -> "Plugin":
+    """Get the fully imported, populated core plugin."""
     from xrlint.plugins.core import export_plugin
-
-    return export_plugin()
-
-
-# TODO: remove get_xcube_plugin
-def get_xcube_plugin():
-    from xrlint.plugins.xcube import export_plugin
 
     return export_plugin()
 
