@@ -11,7 +11,13 @@ def export_plugin() -> Plugin:
     plugin.configs["recommended"] = Config.from_value(
         {
             "name": "recommended",
-            "rules": {f"{rule_id}": "error" for rule_id, rule in plugin.rules.items()},
+            "rules": {
+                "coords-for-dims": "error",
+                "dataset-title-attr": "warn",
+                "grid-mappings": "error",
+                "no-empty-attrs": "warn",
+                "var-units-attr": "warn",
+            },
         }
     )
 

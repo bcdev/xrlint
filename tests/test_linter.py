@@ -30,16 +30,21 @@ class LinterTest(TestCase):
         linter = new_linter()
         self.assertIsInstance(linter, xrl.Linter)
         self.assertIsInstance(linter.config.plugins, dict)
-        self.assertEqual({CORE_PLUGIN_NAME, "xcube"}, set(linter.config.plugins.keys()))
-        self.assertIsInstance(linter.config.rules, dict)
-        self.assertIn("dataset-title-attr", linter.config.rules)
-        self.assertIn("xcube/cube-dims-order", linter.config.rules)
+        self.assertEqual({CORE_PLUGIN_NAME}, set(linter.config.plugins.keys()))
+        self.assertEqual(None, linter.config.rules)
 
         linter = new_linter(recommended=False)
         self.assertIsInstance(linter, xrl.Linter)
         self.assertIsInstance(linter.config.plugins, dict)
-        self.assertEqual({CORE_PLUGIN_NAME, "xcube"}, set(linter.config.plugins.keys()))
+        self.assertEqual({CORE_PLUGIN_NAME}, set(linter.config.plugins.keys()))
         self.assertEqual(None, linter.config.rules)
+
+        linter = new_linter(recommended=True)
+        self.assertIsInstance(linter, xrl.Linter)
+        self.assertIsInstance(linter.config.plugins, dict)
+        self.assertEqual({CORE_PLUGIN_NAME}, set(linter.config.plugins.keys()))
+        self.assertIsInstance(linter.config.rules, dict)
+        self.assertIn("coords-for-dims", linter.config.rules)
 
 
 class LinterVerifyTest(TestCase):

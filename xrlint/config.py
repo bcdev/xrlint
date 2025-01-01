@@ -28,26 +28,37 @@ def get_base_config(recommended: bool = True):
     Returns:
         A new `Config` object
     """
-    from xrlint.plugins.core import export_plugin as import_core_plugin
-    from xrlint.plugins.xcube import export_plugin as import_xcube_plugin
-
-    core_plugin = import_core_plugin()
-    xcube_plugin = import_xcube_plugin()
-
+    core_plugin = get_core_plugin()
+    # xcube_plugin = get_xcube_plugin()
     return Config(
         plugins={
             CORE_PLUGIN_NAME: core_plugin,
-            "xcube": xcube_plugin,
+            # TODO: remove xcube plugin
+            # "xcube": xcube_plugin,
         },
         rules=(
             {
                 **core_plugin.configs["recommended"].rules,
-                **xcube_plugin.configs["recommended"].rules,
+                # TODO: remove xcube config
+                # **xcube_plugin.configs["recommended"].rules,
             }
             if recommended
             else None
         ),
     )
+
+
+def get_core_plugin():
+    from xrlint.plugins.core import export_plugin
+
+    return export_plugin()
+
+
+# TODO: remove get_xcube_plugin
+def get_xcube_plugin():
+    from xrlint.plugins.xcube import export_plugin
+
+    return export_plugin()
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -363,20 +374,47 @@ class ConfigList:
         If `value` is already a `ConfigList` then it is returned as-is.
 
         Args:
-            value: A `ConfigList` object or `list` of values which can be
-                converted into `Config` objects.
+            value: A `ConfigList` object or `list` of items which can be
+                converted into `Config` objects including configuration
+                names of tyype `str`. The latter are resolved against
+                the plugin configurations seen so far in the list.
         Returns:
             A `ConfigList` object.
         """
         if isinstance(value, ConfigList):
             return value
-        if isinstance(value, list):
-            return ConfigList([Config.from_value(c) for c in value])
-        raise TypeError(
-            format_message_type_of(
-                "configuration list", value, "ConfigList|list[Config|dict]"
+        if not isinstance(value, list):
+            raise TypeError(
+                format_message_type_of(
+                    "configuration list", value, "ConfigList|list[Config|dict|str]"
+                )
             )
-        )
+
+        configs = []
+        plugins = {}
+        for item in value:
+            if isinstance(item, str):
+                plugin_name, config_name = (
+                    item.split("/", maxsplit=1)
+                    if "/" in item
+                    else (CORE_PLUGIN_NAME, item)
+                )
+                if CORE_PLUGIN_NAME not in plugins:
+                    plugins.update({CORE_PLUGIN_NAME: get_core_plugin()})
+                plugin: Plugin | None = plugins.get(plugin_name)
+                if (
+                    plugin is None
+                    or not plugin.configs
+                    or config_name not in plugin.configs
+                ):
+                    raise ValueError(f"configuration {item!r} not found")
+                config = Config.from_value(plugin.configs[config_name])
+            else:
+                config = Config.from_value(item)
+            configs.append(config)
+            plugins.update(config.plugins if config.plugins else {})
+
+        return ConfigList(configs=configs)
 
     def compute_config(self, file_path: str) -> Config | None:
         """Compute the configuration object for the given file path.

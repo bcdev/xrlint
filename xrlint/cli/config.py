@@ -17,7 +17,7 @@ def read_config(config_path: str | Path | PathLike[str]) -> ConfigList:
         )
 
     try:
-        config_like = _read_config_like(config_path)
+        config_like = _read_config_like(str(config_path))
     except FileNotFoundError:
         raise
     except (OSError, ValueError, TypeError) as e:
@@ -29,7 +29,7 @@ def read_config(config_path: str | Path | PathLike[str]) -> ConfigList:
         raise click.ClickException(f"{config_path}: {e}") from e
 
 
-def _read_config_like(config_path: str | Path | PathLike[str]) -> Any:
+def _read_config_like(config_path: str) -> Any:
     if config_path.endswith(".yml") or config_path.endswith(".yaml"):
         return _read_config_yaml(config_path)
     if config_path.endswith(".json"):
@@ -59,7 +59,7 @@ def _read_config_python(config_path) -> Any:
     with fsspec.open(config_path, mode="r") as f:
         code = f.read()
 
-    export_function_name = "export_config"
+    export_function_name = "export_configs"
     _locals = {}
     exec(code, None, _locals)
 

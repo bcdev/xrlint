@@ -1,3 +1,5 @@
+import unittest
+from pathlib import Path
 from typing import Any
 from unittest import TestCase
 
@@ -13,8 +15,6 @@ from xrlint.rule import RuleConfig
 
 yaml_text = """
 - name: yaml-test
-  plugins:
-    
   rules:
     rule-1: 2
     rule-2: "warn"
@@ -36,7 +36,7 @@ json_text = """
 """
 
 py_text = """
-def export_config(): 
+def export_configs(): 
     return [
         {
             "name": "py-test",
@@ -132,19 +132,51 @@ class CliConfigTest(TestCase):
 
         with pytest.raises(
             click.ClickException,
-            match="memory://xrlint.config.py: missing definition of function 'export_config'",
+            match=(
+                "memory://xrlint.config.py: missing definition"
+                " of function 'export_configs'"
+            ),
         ):
             read_config(config_path)
 
     def test_read_config_with_exception(self):
         config_path = f"memory://{CONFIG_DEFAULT_BASENAME}.py"
         with fsspec.open(config_path, mode="w") as f:
-            f.write("def export_config():\n    raise ValueError('no config here!')\n")
+            f.write("def export_configs():\n    raise ValueError('no config here!')\n")
 
         from xrlint.util.importutil import UserCodeException
 
         with pytest.raises(
             UserCodeException,
-            match="while executing export_config\\(\\): no config here!",
+            match="while executing export_configs\\(\\): no config here!",
         ):
             read_config(config_path)
+
+
+class CliConfigResolveTest(unittest.TestCase):
+    def test_read_config_py(self):
+        self.assert_ok(
+            read_config(Path(__file__).parent / "configs" / "recommended.py")
+        )
+
+    def test_read_config_json(self):
+        self.assert_ok(
+            read_config(Path(__file__).parent / "configs" / "recommended.json")
+        )
+
+    def test_read_config_yaml(self):
+        self.assert_ok(
+            read_config(Path(__file__).parent / "configs" / "recommended.yaml")
+        )
+
+    def assert_ok(self, config_list: ConfigList):
+        self.assertIsInstance(config_list, ConfigList)
+        self.assertEqual(4, len(config_list.configs))
+        config = config_list.compute_config("test.zarr")
+        self.assertIsInstance(config, Config)
+        self.assertEqual("<computed>", config.name)
+        self.assertIsInstance(config.plugins, dict)
+        self.assertEqual({"xcube"}, set(config.plugins.keys()))
+        self.assertIsInstance(config.rules, dict)
+        self.assertIn("coords-for-dims", config.rules)
+        self.assertIn("xcube/cube-dims-order", config.rules)

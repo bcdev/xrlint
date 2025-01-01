@@ -23,7 +23,7 @@ class CliEngine:
         output_format: str = DEFAULT_OUTPUT_FORMAT,
         output_path: str | None = None,
         files: list[str] | None = None,
-        recommended: bool = True,
+        recommended: bool = False,
     ):
         self.no_default_config = no_default_config
         self.config_path = config_path
