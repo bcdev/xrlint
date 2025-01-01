@@ -40,7 +40,15 @@ class CliMainTest(TestCase):
         os.chdir(cls.last_cwd)
         shutil.rmtree(cls.temp_dir)
 
-    def test_files(self):
+    def test_files_no_rules(self):
+        runner = CliRunner()
+        result = runner.invoke(main, self.files)
+        self.assertIn("No rules configured", result.output)
+        self.assertEqual(result.exit_code, 0)
+
+    def test_files_one_rule(self):
+        with open("xrlint.config.yaml", "w") as f:
+            f.write("- rules:\n" '    "no-empty-attrs": error\n')
         runner = CliRunner()
         result = runner.invoke(main, self.files)
         self.assertIn("".join(f"{f} - ok\n" for f in self.files), result.output)
