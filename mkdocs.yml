@@ -6,6 +6,9 @@ copyright: Copyright &copy; 2025 Brockmann Consult
 
 nav:
     - Overview: index.md
+    - Getting Started: start.md
+    - Configuration: config.md
+    - Rule Reference: rule-ref.md
     - CLI: cli.md
     - Python API: api.md
     - About: about.md
