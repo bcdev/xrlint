@@ -8,7 +8,7 @@
   - use mkdocstrings ref syntax in docstrings
   - provide configuration examples (use as tests?)
   - generate markdown rule reference for the docs
-
+ 
 ## Desired
  
 - add some more tests so we reach 99% coverage
@@ -18,6 +18,12 @@
 - implement `autofix` feature
 
 ## Nice to have
+
+ESLint configuration details
+
+- support default file extensions, for XRLint use `.zarr` and `.nc`
+- use `files` config option to specify valid extensions
+  https://eslint.org/docs/latest/use/configure/configuration-files#specifying-files-with-arbitrary-extensions
 
 Currently unused
 - `RuleMeta.type`
