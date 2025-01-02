@@ -1,7 +1,6 @@
 import os
 import tempfile
 import shutil
-from contextlib import contextmanager
 from unittest import TestCase
 
 from click.testing import CliRunner
@@ -10,6 +9,7 @@ import xarray as xr
 from xrlint.cli.main import main
 from xrlint.cli.constants import DEFAULT_CONFIG_FILE_YAML
 from xrlint.version import version
+from .helpers import text_file
 
 
 # noinspection PyTypeChecker
@@ -157,13 +157,3 @@ class CliMainMetaTest(TestCase):
         result = runner.invoke(main, ["--version"])
         self.assertIn(f"xrlint, version {version}", result.output)
         self.assertEqual(result.exit_code, 0)
-
-
-@contextmanager
-def text_file(file_name: str, content: str):
-    with open(file_name, mode="w") as f:
-        f.write(content)
-    try:
-        yield
-    finally:
-        os.remove(file_name)

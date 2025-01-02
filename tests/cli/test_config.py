@@ -4,17 +4,13 @@ from typing import Any
 from unittest import TestCase
 
 import click
-import fsspec
 import pytest
 
 from xrlint.cli.config import read_config
-from xrlint.cli.constants import DEFAULT_CONFIG_BASENAME
-from xrlint.cli.constants import DEFAULT_CONFIG_FILE_YAML
-from xrlint.cli.constants import DEFAULT_CONFIG_FILE_JSON
-from xrlint.cli.constants import DEFAULT_CONFIG_FILE_PY
 from xrlint.config import Config
 from xrlint.config import ConfigList
 from xrlint.rule import RuleConfig
+from .helpers import text_file
 
 yaml_text = """
 - name: yaml-test
@@ -55,29 +51,26 @@ def export_configs():
 
 # noinspection PyMethodMayBeStatic
 class CliConfigTest(TestCase):
-    def test_read_config_yaml(self):
-        config_path = f"memory://{DEFAULT_CONFIG_FILE_YAML}"
-        with fsspec.open(config_path, mode="w") as f:
-            f.write(yaml_text)
+    module_no = 1000
 
-        config = read_config(config_path)
-        self.assert_config_ok(config, "yaml-test")
+    def new_config_py(self):
+        CliConfigTest.module_no += 1
+        return f"config_{CliConfigTest.module_no}.py"
+
+    def test_read_config_yaml(self):
+        with text_file("config.yaml", yaml_text) as config_path:
+            config = read_config(config_path)
+            self.assert_config_ok(config, "yaml-test")
 
     def test_read_config_json(self):
-        config_path = f"memory://{DEFAULT_CONFIG_FILE_JSON}"
-        with fsspec.open(config_path, mode="w") as f:
-            f.write(json_text)
-
-        config = read_config(config_path)
-        self.assert_config_ok(config, "json-test")
+        with text_file("config.json", json_text) as config_path:
+            config = read_config(config_path)
+            self.assert_config_ok(config, "json-test")
 
     def test_read_config_python(self):
-        config_path = f"memory://{DEFAULT_CONFIG_FILE_PY}"
-        with fsspec.open(config_path, mode="w") as f:
-            f.write(py_text)
-
-        config = read_config(config_path)
-        self.assert_config_ok(config, "py-test")
+        with text_file(self.new_config_py(), py_text) as config_path:
+            config = read_config(config_path)
+            self.assert_config_ok(config, "py-test")
 
     def assert_config_ok(self, config: Any, name: str):
         self.assertEqual(
@@ -106,57 +99,43 @@ class CliConfigTest(TestCase):
             read_config(None)
 
     def test_read_config_with_format_error(self):
-        config_path = f"memory://{DEFAULT_CONFIG_FILE_JSON}"
-        with fsspec.open(config_path, mode="w") as f:
-            f.write("{")
-
-        with pytest.raises(
-            click.ClickException,
-            match=(
-                "memory://xrlint.config.json:"
-                " Expecting property name enclosed in double quotes:"
-                " line 1 column 2 \\(char 1\\)"
-            ),
-        ):
-            read_config(config_path)
+        with text_file("config.json", "{") as config_path:
+            with pytest.raises(
+                click.ClickException,
+                match=(
+                    "config.json:"
+                    " Expecting property name enclosed in double quotes:"
+                    " line 1 column 2 \\(char 1\\)"
+                ),
+            ):
+                read_config(config_path)
 
     def test_read_config_with_unknown_format(self):
-        config_path = f"memory://{DEFAULT_CONFIG_BASENAME}.toml"
-        with fsspec.open(config_path, mode="w") as f:
-            f.write("")
-
         with pytest.raises(
             click.ClickException,
-            match="memory://xrlint.config.toml: unsupported configuration file format",
+            match="config.toml: unsupported configuration file format",
         ):
-            read_config(config_path)
+            read_config("config.toml")
 
     def test_read_config_python_no_export(self):
-        config_path = f"memory://{DEFAULT_CONFIG_BASENAME}.py"
-        with fsspec.open(config_path, mode="w") as f:
-            f.write("")
-
-        with pytest.raises(
-            click.ClickException,
-            match=(
-                "memory://xrlint_config.py: missing definition"
-                " of function 'export_configs'"
-            ),
-        ):
-            read_config(config_path)
+        py_code = "x = 42\n"
+        with text_file(self.new_config_py(), py_code) as config_path:
+            with pytest.raises(
+                click.ClickException,
+                match="has no attribute 'export_configs'",
+            ):
+                read_config(config_path)
 
     def test_read_config_with_exception(self):
-        config_path = f"memory://{DEFAULT_CONFIG_BASENAME}.py"
-        with fsspec.open(config_path, mode="w") as f:
-            f.write("def export_configs():\n    raise ValueError('no config here!')\n")
+        py_code = "def export_configs():\n    raise ValueError('no config here!')\n"
+        with text_file(self.new_config_py(), py_code) as config_path:
+            from xrlint.util.importutil import UserCodeException
 
-        from xrlint.util.importutil import UserCodeException
-
-        with pytest.raises(
-            UserCodeException,
-            match="while executing export_configs\\(\\): no config here!",
-        ):
-            read_config(config_path)
+            with pytest.raises(
+                UserCodeException,
+                match="while executing export_configs\\(\\): no config here!",
+            ):
+                read_config(config_path)
 
 
 class CliConfigResolveTest(unittest.TestCase):

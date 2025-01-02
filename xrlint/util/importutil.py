@@ -42,10 +42,10 @@ T = TypeVar("T")
 
 def import_exported_value(
     module_name: str,
-    name: str,
+    export_item_name: str,
     factory: Callable[[Any], T],
 ) -> T:
-    export_function_name = f"export_{name}"
+    export_function_name = f"export_{export_item_name}"
     config_module = importlib.import_module(module_name)
     export_function = getattr(config_module, export_function_name)
     return eval_exported_value(export_function_name, export_function, factory)

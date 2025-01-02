@@ -1,3 +1,4 @@
+import sys
 from os import PathLike
 from pathlib import Path
 from typing import Any
@@ -7,7 +8,7 @@ import fsspec
 
 from xrlint.config import ConfigList
 from xrlint.util.formatting import format_message_type_of
-from xrlint.util.importutil import eval_exported_value
+from xrlint.util.importutil import import_exported_value
 
 
 def read_config(config_path: str | Path | PathLike[str]) -> ConfigList:
@@ -18,9 +19,9 @@ def read_config(config_path: str | Path | PathLike[str]) -> ConfigList:
 
     try:
         config_like = _read_config_like(str(config_path))
-    except FileNotFoundError:
+    except (FileNotFoundError, ModuleNotFoundError):
         raise
-    except (OSError, ValueError, TypeError) as e:
+    except (OSError, ValueError, TypeError, AttributeError) as e:
         raise click.ClickException(f"{config_path}: {e}") from e
 
     try:
@@ -53,21 +54,14 @@ def _read_config_json(config_path) -> Any:
         return json.load(f)
 
 
-def _read_config_python(config_path) -> Any:
-    import fsspec
+def _read_config_python(config_path: str) -> Any:
+    module_path = Path(config_path)
+    module_parent = module_path.parent
+    module_name = module_path.stem
 
-    with fsspec.open(config_path, mode="r") as f:
-        code = f.read()
-
-    export_function_name = "export_configs"
-    _locals = {}
-    exec(code, None, _locals)
-
+    old_sys_path = sys.path
+    sys.path = [module_parent.as_posix()] + sys.path
     try:
-        export_function = _locals[export_function_name]
-    except KeyError:
-        raise ValueError(f"missing definition of function {export_function_name!r}")
-
-    return eval_exported_value(
-        export_function_name, export_function, ConfigList.from_value
-    )
+        return import_exported_value(module_name, "configs", ConfigList.from_value)
+    finally:
+        sys.path = old_sys_path

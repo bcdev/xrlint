@@ -60,13 +60,13 @@ class CliEngine:
         if self.config_path:
             try:
                 config_list = read_config(config_path=self.config_path)
-            except FileNotFoundError:
+            except (FileNotFoundError, ModuleNotFoundError):
                 raise click.ClickException(f"{self.config_path}: file not found")
         elif not self.no_default_config:
             for f in DEFAULT_CONFIG_FILES:
                 try:
                     config_list = read_config(config_path=f)
-                except FileNotFoundError:
+                except (FileNotFoundError, ModuleNotFoundError):
                     pass
 
         core_config = get_core_config()
