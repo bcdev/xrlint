@@ -23,5 +23,14 @@ def export_plugin() -> Plugin:
             },
         }
     )
+    plugin.configs["all"] = Config.from_value(
+        {
+            "name": "xcube-all",
+            "plugins": {
+                "xcube": plugin,
+            },
+            "rules": {f"xcube/{rule_id}": "error" for rule_id in plugin.rules.keys()},
+        }
+    )
 
     return plugin
