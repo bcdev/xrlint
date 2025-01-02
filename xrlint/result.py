@@ -1,10 +1,10 @@
 from dataclasses import dataclass, field
-from typing import Literal, TYPE_CHECKING, Any
+from typing import Literal, TYPE_CHECKING, Any, Union
 import html
 
 from tabulate import tabulate
 
-from xrlint.constants import SEVERITY_CODE_TO_NAME
+from xrlint.constants import SEVERITY_CODE_TO_NAME, MISSING_DATASET_FILE_PATH
 from xrlint.constants import SEVERITY_ERROR
 from xrlint.constants import SEVERITY_WARN
 from xrlint.util.formatting import format_problems
@@ -99,10 +99,10 @@ class Message(ToDictMixin):
 class Result(ToDictMixin):
     """The aggregated information of linting a dataset."""
 
-    config: "Config"
+    config: Union["Config", None] = None
     """Configuration."""
 
-    file_path: str
+    file_path: str = MISSING_DATASET_FILE_PATH
     """The absolute path to the file of this result. 
     This is the string "<dataset>" if the file path is unknown 
     (when you didn't pass the `file_path` option to the 
@@ -128,8 +128,17 @@ class Result(ToDictMixin):
     """The number of warnings. This includes fixable warnings."""
 
     @classmethod
-    def new(cls, config: "Config", file_path: str, messages: list[Message]):
-        result = Result(config, file_path=file_path, messages=messages)
+    def new(
+        cls,
+        config: Union["Config", None] = None,
+        file_path: str | None = None,
+        messages: list[Message] | None = None,
+    ):
+        result = Result(
+            config=config,
+            file_path=file_path or MISSING_DATASET_FILE_PATH,
+            messages=messages or [],
+        )
         for m in messages:
             result.warning_count += 1 if m.severity == SEVERITY_WARN else 0
             result.error_count += 1 if m.severity == SEVERITY_ERROR else 0

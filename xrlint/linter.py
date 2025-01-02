@@ -4,7 +4,7 @@ from typing import Any
 import xarray as xr
 
 from xrlint.config import Config
-from xrlint.config import get_base_config
+from xrlint.config import get_core_config
 from xrlint.config import merge_configs
 from xrlint.constants import MISSING_DATASET_FILE_PATH
 from xrlint.result import Result
@@ -19,25 +19,27 @@ from xrlint._linter.verify_impl import verify_dataset
 
 
 def new_linter(
-    recommended: bool = True,
+    recommended: bool = False,
     config: Config | dict | None = None,
     **config_kwargs: dict[str, Any],
 ) -> "Linter":
-    """Create a new `Linter` with all built-in plugins configured.
+    """Create a new `Linter`.
 
     Args:
-        recommended: `True` (the default) if the recommended rule configurations of
-            the built-in plugins should be used.
-            If set to `False`, you should configure the `rules` option either
-            in `config` or `config_kwargs`. Otherwise, calling `verify_dataset()`
-            will never succeed for any given dataset.
+        recommended: `True` if the recommended configurations of the builtin
+            rules should be used.
+            If set to `False` (the default), you should configure the `rules`
+            option either in `config` or `config_kwargs`. Otherwise, calling
+            `verify_dataset()` without any rule configuration will never
+            succeed for any given dataset.
         config: The `config` keyword argument passed to the `Linter` class
-        config_kwargs: The `config_kwargs` keyword arguments passed to the `Linter` class
+        config_kwargs: The `config_kwargs` keyword arguments passed to
+            the `Linter` class
     Returns:
         A new linter instance
     """
     return Linter(
-        config=merge_configs(get_base_config(recommended=recommended), config),
+        config=merge_configs(get_core_config(recommended=recommended), config),
         **config_kwargs,
     )
 
@@ -105,17 +107,13 @@ class Linter:
         if dataset is not None and not file_path:
             file_path = _get_file_path_for_dataset(dataset)
 
-        context = RuleContextImpl(config, dataset, file_path)
+        context = RuleContextImpl(config=config, dataset=dataset, file_path=file_path)
 
         if error:
             context.report(str(error), fatal=True)
-
-        # TODO: report error if no rules configured
-        # if not config.rules:
-        #     error = ValueError("No rules configured")
-        #     context.report(str(error), fatal=True)
-
-        if error is None and config.rules:
+        elif not config.rules:
+            context.report("No rules configured or applicable.", fatal=True)
+        else:
             # TODO: validate config,
             #   e.g., validate any rule options against rule.meta.schema
             for rule_id, rule_config in config.rules.items():

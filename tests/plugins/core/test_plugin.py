@@ -20,6 +20,7 @@ class ExportPluginTest(TestCase):
             {
                 "coords-for-dims",
                 "dataset-title-attr",
+                "grid-mappings",
                 "no-empty-attrs",
                 "var-units-attr",
             },

@@ -1,0 +1,15 @@
+[
+  {
+    "plugins": {
+      "xcube": "xrlint.plugins.xcube"
+    }
+  },
+  "recommended",
+  "xcube/recommended",
+  {
+    "rules": {
+      "dataset-title-attr": "error",
+      "xcube/single-grid-mapping": "off"
+    }
+  }
+]
