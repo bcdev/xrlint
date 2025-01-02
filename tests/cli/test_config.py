@@ -67,7 +67,7 @@ class CliConfigTest(TestCase):
             config = read_config_list(config_path)
             self.assert_config_ok(config, "json-test")
 
-    def test_read_config_python(self):
+    def test_read_config_py(self):
         with text_file(self.new_config_py(), py_text) as config_path:
             config = read_config_list(config_path)
             self.assert_config_ok(config, "py-test")
@@ -89,7 +89,7 @@ class CliConfigTest(TestCase):
             config,
         )
 
-    def test_read_config_with_type_error(self):
+    def test_read_config_invalid_arg(self):
         with pytest.raises(
             TypeError,
             match="configuration file must be of type str|Path|PathLike,"
@@ -98,7 +98,7 @@ class CliConfigTest(TestCase):
             # noinspection PyTypeChecker
             read_config_list(None)
 
-    def test_read_config_with_format_error(self):
+    def test_read_config_json_with_format_error(self):
         with text_file("config.json", "{") as config_path:
             with pytest.raises(
                 ConfigError,
@@ -110,6 +110,26 @@ class CliConfigTest(TestCase):
             ):
                 read_config_list(config_path)
 
+    def test_read_config_yaml_with_format_error(self):
+        with text_file("config.yaml", "}") as config_path:
+            with pytest.raises(
+                ConfigError,
+                match="config.yaml: while parsing a block node",
+            ):
+                read_config_list(config_path)
+
+    def test_read_config_yaml_with_type_error(self):
+        with text_file("config.yaml", "prime: 97") as config_path:
+            with pytest.raises(
+                ConfigError,
+                match=(
+                    "'config.yaml: configuration list must be of"
+                    " type ConfigList|list\\[Config|dict|str\\],"
+                    " but was dict'"
+                ),
+            ):
+                read_config_list(config_path)
+
     def test_read_config_with_unknown_format(self):
         with pytest.raises(
             ConfigError,
@@ -117,7 +137,7 @@ class CliConfigTest(TestCase):
         ):
             read_config_list("config.toml")
 
-    def test_read_config_python_no_export(self):
+    def test_read_config_py_no_export(self):
         py_code = "x = 42\n"
         with text_file(self.new_config_py(), py_code) as config_path:
             with pytest.raises(
@@ -126,12 +146,35 @@ class CliConfigTest(TestCase):
             ):
                 read_config_list(config_path)
 
-    def test_read_config_with_exception(self):
-        py_code = "def export_configs():\n    raise ValueError('no config here!')\n"
+    def test_read_config_py_with_value_error(self):
+        py_code = "def export_configs():\n    raise ValueError('value is useless!')\n"
         with text_file(self.new_config_py(), py_code) as config_path:
             with pytest.raises(
                 ValueError,
-                match="no config here!",
+                match="value is useless!",
+            ):
+                read_config_list(config_path)
+
+    def test_read_config_py_with_os_error(self):
+        py_code = "def export_configs():\n    raise OSError('where is my hat?')\n"
+        with text_file(self.new_config_py(), py_code) as config_path:
+            with pytest.raises(
+                ConfigError,
+                match="where is my hat?",
+            ):
+                read_config_list(config_path)
+
+    def test_read_config_py_with_invalid_config_list(self):
+        py_code = "def export_configs():\n    return 42\n"
+        with text_file(self.new_config_py(), py_code) as config_path:
+            with pytest.raises(
+                ConfigError,
+                match=(
+                    ".py: return value of export_configs\\(\\):"
+                    " configuration list must be of type"
+                    " ConfigList|list\\[Config|dict|str\\],"
+                    " but was int"
+                ),
             ):
                 read_config_list(config_path)
 

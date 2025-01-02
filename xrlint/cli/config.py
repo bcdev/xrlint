@@ -90,7 +90,7 @@ def _read_config_python(config_path: str) -> Any:
         sys.path = old_sys_path
 
 
-class ConfigError(ValueError):
+class ConfigError(Exception):
     """An error raised if loading of configuration fails."""
 
     def __init__(self, config_path: str, e: Exception | str | None = None):
