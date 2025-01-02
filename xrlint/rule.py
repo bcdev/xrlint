@@ -106,19 +106,19 @@ class RuleMeta(ToDictMixin):
     """Rule documentation URL."""
 
     schema: dict[str, Any] | list[dict[str, Any]] | bool | None = None
-    """JSON Schema used to specify and validate the rule verifier's 
+    """JSON Schema used to specify and validate the rule verifier's
     options.
-    
+
     It can take the following values:
-    
-    - Use `None` (the default) to indicate that the rule verifier 
+
+    - Use `None` (the default) to indicate that the rule verifier
       as no options at all.
-    - Use a schema to indicate that the rule verifier 
-      takes keyword arguments only.  
+    - Use a schema to indicate that the rule verifier
+      takes keyword arguments only.
       The schema's type must be `"object"`.
     - Use a list of schemas to indicate that the rule verifier
-      takes positional arguments only. 
-      If given, the number of schemas in the list specifies the 
+      takes positional arguments only.
+      If given, the number of schemas in the list specifies the
       number of positional arguments that must be configured.
     """
 
@@ -135,7 +135,7 @@ class Rule:
 
     op_class: Type[RuleOp]
     """The class the implements the rule's verification operation.
-    The class must implement the `RuleOp` interface. 
+    The class must implement the `RuleOp` interface.
     """
 
 

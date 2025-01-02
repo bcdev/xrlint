@@ -17,13 +17,18 @@ Usage: xrlint [OPTIONS] [FILES]...
 
 Options:
   --no-default-config     Disable use of default configuration from
-                          xrlint.config.*
-  -c, --config PATH       Use this configuration, overriding xrlint.config.*
+                          xrlint_config.*
+  -c, --config PATH       Use this configuration, overriding xrlint_config.*
                           config options if present
+  --plugin MODULE         Specify plugins. MODULE is the name of Python module
+                          that defines an 'export_plugin()' function.
+  --rule SPEC             Specify rules. SPEC must have format '<rule-name>:
+                          <rule-config>' (note the space character).
   -f, --format NAME       Use a specific output format - default: simple
   -o, --output-file PATH  Specify file to write report to
   --max-warnings COUNT    Number of warnings to trigger nonzero exit code -
-                          default: -1
+                          default: 5
+  --init                  Write initial configuration file and exit.
   --version               Show the version and exit.
   --help                  Show this message and exit.
 

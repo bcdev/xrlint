@@ -1,7 +1,7 @@
 # xrlint
-xrlint.config.py
-xrlint.config.yaml
-xrlint.config.json
+./xrlint_config.py
+./xrlint_config.yaml
+./xrlint_config.json
 
 # Logs
 *.log

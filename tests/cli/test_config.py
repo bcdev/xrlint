@@ -9,6 +9,9 @@ import pytest
 
 from xrlint.cli.config import read_config
 from xrlint.cli.constants import DEFAULT_CONFIG_BASENAME
+from xrlint.cli.constants import DEFAULT_CONFIG_FILE_YAML
+from xrlint.cli.constants import DEFAULT_CONFIG_FILE_JSON
+from xrlint.cli.constants import DEFAULT_CONFIG_FILE_PY
 from xrlint.config import Config
 from xrlint.config import ConfigList
 from xrlint.rule import RuleConfig
@@ -36,7 +39,7 @@ json_text = """
 """
 
 py_text = """
-def export_configs(): 
+def export_configs():
     return [
         {
             "name": "py-test",
@@ -53,7 +56,7 @@ def export_configs():
 # noinspection PyMethodMayBeStatic
 class CliConfigTest(TestCase):
     def test_read_config_yaml(self):
-        config_path = f"memory://{DEFAULT_CONFIG_BASENAME}.yaml"
+        config_path = f"memory://{DEFAULT_CONFIG_FILE_YAML}"
         with fsspec.open(config_path, mode="w") as f:
             f.write(yaml_text)
 
@@ -61,7 +64,7 @@ class CliConfigTest(TestCase):
         self.assert_config_ok(config, "yaml-test")
 
     def test_read_config_json(self):
-        config_path = f"memory://{DEFAULT_CONFIG_BASENAME}.json"
+        config_path = f"memory://{DEFAULT_CONFIG_FILE_JSON}"
         with fsspec.open(config_path, mode="w") as f:
             f.write(json_text)
 
@@ -69,7 +72,7 @@ class CliConfigTest(TestCase):
         self.assert_config_ok(config, "json-test")
 
     def test_read_config_python(self):
-        config_path = f"memory://{DEFAULT_CONFIG_BASENAME}.py"
+        config_path = f"memory://{DEFAULT_CONFIG_FILE_PY}"
         with fsspec.open(config_path, mode="w") as f:
             f.write(py_text)
 
@@ -103,14 +106,17 @@ class CliConfigTest(TestCase):
             read_config(None)
 
     def test_read_config_with_format_error(self):
-        config_path = f"memory://{DEFAULT_CONFIG_BASENAME}.json"
+        config_path = f"memory://{DEFAULT_CONFIG_FILE_JSON}"
         with fsspec.open(config_path, mode="w") as f:
             f.write("{")
 
         with pytest.raises(
             click.ClickException,
-            match="memory://xrlint.config.json: Expecting property name enclosed in double quotes:"
-            " line 1 column 2 \\(char 1\\)",
+            match=(
+                "memory://xrlint.config.json:"
+                " Expecting property name enclosed in double quotes:"
+                " line 1 column 2 \\(char 1\\)"
+            ),
         ):
             read_config(config_path)
 
@@ -133,7 +139,7 @@ class CliConfigTest(TestCase):
         with pytest.raises(
             click.ClickException,
             match=(
-                "memory://xrlint.config.py: missing definition"
+                "memory://xrlint_config.py: missing definition"
                 " of function 'export_configs'"
             ),
         ):

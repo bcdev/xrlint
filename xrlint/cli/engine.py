@@ -1,9 +1,15 @@
+import os
+
 import click
 import fsspec
 import yaml
 
 from xrlint.cli.config import read_config
-from xrlint.cli.constants import DEFAULT_CONFIG_FILENAMES
+from xrlint.cli.constants import (
+    DEFAULT_CONFIG_FILES,
+    DEFAULT_CONFIG_FILE_YAML,
+    INIT_CONFIG_YAML,
+)
 from xrlint.cli.constants import DEFAULT_OUTPUT_FORMAT
 from xrlint.config import ConfigList
 from xrlint.config import get_core_config
@@ -57,7 +63,7 @@ class CliEngine:
             except FileNotFoundError:
                 raise click.ClickException(f"{self.config_path}: file not found")
         elif not self.no_default_config:
-            for f in DEFAULT_CONFIG_FILENAMES:
+            for f in DEFAULT_CONFIG_FILES:
                 try:
                     config_list = read_config(config_path=f)
                 except FileNotFoundError:
@@ -116,3 +122,12 @@ class CliEngine:
         else:
             with fsspec.open(self.output_path, mode="w") as f:
                 f.write(report)
+
+    @classmethod
+    def init_config_file(cls):
+        file_path = DEFAULT_CONFIG_FILE_YAML
+        if os.path.exists(file_path):
+            raise click.ClickException(f"{file_path}: file exists.")
+        with open(file_path, "w") as f:
+            f.write(INIT_CONFIG_YAML)
+        click.echo(f"Configuration template written to {file_path}")

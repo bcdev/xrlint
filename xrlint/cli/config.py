@@ -36,7 +36,7 @@ def _read_config_like(config_path: str) -> Any:
         return _read_config_json(config_path)
     if config_path.endswith(".py"):
         return _read_config_python(config_path)
-    raise ValueError(f"unsupported configuration file format")
+    raise ValueError("unsupported configuration file format")
 
 
 def _read_config_yaml(config_path) -> Any:

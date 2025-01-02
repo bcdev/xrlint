@@ -55,23 +55,23 @@ class Config(ToDictMixin):
     """
 
     name: str | None = None
-    """A name for the configuration object. 
-    This is used in error messages and config inspector to help identify 
-    which configuration object is being used. 
+    """A name for the configuration object.
+    This is used in error messages and config inspector to help identify
+    which configuration object is being used.
     """
 
     files: list[str] | None = None
-    """An array of glob patterns indicating the files that the 
-    configuration object should apply to. If not specified, 
-    the configuration object applies to all files matched 
+    """An array of glob patterns indicating the files that the
+    configuration object should apply to. If not specified,
+    the configuration object applies to all files matched
     by any other configuration object.
     """
 
     ignores: list[str] | None = None
-    """An array of glob patterns indicating the files that the 
-    configuration object should not apply to. If not specified, 
-    the configuration object applies to all files matched by `files`. 
-    If `ignores` is used without any other keys in the configuration 
+    """An array of glob patterns indicating the files that the
+    configuration object should not apply to. If not specified,
+    the configuration object applies to all files matched by `files`.
+    If `ignores` is used without any other keys in the configuration
     object, then the patterns act as _global ignores_.
     """
 
@@ -79,30 +79,30 @@ class Config(ToDictMixin):
     """A dictionary containing options related to the linting process."""
 
     opener_options: dict[str, Any] | None = None
-    """A dictionary containing options that are passed to 
+    """A dictionary containing options that are passed to
     the dataset opener.
     """
 
     processor: Union["ProcessorOp", str, None] = None
-    """Either an object compatible with the `ProcessorOp` 
-    interface or a string indicating the name of a processor inside 
+    """Either an object compatible with the `ProcessorOp`
+    interface or a string indicating the name of a processor inside
     of a plugin (i.e., `"pluginName/processorName"`).
     """
 
     plugins: dict[str, "Plugin"] | None = None
-    """A dictionary containing a name-value mapping of plugin names to 
-    plugin objects. When `files` is specified, these plugins are only 
+    """A dictionary containing a name-value mapping of plugin names to
+    plugin objects. When `files` is specified, these plugins are only
     available to the matching files.
     """
 
     rules: dict[str, "RuleConfig"] | None = None
-    """A dictionary containing the configured rules. 
-    When `files` or `ignores` are specified, these rule configurations 
+    """A dictionary containing the configured rules.
+    When `files` or `ignores` are specified, these rule configurations
     are only available to the matching files.
     """
 
     settings: dict[str, Any] | None = None
-    """A dictionary containing name-value pairs of information 
+    """A dictionary containing name-value pairs of information
     that should be available to all rules.
     """
 

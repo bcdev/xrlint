@@ -1,6 +1,6 @@
 import importlib
 import pathlib
-from typing import TypeVar, Type, Callable, Any
+from typing import TypeVar, Callable, Any
 
 from xrlint.util.formatting import format_message_type_of
 

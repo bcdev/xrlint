@@ -13,7 +13,7 @@ class MarkdownTest(TestCase):
     def test_markdown(self):
         formatter = Markdown()
         with pytest.raises(NotImplementedError):
-            _text = formatter.format(
+            formatter.format(
                 context=FormatterContext(),
                 results=[
                     Result(

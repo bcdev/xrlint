@@ -45,7 +45,8 @@ class SingleGridMapping(RuleOp):
                 f"Spatial variables refer to multiple grid mappings: {gm_names}.",
                 suggestions=[
                     (
-                        "Split datacube into multiple datacubes each with a single grid mapping."
+                        "Split datacube into multiple datacubes"
+                        " each with a single grid mapping."
                     ),
                 ],
             )

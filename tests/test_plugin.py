@@ -20,7 +20,7 @@ class PluginDefineRuleDecoratorTest(TestCase):
             pass
 
         @plugin.define_rule("my-rule-3")
-        class MyRule2(RuleOp):
+        class MyRule3(RuleOp):
             pass
 
         rules = plugin.rules

@@ -49,6 +49,9 @@ exclude = [
   "docs"
 ]
 
+[tool.flake8]
+max-line-length = 88
+
 [project.scripts]
 xrlint = "xrlint.cli.main:main"
 

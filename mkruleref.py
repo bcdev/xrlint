@@ -27,8 +27,8 @@ def write_plugin_rules(stream, plugin: Plugin):
         rule_meta = plugin.rules[rule_id].meta
         stream.write(f"### `{rule_meta.name}`\n\n")
         stream.write(rule_meta.description or "_No description._")
-        stream.write(f"\n\n")
-        stream.write(f"Contained in: ")
+        stream.write("\n\n")
+        stream.write("Contained in: ")
         for config_id in sorted(configs.keys()):
             config = configs[config_id]
             rule_configs = config.rules or {}
@@ -36,7 +36,7 @@ def write_plugin_rules(stream, plugin: Plugin):
                 f"{plugin.meta.name}/{rule_id}"
             )
             stream.write(f" `{config_id}`-:{icons[rule_config.severity]}:")
-        stream.write(f"\n\n")
+        stream.write("\n\n")
 
 
 if __name__ == "__main__":

@@ -81,7 +81,7 @@ class LinterVerifyTest(TestCase):
         class DatasetVer(RuleOp):
             def dataset(self, ctx: RuleContext, node: DatasetNode):
                 if len(node.dataset.data_vars) == 0:
-                    ctx.report(f"Dataset does not have data variables")
+                    ctx.report("Dataset does not have data variables")
 
         config = Config(plugins={"test": plugin})
         self.linter = Linter(config=config)

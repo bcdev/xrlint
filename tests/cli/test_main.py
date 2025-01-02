@@ -8,6 +8,7 @@ from click.testing import CliRunner
 import xarray as xr
 
 from xrlint.cli.main import main
+from xrlint.cli.constants import DEFAULT_CONFIG_FILE_YAML
 from xrlint.version import version
 
 
@@ -59,7 +60,7 @@ class CliMainTest(TestCase):
         self.assertEqual(1, result.exit_code)
 
     def test_files_one_rule(self):
-        with text_file("xrlint.config.yaml", self.ok_config_yaml):
+        with text_file(DEFAULT_CONFIG_FILE_YAML, self.ok_config_yaml):
             runner = CliRunner()
             result = runner.invoke(main, self.files)
             # self.assertIn("Attributes are empty.", result.output)
@@ -76,7 +77,7 @@ class CliMainTest(TestCase):
             )
             self.assertEqual(0, result.exit_code)
 
-        with text_file("xrlint.config.yaml", self.fail_config_yaml):
+        with text_file(DEFAULT_CONFIG_FILE_YAML, self.fail_config_yaml):
             runner = CliRunner()
             result = runner.invoke(main, self.files)
             self.assertIn("Attributes are empty.", result.output)
@@ -114,7 +115,7 @@ class CliMainTest(TestCase):
         self.assertEqual(1, result.exit_code)
 
     def test_files_with_output_file(self):
-        with text_file("xrlint.config.yaml", self.ok_config_yaml):
+        with text_file(DEFAULT_CONFIG_FILE_YAML, self.ok_config_yaml):
             runner = CliRunner()
             result = runner.invoke(main, ["-o", "memory://report.txt"] + self.files)
             self.assertEqual("", result.output)
@@ -127,7 +128,7 @@ class CliMainTest(TestCase):
         self.assertEqual(1, result.exit_code)
 
     def test_files_with_format_option(self):
-        with text_file("xrlint.config.yaml", self.ok_config_yaml):
+        with text_file(DEFAULT_CONFIG_FILE_YAML, self.ok_config_yaml):
             runner = CliRunner()
             result = runner.invoke(main, ["-f", "json"] + self.files)
             self.assertIn('"results": [\n', result.output)
