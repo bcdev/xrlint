@@ -10,6 +10,6 @@
    - no rules configured reports error
    - CLI fails with max warnings exceeded 
    - CLI fails with no files given
-   - new CLI options `--plugin` and `--rule`
+   - new CLI options `--plugin`, `--rule`, `--init`
 
 - Version 0.0.1 (30.12.2024) - Initial version. 
