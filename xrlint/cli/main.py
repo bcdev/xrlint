@@ -1,3 +1,4 @@
+import os.path
 import sys
 
 import click
@@ -5,16 +6,20 @@ import click
 # Warning: do not import heavy stuff here,
 # Option "--help" can be slow otherwise!
 from xrlint.version import version
-from xrlint.cli.constants import DEFAULT_MAX_WARNINGS
-from xrlint.cli.constants import DEFAULT_OUTPUT_FORMAT
-from xrlint.cli.constants import CONFIG_DEFAULT_BASENAME
+from xrlint.cli.constants import (
+    DEFAULT_MAX_WARNINGS,
+    DEFAULT_OUTPUT_FORMAT,
+    DEFAULT_CONFIG_BASENAME,
+    INIT_CONFIG_PY,
+    INIT_CONFIG_FILENAME,
+)
 
 
 @click.command(name="xrlint")
 @click.option(
     f"--no-default-config",
     "no_default_config",
-    help=f"Disable use of default configuration from {CONFIG_DEFAULT_BASENAME}.*",
+    help=f"Disable use of default configuration from {DEFAULT_CONFIG_BASENAME}.*",
     is_flag=True,
 )
 @click.option(
@@ -22,7 +27,7 @@ from xrlint.cli.constants import CONFIG_DEFAULT_BASENAME
     "-c",
     "config_path",
     help=(
-        f"Use this configuration, overriding {CONFIG_DEFAULT_BASENAME}.*"
+        f"Use this configuration, overriding {DEFAULT_CONFIG_BASENAME}.*"
         f" config options if present"
     ),
     metavar="PATH",
@@ -73,6 +78,12 @@ from xrlint.cli.constants import CONFIG_DEFAULT_BASENAME
     default=DEFAULT_MAX_WARNINGS,
     metavar="COUNT",
 )
+@click.option(
+    "--init",
+    "init_mode",
+    help="Create initial XRLint configuration file and exit.",
+    is_flag=True,
+)
 @click.argument("files", nargs=-1)
 @click.version_option(version)
 @click.help_option()
@@ -84,6 +95,7 @@ def main(
     max_warnings: int,
     output_format: str,
     output_file: str | None,
+    init_mode: bool,
     files: tuple[str, ...],
 ):
     """Lint the given dataset FILES.
@@ -97,6 +109,14 @@ def main(
     `--format NAME` option.
     """
     from xrlint.cli.engine import CliEngine
+
+    if init_mode:
+        if os.path.exists(INIT_CONFIG_FILENAME):
+            raise click.ClickException(f"{INIT_CONFIG_FILENAME}: file exists.")
+        with open(INIT_CONFIG_FILENAME, "w") as f:
+            f.write(INIT_CONFIG_PY)
+        click.echo(f"Configuration template written to {INIT_CONFIG_FILENAME}")
+        raise click.exceptions.Exit(0)
 
     if not files:
         raise click.ClickException("No dataset files provided.")

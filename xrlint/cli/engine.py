@@ -3,7 +3,7 @@ import fsspec
 import yaml
 
 from xrlint.cli.config import read_config
-from xrlint.cli.constants import CONFIG_DEFAULT_FILENAMES
+from xrlint.cli.constants import DEFAULT_CONFIG_FILENAMES
 from xrlint.cli.constants import DEFAULT_OUTPUT_FORMAT
 from xrlint.config import ConfigList
 from xrlint.config import get_core_config
@@ -57,7 +57,7 @@ class CliEngine:
             except FileNotFoundError:
                 raise click.ClickException(f"{self.config_path}: file not found")
         elif not self.no_default_config:
-            for f in CONFIG_DEFAULT_FILENAMES:
+            for f in DEFAULT_CONFIG_FILENAMES:
                 try:
                     config_list = read_config(config_path=f)
                 except FileNotFoundError:

@@ -8,7 +8,7 @@ import fsspec
 import pytest
 
 from xrlint.cli.config import read_config
-from xrlint.cli.constants import CONFIG_DEFAULT_BASENAME
+from xrlint.cli.constants import DEFAULT_CONFIG_BASENAME
 from xrlint.config import Config
 from xrlint.config import ConfigList
 from xrlint.rule import RuleConfig
@@ -53,7 +53,7 @@ def export_configs():
 # noinspection PyMethodMayBeStatic
 class CliConfigTest(TestCase):
     def test_read_config_yaml(self):
-        config_path = f"memory://{CONFIG_DEFAULT_BASENAME}.yaml"
+        config_path = f"memory://{DEFAULT_CONFIG_BASENAME}.yaml"
         with fsspec.open(config_path, mode="w") as f:
             f.write(yaml_text)
 
@@ -61,7 +61,7 @@ class CliConfigTest(TestCase):
         self.assert_config_ok(config, "yaml-test")
 
     def test_read_config_json(self):
-        config_path = f"memory://{CONFIG_DEFAULT_BASENAME}.json"
+        config_path = f"memory://{DEFAULT_CONFIG_BASENAME}.json"
         with fsspec.open(config_path, mode="w") as f:
             f.write(json_text)
 
@@ -69,7 +69,7 @@ class CliConfigTest(TestCase):
         self.assert_config_ok(config, "json-test")
 
     def test_read_config_python(self):
-        config_path = f"memory://{CONFIG_DEFAULT_BASENAME}.py"
+        config_path = f"memory://{DEFAULT_CONFIG_BASENAME}.py"
         with fsspec.open(config_path, mode="w") as f:
             f.write(py_text)
 
@@ -103,7 +103,7 @@ class CliConfigTest(TestCase):
             read_config(None)
 
     def test_read_config_with_format_error(self):
-        config_path = f"memory://{CONFIG_DEFAULT_BASENAME}.json"
+        config_path = f"memory://{DEFAULT_CONFIG_BASENAME}.json"
         with fsspec.open(config_path, mode="w") as f:
             f.write("{")
 
@@ -115,7 +115,7 @@ class CliConfigTest(TestCase):
             read_config(config_path)
 
     def test_read_config_with_unknown_format(self):
-        config_path = f"memory://{CONFIG_DEFAULT_BASENAME}.toml"
+        config_path = f"memory://{DEFAULT_CONFIG_BASENAME}.toml"
         with fsspec.open(config_path, mode="w") as f:
             f.write("")
 
@@ -126,7 +126,7 @@ class CliConfigTest(TestCase):
             read_config(config_path)
 
     def test_read_config_python_no_export(self):
-        config_path = f"memory://{CONFIG_DEFAULT_BASENAME}.py"
+        config_path = f"memory://{DEFAULT_CONFIG_BASENAME}.py"
         with fsspec.open(config_path, mode="w") as f:
             f.write("")
 
@@ -140,7 +140,7 @@ class CliConfigTest(TestCase):
             read_config(config_path)
 
     def test_read_config_with_exception(self):
-        config_path = f"memory://{CONFIG_DEFAULT_BASENAME}.py"
+        config_path = f"memory://{DEFAULT_CONFIG_BASENAME}.py"
         with fsspec.open(config_path, mode="w") as f:
             f.write("def export_configs():\n    raise ValueError('no config here!')\n")
 
