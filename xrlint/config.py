@@ -274,6 +274,7 @@ class Config(ToDictMixin):
             raise TypeError(
                 format_message_type_of(f"pattern in {name} configuration", pattern, str)
             )
+        return pattern
 
     @classmethod
     def _parse_processor(cls, config_dict: dict) -> Union["ProcessorOp", str, None]:
@@ -314,7 +315,7 @@ class Config(ToDictMixin):
 
     @classmethod
     def _parse_options(cls, name: str, config_dict: dict) -> dict[str, Any]:
-        settings = config_dict.get("settings")
+        settings = config_dict.get(name)
         if isinstance(settings, dict):
             for k, v in settings.items():
                 if not isinstance(k, str):

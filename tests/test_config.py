@@ -24,6 +24,24 @@ class ConfigTest(TestCase):
         self.assertEqual(Config(), Config.from_value({}))
         self.assertEqual(Config(), Config.from_value(Config()))
         self.assertEqual(Config(name="x"), Config.from_value(Config(name="x")))
+        self.assertEqual(
+            Config(
+                name="xXx",
+                files=["**/*.zarr", "**/*.nc"],
+                linter_options={"a": 4},
+                opener_options={"b": 5},
+                settings={"c": 6},
+            ),
+            Config.from_value(
+                {
+                    "name": "xXx",
+                    "files": ["**/*.zarr", "**/*.nc"],
+                    "linter_options": {"a": 4},  # not used yet
+                    "opener_options": {"b": 5},  # not used yet
+                    "settings": {"c": 6},
+                }
+            ),
+        )
 
     def test_from_value_fails(self):
         with pytest.raises(
@@ -38,6 +56,15 @@ class ConfigTest(TestCase):
             TypeError, match="configuration must be of type dict, but was tuple"
         ):
             Config.from_value(())
+        with pytest.raises(
+            TypeError,
+            match="linter_options must be of type dict\\[str,Any\\], but was list",
+        ):
+            Config.from_value({"linter_options": [1, 2, 3]})
+        with pytest.raises(
+            TypeError, match="settings keys must be of type str, but was int"
+        ):
+            Config.from_value({"settings": {8: 9}})
 
     def test_global_ignores(self):
         ignores = ["*.tiff", "*.txt"]
