@@ -7,14 +7,14 @@ import click
 from xrlint.version import version
 from xrlint.cli.constants import DEFAULT_MAX_WARNINGS
 from xrlint.cli.constants import DEFAULT_OUTPUT_FORMAT
-from xrlint.cli.constants import CONFIG_DEFAULT_BASENAME
+from xrlint.cli.constants import DEFAULT_CONFIG_BASENAME
 
 
 @click.command(name="xrlint")
 @click.option(
     f"--no-default-config",
     "no_default_config",
-    help=f"Disable use of default configuration from {CONFIG_DEFAULT_BASENAME}.*",
+    help=f"Disable use of default configuration from {DEFAULT_CONFIG_BASENAME}.*",
     is_flag=True,
 )
 @click.option(
@@ -22,7 +22,7 @@ from xrlint.cli.constants import CONFIG_DEFAULT_BASENAME
     "-c",
     "config_path",
     help=(
-        f"Use this configuration, overriding {CONFIG_DEFAULT_BASENAME}.*"
+        f"Use this configuration, overriding {DEFAULT_CONFIG_BASENAME}.*"
         f" config options if present"
     ),
     metavar="PATH",
