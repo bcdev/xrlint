@@ -4,7 +4,7 @@ import click
 import fsspec
 import yaml
 
-from xrlint.cli.config import read_config
+from xrlint.cli.config import read_config_list, ConfigError
 from xrlint.cli.constants import (
     DEFAULT_CONFIG_FILES,
     DEFAULT_CONFIG_FILE_YAML,
@@ -59,15 +59,20 @@ class CliEngine:
 
         if self.config_path:
             try:
-                config_list = read_config(config_path=self.config_path)
-            except (FileNotFoundError, ModuleNotFoundError):
-                raise click.ClickException(f"{self.config_path}: file not found")
+                config_list = read_config_list(self.config_path)
+            except (FileNotFoundError, ConfigError) as e:
+                raise click.ClickException(f"{e}") from e
         elif not self.no_default_config:
-            for f in DEFAULT_CONFIG_FILES:
+            for config_path in DEFAULT_CONFIG_FILES:
                 try:
-                    config_list = read_config(config_path=f)
-                except (FileNotFoundError, ModuleNotFoundError):
+                    config_list = read_config_list(config_path)
+                except FileNotFoundError:
                     pass
+                except ConfigError as e:
+                    raise click.ClickException(f"{e}") from e
+
+        if config_list is None:
+            click.echo("Warning: no configuration file found.")
 
         core_config = get_core_config()
         core_config.plugins.update(plugins)

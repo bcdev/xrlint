@@ -124,7 +124,7 @@ class CliMainTest(TestCase):
     def test_files_but_config_file_missing(self):
         runner = CliRunner()
         result = runner.invoke(main, ["-c", "pippo.py"] + self.files)
-        self.assertIn("Error: pippo.py: file not found", result.output)
+        self.assertIn("Error: file not found: pippo.py", result.output)
         self.assertEqual(1, result.exit_code)
 
     def test_files_with_format_option(self):
