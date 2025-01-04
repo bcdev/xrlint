@@ -117,9 +117,7 @@ class FilePattern:
             return False
 
         path = path if not _WIN_OS else path.replace("\\", "")
-
         while path and path[-1] == "/":
-            _dir = True
             path = path[:-1]
 
         match_result = self._regex.match(path)

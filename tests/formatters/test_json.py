@@ -1,10 +1,7 @@
 from unittest import TestCase
 
-from xrlint.config import Config
 from xrlint.formatter import FormatterContext
 from xrlint.formatters.json import Json
-from xrlint.result import Message
-from xrlint.result import Result
 from .helpers import get_test_results
 
 

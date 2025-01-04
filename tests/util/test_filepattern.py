@@ -166,3 +166,10 @@ class MinimatchTest(unittest.TestCase):
         self.assertEqual(True, matcher.match("fod.ext"))
         self.assertEqual(False, matcher.match("fod.ex"))
         self.assertEqual(False, matcher.match("dir1.ex/dir2"))
+
+        matcher = FilePattern("dir/")
+        self.assertEqual(True, matcher.dir)
+        self.assertEqual(True, matcher.match("dir"))
+        self.assertEqual(True, matcher.match("dir/"))
+        self.assertEqual(False, matcher.match("dir1"))
+        self.assertEqual(False, matcher.match("dir/dir2"))
