@@ -114,8 +114,6 @@ class Linter:
         elif not config.rules:
             context.report("No rules configured or applicable.", fatal=True)
         else:
-            # TODO: validate config,
-            #   e.g., validate any rule options against rule.meta.schema
             for rule_id, rule_config in config.rules.items():
                 with context.use_state(rule_id=rule_id):
                     _apply_rule(context, rule_id, rule_config)
@@ -158,6 +156,7 @@ def _apply_rule(
         return
 
     with context.use_state(severity=rule_config.severity):
+        # TODO: validate rule_config.args/kwargs against rule.meta.schema
         # noinspection PyArgumentList
         verifier: RuleOp = rule.op_class(*rule_config.args, **rule_config.kwargs)
         verify_dataset(verifier, context)

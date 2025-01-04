@@ -13,19 +13,20 @@
 ## Desired
  
 - format reports so links/anchors can be used to point users to
-  rule
+  the rule's description
 - implement xarray backend for xcube 'levels' format
   so can validate them too
 - add some more tests so we reach 99% coverage
 - implement `autofix` feature
+- rule op args/kwargs schema validation
+- formatter op args/kwargs schema validation
 
 ## Nice to have
 
-ESLint configuration details
+- implement `md` (markdown) output format
 
-- support default file extensions, for XRLint use `.zarr` and `.nc`
-
-- implement support for the yet unused properties
+- ESLint configuration details: implement support for the yet 
+  unused properties such as
   - `RuleMeta.type`
   - `RuleTest.expected`
   - `processor: ProcessorOp` 

@@ -13,7 +13,7 @@
   - new CLI options `--plugin`, `--rule`, `--init`
   - markdown rule reference in docs
   - using `files` config option to specify valid filename extensions, see
-    https://eslint.org/docs/latest/use/configure/configuration-files#specifying-files-with-arbitrary-extensions
+    [here](https://eslint.org/docs/latest/use/configure/configuration-files#specifying-files-with-arbitrary-extensions)
   - using default filename extensions `["**/*.zarr", "**/*.nc"]`
   - using subset of [minimatch](https://github.com/isaacs/minimatch) 
     syntax instead of the simple globs used by Python's `fnmatch`

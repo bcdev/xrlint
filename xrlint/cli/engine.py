@@ -126,8 +126,10 @@ class CliEngine:
                 f" The available formats are"
                 f" {', '.join(repr(k) for k in formatters.keys())}."
             )
-        # TODO: pass format-specific args/kwargs
-        return formatter.op_class().format(FormatterContext(False), results)
+        # TODO: pass and validate format-specific args/kwargs
+        #   against formatter.meta.schema
+        formatter_op = formatter.op_class()
+        return formatter_op.format(FormatterContext(False), results)
 
     def write_report(self, report: str):
         if not self.output_path:
