@@ -1,9 +1,11 @@
 from dataclasses import dataclass, field
-import fnmatch
+from functools import cached_property
 from typing import Any, TYPE_CHECKING, Union
 
 from xrlint.constants import CORE_PLUGIN_NAME
+from xrlint.constants import DEFAULT_GLOBAL_FILE_PATTERNS
 from xrlint.util.formatting import format_message_type_of
+from xrlint.util.minimatch import minimatch
 from xrlint.util.todict import ToDictMixin
 from xrlint.util.merge import (
     merge_arrays,
@@ -11,6 +13,7 @@ from xrlint.util.merge import (
     merge_dicts,
     merge_values,
 )
+
 
 if TYPE_CHECKING:  # pragma: no cover
     from xrlint.rule import Rule
@@ -65,6 +68,13 @@ class Config(ToDictMixin):
     configuration object should apply to. If not specified,
     the configuration object applies to all files matched
     by any other configuration object.
+
+    When a configuration object contains only the files property
+    without accompanying rules or settings, it effectively acts as
+    a _global file filter_. This means that XRLint will recognize
+    and process only the files matching these patterns, thereby
+    limiting its scope to the specified files. The inbuilt
+    global file filters are `["**/*.zarr", "**/*.nc"]`.
     """
 
     ignores: list[str] | None = None
@@ -149,22 +159,28 @@ class Config(ToDictMixin):
             settings=settings,
         )
 
-    @property
-    def global_ignores(self) -> list[str]:
-        # The list of `ignores` patterns from this configuration which
-        # are _global ignores_.
+    @cached_property
+    def regular(self) -> bool:
+        # `True` if this configuration is regular: it does not represent
+        # a global `files` or `ignores` filter.
+        files, ignores = self.global_filter_patterns
+        return files is None and ignores is None
+
+    @cached_property
+    def global_filter_patterns(self) -> tuple[list[str] | None, list[str] | None]:
+        # Get global `files` and `ignores` as a tuple or return `(None, None)`
+        # if this config object is a regular configuration.
         return (
-            self.ignores
-            if self.ignores
+            (self.files or None, self.ignores or None)
+            if (self.files or self.ignores)
             and not (
-                self.files
-                or self.linter_options
+                self.linter_options
                 or self.opener_options
                 or self.plugins
                 or self.rules
                 or self.settings
             )
-            else []
+            else (None, None)
         )
 
     def get_rule(self, rule_id: str) -> "Rule":
@@ -392,7 +408,19 @@ class ConfigList:
             configs.append(config)
             plugins.update(config.plugins if config.plugins else {})
 
-        return ConfigList(configs=configs)
+        return ConfigList(configs)
+
+    def split_global(self) -> tuple["GlobalFilter", "ConfigList"]:
+        """Split into global filter and list of regular configurations."""
+        global_filter = GlobalFilter()
+        regular_configs = []
+        for c in self.configs:
+            files, ignores = c.global_filter_patterns
+            if files or ignores:
+                global_filter.update(files, ignores)
+            else:
+                regular_configs.append(c)
+        return global_filter, ConfigList(regular_configs)
 
     def compute_config(self, file_path: str) -> Config | None:
         """Compute the configuration object for the given file path.
@@ -404,41 +432,31 @@ class ConfigList:
             if `file_path` is not included by any `files` pattern
             or intentionally ignored by global `ignores`.
         """
-        # Step 1: Check against global ignores
-        global_ignores = set()
-        effective_configs = []
-        for c in self.configs:
-            ignores = c.global_ignores
-            if ignores:
-                global_ignores.update(ignores)
-            else:
-                effective_configs.append(c)
-        for p in global_ignores:
-            if fnmatch.fnmatch(file_path, p):
-                return None
-
-        # Step 2: Check against global ignores
         config = None
-        for c in effective_configs:
-            excluded = False
-            if c.ignores:
-                for p in c.ignores:
-                    excluded = fnmatch.fnmatch(file_path, p)
-                    if excluded:
+        for c in self.configs:
+            if not c.regular:
+                continue
+            included = True
+            if c.files:
+                for p in c.files:
+                    included = minimatch(file_path, p)
+                    if included:
                         break
-            included = not excluded
             if included:
-                if c.files:
-                    for p in c.files:
-                        included = fnmatch.fnmatch(file_path, p)
-                        if not included:
+                excluded = False
+                if c.ignores:
+                    for p in c.ignores:
+                        excluded = minimatch(file_path, p)
+                        if excluded:
                             break
+                included = not excluded
             if included:
                 config = config.merge(c) if config is not None else c
 
         if config is None:
             return None
-        # Exclude "files" and "ignores" because they have been used
+
+        # Note, computed configurations do not have "files" and "ignores"
         return Config(
             name="<computed>",
             linter_options=config.linter_options,
@@ -448,3 +466,28 @@ class ConfigList:
             rules=config.rules,
             settings=config.settings,
         )
+
+
+@dataclass(frozen=True)
+class GlobalFilter:
+    file_patterns: set[str] = field(default_factory=set)
+    ignore_patterns: set[str] = field(default_factory=set)
+
+    def update(self, files: list[str] | None, ignores: list[str] | None):
+        if files:
+            self.file_patterns.update(files)
+        if ignores:
+            self.ignore_patterns.update(ignores)
+
+    def accept(self, file_path) -> bool:
+        included = False
+        for p in self.file_patterns or DEFAULT_GLOBAL_FILE_PATTERNS:
+            if minimatch(file_path, p):
+                included = True
+                break
+        if not included:
+            return False
+        for p in self.ignore_patterns:
+            if minimatch(file_path, p):
+                return False
+        return True

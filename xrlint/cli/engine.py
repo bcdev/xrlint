@@ -85,24 +85,27 @@ class CliEngine:
         return ConfigList.from_value(configs)
 
     def verify_datasets(self, config_list: ConfigList) -> list[Result]:
+        global_filter, regular_config_list = config_list.split_global()
         results: list[Result] = []
         for file_path in self.files:
-            config = config_list.compute_config(file_path)
-            if config is not None:
-                # TODO: use config.processor
-                linter = Linter(config=config)
-                result = linter.verify_dataset(file_path)
-            else:
-                result = Result.new(
-                    config=config,
-                    file_path=file_path,
-                    messages=[
-                        Message(
-                            message="No configuration matches this file.", severity=2
-                        )
-                    ],
-                )
-            results.append(result)
+            if global_filter.accept(file_path):
+                config = regular_config_list.compute_config(file_path)
+                if config is not None:
+                    # TODO: use config.processor
+                    linter = Linter(config=config)
+                    result = linter.verify_dataset(file_path)
+                else:
+                    result = Result.new(
+                        config=config,
+                        file_path=file_path,
+                        messages=[
+                            Message(
+                                message="No configuration matches this file.",
+                                severity=2,
+                            )
+                        ],
+                    )
+                results.append(result)
 
         return results
 

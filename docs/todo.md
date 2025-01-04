@@ -8,13 +8,16 @@
   - use mkdocstrings ref syntax in docstrings
   - provide configuration examples (use as tests?)
   - generate markdown rule reference for the docs
- 
+
 ## Desired
  
+- allow the CLI's `FILES` args to contain directories, which are 
+  automatically recursively traversed
+- format reports so links/anchors can be used to point users to
+  rule
+- implement xarray backend for xcube 'levels' format
+  so can validate them too
 - add some more tests so we reach 99% coverage
-- introduce `dataset_options` config:
-    - `opener: OpenerOp`
-    - `opener_options: dict[str, Any]`
 - implement `autofix` feature
 
 ## Nice to have
@@ -22,15 +25,19 @@
 ESLint configuration details
 
 - support default file extensions, for XRLint use `.zarr` and `.nc`
-- use `files` config option to specify valid extensions
-  https://eslint.org/docs/latest/use/configure/configuration-files#specifying-files-with-arbitrary-extensions
 
-Currently unused
-- `RuleMeta.type`
-- `RuleTest.expected`
-- `processor: ProcessorOp` 
+- implement support for the yet unused properties
+  - `RuleMeta.type`
+  - `RuleTest.expected`
+  - `processor: ProcessorOp` 
 
 # Ideas
+
+## Allow for different dataset openers
+
+- introduce `dataset_options` config:
+  - `opener: OpenerOp`
+  - `opener_options: dict[str, Any]`
 
 ## Other plugins
 

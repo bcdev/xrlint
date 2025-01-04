@@ -1,9 +1,9 @@
+from typing import Any
 from unittest import TestCase
 
 import pytest
 
-from xrlint.rule import RuleConfig
-from xrlint.config import Config, ConfigList
+from xrlint.config import Config, ConfigList, GlobalFilter
 
 
 # noinspection PyMethodMayBeStatic
@@ -66,19 +66,28 @@ class ConfigTest(TestCase):
         ):
             Config.from_value({"settings": {8: 9}})
 
-    def test_global_ignores(self):
-        ignores = ["*.tiff", "*.txt"]
-        self.assertEqual(ignores, Config(ignores=ignores).global_ignores)
-        self.assertEqual(ignores, Config(ignores=ignores, name="Empty?").global_ignores)
-        self.assertEqual(ignores, Config(ignores=ignores, rules={}).global_ignores)
-        self.assertEqual(ignores, Config(ignores=ignores, settings={}).global_ignores)
-        self.assertEqual(ignores, Config(ignores=ignores, files=[]).global_ignores)
-        self.assertEqual([], Config(rules={"x": RuleConfig(0)}).global_ignores)
-        self.assertEqual([], Config(settings={"a": 17}).global_ignores)
-        self.assertEqual([], Config(ignores=ignores, settings={"a": 17}).global_ignores)
-        self.assertEqual(
-            [], Config(ignores=ignores, rules={"x": RuleConfig(0)}).global_ignores
+    def test_global_filters_are_empty(self):
+        files = ["**/*.zarr", "**/*.hdf"]
+        ignores = ["**/*.tiff", "**/*.txt"]
+        # empty
+        self.assert_global_filters({"rules": {"r1": 2}}, (None, None))
+        self.assert_global_filters({"settings": {"a": 17}}, (None, None))
+        self.assert_global_filters({"files": files, "rules": {"r2": 0}}, (None, None))
+        self.assert_global_filters(
+            {"ignores": ignores, "settings": {"a": 19}}, (None, None)
         )
+        # non-empty
+        self.assert_global_filters({"files": None, "ignores": ignores}, (None, ignores))
+        self.assert_global_filters({"files": [], "ignores": ignores}, (None, ignores))
+        self.assert_global_filters({"files": files, "ignores": None}, (files, None))
+        self.assert_global_filters({"files": files, "ignores": []}, (files, None))
+        self.assert_global_filters(
+            {"files": files, "ignores": ignores}, (files, ignores)
+        )
+
+    def assert_global_filters(self, config_obj: Any, expected_value: tuple):
+        config = Config.from_value(config_obj)
+        self.assertEqual(expected_value, config.global_filter_patterns)
 
 
 class ConfigListTest(TestCase):
@@ -104,9 +113,9 @@ class ConfigListTest(TestCase):
             ConfigList.from_value({})
 
     def test_compute_config(self):
-        file_path = "s3://wq-services/datacubes/chl-2.zarr"
 
         config_list = ConfigList([Config()])
+        file_path = "s3://wq-services/datacubes/chl-2.zarr"
         self.assertEqual(
             Config(name="<computed>"), config_list.compute_config(file_path)
         )
@@ -115,10 +124,10 @@ class ConfigListTest(TestCase):
             [
                 Config(settings={"a": 1, "b": 1}),
                 Config(files=["**/datacubes/*.zarr"], settings={"b": 2}),
-                Config(ignores=["**/chl-*.*"], settings={"a": 2}),
-                Config(ignores=["**/chl-*.txt"]),  # global ignores
+                Config(files=["**/*.txt"], settings={"a": 2}),
             ]
         )
+        file_path = "s3://wq-services/datacubes/chl-2.zarr"
         self.assertEqual(
             Config(name="<computed>", settings={"a": 1, "b": 2}),
             config_list.compute_config(file_path),
@@ -126,4 +135,37 @@ class ConfigListTest(TestCase):
 
         # global ignores
         file_path = "s3://wq-services/datacubes/chl-2.txt"
-        self.assertEqual(None, config_list.compute_config(file_path))
+        self.assertEqual(
+            Config(name="<computed>", settings={"a": 2, "b": 1}),
+            config_list.compute_config(file_path),
+        )
+
+    def test_split_global(self):
+        config_list = ConfigList(
+            [
+                Config(settings={"a": 1, "b": 1}),
+                Config(files=["**/datacubes/*.zarr"], settings={"b": 2}),
+                Config(ignores=["**/chl-?.*"], settings={"a": 2}),
+                Config(ignores=["**/chl-?.txt"]),  # global ignores
+            ]
+        )
+
+        global_filter, regular_config_list = config_list.split_global()
+        self.assertEqual(
+            ConfigList(
+                [
+                    Config(settings={"a": 1, "b": 1}),
+                    Config(files=["**/datacubes/*.zarr"], settings={"b": 2}),
+                    Config(ignores=["**/chl-?.*"], settings={"a": 2}),
+                ]
+            ),
+            regular_config_list,
+        )
+
+        self.assertEqual(GlobalFilter(set(), {"**/chl-?.txt"}), global_filter)
+        self.assertEqual(
+            True, global_filter.accept("s3://wq-services/datacubes/chl-2.zarr")
+        )
+        self.assertEqual(
+            False, global_filter.accept("s3://wq-services/datacubes/chl-2.txt")
+        )
