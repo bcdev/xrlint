@@ -17,5 +17,3 @@ SEVERITY_ENUM_TEXT = ", ".join(f"{k!r}" for k in SEVERITY_ENUM.keys())
 MISSING_DATASET_FILE_PATH = "<dataset>"
 
 CORE_PLUGIN_NAME = "__core__"
-
-DEFAULT_GLOBAL_FILE_PATTERNS = ["**/*.zarr", "**/*.nc"]

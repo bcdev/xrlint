@@ -14,3 +14,6 @@ DEFAULT_OUTPUT_FORMAT = "simple"
 DEFAULT_MAX_WARNINGS = 5
 
 INIT_CONFIG_YAML = "- recommended\n"
+
+DEFAULT_GLOBAL_FILES = ["**/*.zarr", "**/*.nc"]
+DEFAULT_GLOBAL_IGNORES = [".git", "node_modules"]

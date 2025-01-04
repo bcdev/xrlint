@@ -5,11 +5,11 @@ import fsspec
 import yaml
 
 from xrlint.cli.config import read_config_list, ConfigError
-from xrlint.cli.constants import (
-    DEFAULT_CONFIG_FILES,
-    DEFAULT_CONFIG_FILE_YAML,
-    INIT_CONFIG_YAML,
-)
+from xrlint.cli.constants import DEFAULT_CONFIG_FILES
+from xrlint.cli.constants import DEFAULT_CONFIG_FILE_YAML
+from xrlint.cli.constants import DEFAULT_GLOBAL_FILES
+from xrlint.cli.constants import DEFAULT_GLOBAL_IGNORES
+from xrlint.cli.constants import INIT_CONFIG_YAML
 from xrlint.cli.constants import DEFAULT_OUTPUT_FORMAT
 from xrlint.config import ConfigList
 from xrlint.config import get_core_config
@@ -19,6 +19,12 @@ from xrlint.linter import Linter
 from xrlint.plugin import Plugin
 from xrlint.result import Message
 from xrlint.result import Result
+from xrlint.util.filefilter import FileFilter
+
+
+DEFAULT_GLOBAL_FILTER = FileFilter.from_patterns(
+    DEFAULT_GLOBAL_FILES, DEFAULT_GLOBAL_IGNORES
+)
 
 
 class CliEngine:
@@ -33,7 +39,6 @@ class CliEngine:
         output_format: str = DEFAULT_OUTPUT_FORMAT,
         output_path: str | None = None,
         files: tuple[str, ...] = (),
-        recommended: bool = False,
     ):
         self.no_default_config = no_default_config
         self.config_path = config_path
@@ -85,11 +90,11 @@ class CliEngine:
         return ConfigList.from_value(configs)
 
     def verify_datasets(self, config_list: ConfigList) -> list[Result]:
-        global_filter, regular_config_list = config_list.split_global()
+        global_filter = config_list.get_global_filter(default=DEFAULT_GLOBAL_FILTER)
         results: list[Result] = []
         for file_path in self.files:
             if global_filter.accept(file_path):
-                config = regular_config_list.compute_config(file_path)
+                config = config_list.compute_config(file_path)
                 if config is not None:
                     # TODO: use config.processor
                     linter = Linter(config=config)
