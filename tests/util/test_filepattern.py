@@ -4,6 +4,18 @@ from xrlint.util.filepattern import FilePattern
 
 
 class MinimatchTest(unittest.TestCase):
+    def test_basics(self):
+        matcher = FilePattern("**/*.h5")
+        self.assertEqual("**/*.h5", str(matcher))
+        self.assertEqual("FilePattern('**/*.h5')", repr(matcher))
+        self.assertTrue(matcher == matcher)
+        self.assertFalse(matcher == 5)
+        self.assertTrue(matcher == FilePattern("**/*.h5"))
+        self.assertFalse(matcher == FilePattern("**/*.nc"))
+        self.assertFalse(matcher != FilePattern("**/*.h5"))
+        self.assertTrue(matcher != FilePattern("**/*.nc"))
+        self.assertTrue(hash(matcher) == hash("**/*.h5"))
+
     def test_no_magic(self):
         matcher = FilePattern("fod")
         self.assertEqual(True, matcher.match("fod"))

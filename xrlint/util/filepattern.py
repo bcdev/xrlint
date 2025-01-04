@@ -88,7 +88,7 @@ class FilePattern:
         return self.pattern
 
     def __repr__(self):
-        return f"Minimatcher({self.pattern!r})"
+        return f"FilePattern({self.pattern!r})"
 
     def __eq__(self, other):
         if other is self:
