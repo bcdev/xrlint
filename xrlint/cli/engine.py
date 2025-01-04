@@ -1,4 +1,5 @@
 import os
+from typing import Generator
 
 import click
 import fsspec
@@ -92,25 +93,24 @@ class CliEngine:
     def verify_datasets(self, config_list: ConfigList) -> list[Result]:
         global_filter = config_list.get_global_filter(default=DEFAULT_GLOBAL_FILTER)
         results: list[Result] = []
-        for file_path in self.files:
-            if global_filter.accept(file_path):
-                config = config_list.compute_config(file_path)
-                if config is not None:
-                    # TODO: use config.processor
-                    linter = Linter(config=config)
-                    result = linter.verify_dataset(file_path)
-                else:
-                    result = Result.new(
-                        config=config,
-                        file_path=file_path,
-                        messages=[
-                            Message(
-                                message="No configuration matches this file.",
-                                severity=2,
-                            )
-                        ],
-                    )
-                results.append(result)
+        for file_path, is_dir in get_files(self.files, global_filter):
+            config = config_list.compute_config(file_path)
+            if config is not None:
+                # TODO: use config.processor
+                linter = Linter(config=config)
+                result = linter.verify_dataset(file_path)
+            else:
+                result = Result.new(
+                    config=config,
+                    file_path=file_path,
+                    messages=[
+                        Message(
+                            message="No configuration matches this file.",
+                            severity=2,
+                        )
+                    ],
+                )
+            results.append(result)
 
         return results
 
@@ -144,3 +144,25 @@ class CliEngine:
         with open(file_path, "w") as f:
             f.write(INIT_CONFIG_YAML)
         click.echo(f"Configuration template written to {file_path}")
+
+
+def get_files(
+    file_paths: tuple[str, ...], global_filter: FileFilter
+) -> Generator[tuple[str, bool | None]]:
+    for file_path in file_paths:
+        _fs, root = fsspec.url_to_fs(file_path)
+        fs: fsspec.AbstractFileSystem = _fs
+        _dir = fs.isdir(root)
+        if global_filter.accept(file_path):
+            yield file_path, _dir
+        elif _dir:
+            for path, dirs, files in fs.walk(root):
+                # print(path, dirs, files)
+                for d in dirs:
+                    d_path = f"{path}/{d}"
+                    if global_filter.accept(d_path):
+                        yield d_path, True
+                for f in files:
+                    f_path = f"{path}/{f}"
+                    if global_filter.accept(f_path):
+                        yield f_path, False

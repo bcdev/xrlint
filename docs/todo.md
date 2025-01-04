@@ -8,11 +8,10 @@
   - use mkdocstrings ref syntax in docstrings
   - provide configuration examples (use as tests?)
   - generate markdown rule reference for the docs
+- rule `coords-for-dims` should be performed on dataset level
 
 ## Desired
  
-- allow the CLI's `FILES` args to contain directories, which are 
-  automatically recursively traversed
 - format reports so links/anchors can be used to point users to
   rule
 - implement xarray backend for xcube 'levels' format
