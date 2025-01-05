@@ -106,6 +106,8 @@ class Config(ToDictMixin):
     """Either an object compatible with the `ProcessorOp`
     interface or a string indicating the name of a processor inside
     of a plugin (i.e., `"pluginName/processorName"`).
+
+    Processors are note yet supported.
     """
 
     plugins: dict[str, "Plugin"] | None = None
