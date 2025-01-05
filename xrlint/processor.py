@@ -1,6 +1,6 @@
 from abc import abstractmethod, ABC
 from dataclasses import dataclass
-from typing import Type, Any
+from typing import Type, Any, Callable
 
 import xarray as xr
 
@@ -58,8 +58,6 @@ class ProcessorMeta:
 class Processor:
     """Processors tell XRLint how to process files other than
     standard xarray datasets.
-
-    Processors are note yet supported.
     """
 
     meta: ProcessorMeta
@@ -70,3 +68,28 @@ class Processor:
 
     supports_auto_fix: bool = False
     """`True` if this processor supports auto-fixing of datasets."""
+
+
+def register_processor(
+    registry: dict[str, Processor],
+    name: str,
+    version: str = "0.0.0",
+    op_class: Type[ProcessorOp] | None = None,
+) -> Callable[[Any], Type[ProcessorOp]] | None:
+    def _register_processor(_op_class: Any) -> Type[ProcessorOp]:
+        from inspect import isclass
+
+        if not isclass(_op_class) or not issubclass(_op_class, ProcessorOp):
+            raise TypeError(
+                f"component decorated by define_processor()"
+                f" must be a subclass of {ProcessorOp.__name__}"
+            )
+        meta = ProcessorMeta(name=name, version=version)
+        registry[name] = Processor(meta=meta, op_class=_op_class)
+        return _op_class
+
+    if op_class is None:
+        # decorator case
+        return _register_processor
+
+    _register_processor(op_class)

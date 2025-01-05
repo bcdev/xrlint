@@ -46,6 +46,17 @@ def get_core_config(recommended: bool = False):
     )
 
 
+def split_config_spec(config_spec: str) -> tuple[str, str]:
+    """Split a configuration specification into plugin name
+    and configuration item name.
+    """
+    return (
+        config_spec.split("/", maxsplit=1)
+        if "/" in config_spec
+        else (CORE_PLUGIN_NAME, config_spec)
+    )
+
+
 def merge_configs(
     config1: Union["Config", dict[str, Any], None],
     config2: Union["Config", dict[str, Any], None],
@@ -106,8 +117,6 @@ class Config(ToDictMixin):
     """Either an object compatible with the `ProcessorOp`
     interface or a string indicating the name of a processor inside
     of a plugin (i.e., `"pluginName/processorName"`).
-
-    Processors are note yet supported.
     """
 
     plugins: dict[str, "Plugin"] | None = None
@@ -188,6 +197,13 @@ class Config(ToDictMixin):
             or self.settings
         )
 
+    def get_plugin(self, plugin_name: str) -> "Plugin":
+        """Get the plugin for given plugin name `plugin_name`."""
+        plugin = (self.plugins or {}).get(plugin_name)
+        if plugin is None:
+            raise ValueError(f"unknown plugin {plugin_name!r}")
+        return plugin
+
     def get_rule(self, rule_id: str) -> "Rule":
         """Get the rule for the given rule identifier `rule_id`.
 
@@ -200,23 +216,29 @@ class Config(ToDictMixin):
             ValueError: If either the plugin is unknown in this configuration
                 or the rule name is unknown.
         """
-        if "/" in rule_id:
-            plugin_name, rule_name = rule_id.split("/", maxsplit=1)
-        else:
-            plugin_name, rule_name = CORE_PLUGIN_NAME, rule_id
-
-        from xrlint.plugin import Plugin
-        from xrlint.rule import Rule
-
-        plugin: Plugin | None = (self.plugins or {}).get(plugin_name)
-        if plugin is None:
-            raise ValueError(f"unknown plugin {plugin_name!r}")
-
-        rule: Rule | None = (plugin.rules or {}).get(rule_name)
+        plugin_name, rule_name = split_config_spec(rule_id)
+        plugin = self.get_plugin(plugin_name)
+        rule = (plugin.rules or {}).get(rule_name)
         if rule is None:
             raise ValueError(f"unknown rule {rule_id!r}")
-
         return rule
+
+    def get_processor_op(
+        self, processor_spec: Union["ProcessorOp", str]
+    ) -> "ProcessorOp":
+        """Get the processor operation for the given processor identifier `processor_spec`."""
+        from xrlint.processor import Processor
+        from xrlint.processor import ProcessorOp
+
+        if isinstance(processor_spec, ProcessorOp):
+            return processor_spec
+
+        plugin_name, processor_name = split_config_spec(processor_spec)
+        plugin = self.get_plugin(plugin_name)
+        processor: Processor | None = (plugin.processors or {}).get(processor_name)
+        if processor is None:
+            raise ValueError(f"unknown processor {processor_spec!r}")
+        return processor.op_class()
 
     def merge(self, config: "Config", name: str = None) -> "Config":
         return Config(
@@ -229,7 +251,7 @@ class Config(ToDictMixin):
             opener_options=self._merge_options(
                 self.opener_options, config.opener_options
             ),
-            processor=merge_values(self.processor, config.processor),  # TBD!
+            processor=merge_values(self.processor, config.processor),
             plugins=self._merge_plugin_dicts(self.plugins, config.plugins),
             rules=self._merge_rule_dicts(self.rules, config.rules),
             settings=self._merge_options(self.settings, config.settings),

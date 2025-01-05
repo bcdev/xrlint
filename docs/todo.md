@@ -30,9 +30,6 @@
 - support `autofix` feature
 - support `md` (markdown) output format
 - support formatter op args/kwargs schema validation
-- support processors, see yet unused declarations:
-  - `Config.processor: ProcessorOp` 
-  - `Plugin.processors: dict[str, ProcessorOp]` 
 
 # Ideas
 

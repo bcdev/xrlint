@@ -10,7 +10,7 @@ def merge_values(
         return merge_arrays(value1, value2, merge_items=merge_items)
     if isinstance(value1, dict) and isinstance(value2, dict):
         return merge_dicts(value1, value2, merge_items=merge_items)
-    return value2
+    return value2 if value2 is not None else value1
 
 
 def merge_dicts(

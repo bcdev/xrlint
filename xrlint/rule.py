@@ -250,8 +250,7 @@ class RuleConfig:
 def register_rule(
     registry: dict[str, Rule],
     name: str,
-    /,
-    version: str | None = None,
+    version: str = "0.0.0",
     schema: dict[str, Any] | list[dict[str, Any]] | bool | None = None,
     type: Literal["problem", "suggestion", "layout"] | None = None,
     description: str | None = None,

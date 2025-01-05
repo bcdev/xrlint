@@ -51,7 +51,7 @@ class Suggestion(ToDictMixin):
         raise TypeError(format_message_type_of("value", value, "Suggestion|str"))
 
 
-@dataclass(kw_only=True)
+@dataclass()
 class Message(ToDictMixin):
     message: str
     """The error message."""

@@ -80,7 +80,7 @@ class CliMainTest(TestCase):
         with text_file(DEFAULT_CONFIG_FILE_YAML, self.fail_config_yaml):
             runner = CliRunner()
             result = runner.invoke(main, self.files)
-            self.assertIn("Attributes are empty.", result.output)
+            self.assertIn("Missing metadata, attributes are empty.", result.output)
             self.assertIn("no-empty-attrs", result.output)
             self.assertEqual(1, result.exit_code)
 
@@ -94,7 +94,7 @@ class CliMainTest(TestCase):
             ]
             + self.files,
         )
-        self.assertIn("Attributes are empty.", result.output)
+        self.assertIn("Missing metadata, attributes are empty.", result.output)
         self.assertIn("no-empty-attrs", result.output)
         self.assertEqual(1, result.exit_code)
 

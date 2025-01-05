@@ -20,5 +20,6 @@
   - allow the CLI's `FILES` args to contain directories, which are 
     automatically recursively traversed
   - rule `coords-for-dims` works on dataset level
+  - support for custom processors
   
 - Version 0.0.1 (30.12.2024) - Initial version. 
