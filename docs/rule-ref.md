@@ -2,7 +2,7 @@
 
 ## Core Rules
 
-### :material-text: `coords-for-dims`
+### :material-bug: `coords-for-dims`
 
 Dimensions of data variables should have corresponding coordinates.
 

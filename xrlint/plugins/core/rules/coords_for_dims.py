@@ -7,7 +7,7 @@ from xrlint.util.formatting import format_item
 @plugin.define_rule(
     "coords-for-dims",
     version="1.0.0",
-    type="layout",
+    type="problem",
     description="Dimensions of data variables should have corresponding coordinates.",
 )
 class CoordsForDims(RuleOp):
