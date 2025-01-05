@@ -25,7 +25,7 @@ def get_test_results():
     config = Config(plugins={"test": plugin})
 
     return [
-        Result(
+        Result.new(
             config,
             file_path="test.nc",
             messages=[
@@ -34,7 +34,7 @@ def get_test_results():
                 Message(message="message-3", fatal=True),
             ],
         ),
-        Result(
+        Result.new(
             config,
             file_path="test-2.nc",
             messages=[

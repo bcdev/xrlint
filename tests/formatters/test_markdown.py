@@ -16,7 +16,7 @@ class MarkdownTest(TestCase):
             formatter.format(
                 context=FormatterContext(),
                 results=[
-                    Result(
+                    Result.new(
                         Config(),
                         file_path="test.nc",
                         messages=[
