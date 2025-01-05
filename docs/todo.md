@@ -15,20 +15,24 @@
   the rule's description
 - implement xarray backend for xcube 'levels' format
   so can validate them too
+- CLI should output result for file immediately,
+  not only after all results have been collected
+- rename `xrlint.cli.CliEngine` into `xrlint.cli.XRLint`
+  (with similar API as the `ESLint` class) and export it 
+  from `xrlint.all`
 - add some more tests so we reach 99% coverage
-- implement `autofix` feature
-- rule op args/kwargs schema validation
-- formatter op args/kwargs schema validation
+- support rule op args/kwargs schema validation
+- support CLI option `--print-config FILE`, see ESLint
+- Support `RuleTest.expected`, it is currently unused
 
 ## Nice to have
 
-- implement `md` (markdown) output format
-
-- ESLint configuration details: implement support for the yet 
-  unused properties such as
-  - `RuleMeta.type`
-  - `RuleTest.expected`
-  - `processor: ProcessorOp` 
+- support `autofix` feature
+- support `md` (markdown) output format
+- support formatter op args/kwargs schema validation
+- support processors, see yet unused declarations:
+  - `Config.processor: ProcessorOp` 
+  - `Plugin.processors: dict[str, ProcessorOp]` 
 
 # Ideas
 

@@ -122,8 +122,14 @@ class RuleMeta(ToDictMixin):
       number of positional arguments that must be configured.
     """
 
-    type: Literal["problem", "suggestion"] = "problem"
-    """Rule type. Defaults to `"problem"`."""
+    type: Literal["problem", "suggestion", "layout"] = "problem"
+    """Rule type. Defaults to `"problem"`.
+    
+    Primarily serves to categorize the rule's purpose for the benefit 
+    of developers and tools that consume XRLint output. 
+    It doesn’t directly affect the linting logic - that part is handled 
+    by the rule’s implementation and its configured severity.
+    """
 
 
 @dataclass(frozen=True)
