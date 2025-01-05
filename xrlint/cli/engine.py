@@ -16,7 +16,7 @@ from xrlint.config import ConfigList
 from xrlint.config import get_core_config
 from xrlint.formatter import FormatterContext
 from xrlint.formatters import export_formatters
-from xrlint.linter import Linter, DatasetOpener
+from xrlint.linter import Linter
 from xrlint.plugin import Plugin
 from xrlint.result import Message
 from xrlint.result import Result

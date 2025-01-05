@@ -6,18 +6,8 @@ import xarray as xr
 from xrlint.config import Config
 from xrlint.config import get_core_config
 from xrlint.config import merge_configs
-from xrlint.constants import MISSING_DATASET_FILE_PATH
-from xrlint.processor import ProcessorOp
-from xrlint.result import Result, Message
-from xrlint.rule import RuleConfig
-from xrlint.rule import RuleOp
-
-# noinspection PyProtectedMember
-from xrlint._linter.rule_ctx_impl import RuleContextImpl
-
-# noinspection PyProtectedMember
-from xrlint._linter.verify_impl import verify_dataset
-from xrlint.util.formatting import format_message_type_of
+from xrlint.result import Result
+from ._linter.verify import verify_dataset
 
 
 def new_linter(
@@ -25,7 +15,7 @@ def new_linter(
     config: Config | dict | None = None,
     **config_kwargs: dict[str, Any],
 ) -> "Linter":
-    """Create a new `Linter`.
+    """Create a new `Linter` with core rules loaded.
 
     Args:
         recommended: `True` if the recommended configurations of the builtin
@@ -49,8 +39,10 @@ def new_linter(
 class Linter:
     """The linter.
 
-    You should not use the constructor directly.
-    Instead, use the `new_linter()` function.
+    Using the constructor directly creates an empty linter
+    with no configuration - even without default rules loaded.
+    If you want a linter with core rules loaded
+    use the `new_linter()` function.
 
     Args:
         config: The linter's configuration.
@@ -75,7 +67,7 @@ class Linter:
 
     def verify_dataset(
         self,
-        dataset: str | Path | xr.Dataset,
+        dataset: Any,
         *,
         file_path: str | None = None,
         config: Config | dict[str, Any] | None = None,
@@ -85,7 +77,8 @@ class Linter:
 
         Args:
             dataset: The dataset. Can be a `xr.Dataset` instance
-                or a file path from which the dataset will be opened.
+                or a file path, or any dataset source that can be opened
+                using `xarray.open_dataset()`.
             file_path: Optional file path used for formatting
                 messages. Useful if `dataset` is not a file path.
             config: Configuration tbe merged with the linter's
@@ -98,116 +91,4 @@ class Linter:
         """
         config = merge_configs(self._config, config)
         config = merge_configs(config, config_kwargs)
-
-        if isinstance(dataset, xr.Dataset):
-            file_path = file_path or _get_file_path_for_dataset(dataset)
-            messages = _verify_dataset(
-                config, dataset, file_path or _get_file_path_for_dataset(dataset)
-            )
-        else:
-            file_path = file_path or str(dataset)
-            messages = _open_and_verify_dataset(config, dataset, file_path)
-
-        return Result.new(config=config, file_path=file_path, messages=messages)
-
-
-def _open_and_verify_dataset(
-    config: Config, ds_source: Any, file_path: str
-) -> list[Message]:
-    opener_options = config.opener_options or {}
-    if isinstance(ds_source, str) and config.processor is not None:
-        processor_op = config.get_processor_op(config.processor)
-        try:
-            ds_path_list = processor_op.preprocess(ds_source, opener_options)
-        except (OSError, ValueError, TypeError) as e:
-            return [Message(message=str(e), fatal=True, severity=2)]
-        return processor_op.postprocess(
-            [_verify_dataset(config, ds, path) for ds, path in ds_path_list],
-            ds_source,
-        )
-    else:
-        try:
-            dataset = open_dataset(ds_source, opener_options)
-        except (OSError, ValueError, TypeError) as e:
-            return [Message(message=str(e), fatal=True, severity=2)]
-        with dataset:
-            return _verify_dataset(config, dataset, file_path)
-
-
-def _verify_dataset(
-    config: Config,
-    dataset: xr.Dataset,
-    file_path: str,
-) -> list[Message]:
-    assert isinstance(config, Config)
-    assert isinstance(dataset, xr.Dataset)
-    assert isinstance(file_path, str)
-
-    context = RuleContextImpl(config=config, dataset=dataset, file_path=file_path)
-
-    if not config.rules:
-        context.report("No rules configured or applicable.", fatal=True)
-    else:
-        for rule_id, rule_config in config.rules.items():
-            with context.use_state(rule_id=rule_id):
-                _apply_rule(context, rule_id, rule_config)
-
-    return context.messages
-
-
-class DatasetOpener(ProcessorOp):
-
-    def preprocess(
-        self, file_path: str, opener_options: dict[str, Any]
-    ) -> list[tuple[xr.Dataset, str]]:
-        """Open a dataset."""
-        engine = opener_options.pop("engine", None)
-        if engine is None and file_path.endswith(".zarr"):
-            engine = "zarr"
-
-        dataset = xr.open_dataset(file_path, engine=engine, **(opener_options or {}))
-        return [(dataset, file_path)]
-
-    def postprocess(
-        self, messages: list[list[Message]], file_path: str
-    ) -> list[Message]:
-        return messages[0]
-
-
-def open_dataset(file_path: str, opener_options: dict[str, Any] | None) -> xr.Dataset:
-    """Open a dataset."""
-    engine = opener_options.pop("engine", None)
-    if engine is None and file_path.endswith(".zarr"):
-        engine = "zarr"
-    return xr.open_dataset(file_path, engine=engine, **(opener_options or {}))
-
-
-def _apply_rule(
-    context: RuleContextImpl,
-    rule_id: str,
-    rule_config: RuleConfig,
-):
-    """Apply rule given by `rule_id` to dataset given by
-    `context` using rule configuration `rule_config`.
-    """
-    try:
-        rule = context.config.get_rule(rule_id)
-    except ValueError as e:
-        context.report(f"{e}", fatal=True)
-        return
-
-    if rule_config.severity == 0:
-        # rule is off
-        return
-
-    with context.use_state(severity=rule_config.severity):
-        # TODO: validate rule_config.args/kwargs against rule.meta.schema
-        # noinspection PyArgumentList
-        verifier: RuleOp = rule.op_class(*rule_config.args, **rule_config.kwargs)
-        verify_dataset(verifier, context)
-
-
-def _get_file_path_for_dataset(dataset: xr.Dataset) -> str:
-    source = dataset.encoding.get("source")
-    file_path = source if isinstance(source, str) else ""
-    return file_path or MISSING_DATASET_FILE_PATH
+        return verify_dataset(config, dataset, file_path)
