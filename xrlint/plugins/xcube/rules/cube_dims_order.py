@@ -7,6 +7,7 @@ from xrlint.rule import RuleOp, RuleContext
 @plugin.define_rule(
     "cube-dims-order",
     version="1.0.0",
+    type="problem",
     description=(
         f"Order of dimensions in spatio-temporal datacube variables"
         f" should be [{T_NAME}, ..., {Y_NAME}, {X_NAME}]."

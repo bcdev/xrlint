@@ -124,6 +124,20 @@ class RuleMeta(ToDictMixin):
 
     type: Literal["problem", "suggestion", "layout"] = "problem"
     """Rule type. Defaults to `"problem"`.
+
+    The type field can have one of the following values:
+
+    - `"problem"`: Indicates that the rule addresses datasets that are 
+      likely to cause errors or unexpected behavior during runtime. 
+      These issues usually represent real bugs or potential runtime problems.
+    - `"suggestion"`: Used for rules that suggest structural improvements 
+      or enforce best practices. These issues are not necessarily bugs, but 
+      following the suggestions may lead to more readable, maintainable, or 
+      consistent datasets.
+    - `"layout"`: Specifies that the rule enforces consistent stylistic 
+      aspects of dataset formatting, e.g., whitespaces in names. 
+      Issues with layout rules are often automatically fixable 
+      (not supported yet). 
     
     Primarily serves to categorize the rule's purpose for the benefit 
     of developers and tools that consume XRLint output. 

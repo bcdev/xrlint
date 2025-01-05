@@ -1,14 +1,13 @@
-from xrlint.result import Suggestion
 from xrlint.node import DatasetNode
-from xrlint.node import DataArrayNode
 from xrlint.plugins.core.rules import plugin
 from xrlint.rule import RuleContext, RuleOp
-from xrlint.util.formatting import format_count, format_item
+from xrlint.util.formatting import format_item
 
 
 @plugin.define_rule(
     "coords-for-dims",
     version="1.0.0",
+    type="layout",
     description="Dimensions of data variables should have corresponding coordinates.",
 )
 class CoordsForDims(RuleOp):

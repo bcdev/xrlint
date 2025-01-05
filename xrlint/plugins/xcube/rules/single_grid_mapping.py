@@ -8,6 +8,7 @@ from xrlint.rule import RuleOp, RuleContext
 @plugin.define_rule(
     "single-grid-mapping",
     version="1.0.0",
+    type="problem",
     description=(
         "A single grid mapping shall be used for all"
         " spatial data variables of a datacube."

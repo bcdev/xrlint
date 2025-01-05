@@ -10,6 +10,7 @@ INVALID_LON_NAMES = {"lng", "long", "longitude"}
 @plugin.define_rule(
     "lat-lon-naming",
     version="1.0.0",
+    type="problem",
     description=(
         f"Latitude and longitude coordinates and dimensions"
         f" should be called {LAT_NAME !r} and {LON_NAME !r}."

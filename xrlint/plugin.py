@@ -49,7 +49,7 @@ class Plugin:
         /,
         version: str | None = None,
         schema: dict[str, Any] | list[dict[str, Any]] | bool | None = None,
-        type: Literal["problem", "suggestion"] | None = None,
+        type: Literal["problem", "suggestion", "layout"] | None = None,
         description: str | None = None,
         docs_url: str | None = None,
         op_class: Type[RuleOp] | None = None,
