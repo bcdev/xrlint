@@ -19,5 +19,6 @@
     syntax instead of the simple globs used by Python's `fnmatch`
   - allow the CLI's `FILES` args to contain directories, which are 
     automatically recursively traversed
+  - rule `coords-for-dims` works on dataset level
   
 - Version 0.0.1 (30.12.2024) - Initial version. 

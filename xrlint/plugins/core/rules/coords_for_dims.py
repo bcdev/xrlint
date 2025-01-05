@@ -1,7 +1,9 @@
 from xrlint.result import Suggestion
+from xrlint.node import DatasetNode
 from xrlint.node import DataArrayNode
 from xrlint.plugins.core.rules import plugin
 from xrlint.rule import RuleContext, RuleOp
+from xrlint.util.formatting import format_count, format_item
 
 
 @plugin.define_rule(
@@ -10,18 +12,30 @@ from xrlint.rule import RuleContext, RuleOp
     description="Dimensions of data variables should have corresponding coordinates.",
 )
 class CoordsForDims(RuleOp):
-    def data_array(self, ctx: RuleContext, node: DataArrayNode):
-        if not node.in_data_vars():
+    def dataset(self, ctx: RuleContext, node: DatasetNode):
+        dataset = node.dataset
+
+        # Get data variable dimensions
+        data_var_dims = set()
+        for v in dataset.data_vars.values():
+            data_var_dims.update(v.dims)
+        if not data_var_dims:
             return
-        data_array = node.data_array
-        for dim in data_array.dims:
-            if dim not in data_array.coords:
-                ctx.report(
-                    f"Dimension {dim!r} without corresponding coordinate.",
-                    suggestions=[
-                        Suggestion(
-                            f"Add a coordinate variable named {dim!r}"
-                            f" with size {data_array.sizes[dim]}."
-                        )
-                    ],
-                )
+
+        # Get dimensions with coordinate variables
+        no_coord_dims = []
+        for d in sorted(str(d) for d in data_var_dims):
+            if d not in dataset.coords:
+                no_coord_dims.append(d)
+
+        if no_coord_dims:
+            n = len(no_coord_dims)
+            ctx.report(
+                f"{format_item("Data variable dimension", n)}"
+                f" without coordinates: {', '.join(no_coord_dims)}",
+                suggestions=[
+                    f"Add corresponding {format_item('coordinate variable', n)}"
+                    f" to dataset:"
+                    f" {', '.join(f'{d}[{dataset.sizes[d]}]' for d in no_coord_dims)}."
+                ],
+            )
