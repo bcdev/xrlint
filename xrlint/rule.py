@@ -148,7 +148,16 @@ class RuleMeta(ToDictMixin):
 
 @dataclass(frozen=True)
 class Rule:
-    """A rule."""
+    """A rule comprises rule metadata and a reference to the
+    class that implements the rule's logic.
+
+    Instances of this class can be easily created and added to a plugin
+    by using the decorator `@define_rule` of the `Plugin` class.
+
+    Args:
+        meta: the rule's metadata
+        op_class: the class that implements the rule's logic
+    """
 
     meta: RuleMeta
     """Rule metadata of type `RuleMeta`."""
@@ -173,7 +182,7 @@ class RuleConfig:
     """
 
     severity: Literal[0, 1, 2]
-    """Rule severity."""
+    """Rule severity, one of `2` (error), `1` (warn), or `0` (off)."""
 
     args: tuple[Any, ...] = field(default_factory=tuple)
     """Rule operation arguments."""
@@ -244,7 +253,7 @@ def register_rule(
     /,
     version: str | None = None,
     schema: dict[str, Any] | list[dict[str, Any]] | bool | None = None,
-    type: Literal["problem", "suggestion"] | None = None,
+    type: Literal["problem", "suggestion", "layout"] | None = None,
     description: str | None = None,
     docs_url: str | None = None,
     op_class: Type[RuleOp] | None = None,
