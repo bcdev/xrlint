@@ -1,7 +1,4 @@
-from pathlib import Path
 from typing import Any
-
-import xarray as xr
 
 from xrlint.config import Config
 from xrlint.config import get_core_config

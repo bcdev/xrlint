@@ -2,7 +2,6 @@ from typing import Any
 from unittest import TestCase
 
 import xarray as xr
-from pyexpat.errors import messages
 
 from xrlint.config import Config
 from xrlint.constants import CORE_PLUGIN_NAME

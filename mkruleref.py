@@ -1,6 +1,4 @@
 from xrlint.plugin import Plugin
-from xrlint.rule import RuleConfig
-from xrlint.util.formatting import format_item
 
 severity_icons = {
     2: "material-lightning-bolt",
@@ -39,7 +37,7 @@ def write_plugin_rules(stream, plugin: Plugin):
         stream.write(rule_meta.description or "_No description._")
         stream.write("\n\n")
         # List the predefined configurations that contain the rule
-        stream.write(f"Contained in: ")
+        stream.write("Contained in: ")
         for config_id in sorted(configs.keys()):
             config = configs[config_id]
             rule_configs = config.rules or {}

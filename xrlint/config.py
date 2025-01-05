@@ -226,7 +226,9 @@ class Config(ToDictMixin):
     def get_processor_op(
         self, processor_spec: Union["ProcessorOp", str]
     ) -> "ProcessorOp":
-        """Get the processor operation for the given processor identifier `processor_spec`."""
+        """Get the processor operation for the given
+        processor identifier `processor_spec`.
+        """
         from xrlint.processor import Processor
         from xrlint.processor import ProcessorOp
 
