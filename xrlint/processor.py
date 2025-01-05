@@ -1,7 +1,6 @@
 from abc import abstractmethod, ABC
 from dataclasses import dataclass
-from typing import Type
-
+from typing import Type, Any
 
 import xarray as xr
 
@@ -13,19 +12,17 @@ class ProcessorOp(ABC):
 
     @abstractmethod
     def preprocess(
-        self, dataset: xr.Dataset, file_path: str
+        self, file_path: str, opener_options: dict[str, Any]
     ) -> list[tuple[xr.Dataset, str]]:
-        """Pre-process the dataset.
-        In this method you can strip out any content
-        and optionally split into multiple (or none)
+        """Pre-process a dataset given by its `file_path` and `opener_options`.
+        In this method you use the `file_path` to read zero, one, or more
         datasets to lint.
 
         Args:
-            dataset: A dataset
-            file_path: The file path that was used to open
-                the `dataset`.
+            file_path: A file path
+            opener_options: The configuration's `opener_options`.
         Returns:
-            An array of code blocks to lint
+            A list of (dataset, file_path) pairs
         """
 
     @abstractmethod
@@ -48,12 +45,23 @@ class ProcessorOp(ABC):
 
 @dataclass(frozen=True, kw_only=True)
 class ProcessorMeta:
+    """Processor metadata."""
+
     name: str
-    version: str
+    """Name of the processor."""
+
+    version: str = "0.0.0"
+    """Version of the processor."""
 
 
 @dataclass(frozen=True, kw_only=True)
 class Processor:
+    """Processors tell XRLint how to process files other than
+    standard xarray datasets.
+
+    Processors are note yet supported.
+    """
+
     meta: ProcessorMeta
     """Information about the processor."""
 

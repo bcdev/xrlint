@@ -96,7 +96,8 @@ class CliEngine:
         for file_path, is_dir in get_files(self.files, global_filter):
             config = config_list.compute_config(file_path)
             if config is not None:
-                # TODO: use config.processor
+                if isinstance(config.processor, str):
+                    config.processor.preprocess(file_path, config.opener_options or {})
                 linter = Linter(config=config)
                 result = linter.verify_dataset(file_path)
             else:

@@ -33,7 +33,10 @@ class Plugin:
     """A dictionary containing the definitions of custom rules."""
 
     processors: dict[str, Processor] = field(default_factory=dict)
-    """A dictionary containing named processors."""
+    """A dictionary containing named processors.
+    
+    Processors are note yet supported.
+    """
 
     @classmethod
     def from_value(cls, value: Any) -> "Plugin":
