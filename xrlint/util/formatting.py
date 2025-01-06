@@ -64,3 +64,62 @@ def format_type_of(value: Any) -> str:
         return value
     assert isinstance(value, type)
     return value.__name__
+
+
+def format_styled(
+    text: str = "", s: str = "", fg: str = "", bg: str = "", href: str = ""
+):
+    """Format styled text"""
+    if not text:
+        if not href:
+            return ""
+        text = href
+
+    style = ""
+    if s != "":
+        style += _S_CODES.get(s, "")
+    if fg != "":
+        style += ";" + _FG_CODES.get(fg, "")
+    if bg != "":
+        style += (";" if style else ";;") + _BG_CODES.get(bg, "")
+
+    if style:
+        styled_text = f"\033[{style}m{text}\033[0m"
+    else:
+        styled_text = text
+
+    if not href:
+        return styled_text
+    if "://" in href:
+        url = href
+    else:
+        url = "file://" + href
+    return f"\033]8;;{url}\033\\{styled_text}\033]8;;\033\\"
+
+
+_S_CODES = {
+    k: str(c)
+    for k, c in (
+        ("normal", 0),
+        ("bold", 1),
+        ("dim", 2),
+        ("italic", 3),
+        ("underline", 4),
+        ("blink", 5),
+        ("reverse", 7),
+    )
+}
+
+_C_CODES = (
+    ("black", 30, 40),
+    ("red", 31, 41),
+    ("green", 32, 42),
+    ("yellow", 33, 43),
+    ("blue", 34, 44),
+    ("magenta", 35, 45),
+    ("cyan", 36, 46),
+    ("white", 37, 47),
+)
+
+_FG_CODES = {k: str(c) for k, c, _ in _C_CODES}
+_BG_CODES = {k: str(c) for k, _, c in _C_CODES}

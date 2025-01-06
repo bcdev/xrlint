@@ -39,6 +39,7 @@ class CliEngine:
         rule_specs: tuple[str, ...] = (),
         output_format: str = DEFAULT_OUTPUT_FORMAT,
         output_path: str | None = None,
+        color_enabled: bool = True,
         files: tuple[str, ...] = (),
     ):
         self.no_default_config = no_default_config
@@ -47,6 +48,7 @@ class CliEngine:
         self.rule_specs = rule_specs
         self.output_format = output_format
         self.output_path = output_path
+        self.color_enabled = color_enabled
         self.files = files
 
     def load_config(self) -> ConfigList:
@@ -127,7 +129,12 @@ class CliEngine:
             )
         # TODO: pass and validate format-specific args/kwargs
         #   against formatter.meta.schema
-        formatter_op = formatter.op_class()
+        if output_format == "simple":
+            formatter_kwargs = {"color_enabled": self.color_enabled}
+        else:
+            formatter_kwargs = {}
+        # noinspection PyArgumentList
+        formatter_op = formatter.op_class(**formatter_kwargs)
         return formatter_op.format(FormatterContext(False), results)
 
     def write_report(self, report: str):

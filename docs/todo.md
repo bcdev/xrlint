@@ -10,8 +10,7 @@
 
 ## Desired
  
-- format reports so links/anchors can be used to point users to
-  the rule's description
+- use `RuleMeta.docs_url` in formatters to create links
 - implement xarray backend for xcube 'levels' format
   so can validate them too
 - CLI should output result for file immediately,

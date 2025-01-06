@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from xrlint.util.formatting import format_count
+from xrlint.util.formatting import format_count, format_styled
 from xrlint.util.formatting import format_problems
 
 
@@ -26,3 +26,28 @@ class FormattingTest(TestCase):
         self.assertEqual("2 warnings", format_problems(0, 2))
         self.assertEqual("3 problems (one error and 2 warnings)", format_problems(1, 2))
         self.assertEqual("4 problems (2 errors and 2 warnings)", format_problems(2, 2))
+
+    def test_format_styled(self):
+        self.assertEqual("Hello", format_styled("Hello"))
+        self.assertEqual("\x1b[2mHello\x1b[0m", format_styled("Hello", s="dim"))
+        self.assertEqual("\x1b[;31mHello\x1b[0m", format_styled("Hello", fg="red"))
+        self.assertEqual("\x1b[;;42mHello\x1b[0m", format_styled("Hello", bg="green"))
+        self.assertEqual(
+            "\x1b]8;;file://x.nc\x1b\\File\x1b]8;;\x1b\\",
+            format_styled("File", href="x.nc"),
+        )
+        self.assertEqual(
+            "\x1b]8;;https://data.com/x.nc\x1b\\File\x1b]8;;\x1b\\",
+            format_styled("File", href="https://data.com/x.nc"),
+        )
+        self.assertEqual(
+            "\x1b]8;;file://x.nc\x1b\\x.nc\x1b]8;;\x1b\\",
+            format_styled("", href="x.nc"),
+        )
+        self.assertEqual(
+            "\x1b]8;;file://x.nc\x1b\\\x1b[4mFile\x1b[0m\x1b]8;;\x1b\\",
+            format_styled("File", href="x.nc", s="underline"),
+        )
+
+        self.assertEqual("", format_styled(""))
+        self.assertEqual("", format_styled("", s="dim"))

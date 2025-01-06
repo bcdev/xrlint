@@ -56,16 +56,14 @@ class CliMainTest(TestCase):
     def test_files_no_rules(self):
         runner = CliRunner()
         result = runner.invoke(main, self.files)
+        self.assertIn("Warning: no configuration file found.", result.output)
         self.assertIn("No rules configured or applicable.", result.output)
         self.assertEqual(1, result.exit_code)
 
     def test_files_one_rule(self):
         with text_file(DEFAULT_CONFIG_FILE_YAML, self.ok_config_yaml):
             runner = CliRunner()
-            result = runner.invoke(main, self.files)
-            # self.assertIn("Attributes are empty.", result.output)
-            # self.assertIn("no-empty-attrs", result.output)
-
+            result = runner.invoke(main, ["--no-color"] + self.files)
             self.assertEqual(
                 "\n"
                 "dataset1.zarr - ok\n\n"
@@ -83,6 +81,47 @@ class CliMainTest(TestCase):
             self.assertIn("Missing metadata, attributes are empty.", result.output)
             self.assertIn("no-empty-attrs", result.output)
             self.assertEqual(1, result.exit_code)
+
+    def test_color_no_color(self):
+        with text_file(DEFAULT_CONFIG_FILE_YAML, self.ok_config_yaml):
+            runner = CliRunner()
+            result = runner.invoke(main, ["--no-color"] + self.files)
+            self.assertEqual(
+                "\n"
+                "dataset1.zarr - ok\n\n"
+                "dataset1.nc - ok\n\n"
+                "dataset2.zarr - ok\n\n"
+                "dataset2.nc - ok\n\n"
+                "no problems\n\n",
+                result.output,
+            )
+            self.assertEqual(0, result.exit_code)
+
+        with text_file(DEFAULT_CONFIG_FILE_YAML, self.ok_config_yaml):
+            runner = CliRunner()
+            result = runner.invoke(main, self.files)
+            self.assertEqual(
+                "\n\x1b[4mdataset1.zarr\x1b[0m - ok\n\n"
+                "\x1b[4mdataset1.nc\x1b[0m - ok\n\n"
+                "\x1b[4mdataset2.zarr\x1b[0m - ok\n\n"
+                "\x1b[4mdataset2.nc\x1b[0m - ok\n\n"
+                "no problems\n\n",
+                result.output,
+            )
+            self.assertEqual(0, result.exit_code)
+
+        with text_file(DEFAULT_CONFIG_FILE_YAML, self.ok_config_yaml):
+            runner = CliRunner()
+            result = runner.invoke(main, ["--color"] + self.files)
+            self.assertEqual(
+                "\n\x1b[4mdataset1.zarr\x1b[0m - ok\n\n"
+                "\x1b[4mdataset1.nc\x1b[0m - ok\n\n"
+                "\x1b[4mdataset2.zarr\x1b[0m - ok\n\n"
+                "\x1b[4mdataset2.nc\x1b[0m - ok\n\n"
+                "no problems\n\n",
+                result.output,
+            )
+            self.assertEqual(0, result.exit_code)
 
     def test_files_with_rule_option(self):
         runner = CliRunner()
