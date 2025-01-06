@@ -1,7 +1,10 @@
 
 ## Early development snapshots
 
-- Version 0.0.2 (in development) 
+- Version 0.0.3 (in development)
+
+
+- Version 0.0.2 (06.01.2025) 
   - more rules
   - more tests
   - config list item can be config name
