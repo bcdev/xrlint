@@ -269,6 +269,66 @@
   
   
     <li class="md-nav__item">
+      <a href="../start/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../config/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Configuration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../rule-ref/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Rule Reference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../cli/" class="md-nav__link">
         
   
@@ -401,24 +461,36 @@
 <li>add <code>docs</code></li>
 <li>use mkdocstrings ref syntax in docstrings</li>
 <li>provide configuration examples (use as tests?)</li>
-<li>generate markdown rule reference for the docs</li>
 </ul>
 <h2 id="desired">Desired</h2>
 <ul>
+<li>format reports so links/anchors can be used to point users to
+  the rule's description</li>
+<li>implement xarray backend for xcube 'levels' format
+  so can validate them too</li>
+<li>CLI should output result for file immediately,
+  not only after all results have been collected</li>
+<li>rename <code>xrlint.cli.CliEngine</code> into <code>xrlint.cli.XRLint</code>
+  (with similar API as the <code>ESLint</code> class) and export it 
+  from <code>xrlint.all</code></li>
 <li>add some more tests so we reach 99% coverage</li>
-<li>introduce <code>dataset_options</code> config:<ul>
+<li>support rule op args/kwargs schema validation</li>
+<li>support CLI option <code>--print-config FILE</code>, see ESLint</li>
+<li>Support <code>RuleTest.expected</code>, it is currently unused</li>
+</ul>
+<h2 id="nice-to-have">Nice to have</h2>
+<ul>
+<li>support <code>autofix</code> feature</li>
+<li>support <code>md</code> (markdown) output format</li>
+<li>support formatter op args/kwargs schema validation</li>
+</ul>
+<h1 id="ideas">Ideas</h1>
+<h2 id="allow-for-different-dataset-openers">Allow for different dataset openers</h2>
+<ul>
+<li>introduce <code>dataset_options</code> config:</li>
 <li><code>opener: OpenerOp</code></li>
 <li><code>opener_options: dict[str, Any]</code></li>
 </ul>
-</li>
-<li>implement <code>autofix</code> feature</li>
-</ul>
-<h2 id="nice-to-have">Nice to have</h2>
-<p>Currently unused
-- <code>RuleMeta.type</code>
-- <code>RuleTest.expected</code>
-- <code>processor: ProcessorOp</code> </p>
-<h1 id="ideas">Ideas</h1>
 <h2 id="other-plugins">Other plugins</h2>
 <ul>
 <li><code>sgrid</code>: https://sgrid.github.io/sgrid/</li>

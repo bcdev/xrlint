@@ -9,23 +9,25 @@
       
       
       
+        <link rel="prev" href="../config/">
       
-        <link rel="next" href="start/">
+      
+        <link rel="next" href="../cli/">
       
       
-      <link rel="icon" href="assets/images/favicon.png">
+      <link rel="icon" href="../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.49">
     
     
       
-        <title>XRLint</title>
+        <title>Rule Reference - XRLint</title>
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/main.6f8fc17f.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.6f8fc17f.min.css">
       
         
-        <link rel="stylesheet" href="assets/stylesheets/palette.06af60db.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
       
       
 
@@ -44,9 +46,9 @@
       
     
     
-      <link rel="stylesheet" href="assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
     
-    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -72,7 +74,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#xrlint-a-linter-for-xarray-datasets" class="md-skip">
+        <a href="#rule-reference" class="md-skip">
           Skip to content
         </a>
       
@@ -88,7 +90,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="." title="XRLint" class="md-header__button md-logo" aria-label="XRLint" data-md-component="logo">
+    <a href=".." title="XRLint" class="md-header__button md-logo" aria-label="XRLint" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -108,7 +110,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Overview
+              Rule Reference
             
           </span>
         </div>
@@ -221,7 +223,7 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="." title="XRLint" class="md-nav__button md-logo" aria-label="XRLint" data-md-component="logo">
+    <a href=".." title="XRLint" class="md-nav__button md-logo" aria-label="XRLint" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -248,6 +250,66 @@
       
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../start/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../config/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Configuration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
     
   
   
@@ -264,18 +326,18 @@
           
   
   <span class="md-ellipsis">
-    Overview
+    Rule Reference
   </span>
   
 
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <a href="." class="md-nav__link md-nav__link--active">
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
-    Overview
+    Rule Reference
   </span>
   
 
@@ -297,20 +359,122 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#features" class="md-nav__link">
+  <a href="#core-rules" class="md-nav__link">
     <span class="md-ellipsis">
-      Features
+      Core Rules
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Core Rules">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#coords-for-dims" class="md-nav__link">
+    <span class="md-ellipsis">
+      coords-for-dims
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#inbuilt-rules" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#dataset-title-attr" class="md-nav__link">
     <span class="md-ellipsis">
-      Inbuilt Rules
+      dataset-title-attr
     </span>
   </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grid-mappings" class="md-nav__link">
+    <span class="md-ellipsis">
+      grid-mappings
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#no-empty-attrs" class="md-nav__link">
+    <span class="md-ellipsis">
+      no-empty-attrs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#var-units-attr" class="md-nav__link">
+    <span class="md-ellipsis">
+      var-units-attr
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#xcube-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      xcube Rules
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="xcube Rules">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#any-spatial-data-var" class="md-nav__link">
+    <span class="md-ellipsis">
+      any-spatial-data-var
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cube-dims-order" class="md-nav__link">
+    <span class="md-ellipsis">
+      cube-dims-order
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grid-mapping-naming" class="md-nav__link">
+    <span class="md-ellipsis">
+      grid-mapping-naming
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lat-lon-naming" class="md-nav__link">
+    <span class="md-ellipsis">
+      lat-lon-naming
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#single-grid-mapping" class="md-nav__link">
+    <span class="md-ellipsis">
+      single-grid-mapping
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -329,67 +493,7 @@
   
   
     <li class="md-nav__item">
-      <a href="start/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Getting Started
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="config/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Configuration
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="rule-ref/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Rule Reference
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="cli/" class="md-nav__link">
+      <a href="../cli/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -409,7 +513,7 @@
   
   
     <li class="md-nav__item">
-      <a href="api/" class="md-nav__link">
+      <a href="../api/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -429,7 +533,7 @@
   
   
     <li class="md-nav__item">
-      <a href="about/" class="md-nav__link">
+      <a href="../about/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -469,20 +573,122 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#features" class="md-nav__link">
+  <a href="#core-rules" class="md-nav__link">
     <span class="md-ellipsis">
-      Features
+      Core Rules
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Core Rules">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#coords-for-dims" class="md-nav__link">
+    <span class="md-ellipsis">
+      coords-for-dims
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#inbuilt-rules" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#dataset-title-attr" class="md-nav__link">
     <span class="md-ellipsis">
-      Inbuilt Rules
+      dataset-title-attr
     </span>
   </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grid-mappings" class="md-nav__link">
+    <span class="md-ellipsis">
+      grid-mappings
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#no-empty-attrs" class="md-nav__link">
+    <span class="md-ellipsis">
+      no-empty-attrs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#var-units-attr" class="md-nav__link">
+    <span class="md-ellipsis">
+      var-units-attr
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#xcube-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      xcube Rules
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="xcube Rules">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#any-spatial-data-var" class="md-nav__link">
+    <span class="md-ellipsis">
+      any-spatial-data-var
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cube-dims-order" class="md-nav__link">
+    <span class="md-ellipsis">
+      cube-dims-order
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grid-mapping-naming" class="md-nav__link">
+    <span class="md-ellipsis">
+      grid-mapping-naming
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lat-lon-naming" class="md-nav__link">
+    <span class="md-ellipsis">
+      lat-lon-naming
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#single-grid-mapping" class="md-nav__link">
+    <span class="md-ellipsis">
+      single-grid-mapping
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -504,34 +710,39 @@
   
 
 
-<h1 id="xrlint-a-linter-for-xarray-datasets">XRLint - A linter for xarray datasets</h1>
-<p>XRLint is a <a href="https://en.wikipedia.org/wiki/Lint_(software)">linting</a> 
-tool and library for <a href="">xarray</a> datasets.
-Its design is heavily inspired by <a href="https://eslint.org/">ESLint</a>.</p>
-<p><strong>IMPORTANT NOTE</strong>: This project just started and is under development, 
-there is no stable release yet. See <a href="https://github.com/bcdev/xrlint/blob/main/docs/todo.md">to-do list</a>.</p>
-<h2 id="features">Features</h2>
-<ul>
-<li>Flexible validation for <code>xarray.Dataset</code> objects by configurable <em>rules</em>.</li>
-<li>Available from <em>CLI</em> and <em>Python API</em>.</li>
-<li><em>Custom plugins</em> providing <em>custom rule</em> sets allow addressing 
-  different dataset conventions.</li>
-<li><em>Project-specific configurations</em> including configuration of individual 
-  rules and file-specific settings.</li>
-</ul>
-<h2 id="inbuilt-rules">Inbuilt Rules</h2>
-<p>The following rule plugins are currently built into the code base:</p>
-<ul>
-<li><code>core</code>: Implementing the rules for
-  <a href="https://tutorial.xarray.dev/intermediate/data_cleaning/05.1_intro.html">tiny data</a>
-  and the 
-  <a href="https://cfconventions.org/cf-conventions/cf-conventions.html">CF-Conventions</a>.</li>
-<li><code>xcube</code>: Implementing the rules for 
-  <a href="https://xcube.readthedocs.io/en/latest/cubespec.html">xcube datasets</a>.
-  Note, this plugin is fully optional. You must manually configure 
-  it to apply its rules. It may be moved into a separate GitHub repo 
-  once XRLint is mature enough. </li>
-</ul>
+<h1 id="rule-reference">Rule Reference</h1>
+<h2 id="core-rules">Core Rules</h2>
+<h3 id="coords-for-dims"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14 12h-4v-2h4m0 6h-4v-2h4m6-6h-2.81a6 6 0 0 0-1.82-1.96L17 4.41 15.59 3l-2.17 2.17a6 6 0 0 0-2.83 0L8.41 3 7 4.41l1.62 1.63C7.88 6.55 7.26 7.22 6.81 8H4v2h2.09c-.05.33-.09.66-.09 1v1H4v2h2v1c0 .34.04.67.09 1H4v2h2.81c1.04 1.79 2.97 3 5.19 3s4.15-1.21 5.19-3H20v-2h-2.09c.05-.33.09-.66.09-1v-1h2v-2h-2v-1c0-.34-.04-.67-.09-1H20z"/></svg></span> <code>coords-for-dims</code></h3>
+<p>Dimensions of data variables should have corresponding coordinates.</p>
+<p>Contained in:  <code>all</code>-<span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 15H6l7-14v8h5l-7 14z"/></svg></span> <code>recommended</code>-<span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 15H6l7-14v8h5l-7 14z"/></svg></span></p>
+<h3 id="dataset-title-attr"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7M9 21a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-1H9z"/></svg></span> <code>dataset-title-attr</code></h3>
+<p>Datasets should be given a non-empty title.</p>
+<p>Contained in:  <code>all</code>-<span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 15H6l7-14v8h5l-7 14z"/></svg></span> <code>recommended</code>-<span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 14h-2V9h2m0 9h-2v-2h2M1 21h22L12 2z"/></svg></span></p>
+<h3 id="grid-mappings"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14 12h-4v-2h4m0 6h-4v-2h4m6-6h-2.81a6 6 0 0 0-1.82-1.96L17 4.41 15.59 3l-2.17 2.17a6 6 0 0 0-2.83 0L8.41 3 7 4.41l1.62 1.63C7.88 6.55 7.26 7.22 6.81 8H4v2h2.09c-.05.33-.09.66-.09 1v1H4v2h2v1c0 .34.04.67.09 1H4v2h2.81c1.04 1.79 2.97 3 5.19 3s4.15-1.21 5.19-3H20v-2h-2.09c.05-.33.09-.66.09-1v-1h2v-2h-2v-1c0-.34-.04-.67-.09-1H20z"/></svg></span> <code>grid-mappings</code></h3>
+<p>Grid mappings, if any, shall have valid grid mapping coordinate variables.</p>
+<p>Contained in:  <code>all</code>-<span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 15H6l7-14v8h5l-7 14z"/></svg></span> <code>recommended</code>-<span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 15H6l7-14v8h5l-7 14z"/></svg></span></p>
+<h3 id="no-empty-attrs"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7M9 21a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-1H9z"/></svg></span> <code>no-empty-attrs</code></h3>
+<p>Every dataset element should have metadata that describes it.</p>
+<p>Contained in:  <code>all</code>-<span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 15H6l7-14v8h5l-7 14z"/></svg></span> <code>recommended</code>-<span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 14h-2V9h2m0 9h-2v-2h2M1 21h22L12 2z"/></svg></span></p>
+<h3 id="var-units-attr"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7M9 21a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-1H9z"/></svg></span> <code>var-units-attr</code></h3>
+<p>Every variable should have a valid 'units' attribute.</p>
+<p>Contained in:  <code>all</code>-<span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 15H6l7-14v8h5l-7 14z"/></svg></span> <code>recommended</code>-<span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 14h-2V9h2m0 9h-2v-2h2M1 21h22L12 2z"/></svg></span></p>
+<h2 id="xcube-rules">xcube Rules</h2>
+<h3 id="any-spatial-data-var"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14 12h-4v-2h4m0 6h-4v-2h4m6-6h-2.81a6 6 0 0 0-1.82-1.96L17 4.41 15.59 3l-2.17 2.17a6 6 0 0 0-2.83 0L8.41 3 7 4.41l1.62 1.63C7.88 6.55 7.26 7.22 6.81 8H4v2h2.09c-.05.33-.09.66-.09 1v1H4v2h2v1c0 .34.04.67.09 1H4v2h2.81c1.04 1.79 2.97 3 5.19 3s4.15-1.21 5.19-3H20v-2h-2.09c.05-.33.09-.66.09-1v-1h2v-2h-2v-1c0-.34-.04-.67-.09-1H20z"/></svg></span> <code>any-spatial-data-var</code></h3>
+<p>A datacube should have spatial data variables.</p>
+<p>Contained in:  <code>all</code>-<span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 15H6l7-14v8h5l-7 14z"/></svg></span> <code>recommended</code>-<span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 15H6l7-14v8h5l-7 14z"/></svg></span></p>
+<h3 id="cube-dims-order"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14 12h-4v-2h4m0 6h-4v-2h4m6-6h-2.81a6 6 0 0 0-1.82-1.96L17 4.41 15.59 3l-2.17 2.17a6 6 0 0 0-2.83 0L8.41 3 7 4.41l1.62 1.63C7.88 6.55 7.26 7.22 6.81 8H4v2h2.09c-.05.33-.09.66-.09 1v1H4v2h2v1c0 .34.04.67.09 1H4v2h2.81c1.04 1.79 2.97 3 5.19 3s4.15-1.21 5.19-3H20v-2h-2.09c.05-.33.09-.66.09-1v-1h2v-2h-2v-1c0-.34-.04-.67-.09-1H20z"/></svg></span> <code>cube-dims-order</code></h3>
+<p>Order of dimensions in spatio-temporal datacube variables should be [time, ..., y, x].</p>
+<p>Contained in:  <code>all</code>-<span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 15H6l7-14v8h5l-7 14z"/></svg></span> <code>recommended</code>-<span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 15H6l7-14v8h5l-7 14z"/></svg></span></p>
+<h3 id="grid-mapping-naming"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7M9 21a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-1H9z"/></svg></span> <code>grid-mapping-naming</code></h3>
+<p>Grid mapping variables should be called 'spatial_ref' or 'crs' for compatibility with rioxarray and other packages.</p>
+<p>Contained in:  <code>all</code>-<span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 15H6l7-14v8h5l-7 14z"/></svg></span> <code>recommended</code>-<span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 14h-2V9h2m0 9h-2v-2h2M1 21h22L12 2z"/></svg></span></p>
+<h3 id="lat-lon-naming"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14 12h-4v-2h4m0 6h-4v-2h4m6-6h-2.81a6 6 0 0 0-1.82-1.96L17 4.41 15.59 3l-2.17 2.17a6 6 0 0 0-2.83 0L8.41 3 7 4.41l1.62 1.63C7.88 6.55 7.26 7.22 6.81 8H4v2h2.09c-.05.33-.09.66-.09 1v1H4v2h2v1c0 .34.04.67.09 1H4v2h2.81c1.04 1.79 2.97 3 5.19 3s4.15-1.21 5.19-3H20v-2h-2.09c.05-.33.09-.66.09-1v-1h2v-2h-2v-1c0-.34-.04-.67-.09-1H20z"/></svg></span> <code>lat-lon-naming</code></h3>
+<p>Latitude and longitude coordinates and dimensions should be called 'lat' and 'lon'.</p>
+<p>Contained in:  <code>all</code>-<span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 15H6l7-14v8h5l-7 14z"/></svg></span> <code>recommended</code>-<span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 15H6l7-14v8h5l-7 14z"/></svg></span></p>
+<h3 id="single-grid-mapping"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14 12h-4v-2h4m0 6h-4v-2h4m6-6h-2.81a6 6 0 0 0-1.82-1.96L17 4.41 15.59 3l-2.17 2.17a6 6 0 0 0-2.83 0L8.41 3 7 4.41l1.62 1.63C7.88 6.55 7.26 7.22 6.81 8H4v2h2.09c-.05.33-.09.66-.09 1v1H4v2h2v1c0 .34.04.67.09 1H4v2h2.81c1.04 1.79 2.97 3 5.19 3s4.15-1.21 5.19-3H20v-2h-2.09c.05-.33.09-.66.09-1v-1h2v-2h-2v-1c0-.34-.04-.67-.09-1H20z"/></svg></span> <code>single-grid-mapping</code></h3>
+<p>A single grid mapping shall be used for all spatial data variables of a datacube.</p>
+<p>Contained in:  <code>all</code>-<span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 15H6l7-14v8h5l-7 14z"/></svg></span> <code>recommended</code>-<span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 15H6l7-14v8h5l-7 14z"/></svg></span></p>
 
 
 
@@ -608,10 +819,10 @@ there is no stable release yet. See <a href="https://github.com/bcdev/xrlint/blo
     </div>
     
     
-    <script id="__config" type="application/json">{"base": ".", "features": [], "search": "assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="assets/javascripts/bundle.88dd0f4e.min.js"></script>
+      <script src="../assets/javascripts/bundle.88dd0f4e.min.js"></script>
       
     
   </body>

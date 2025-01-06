@@ -9,21 +9,25 @@
       
       
       
+        <link rel="prev" href="../start/">
       
       
-      <link rel="icon" href="/assets/images/favicon.png">
+        <link rel="next" href="../rule-ref/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.49">
     
     
       
-        <title>XRLint</title>
+        <title>Configuration - XRLint</title>
       
     
     
-      <link rel="stylesheet" href="/assets/stylesheets/main.6f8fc17f.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.6f8fc17f.min.css">
       
         
-        <link rel="stylesheet" href="/assets/stylesheets/palette.06af60db.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
       
       
 
@@ -42,9 +46,9 @@
       
     
     
-      <link rel="stylesheet" href="/assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
     
-    <script>__md_scope=new URL("/",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -69,6 +73,11 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
+        
+        <a href="#configure-xrlint" class="md-skip">
+          Skip to content
+        </a>
+      
     </div>
     <div data-md-component="announce">
       
@@ -81,7 +90,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="/." title="XRLint" class="md-header__button md-logo" aria-label="XRLint" data-md-component="logo">
+    <a href=".." title="XRLint" class="md-header__button md-logo" aria-label="XRLint" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -101,7 +110,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              
+              Configuration
             
           </span>
         </div>
@@ -214,7 +223,7 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="/." title="XRLint" class="md-nav__button md-logo" aria-label="XRLint" data-md-component="logo">
+    <a href=".." title="XRLint" class="md-nav__button md-logo" aria-label="XRLint" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -244,7 +253,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/." class="md-nav__link">
+      <a href=".." class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -264,7 +273,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/start/" class="md-nav__link">
+      <a href="../start/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -281,10 +290,30 @@
       
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="/config/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Configuration
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -293,6 +322,44 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#configuration-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuration File
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration-objects" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuration Objects
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -304,7 +371,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/rule-ref/" class="md-nav__link">
+      <a href="../rule-ref/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -324,7 +391,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/cli/" class="md-nav__link">
+      <a href="../cli/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -344,7 +411,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/api/" class="md-nav__link">
+      <a href="../api/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -364,7 +431,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/about/" class="md-nav__link">
+      <a href="../about/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -394,6 +461,34 @@
   
   
   
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#configuration-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuration File
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration-objects" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuration Objects
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
   
 </nav>
                   </div>
@@ -405,8 +500,103 @@
             <div class="md-content" data-md-component="content">
               <article class="md-content__inner md-typeset">
                 
-  <h1>404 - Not found</h1>
+                  
 
+  
+  
+
+
+<h1 id="configure-xrlint">Configure XRLint</h1>
+<p><em><strong>Note</strong>: this chapter's material is based on the documentation of how to <a href="https://eslint.org/docs/latest/use/configure/">configure ESLint</a>.
+Many parts have been copied and adjusted as it applies in many similar ways to XRLint.</em> </p>
+<h2 id="configuration-file">Configuration File</h2>
+<p>The XRLint configuration file may be named any of the following:</p>
+<ul>
+<li><code>xrlint_config.yaml</code></li>
+<li><code>xrlint_config.json</code></li>
+<li><code>xrlint_config.py</code></li>
+</ul>
+<p>It should be placed in the root directory of your project and export 
+an array of <a href="#configuration-objects">configuration objects</a> or 
+references to <a href="#predefined-configuration-objects">predefined configuration objects</a>. </p>
+<p>Here’s a YAML example:</p>
+<div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">files</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;**/*.zarr&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;**/*.nc&quot;</span><span class="p p-Indicator">]</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">plugins</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">xcube</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">xrlint.plugins.xcube</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">recommended</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">xcube/recommended</span>
+</code></pre></div>
+<p>Same using JSON:</p>
+<div class="highlight"><pre><span></span><code><span class="p">[</span>
+<span class="w">  </span><span class="p">{</span><span class="nt">&quot;files&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;**/*.zarr&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;**/*.nc&quot;</span><span class="p">]},</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;plugins&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;xcube&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;xrlint.plugins.xcube&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="s2">&quot;recommended&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">&quot;xcube/recommended&quot;</span>
+<span class="p">]</span>
+</code></pre></div>
+<p>And as Python script:</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">export_configs</span><span class="p">():</span>
+    <span class="k">return</span> <span class="p">[</span>
+      <span class="p">{</span><span class="s2">&quot;files&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;**/*.zarr&quot;</span><span class="p">,</span> <span class="s2">&quot;**/*.nc&quot;</span><span class="p">]},</span>
+      <span class="p">{</span>
+        <span class="s2">&quot;plugins&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="s2">&quot;xcube&quot;</span><span class="p">:</span> <span class="s2">&quot;xrlint.plugins.xcube&quot;</span>
+        <span class="p">}</span>
+      <span class="p">},</span>
+      <span class="s2">&quot;recommended&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;xcube/recommended&quot;</span>
+    <span class="p">]</span>
+</code></pre></div>
+<h2 id="configuration-objects">Configuration Objects</h2>
+<p>Each configuration object contains all of the information XRLint needs 
+to execute on a set of files. Each configuration object is made up of 
+these properties:</p>
+<ul>
+<li><code>name</code> - A name for the configuration object. 
+  This is used in error messages and config inspector to help identify which 
+  configuration object is being used.</li>
+<li><code>files</code> - A list of glob patterns indicating the files that the 
+  configuration object should apply to. If not specified, the configuration 
+  object applies to all files matched by any other configuration object.</li>
+<li><code>ignores</code> - A list of glob patterns indicating the files that the 
+  configuration object should not apply to. If not specified, the configuration 
+  object applies to all files matched by files. If ignores is used without any 
+  other keys in the configuration object, then the patterns act as <em>global ignores</em>.</li>
+<li><code>opener_options</code> - A dictionary specifying keyword-arguments that are passed 
+  directly to the <code>xarray.open_dataset()</code> function. The available options are 
+  dependent on the xarray backend selected by the <code>engine</code> option.</li>
+<li><code>linter_options</code> - A dictionary containing settings related to 
+  the linting process. (Currently not used.)</li>
+<li><code>processor</code> - A string indicating the name of a processor inside of a plugin, 
+  i.e., <code>"&lt;plugin-name&gt;/&lt;processor-name&gt;"</code>. In Python configurations 
+  it can also be an object of type <code>ProcessorOp</code> containing
+  <code>preprocess()</code> and <code>postprocess()</code> methods.</li>
+<li><code>plugins</code> - A dictionary containing a name-value mapping of plugin names 
+  to either plugin module names or <code>Plugin</code> objects. When <code>files</code> is specified, 
+  these plugins are only available to the matching files.</li>
+<li><code>rules</code> - An object containing the configured rules. 
+  When <code>files</code> or <code>ignores</code> are specified, these rule configurations are only 
+  available to the matching files.</li>
+<li><code>settings</code> - An object containing name-value pairs of information that should 
+  be available to all rules.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
               </article>
             </div>
           
@@ -470,10 +660,10 @@
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "/", "features": [], "search": "/assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="/assets/javascripts/bundle.88dd0f4e.min.js"></script>
+      <script src="../assets/javascripts/bundle.88dd0f4e.min.js"></script>
       
     
   </body>

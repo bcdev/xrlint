@@ -9,7 +9,7 @@
       
       
       
-        <link rel="prev" href="..">
+        <link rel="prev" href="../rule-ref/">
       
       
         <link rel="next" href="../api/">
@@ -270,6 +270,66 @@
       
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../start/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../config/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Configuration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../rule-ref/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Rule Reference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
     
   
   
@@ -388,13 +448,18 @@ The following are the command's options and arguments:</p>
 
 Options:
   --no-default-config     Disable use of default configuration from
-                          xrlint.config.*
-  -c, --config PATH       Use this configuration, overriding xrlint.config.*
+                          xrlint_config.*
+  -c, --config PATH       Use this configuration, overriding xrlint_config.*
                           config options if present
+  --plugin MODULE         Specify plugins. MODULE is the name of Python module
+                          that defines an &#39;export_plugin()&#39; function.
+  --rule SPEC             Specify rules. SPEC must have format &#39;&lt;rule-name&gt;:
+                          &lt;rule-config&gt;&#39; (note the space character).
   -f, --format NAME       Use a specific output format - default: simple
   -o, --output-file PATH  Specify file to write report to
   --max-warnings COUNT    Number of warnings to trigger nonzero exit code -
-                          default: -1
+                          default: 5
+  --init                  Write initial configuration file and exit.
   --version               Show the version and exit.
   --help                  Show this message and exit.
 </code></pre></div>
