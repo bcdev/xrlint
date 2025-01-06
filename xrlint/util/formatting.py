@@ -64,3 +64,41 @@ def format_type_of(value: Any) -> str:
         return value
     assert isinstance(value, type)
     return value.__name__
+
+
+def format_link(path_or_url: str, text: str | None = None):
+    """Format the file path as a clickable link"""
+    href = ("file://" + path_or_url) if "://" not in path_or_url else path_or_url
+    return f"\033]8;;{href}\033\\{text or path_or_url}\033]8;;\033\\"
+
+
+def format_severity(severity: int):
+    """Format the text to appear as an error"""
+    return format_error("error") if severity == 2 else format_warn("warn")
+
+
+def format_rule(rule_name: str):
+    """Format the text to appear as an error"""
+    return f"\033[1;31m{text}\033[0m"
+
+
+def format_error(text: str):
+    """Format the text to appear as an error"""
+    return f"\033[0;31m{text}\033[0m"
+
+
+def format_warn(text: str):
+    """Format the text to appear as a warning"""
+    return f"\033[0;34m{text}\033[0m"
+
+
+def format_styled(text: str, s: int | str = "", fg: int | str = "", bg: int | str = ""):
+    """Format styled text"""
+    style = ""
+    if s != "":
+        style += str(s)
+    if fg != "":
+        style += ";" + str(fg)
+    if bg != "":
+        style += (";" if style else ";;") + str(bg)
+    return f"\033[{style}m{text}\033[0m"

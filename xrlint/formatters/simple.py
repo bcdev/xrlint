@@ -2,8 +2,7 @@ from xrlint.constants import SEVERITY_CODE_TO_NAME
 from xrlint.formatter import FormatterOp, FormatterContext
 from xrlint.formatters import registry
 from xrlint.result import Result
-from xrlint.util.formatting import format_problems
-
+from xrlint.util.formatting import format_problems, format_link, format_styled
 
 from tabulate import tabulate
 
@@ -26,12 +25,14 @@ class Simple(FormatterOp):
                 text.append(f"\n{r.file_path}:\n")
                 r_data = []
                 for m in r.messages:
+                    severity = SEVERITY_CODE_TO_NAME.get(m.severity)
+                    docs_url = "https://bcdev.github.io/xrlint"
                     r_data.append(
                         [
                             m.node_path,
-                            SEVERITY_CODE_TO_NAME.get(m.severity),
+                            format_styled(severity, s=3, fg=31 if m.severity == 2 else 32),
                             m.message,
-                            m.rule_id,
+                            format_styled(format_link(docs_url, m.rule_id), s=2, fg=34),
                         ]
                     )
                 text.append(tabulate(r_data, headers=(), tablefmt="plain"))
