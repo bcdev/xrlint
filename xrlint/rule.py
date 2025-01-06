@@ -106,36 +106,65 @@ class RuleMeta(ToDictMixin):
     """Rule documentation URL."""
 
     schema: dict[str, Any] | list[dict[str, Any]] | bool | None = None
-    """JSON Schema used to specify and validate the rule verifier's 
+    """JSON Schema used to specify and validate the rule verifier's
     options.
-    
+
     It can take the following values:
-    
-    - Use `None` (the default) to indicate that the rule verifier 
+
+    - Use `None` (the default) to indicate that the rule verifier
       as no options at all.
-    - Use a schema to indicate that the rule verifier 
-      takes keyword arguments only.  
+    - Use a schema to indicate that the rule verifier
+      takes keyword arguments only.
       The schema's type must be `"object"`.
     - Use a list of schemas to indicate that the rule verifier
-      takes positional arguments only. 
-      If given, the number of schemas in the list specifies the 
+      takes positional arguments only.
+      If given, the number of schemas in the list specifies the
       number of positional arguments that must be configured.
     """
 
-    type: Literal["problem", "suggestion"] = "problem"
-    """Rule type. Defaults to `"problem"`."""
+    type: Literal["problem", "suggestion", "layout"] = "problem"
+    """Rule type. Defaults to `"problem"`.
+
+    The type field can have one of the following values:
+
+    - `"problem"`: Indicates that the rule addresses datasets that are
+      likely to cause errors or unexpected behavior during runtime.
+      These issues usually represent real bugs or potential runtime problems.
+    - `"suggestion"`: Used for rules that suggest structural improvements
+      or enforce best practices. These issues are not necessarily bugs, but
+      following the suggestions may lead to more readable, maintainable, or
+      consistent datasets.
+    - `"layout"`: Specifies that the rule enforces consistent stylistic
+      aspects of dataset formatting, e.g., whitespaces in names.
+      Issues with layout rules are often automatically fixable
+      (not supported yet).
+
+    Primarily serves to categorize the rule's purpose for the benefit
+    of developers and tools that consume XRLint output.
+    It doesn’t directly affect the linting logic - that part is handled
+    by the rule’s implementation and its configured severity.
+    """
 
 
 @dataclass(frozen=True)
 class Rule:
-    """A rule."""
+    """A rule comprises rule metadata and a reference to the
+    class that implements the rule's logic.
+
+    Instances of this class can be easily created and added to a plugin
+    by using the decorator `@define_rule` of the `Plugin` class.
+
+    Args:
+        meta: the rule's metadata
+        op_class: the class that implements the rule's logic
+    """
 
     meta: RuleMeta
     """Rule metadata of type `RuleMeta`."""
 
     op_class: Type[RuleOp]
     """The class the implements the rule's verification operation.
-    The class must implement the `RuleOp` interface. 
+    The class must implement the `RuleOp` interface.
     """
 
 
@@ -153,7 +182,7 @@ class RuleConfig:
     """
 
     severity: Literal[0, 1, 2]
-    """Rule severity."""
+    """Rule severity, one of `2` (error), `1` (warn), or `0` (off)."""
 
     args: tuple[Any, ...] = field(default_factory=tuple)
     """Rule operation arguments."""
@@ -221,10 +250,9 @@ class RuleConfig:
 def register_rule(
     registry: dict[str, Rule],
     name: str,
-    /,
-    version: str | None = None,
+    version: str = "0.0.0",
     schema: dict[str, Any] | list[dict[str, Any]] | bool | None = None,
-    type: Literal["problem", "suggestion"] | None = None,
+    type: Literal["problem", "suggestion", "layout"] | None = None,
     description: str | None = None,
     docs_url: str | None = None,
     op_class: Type[RuleOp] | None = None,

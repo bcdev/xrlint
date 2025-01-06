@@ -9,6 +9,7 @@ class ExportPluginTest(TestCase):
         _plugin = export_plugin()
         self.assertEqual(
             {
+                "all",
                 "recommended",
             },
             set(_plugin.configs.keys()),

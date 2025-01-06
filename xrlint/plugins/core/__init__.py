@@ -20,5 +20,11 @@ def export_plugin() -> Plugin:
             },
         }
     )
+    plugin.configs["all"] = Config.from_value(
+        {
+            "name": "all",
+            "rules": {rule_id: "error" for rule_id in plugin.rules.keys()},
+        }
+    )
 
     return plugin

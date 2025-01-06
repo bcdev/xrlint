@@ -7,6 +7,7 @@ from xrlint.rule import RuleOp, RuleContext
 @plugin.define_rule(
     "grid-mapping-naming",
     version="1.0.0",
+    type="suggestion",
     description=(
         f"Grid mapping variables should be called {GM_NAMES_TEXT}"
         f" for compatibility with rioxarray and other packages."

@@ -34,10 +34,10 @@ class RuleTest:
     """Optional keyword arguments passed to the rule verifier's constructor."""
 
     expected: list[Message] | int | None = 0
-    """Expected messages. 
-    Either a list of expected message objects or 
+    """Expected messages.
+    Either a list of expected message objects or
     the number of expected message.
-    Must not be provided for valid checks 
+    Must not be provided for valid checks
     and must be provided for invalid checks.
     """
 

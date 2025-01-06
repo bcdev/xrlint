@@ -6,6 +6,7 @@ from xrlint.rule import RuleOp, RuleContext
 @plugin.define_rule(
     "grid-mappings",
     version="1.0.0",
+    type="problem",
     description=(
         "Grid mappings, if any, shall have valid grid mapping coordinate variables."
     ),

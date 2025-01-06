@@ -8,6 +8,7 @@ from xrlint.rule import RuleOp, RuleContext
 @plugin.define_rule(
     "single-grid-mapping",
     version="1.0.0",
+    type="problem",
     description=(
         "A single grid mapping shall be used for all"
         " spatial data variables of a datacube."
@@ -45,7 +46,8 @@ class SingleGridMapping(RuleOp):
                 f"Spatial variables refer to multiple grid mappings: {gm_names}.",
                 suggestions=[
                     (
-                        "Split datacube into multiple datacubes each with a single grid mapping."
+                        "Split datacube into multiple datacubes"
+                        " each with a single grid mapping."
                     ),
                 ],
             )

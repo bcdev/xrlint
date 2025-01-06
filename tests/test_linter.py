@@ -1,3 +1,4 @@
+from typing import Any
 from unittest import TestCase
 
 import xarray as xr
@@ -6,6 +7,7 @@ from xrlint.config import Config
 from xrlint.constants import CORE_PLUGIN_NAME
 from xrlint.linter import Linter
 from xrlint.linter import new_linter
+from xrlint.processor import ProcessorOp
 from xrlint.result import Message
 from xrlint.plugin import Plugin, PluginMeta
 from xrlint.result import Result
@@ -81,7 +83,22 @@ class LinterVerifyTest(TestCase):
         class DatasetVer(RuleOp):
             def dataset(self, ctx: RuleContext, node: DatasetNode):
                 if len(node.dataset.data_vars) == 0:
-                    ctx.report(f"Dataset does not have data variables")
+                    ctx.report("Dataset does not have data variables")
+
+        @plugin.define_processor("multi-level-dataset")
+        class MultiLevelDataset(ProcessorOp):
+            def preprocess(
+                self, file_path: str, _opener_options: dict[str, Any]
+            ) -> list[tuple[xr.Dataset, str]]:
+                return [
+                    (xr.Dataset(attrs={"title": "Level 0"}), file_path + "/0.zarr"),
+                    (xr.Dataset(attrs={"title": "Level 1"}), file_path + "/1.zarr"),
+                ]
+
+            def postprocess(
+                self, messages: list[list[Message]], file_path: str
+            ) -> list[Message]:
+                return messages[0] + messages[1]
 
         config = Config(plugins={"test": plugin})
         self.linter = Linter(config=config)
@@ -245,4 +262,34 @@ class LinterVerifyTest(TestCase):
                 ],
             ),
             result,
+        )
+
+    def test_processor(self):
+
+        result = self.linter.verify_dataset(
+            "test.levels",
+            config=Config.from_value(
+                {
+                    "processor": "test/multi-level-dataset",
+                    "rules": {"test/dataset-without-data-vars": "warn"},
+                }
+            ),
+        )
+
+        self.assertEqual(
+            [
+                Message(
+                    message="Dataset does not have data variables",
+                    node_path="dataset",
+                    rule_id="test/dataset-without-data-vars",
+                    severity=1,
+                ),
+                Message(
+                    message="Dataset does not have data variables",
+                    node_path="dataset",
+                    rule_id="test/dataset-without-data-vars",
+                    severity=1,
+                ),
+            ],
+            result.messages,
         )

@@ -2,7 +2,7 @@ from unittest import TestCase
 
 from xrlint.plugin import Plugin
 from xrlint.util.importutil import import_submodules
-from xrlint.util.importutil import import_exported_value
+from xrlint.util.importutil import import_value
 
 
 class ImportSubmodulesTest(TestCase):
@@ -26,7 +26,7 @@ class ImportSubmodulesTest(TestCase):
         )
 
     def test_import_exported_value(self):
-        core_plugin = import_exported_value(
-            "xrlint.plugins.core", "plugin", Plugin.from_value
+        core_plugin = import_value(
+            "xrlint.plugins.core", "export_plugin", Plugin.from_value
         )
         self.assertIsInstance(core_plugin, Plugin)

@@ -4,7 +4,6 @@ from typing import Any, Literal
 import xarray as xr
 
 from xrlint.config import Config
-from xrlint.constants import MISSING_DATASET_FILE_PATH
 from xrlint.constants import SEVERITY_ERROR
 from xrlint.node import Node
 from xrlint.result import Message
@@ -16,10 +15,11 @@ class RuleContextImpl(RuleContext):
     def __init__(
         self,
         config: Config,
-        dataset: xr.Dataset | None,
+        dataset: xr.Dataset,
         file_path: str,
     ):
         assert config is not None
+        assert dataset is not None
         assert file_path is not None
         self._config = config
         self._dataset = dataset
@@ -40,10 +40,6 @@ class RuleContextImpl(RuleContext):
 
     @property
     def dataset(self) -> xr.Dataset:
-        # self._dataset may be None, e.g., if it could not be opened.
-        # But in this case we never should enter user code, hence,
-        # we will see the assertion error only in our own code.
-        assert self._dataset is not None
         return self._dataset
 
     @property

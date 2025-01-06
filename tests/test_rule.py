@@ -61,6 +61,9 @@ class RuleConfigTest(TestCase):
             RuleConfig.from_value(4)
         with pytest.raises(
             ValueError,
-            match="severity must be one of 'error', 'warn', 'off', 2, 1, 0, but was 'debug'",
+            match=(
+                "severity must be one of 'error', 'warn', 'off',"
+                " 2, 1, 0, but was 'debug'"
+            ),
         ):
             RuleConfig.from_value("debug")

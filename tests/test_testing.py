@@ -45,7 +45,10 @@ class RuleTesterTest(TestCase):
         tester = RuleTester(rules={"test/force-title": "error"})
         with pytest.raises(
             AssertionError,
-            match="Rule 'force-title': test_valid_2: expected no problem, but got one error",
+            match=(
+                "Rule 'force-title': test_valid_2:"
+                " expected no problem, but got one error"
+            ),
         ):
             tester.run(
                 "force-title",
@@ -61,7 +64,10 @@ class RuleTesterTest(TestCase):
         tester = RuleTester(rules={"test/force-title": "error"})
         with pytest.raises(
             AssertionError,
-            match="Rule 'force-title': test_invalid_1: expected one or more problems, but got no problems",
+            match=(
+                "Rule 'force-title': test_invalid_1:"
+                " expected one or more problems, but got no problems"
+            ),
         ):
             tester.run(
                 "force-title",

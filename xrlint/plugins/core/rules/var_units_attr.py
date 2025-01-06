@@ -6,6 +6,7 @@ from xrlint.rule import RuleOp, RuleContext
 @plugin.define_rule(
     "var-units-attr",
     version="1.0.0",
+    type="suggestion",
     description="Every variable should have a valid 'units' attribute.",
 )
 class VarUnitsAttr(RuleOp):

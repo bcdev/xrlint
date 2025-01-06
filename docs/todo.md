@@ -7,24 +7,36 @@
 - add `docs`
   - use mkdocstrings ref syntax in docstrings
   - provide configuration examples (use as tests?)
-  - generate markdown rule reference for the docs
 
 ## Desired
  
+- format reports so links/anchors can be used to point users to
+  the rule's description
+- implement xarray backend for xcube 'levels' format
+  so can validate them too
+- CLI should output result for file immediately,
+  not only after all results have been collected
+- rename `xrlint.cli.CliEngine` into `xrlint.cli.XRLint`
+  (with similar API as the `ESLint` class) and export it 
+  from `xrlint.all`
 - add some more tests so we reach 99% coverage
-- introduce `dataset_options` config:
-    - `opener: OpenerOp`
-    - `opener_options: dict[str, Any]`
-- implement `autofix` feature
+- support rule op args/kwargs schema validation
+- support CLI option `--print-config FILE`, see ESLint
+- Support `RuleTest.expected`, it is currently unused
 
 ## Nice to have
 
-Currently unused
-- `RuleMeta.type`
-- `RuleTest.expected`
-- `processor: ProcessorOp` 
+- support `autofix` feature
+- support `md` (markdown) output format
+- support formatter op args/kwargs schema validation
 
 # Ideas
+
+## Allow for different dataset openers
+
+- introduce `dataset_options` config:
+  - `opener: OpenerOp`
+  - `opener_options: dict[str, Any]`
 
 ## Other plugins
 

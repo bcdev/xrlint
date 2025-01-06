@@ -6,6 +6,7 @@ from xrlint.rule import RuleContext, RuleOp
 @plugin.define_rule(
     "dataset-title-attr",
     version="1.0.0",
+    type="suggestion",
     description="Datasets should be given a non-empty title.",
 )
 class DatasetTitleAttr(RuleOp):

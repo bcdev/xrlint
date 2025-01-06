@@ -3,7 +3,7 @@ from unittest import TestCase
 import xarray as xr
 
 # noinspection PyProtectedMember
-from xrlint._linter.rule_ctx_impl import RuleContextImpl
+from xrlint._linter.rulectx import RuleContextImpl
 from xrlint.config import Config
 from xrlint.result import Suggestion, Message
 

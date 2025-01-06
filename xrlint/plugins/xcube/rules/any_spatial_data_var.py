@@ -7,6 +7,7 @@ from xrlint.rule import RuleOp, RuleContext
 @plugin.define_rule(
     "any-spatial-data-var",
     version="1.0.0",
+    type="problem",
     description="A datacube should have spatial data variables.",
 )
 class AnySpatialDataVar(RuleOp):

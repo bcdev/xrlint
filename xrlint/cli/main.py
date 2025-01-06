@@ -2,17 +2,19 @@ import sys
 
 import click
 
-# Warning: do not import heavy stuff here,
-# Option "--help" can be slow otherwise!
+# Warning: do not import heavy stuff here, it can
+# slow down commands like "xrlint --help" otherwise.
 from xrlint.version import version
-from xrlint.cli.constants import DEFAULT_MAX_WARNINGS
-from xrlint.cli.constants import DEFAULT_OUTPUT_FORMAT
-from xrlint.cli.constants import DEFAULT_CONFIG_BASENAME
+from xrlint.cli.constants import (
+    DEFAULT_MAX_WARNINGS,
+    DEFAULT_OUTPUT_FORMAT,
+    DEFAULT_CONFIG_BASENAME,
+)
 
 
 @click.command(name="xrlint")
 @click.option(
-    f"--no-default-config",
+    "--no-default-config",
     "no_default_config",
     help=f"Disable use of default configuration from {DEFAULT_CONFIG_BASENAME}.*",
     is_flag=True,
@@ -31,8 +33,8 @@ from xrlint.cli.constants import DEFAULT_CONFIG_BASENAME
     "--plugin",
     "plugin_specs",
     help=(
-        f"Specify plugins. MODULE is the name of Python module"
-        f" that defines an 'export_plugin()' function."
+        "Specify plugins. MODULE is the name of Python module"
+        " that defines an 'export_plugin()' function."
     ),
     metavar="MODULE",
     multiple=True,
@@ -41,8 +43,8 @@ from xrlint.cli.constants import DEFAULT_CONFIG_BASENAME
     "--rule",
     "rule_specs",
     help=(
-        f"Specify rules. SPEC must have format"
-        f" '<rule-name>: <rule-config>' (note the space character)."
+        "Specify rules. SPEC must have format"
+        " '<rule-name>: <rule-config>' (note the space character)."
     ),
     metavar="SPEC",
     multiple=True,
@@ -59,7 +61,7 @@ from xrlint.cli.constants import DEFAULT_CONFIG_BASENAME
     "-o",
     "--output-file",
     "output_file",
-    help=f"Specify file to write report to",
+    help="Specify file to write report to",
     metavar="PATH",
 )
 @click.option(
@@ -73,6 +75,12 @@ from xrlint.cli.constants import DEFAULT_CONFIG_BASENAME
     default=DEFAULT_MAX_WARNINGS,
     metavar="COUNT",
 )
+@click.option(
+    "--init",
+    "init_mode",
+    help="Write initial configuration file and exit.",
+    is_flag=True,
+)
 @click.argument("files", nargs=-1)
 @click.version_option(version)
 @click.help_option()
@@ -84,19 +92,24 @@ def main(
     max_warnings: int,
     output_format: str,
     output_file: str | None,
+    init_mode: bool,
     files: tuple[str, ...],
 ):
-    """Lint the given dataset FILES.
+    """Validate the given dataset FILES.
 
-    Reads configuration from `./xrlint.config.py` if `--no-default-config`
-    is not set and `--config PATH` is not provided, then validates
-    each dataset in FILES against the configuration.
+    Reads configuration from `xrlint.config.*` if file exists and
+    unless `--no-default-config` is set or `--config PATH` is provided.
+    Then validates each dataset in FILES against the configuration.
     The validation result is dumped to standard output if not otherwise
     stated by `--output-file PATH`. The output format is `simple`. Other
     inbuilt formats are `json` and `html` which can by setting the
     `--format NAME` option.
     """
     from xrlint.cli.engine import CliEngine
+
+    if init_mode:
+        CliEngine.init_config_file()
+        raise click.exceptions.Exit(0)
 
     if not files:
         raise click.ClickException("No dataset files provided.")

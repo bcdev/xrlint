@@ -1,7 +1,6 @@
 from abc import abstractmethod, ABC
 from dataclasses import dataclass
-from typing import Type
-
+from typing import Type, Any, Callable
 
 import xarray as xr
 
@@ -13,19 +12,17 @@ class ProcessorOp(ABC):
 
     @abstractmethod
     def preprocess(
-        self, dataset: xr.Dataset, file_path: str
+        self, file_path: str, opener_options: dict[str, Any]
     ) -> list[tuple[xr.Dataset, str]]:
-        """Pre-process the dataset.
-        In this method you can strip out any content
-        and optionally split into multiple (or none)
+        """Pre-process a dataset given by its `file_path` and `opener_options`.
+        In this method you use the `file_path` to read zero, one, or more
         datasets to lint.
 
         Args:
-            dataset: A dataset
-            file_path: The file path that was used to open
-                the `dataset`.
+            file_path: A file path
+            opener_options: The configuration's `opener_options`.
         Returns:
-            An array of code blocks to lint
+            A list of (dataset, file_path) pairs
         """
 
     @abstractmethod
@@ -48,12 +45,21 @@ class ProcessorOp(ABC):
 
 @dataclass(frozen=True, kw_only=True)
 class ProcessorMeta:
+    """Processor metadata."""
+
     name: str
-    version: str
+    """Name of the processor."""
+
+    version: str = "0.0.0"
+    """Version of the processor."""
 
 
 @dataclass(frozen=True, kw_only=True)
 class Processor:
+    """Processors tell XRLint how to process files other than
+    standard xarray datasets.
+    """
+
     meta: ProcessorMeta
     """Information about the processor."""
 
@@ -62,3 +68,28 @@ class Processor:
 
     supports_auto_fix: bool = False
     """`True` if this processor supports auto-fixing of datasets."""
+
+
+def register_processor(
+    registry: dict[str, Processor],
+    name: str,
+    version: str = "0.0.0",
+    op_class: Type[ProcessorOp] | None = None,
+) -> Callable[[Any], Type[ProcessorOp]] | None:
+    def _register_processor(_op_class: Any) -> Type[ProcessorOp]:
+        from inspect import isclass
+
+        if not isclass(_op_class) or not issubclass(_op_class, ProcessorOp):
+            raise TypeError(
+                f"component decorated by define_processor()"
+                f" must be a subclass of {ProcessorOp.__name__}"
+            )
+        meta = ProcessorMeta(name=name, version=version)
+        registry[name] = Processor(meta=meta, op_class=_op_class)
+        return _op_class
+
+    if op_class is None:
+        # decorator case
+        return _register_processor
+
+    _register_processor(op_class)

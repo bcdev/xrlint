@@ -1,14 +1,15 @@
 import os
 import tempfile
 import shutil
-from contextlib import contextmanager
 from unittest import TestCase
 
 from click.testing import CliRunner
 import xarray as xr
 
 from xrlint.cli.main import main
+from xrlint.cli.constants import DEFAULT_CONFIG_FILE_YAML
 from xrlint.version import version
+from .helpers import text_file
 
 
 # noinspection PyTypeChecker
@@ -59,7 +60,7 @@ class CliMainTest(TestCase):
         self.assertEqual(1, result.exit_code)
 
     def test_files_one_rule(self):
-        with text_file("xrlint.config.yaml", self.ok_config_yaml):
+        with text_file(DEFAULT_CONFIG_FILE_YAML, self.ok_config_yaml):
             runner = CliRunner()
             result = runner.invoke(main, self.files)
             # self.assertIn("Attributes are empty.", result.output)
@@ -76,10 +77,10 @@ class CliMainTest(TestCase):
             )
             self.assertEqual(0, result.exit_code)
 
-        with text_file("xrlint.config.yaml", self.fail_config_yaml):
+        with text_file(DEFAULT_CONFIG_FILE_YAML, self.fail_config_yaml):
             runner = CliRunner()
             result = runner.invoke(main, self.files)
-            self.assertIn("Attributes are empty.", result.output)
+            self.assertIn("Missing metadata, attributes are empty.", result.output)
             self.assertIn("no-empty-attrs", result.output)
             self.assertEqual(1, result.exit_code)
 
@@ -93,7 +94,7 @@ class CliMainTest(TestCase):
             ]
             + self.files,
         )
-        self.assertIn("Attributes are empty.", result.output)
+        self.assertIn("Missing metadata, attributes are empty.", result.output)
         self.assertIn("no-empty-attrs", result.output)
         self.assertEqual(1, result.exit_code)
 
@@ -114,7 +115,7 @@ class CliMainTest(TestCase):
         self.assertEqual(1, result.exit_code)
 
     def test_files_with_output_file(self):
-        with text_file("xrlint.config.yaml", self.ok_config_yaml):
+        with text_file(DEFAULT_CONFIG_FILE_YAML, self.ok_config_yaml):
             runner = CliRunner()
             result = runner.invoke(main, ["-o", "memory://report.txt"] + self.files)
             self.assertEqual("", result.output)
@@ -123,11 +124,11 @@ class CliMainTest(TestCase):
     def test_files_but_config_file_missing(self):
         runner = CliRunner()
         result = runner.invoke(main, ["-c", "pippo.py"] + self.files)
-        self.assertIn("Error: pippo.py: file not found", result.output)
+        self.assertIn("Error: file not found: pippo.py", result.output)
         self.assertEqual(1, result.exit_code)
 
     def test_files_with_format_option(self):
-        with text_file("xrlint.config.yaml", self.ok_config_yaml):
+        with text_file(DEFAULT_CONFIG_FILE_YAML, self.ok_config_yaml):
             runner = CliRunner()
             result = runner.invoke(main, ["-f", "json"] + self.files)
             self.assertIn('"results": [\n', result.output)
@@ -156,13 +157,3 @@ class CliMainMetaTest(TestCase):
         result = runner.invoke(main, ["--version"])
         self.assertIn(f"xrlint, version {version}", result.output)
         self.assertEqual(result.exit_code, 0)
-
-
-@contextmanager
-def text_file(file_name: str, content: str):
-    with open(file_name, mode="w") as f:
-        f.write(content)
-    try:
-        yield
-    finally:
-        os.remove(file_name)

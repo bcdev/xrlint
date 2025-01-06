@@ -1,8 +1,9 @@
 from dataclasses import dataclass, field
-import fnmatch
+from functools import cached_property
 from typing import Any, TYPE_CHECKING, Union
 
 from xrlint.constants import CORE_PLUGIN_NAME
+from xrlint.util.filefilter import FileFilter
 from xrlint.util.formatting import format_message_type_of
 from xrlint.util.todict import ToDictMixin
 from xrlint.util.merge import (
@@ -12,11 +13,19 @@ from xrlint.util.merge import (
     merge_values,
 )
 
+
 if TYPE_CHECKING:  # pragma: no cover
     from xrlint.rule import Rule
     from xrlint.rule import RuleConfig
     from xrlint.plugin import Plugin
     from xrlint.processor import ProcessorOp
+
+
+def get_core_plugin() -> "Plugin":
+    """Get the fully imported, populated core plugin."""
+    from xrlint.plugins.core import export_plugin
+
+    return export_plugin()
 
 
 def get_core_config(recommended: bool = False):
@@ -37,11 +46,25 @@ def get_core_config(recommended: bool = False):
     )
 
 
-def get_core_plugin() -> "Plugin":
-    """Get the fully imported, populated core plugin."""
-    from xrlint.plugins.core import export_plugin
+def split_config_spec(config_spec: str) -> tuple[str, str]:
+    """Split a configuration specification into plugin name
+    and configuration item name.
+    """
+    return (
+        config_spec.split("/", maxsplit=1)
+        if "/" in config_spec
+        else (CORE_PLUGIN_NAME, config_spec)
+    )
 
-    return export_plugin()
+
+def merge_configs(
+    config1: Union["Config", dict[str, Any], None],
+    config2: Union["Config", dict[str, Any], None],
+) -> "Config":
+    """Merge two configuration objects and return the result."""
+    config1 = Config.from_value(config1)
+    config2 = Config.from_value(config2)
+    return config1.merge(config2)
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -55,23 +78,30 @@ class Config(ToDictMixin):
     """
 
     name: str | None = None
-    """A name for the configuration object. 
-    This is used in error messages and config inspector to help identify 
-    which configuration object is being used. 
+    """A name for the configuration object.
+    This is used in error messages and config inspector to help identify
+    which configuration object is being used.
     """
 
     files: list[str] | None = None
-    """An array of glob patterns indicating the files that the 
-    configuration object should apply to. If not specified, 
-    the configuration object applies to all files matched 
+    """An array of glob patterns indicating the files that the
+    configuration object should apply to. If not specified,
+    the configuration object applies to all files matched
     by any other configuration object.
+
+    When a configuration object contains only the files property
+    without accompanying rules or settings, it effectively acts as
+    a _global file filter_. This means that XRLint will recognize
+    and process only the files matching these patterns, thereby
+    limiting its scope to the specified files. The inbuilt
+    global file filters are `["**/*.zarr", "**/*.nc"]`.
     """
 
     ignores: list[str] | None = None
-    """An array of glob patterns indicating the files that the 
-    configuration object should not apply to. If not specified, 
-    the configuration object applies to all files matched by `files`. 
-    If `ignores` is used without any other keys in the configuration 
+    """An array of glob patterns indicating the files that the
+    configuration object should not apply to. If not specified,
+    the configuration object applies to all files matched by `files`.
+    If `ignores` is used without any other keys in the configuration
     object, then the patterns act as _global ignores_.
     """
 
@@ -79,30 +109,30 @@ class Config(ToDictMixin):
     """A dictionary containing options related to the linting process."""
 
     opener_options: dict[str, Any] | None = None
-    """A dictionary containing options that are passed to 
+    """A dictionary containing options that are passed to
     the dataset opener.
     """
 
     processor: Union["ProcessorOp", str, None] = None
-    """Either an object compatible with the `ProcessorOp` 
-    interface or a string indicating the name of a processor inside 
+    """Either an object compatible with the `ProcessorOp`
+    interface or a string indicating the name of a processor inside
     of a plugin (i.e., `"pluginName/processorName"`).
     """
 
     plugins: dict[str, "Plugin"] | None = None
-    """A dictionary containing a name-value mapping of plugin names to 
-    plugin objects. When `files` is specified, these plugins are only 
+    """A dictionary containing a name-value mapping of plugin names to
+    plugin objects. When `files` is specified, these plugins are only
     available to the matching files.
     """
 
     rules: dict[str, "RuleConfig"] | None = None
-    """A dictionary containing the configured rules. 
-    When `files` or `ignores` are specified, these rule configurations 
+    """A dictionary containing the configured rules.
+    When `files` or `ignores` are specified, these rule configurations
     are only available to the matching files.
     """
 
     settings: dict[str, Any] | None = None
-    """A dictionary containing name-value pairs of information 
+    """A dictionary containing name-value pairs of information
     that should be available to all rules.
     """
 
@@ -149,23 +179,30 @@ class Config(ToDictMixin):
             settings=settings,
         )
 
-    @property
-    def global_ignores(self) -> list[str]:
-        # The list of `ignores` patterns from this configuration which
-        # are _global ignores_.
-        return (
-            self.ignores
-            if self.ignores
-            and not (
-                self.files
-                or self.linter_options
-                or self.opener_options
-                or self.plugins
-                or self.rules
-                or self.settings
-            )
-            else []
+    @cached_property
+    def file_filter(self) -> "FileFilter":
+        """The file filter specified by this configuration. May be empty."""
+        return FileFilter.from_patterns(self.files, self.ignores)
+
+    @cached_property
+    def empty(self) -> bool:
+        """`True` if this configuration object does not configure anything.
+        Note, it could still contribute to a global file filter if its
+        `files` and `ignores` options are set."""
+        return not (
+            self.linter_options
+            or self.opener_options
+            or self.plugins
+            or self.rules
+            or self.settings
         )
+
+    def get_plugin(self, plugin_name: str) -> "Plugin":
+        """Get the plugin for given plugin name `plugin_name`."""
+        plugin = (self.plugins or {}).get(plugin_name)
+        if plugin is None:
+            raise ValueError(f"unknown plugin {plugin_name!r}")
+        return plugin
 
     def get_rule(self, rule_id: str) -> "Rule":
         """Get the rule for the given rule identifier `rule_id`.
@@ -179,23 +216,31 @@ class Config(ToDictMixin):
             ValueError: If either the plugin is unknown in this configuration
                 or the rule name is unknown.
         """
-        if "/" in rule_id:
-            plugin_name, rule_name = rule_id.split("/", maxsplit=1)
-        else:
-            plugin_name, rule_name = CORE_PLUGIN_NAME, rule_id
-
-        from xrlint.plugin import Plugin
-        from xrlint.rule import Rule
-
-        plugin: Plugin | None = (self.plugins or {}).get(plugin_name)
-        if plugin is None:
-            raise ValueError(f"unknown plugin {plugin_name!r}")
-
-        rule: Rule | None = (plugin.rules or {}).get(rule_name)
+        plugin_name, rule_name = split_config_spec(rule_id)
+        plugin = self.get_plugin(plugin_name)
+        rule = (plugin.rules or {}).get(rule_name)
         if rule is None:
             raise ValueError(f"unknown rule {rule_id!r}")
-
         return rule
+
+    def get_processor_op(
+        self, processor_spec: Union["ProcessorOp", str]
+    ) -> "ProcessorOp":
+        """Get the processor operation for the given
+        processor identifier `processor_spec`.
+        """
+        from xrlint.processor import Processor
+        from xrlint.processor import ProcessorOp
+
+        if isinstance(processor_spec, ProcessorOp):
+            return processor_spec
+
+        plugin_name, processor_name = split_config_spec(processor_spec)
+        plugin = self.get_plugin(plugin_name)
+        processor: Processor | None = (plugin.processors or {}).get(processor_name)
+        if processor is None:
+            raise ValueError(f"unknown processor {processor_spec!r}")
+        return processor.op_class()
 
     def merge(self, config: "Config", name: str = None) -> "Config":
         return Config(
@@ -208,7 +253,7 @@ class Config(ToDictMixin):
             opener_options=self._merge_options(
                 self.opener_options, config.opener_options
             ),
-            processor=merge_values(self.processor, config.processor),  # TBD!
+            processor=merge_values(self.processor, config.processor),
             plugins=self._merge_plugin_dicts(self.plugins, config.plugins),
             rules=self._merge_rule_dicts(self.rules, config.rules),
             settings=self._merge_options(self.settings, config.settings),
@@ -274,6 +319,7 @@ class Config(ToDictMixin):
             raise TypeError(
                 format_message_type_of(f"pattern in {name} configuration", pattern, str)
             )
+        return pattern
 
     @classmethod
     def _parse_processor(cls, config_dict: dict) -> Union["ProcessorOp", str, None]:
@@ -314,7 +360,7 @@ class Config(ToDictMixin):
 
     @classmethod
     def _parse_options(cls, name: str, config_dict: dict) -> dict[str, Any]:
-        settings = config_dict.get("settings")
+        settings = config_dict.get(name)
         if isinstance(settings, dict):
             for k, v in settings.items():
                 if not isinstance(k, str):
@@ -322,15 +368,6 @@ class Config(ToDictMixin):
             return {k: v for k, v in settings.items()}
         if settings is not None:
             raise TypeError(format_message_type_of(name, settings, "dict[str,Any]"))
-
-
-def merge_configs(
-    config1: Config | dict[str, Any] | None,
-    config2: Config | dict[str, Any] | None,
-) -> Config:
-    config1 = Config.from_value(config1)
-    config2 = Config.from_value(config2)
-    return config1.merge(config2)
 
 
 @dataclass(frozen=True)
@@ -360,6 +397,7 @@ class ConfigList:
         """
         if isinstance(value, ConfigList):
             return value
+
         if not isinstance(value, list):
             raise TypeError(
                 format_message_type_of(
@@ -367,31 +405,43 @@ class ConfigList:
                 )
             )
 
-        configs = []
-        plugins = {}
+        configs: list[Config] = []
+        plugins: dict[str, Plugin] = {}
         for item in value:
             if isinstance(item, str):
-                plugin_name, config_name = (
-                    item.split("/", maxsplit=1)
-                    if "/" in item
-                    else (CORE_PLUGIN_NAME, item)
-                )
                 if CORE_PLUGIN_NAME not in plugins:
                     plugins.update({CORE_PLUGIN_NAME: get_core_plugin()})
-                plugin: Plugin | None = plugins.get(plugin_name)
-                if (
-                    plugin is None
-                    or not plugin.configs
-                    or config_name not in plugin.configs
-                ):
-                    raise ValueError(f"configuration {item!r} not found")
-                config = Config.from_value(plugin.configs[config_name])
+                config = cls._get_named_config(item, plugins)
             else:
                 config = Config.from_value(item)
             configs.append(config)
             plugins.update(config.plugins if config.plugins else {})
 
-        return ConfigList(configs=configs)
+        return ConfigList(configs)
+
+    @classmethod
+    def _get_named_config(cls, config_spec: str, plugins: dict[str, "Plugin"]):
+        plugin_name, config_name = (
+            config_spec.split("/", maxsplit=1)
+            if "/" in config_spec
+            else (CORE_PLUGIN_NAME, config_spec)
+        )
+        plugin: Plugin | None = plugins.get(plugin_name)
+        if plugin is None or not plugin.configs or config_name not in plugin.configs:
+            raise ValueError(f"configuration {config_spec!r} not found")
+        config_value = plugin.configs[config_name]
+        return config_value
+
+    def get_global_filter(self, default: FileFilter | None = None) -> "FileFilter":
+        """Get a global file filter for this configuration list."""
+        global_filter = FileFilter(
+            default.files if default else (),
+            default.ignores if default else (),
+        )
+        for c in self.configs:
+            if c.empty and not c.file_filter.empty:
+                global_filter = global_filter.merge(c.file_filter)
+        return global_filter
 
     def compute_config(self, file_path: str) -> Config | None:
         """Compute the configuration object for the given file path.
@@ -403,41 +453,16 @@ class ConfigList:
             if `file_path` is not included by any `files` pattern
             or intentionally ignored by global `ignores`.
         """
-        # Step 1: Check against global ignores
-        global_ignores = set()
-        effective_configs = []
-        for c in self.configs:
-            ignores = c.global_ignores
-            if ignores:
-                global_ignores.update(ignores)
-            else:
-                effective_configs.append(c)
-        for p in global_ignores:
-            if fnmatch.fnmatch(file_path, p):
-                return None
 
-        # Step 2: Check against global ignores
         config = None
-        for c in effective_configs:
-            excluded = False
-            if c.ignores:
-                for p in c.ignores:
-                    excluded = fnmatch.fnmatch(file_path, p)
-                    if excluded:
-                        break
-            included = not excluded
-            if included:
-                if c.files:
-                    for p in c.files:
-                        included = fnmatch.fnmatch(file_path, p)
-                        if not included:
-                            break
-            if included:
+        for c in self.configs:
+            if c.file_filter.empty or c.file_filter.accept(file_path):
                 config = config.merge(c) if config is not None else c
 
         if config is None:
             return None
-        # Exclude "files" and "ignores" because they have been used
+
+        # Note, computed configurations do not have "files" and "ignores"
         return Config(
             name="<computed>",
             linter_options=config.linter_options,
