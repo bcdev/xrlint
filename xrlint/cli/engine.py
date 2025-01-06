@@ -148,7 +148,7 @@ class CliEngine:
     def init_config_file(cls):
         file_path = DEFAULT_CONFIG_FILE_YAML
         if os.path.exists(file_path):
-            raise click.ClickException(f"{file_path}: file exists.")
+            raise click.ClickException(f"file {file_path} already exists.")
         with open(file_path, "w") as f:
             f.write(INIT_CONFIG_YAML)
         click.echo(f"Configuration template written to {file_path}")

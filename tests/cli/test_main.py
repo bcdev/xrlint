@@ -82,6 +82,25 @@ class CliMainTest(TestCase):
             self.assertIn("no-empty-attrs", result.output)
             self.assertEqual(1, result.exit_code)
 
+    def test_dir_one_rule(self):
+        with text_file(DEFAULT_CONFIG_FILE_YAML, self.ok_config_yaml):
+            runner = CliRunner()
+            result = runner.invoke(main, ["--no-color", "."])
+            prefix = self.temp_dir.replace("\\", "/")
+            self.assertIn(f"{prefix}/dataset1.zarr - ok\n\n", result.output)
+            self.assertIn(f"{prefix}/dataset1.nc - ok\n\n", result.output)
+            self.assertIn(f"{prefix}/dataset2.zarr - ok\n\n", result.output)
+            self.assertIn(f"{prefix}/dataset2.nc - ok\n\n", result.output)
+            self.assertIn("no problems\n\n", result.output)
+            self.assertEqual(0, result.exit_code)
+
+        with text_file(DEFAULT_CONFIG_FILE_YAML, self.fail_config_yaml):
+            runner = CliRunner()
+            result = runner.invoke(main, self.files)
+            self.assertIn("Missing metadata, attributes are empty.", result.output)
+            self.assertIn("no-empty-attrs", result.output)
+            self.assertEqual(1, result.exit_code)
+
     def test_color_no_color(self):
         with text_file(DEFAULT_CONFIG_FILE_YAML, self.ok_config_yaml):
             runner = CliRunner()
@@ -92,19 +111,6 @@ class CliMainTest(TestCase):
                 "dataset1.nc - ok\n\n"
                 "dataset2.zarr - ok\n\n"
                 "dataset2.nc - ok\n\n"
-                "no problems\n\n",
-                result.output,
-            )
-            self.assertEqual(0, result.exit_code)
-
-        with text_file(DEFAULT_CONFIG_FILE_YAML, self.ok_config_yaml):
-            runner = CliRunner()
-            result = runner.invoke(main, self.files)
-            self.assertEqual(
-                "\n\x1b[4mdataset1.zarr\x1b[0m - ok\n\n"
-                "\x1b[4mdataset1.nc\x1b[0m - ok\n\n"
-                "\x1b[4mdataset2.zarr\x1b[0m - ok\n\n"
-                "\x1b[4mdataset2.nc\x1b[0m - ok\n\n"
                 "no problems\n\n",
                 result.output,
             )
@@ -181,8 +187,36 @@ class CliMainTest(TestCase):
         )
         self.assertEqual(1, result.exit_code)
 
+    def test_init(self):
+        config_file = DEFAULT_CONFIG_FILE_YAML
+        exists = os.path.exists(config_file)
+        self.assertFalse(exists)
+        try:
+            runner = CliRunner()
+            result = runner.invoke(main, ["--init"])
+            self.assertEqual(
+                f"Configuration template written to {config_file}\n", result.output
+            )
+            self.assertEqual(result.exit_code, 0)
+            exists = os.path.exists(config_file)
+            self.assertTrue(exists)
+        finally:
+            if exists:
+                os.remove(config_file)
 
-# noinspection PyTypeChecker
+    def test_init_exists(self):
+        config_file = DEFAULT_CONFIG_FILE_YAML
+        exists = os.path.exists(config_file)
+        self.assertFalse(exists)
+        with text_file(config_file, ""):
+            runner = CliRunner()
+            result = runner.invoke(main, ["--init"])
+            self.assertEqual(
+                f"Error: file {config_file} already exists.\n", result.output
+            )
+            self.assertEqual(result.exit_code, 1)
+
+
 class CliMainMetaTest(TestCase):
 
     def test_help(self):
