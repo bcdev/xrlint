@@ -50,6 +50,13 @@ from xrlint.cli.constants import (
     multiple=True,
 )
 @click.option(
+    "-o",
+    "--output-file",
+    "output_file",
+    help="Specify file to write report to",
+    metavar="PATH",
+)
+@click.option(
     "-f",
     "--format",
     "output_format",
@@ -58,11 +65,10 @@ from xrlint.cli.constants import (
     metavar="NAME",
 )
 @click.option(
-    "-o",
-    "--output-file",
-    "output_file",
-    help="Specify file to write report to",
-    metavar="PATH",
+    "--color/--no-color",
+    "color_enabled",
+    default=True,
+    help="Force enabling/disabling of color",
 )
 @click.option(
     "--max-warnings",
@@ -90,8 +96,9 @@ def main(
     plugin_specs: tuple[str, ...],
     rule_specs: tuple[str, ...],
     max_warnings: int,
-    output_format: str,
     output_file: str | None,
+    output_format: str,
+    color_enabled: bool,
     init_mode: bool,
     files: tuple[str, ...],
 ):
@@ -122,6 +129,7 @@ def main(
         files=files,
         output_format=output_format,
         output_path=output_file,
+        color_enabled=color_enabled,
     )
 
     config_list = cli_engine.load_config()
