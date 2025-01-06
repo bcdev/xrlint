@@ -2,7 +2,7 @@
 ## Early development snapshots
 
 - Version 0.0.3 (in development)
-
+  - enhanced "simple" output format by colors and links 
 
 - Version 0.0.2 (06.01.2025) 
   - more rules
