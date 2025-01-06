@@ -30,7 +30,7 @@ class CoordsForDims(RuleOp):
         if no_coord_dims:
             n = len(no_coord_dims)
             ctx.report(
-                f"{format_item("Data variable dimension", n)} without"
+                f"{format_item('Data variable dimension', n)} without"
                 f" coordinates: {', '.join(no_coord_dims)}",
                 suggestions=[
                     f"Add corresponding {format_item('coordinate variable', n)}"
