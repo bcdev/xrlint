@@ -11,7 +11,7 @@
   - CLI exit code 1 with max warnings exceeded 
   - CLI exit code 1 with no files given
   - new CLI options `--plugin`, `--rule`, `--init`
-  - markdown rule reference in docs
+  - markdown rule reference in docs via `mkruleref.py` tool
   - using `files` config option to specify valid filename extensions, see
     [here](https://eslint.org/docs/latest/use/configure/configuration-files#specifying-files-with-arbitrary-extensions)
   - using default filename extensions `["**/*.zarr", "**/*.nc"]`

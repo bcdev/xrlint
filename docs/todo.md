@@ -7,7 +7,6 @@
 - add `docs`
   - use mkdocstrings ref syntax in docstrings
   - provide configuration examples (use as tests?)
-  - generate markdown rule reference for the docs
 
 ## Desired
  
