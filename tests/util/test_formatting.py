@@ -1,7 +1,10 @@
 from unittest import TestCase
 
-from xrlint.util.formatting import format_count, format_styled
+from xrlint.util.formatting import format_case
+from xrlint.util.formatting import format_count
 from xrlint.util.formatting import format_problems
+from xrlint.util.formatting import format_seq
+from xrlint.util.formatting import format_styled
 
 
 class FormattingTest(TestCase):
@@ -26,6 +29,24 @@ class FormattingTest(TestCase):
         self.assertEqual("2 warnings", format_problems(0, 2))
         self.assertEqual("3 problems (one error and 2 warnings)", format_problems(1, 2))
         self.assertEqual("4 problems (2 errors and 2 warnings)", format_problems(2, 2))
+
+    def test_format_case(self):
+        self.assertEqual("hello", format_case("hello"))
+        self.assertEqual("Hello", format_case("Hello"))
+        self.assertEqual("hello", format_case("hello", upper=False))
+        self.assertEqual("Hello", format_case("hello", upper=True))
+        self.assertEqual("hello", format_case("Hello", upper=False))
+        self.assertEqual("Hello", format_case("Hello", upper=True))
+
+    def test_format_seq(self):
+        self.assertEqual("", format_seq([]))
+        self.assertEqual("1, 2, 3", format_seq([1, 2, 3]))
+        self.assertEqual(
+            "1, 2, 3, ..., 8, 9, 10", format_seq([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+        )
+        self.assertEqual(
+            "1, 2, ..., 9, 10", format_seq([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], max_count=4)
+        )
 
     def test_format_styled(self):
         self.assertEqual("Hello", format_styled("Hello"))

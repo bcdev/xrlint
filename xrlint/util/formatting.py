@@ -1,7 +1,9 @@
+from collections.abc import Sequence
+
 from typing import Any
 
 
-def format_problems(error_count, warning_count) -> str:
+def format_problems(error_count: int, warning_count: int) -> str:
     """Return human readable text for the given
     `error_count` and `warning_count`.
     """
@@ -19,20 +21,31 @@ def format_problems(error_count, warning_count) -> str:
         return w_label
 
 
-def format_count(count: int, item_name: str, upper: bool | None = None) -> str:
-    """Format given `count` of items named by `item_name`."""
+def format_count(
+    count: int,
+    singular: str,
+    plural: str | None = None,
+    upper: bool | None = None,
+) -> str:
+    """Format given `count` of items named by `singular` or `plural`."""
     if count == 0:
-        return f"{format_case('no', upper)} {item_name}s"
-    if count == 1:
-        return f"{format_case('one', upper)} {item_name}"
+        count_text = format_case("no", upper)
+    elif count == 1:
+        count_text = format_case("one", upper)
     else:
-        return f"{count} {item_name}s"
+        count_text = str(count)
+    return f"{count_text} {format_item(count, singular, plural=plural)}"
 
 
-def format_item(item_name: str, count: int, upper: bool | None = None) -> str:
-    """Format given `item_name` given it occurs `count` times."""
-    item_name = format_case(item_name, upper)
-    return f"{item_name}s" if count != 1 else item_name
+def format_item(
+    count: int, singular: str, plural: str | None = None, upper: bool | None = None
+) -> str:
+    """Format `singular` given it occurs `count` times."""
+    if count == 1:
+        name_text = singular
+    else:
+        name_text = plural or (singular + "s")
+    return format_case(name_text, upper)
 
 
 def format_case(text: str, upper: bool | None = None) -> str:
@@ -64,6 +77,20 @@ def format_type_of(value: Any) -> str:
         return value
     assert isinstance(value, type)
     return value.__name__
+
+
+def format_seq(seq: Sequence, max_count: int = 6) -> str:
+    if len(seq) == 0:
+        return ""
+    elif len(seq) <= max_count:
+        return _format_seq(seq)
+    else:
+        i = max_count // 2
+        return f"{_format_seq(seq[:i])}, ..., {_format_seq(seq[-i:])}"
+
+
+def _format_seq(seq: Sequence) -> str:
+    return ", ".join(str(v) for v in seq)
 
 
 def format_styled(

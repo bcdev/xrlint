@@ -24,6 +24,7 @@ class ExportPluginTest(TestCase):
                 "grid-mapping-naming",
                 "lat-lon-naming",
                 "single-grid-mapping",
+                "increasing-time",
             },
             set(_plugin.rules.keys()),
         )
