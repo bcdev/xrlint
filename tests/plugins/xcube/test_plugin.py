@@ -21,6 +21,7 @@ class ExportPluginTest(TestCase):
             {
                 "any-spatial-data-var",
                 "cube-dims-order",
+                "data-var-colors",
                 "grid-mapping-naming",
                 "lat-lon-naming",
                 "single-grid-mapping",

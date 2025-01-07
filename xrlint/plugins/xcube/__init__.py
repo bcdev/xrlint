@@ -17,6 +17,7 @@ def export_plugin() -> Plugin:
             "rules": {
                 "xcube/any-spatial-data-var": "error",
                 "xcube/cube-dims-order": "error",
+                "xcube/data-var-colors": "warn",
                 "xcube/grid-mapping-naming": "warn",
                 "xcube/increasing-time": "error",
                 "xcube/lat-lon-naming": "error",
