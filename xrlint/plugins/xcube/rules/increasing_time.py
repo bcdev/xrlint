@@ -20,15 +20,16 @@ class IncreasingTime(RuleOp):
         if node.in_coords() and node.name == "time" and array.dims == ("time",):
             diff_array: np.ndarray = array.diff("time").values
             if not np.count_nonzero(diff_array > 0) == diff_array.size:
-                self.check_indexes(ctx, diff_array == 0, "Duplicate")
-                self.check_indexes(ctx, diff_array < 0, "Backsliding")
+                check_indexes(ctx, diff_array == 0, "Duplicate")
+                check_indexes(ctx, diff_array < 0, "Backsliding")
         return True  # No need to apply rule any further
 
-    def check_indexes(self, ctx, cond: np.ndarray, issue_name: str):
-        (indexes,) = np.nonzero(cond)
-        if indexes.size > 0:
-            index_text = format_count(indexes.size, singular="index", plural="indexes")
-            ctx.report(
-                f"{issue_name} 'time' coordinate label at {index_text}"
-                f" {format_seq(indexes)}"
-            )
+
+def check_indexes(ctx, cond: np.ndarray, issue_name: str):
+    (indexes,) = np.nonzero(cond)
+    if indexes.size > 0:
+        index_text = format_count(indexes.size, singular="index", plural="indexes")
+        ctx.report(
+            f"{issue_name} 'time' coordinate label at {index_text}"
+            f" {format_seq(indexes)}"
+        )
