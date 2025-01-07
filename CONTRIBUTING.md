@@ -53,10 +53,12 @@ and effectively avoid circular dependencies.
 
 ### Rule Naming
 
-The rule naming conventions for XRLint are the same as or ESLint:
+The rule naming conventions for XRLint are based ESLint:
 
 * Lower-case only.
 * Use dashes between words (kebab-case).
+* The rule name should be chosen based on what shall be
+  achieved, of what shall be regulated. It names a contract.
 * If your rule only disallows something, 
   prefix it with `no-` such as `no-empty-attrs` for disallowing 
   empty attributes in dataset nodes.
