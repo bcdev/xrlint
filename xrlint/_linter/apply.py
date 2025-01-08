@@ -3,6 +3,7 @@ from xrlint.node import AttrsNode
 from xrlint.node import DataArrayNode
 from xrlint.node import DatasetNode
 from xrlint.rule import RuleConfig
+from xrlint.rule import RuleExit
 from xrlint.rule import RuleOp
 from .rulectx import RuleContextImpl
 
@@ -29,11 +30,15 @@ def apply_rule(
         # TODO: validate rule_config.args/kwargs against rule.meta.schema
         # noinspection PyArgumentList
         rule_op: RuleOp = rule.op_class(*rule_config.args, **rule_config.kwargs)
-        _visit_dataset_node(
-            rule_op,
-            context,
-            DatasetNode(parent=None, path="dataset", dataset=context.dataset),
-        )
+        try:
+            _visit_dataset_node(
+                rule_op,
+                context,
+                DatasetNode(parent=None, path="dataset", dataset=context.dataset),
+            )
+        except RuleExit:
+            # This is ok, the rule requested it.
+            pass
 
 
 def _visit_dataset_node(rule_op: RuleOp, context: RuleContextImpl, node: DatasetNode):

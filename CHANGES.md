@@ -4,6 +4,8 @@
 - Version 0.0.3 (in development)
   - enhanced "simple" output format by colors and links 
   - new xcube rule "increasing-time"
+  - new `RuleExit` exception to exit rule logic and 
+    stop further node traversal
 
 - Version 0.0.2 (06.01.2025) 
   - more rules

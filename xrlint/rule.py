@@ -53,6 +53,21 @@ class RuleContext(ABC):
         """
 
 
+class RuleExit(Exception):
+    """The `RuleExit` is an exception that can be raised to
+    immediately cancel dataset node validation with the current rule.
+
+    Raise it from any of your `RuleOp` method implementations if further
+    node traversal doesn't make sense. Typical usage:
+
+    ```python
+    if something_is_not_ok:
+        ctx.report("Something is not ok.")
+        raise RuleExit
+    ```
+    """
+
+
 class RuleOp(ABC):
     """Define the specific rule verification operation."""
 

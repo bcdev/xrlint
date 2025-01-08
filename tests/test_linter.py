@@ -7,17 +7,19 @@ from xrlint.config import Config
 from xrlint.constants import CORE_PLUGIN_NAME
 from xrlint.linter import Linter
 from xrlint.linter import new_linter
-from xrlint.processor import ProcessorOp
-from xrlint.result import Message
-from xrlint.plugin import Plugin, PluginMeta
-from xrlint.result import Result
+from xrlint.plugin import Plugin
+from xrlint.plugin import PluginMeta
 from xrlint.node import (
     AttrsNode,
     AttrNode,
     DataArrayNode,
     DatasetNode,
 )
+from xrlint.processor import ProcessorOp
+from xrlint.result import Message
+from xrlint.result import Result
 from xrlint.rule import RuleContext
+from xrlint.rule import RuleExit
 from xrlint.rule import RuleOp
 
 
@@ -84,6 +86,7 @@ class LinterVerifyTest(TestCase):
             def dataset(self, ctx: RuleContext, node: DatasetNode):
                 if len(node.dataset.data_vars) == 0:
                     ctx.report("Dataset does not have data variables")
+                    raise RuleExit  # no need to traverse further
 
         @plugin.define_processor("multi-level-dataset")
         class MultiLevelDataset(ProcessorOp):

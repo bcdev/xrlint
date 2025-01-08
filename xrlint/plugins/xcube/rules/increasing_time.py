@@ -3,6 +3,7 @@ import numpy as np
 from xrlint.node import DataArrayNode
 from xrlint.plugins.xcube.rules import plugin
 from xrlint.rule import RuleContext
+from xrlint.rule import RuleExit
 from xrlint.rule import RuleOp
 from xrlint.util.formatting import format_count
 from xrlint.util.formatting import format_seq
@@ -22,7 +23,7 @@ class IncreasingTime(RuleOp):
             if not np.count_nonzero(diff_array > 0) == diff_array.size:
                 check_indexes(ctx, diff_array == 0, "Duplicate")
                 check_indexes(ctx, diff_array < 0, "Backsliding")
-        return True  # No need to apply rule any further
+                raise RuleExit  # No need to apply rule any further
 
 
 def check_indexes(ctx, cond: np.ndarray, issue_name: str):
