@@ -1,3 +1,9 @@
+# XRLint Change History
+
+## Version 0.1.0 (in development)
+
+- ...
+
 
 ## Early development snapshots
 
