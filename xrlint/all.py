@@ -26,6 +26,7 @@ from xrlint.processor import ProcessorOp
 from xrlint.rule import Rule
 from xrlint.rule import RuleConfig
 from xrlint.rule import RuleContext
+from xrlint.rule import RuleExit
 from xrlint.rule import RuleMeta
 from xrlint.rule import RuleOp
 from xrlint.testing import RuleTest
@@ -61,6 +62,7 @@ __all__ = [
     "Rule",
     "RuleConfig",
     "RuleContext",
+    "RuleExit",
     "RuleMeta",
     "RuleOp",
     "RuleTest",

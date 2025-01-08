@@ -2,7 +2,7 @@
 
 ## Required
 
-- populate `core` plugin by more rules
+- populate `core` plugin by more rules, see CF site and `cf-check` tool
 - populate `xcube` plugin by more rules
 - add `docs`
   - use mkdocstrings ref syntax in docstrings
@@ -10,6 +10,7 @@
 
 ## Desired
  
+- project logo
 - use `RuleMeta.docs_url` in formatters to create links
 - implement xarray backend for xcube 'levels' format
   so can validate them too
@@ -22,10 +23,6 @@
 - support rule op args/kwargs schema validation
 - support CLI option `--print-config FILE`, see ESLint
 - Support `RuleTest.expected`, it is currently unused
-- Allow `RuleOp` methods to return `True` to finish
-  node validation with the current rule on current dataset.
-  In this case the linter interrupts traversing the 
-  dataset node tree.
 
 ## Nice to have
 
