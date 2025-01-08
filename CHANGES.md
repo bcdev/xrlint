@@ -4,6 +4,7 @@
 - Version 0.0.3 (in development)
   - enhanced "simple" output format by colors and links 
   - new xcube rule "increasing-time"
+  - new xcube rule "data-var-colors"
 
 - Version 0.0.2 (06.01.2025) 
   - more rules
