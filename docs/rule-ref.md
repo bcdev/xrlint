@@ -46,11 +46,24 @@ Order of dimensions in spatio-temporal datacube variables should be [time, ..., 
 
 Contained in:  `all`-:material-lightning-bolt: `recommended`-:material-lightning-bolt:
 
+### :material-lightbulb: `data-var-colors`
+
+Spatial data variables should encode xcube color mappings in their metadata.
+[More information.](https://xcube.readthedocs.io/en/latest/cubespec.html#encoding-of-colors)
+
+Contained in:  `all`-:material-lightning-bolt: `recommended`-:material-alert:
+
 ### :material-lightbulb: `grid-mapping-naming`
 
 Grid mapping variables should be called 'spatial_ref' or 'crs' for compatibility with rioxarray and other packages.
 
 Contained in:  `all`-:material-lightning-bolt: `recommended`-:material-alert:
+
+### :material-bug: `increasing-time`
+
+Time coordinate labels should be monotonically increasing.
+
+Contained in:  `all`-:material-lightning-bolt: `recommended`-:material-lightning-bolt:
 
 ### :material-bug: `lat-lon-naming`
 

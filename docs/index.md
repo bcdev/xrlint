@@ -10,19 +10,20 @@ there is no stable release yet. See [to-do list](https://github.com/bcdev/xrlint
 
 ## Features 
 
-- Flexible validation for `xarray.Dataset` objects by configurable _rules_.
-- Available from _CLI_ and _Python API_.
-- _Custom plugins_ providing _custom rule_ sets allow addressing 
+- Flexible validation for `xarray.Dataset` objects by configurable rules.
+- Available from CLI and Python API.
+- Custom plugins providing custom rule sets allow addressing 
   different dataset conventions.
-- _Project-specific configurations_ including configuration of individual 
+- Project-specific configurations including configuration of individual 
   rules and file-specific settings.
+
 
 ## Inbuilt Rules
 
 The following rule plugins are currently built into the code base:
 
 - `core`: Implementing the rules for
-  [tiny data](https://tutorial.xarray.dev/intermediate/data_cleaning/05.1_intro.html)
+  [tidy data](https://tutorial.xarray.dev/intermediate/data_cleaning/05.1_intro.html)
   and the 
   [CF-Conventions](https://cfconventions.org/cf-conventions/cf-conventions.html).
 - `xcube`: Implementing the rules for 
