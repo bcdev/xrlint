@@ -369,6 +369,23 @@ class Config(ToDictMixin):
         if settings is not None:
             raise TypeError(format_message_type_of(name, settings, "dict[str,Any]"))
 
+    def to_dict(self):
+        d = super().to_dict()
+        plugins: dict[str, Plugin] | None = d.get("plugins")
+        if plugins is not None:
+            d["plugins"] = {k: v.meta.module or "?" for k, v in plugins.items()}
+        rules: dict[str, RuleConfig] | None = d.get("rules")
+        if rules is not None:
+            d["rules"] = {
+                k: (
+                    v.severity
+                    if not (v.args or v.kwargs)
+                    else [v.severity, v.args, v.kwargs]
+                )
+                for k, v in rules.items()
+            }
+        return d
+
 
 @dataclass(frozen=True)
 class ConfigList:

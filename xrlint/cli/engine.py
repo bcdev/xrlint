@@ -33,7 +33,7 @@ class CliEngine:
     # noinspection PyShadowingBuiltins
     def __init__(
         self,
-        no_default_config: int = False,
+        no_config_lookup: int = False,
         config_path: str | None = None,
         plugin_specs: tuple[str, ...] = (),
         rule_specs: tuple[str, ...] = (),
@@ -42,7 +42,7 @@ class CliEngine:
         color_enabled: bool = True,
         files: tuple[str, ...] = (),
     ):
-        self.no_default_config = no_default_config
+        self.no_config_lookup = no_config_lookup
         self.config_path = config_path
         self.plugin_specs = plugin_specs
         self.rule_specs = rule_specs
@@ -70,7 +70,7 @@ class CliEngine:
                 config_list = read_config_list(self.config_path)
             except (FileNotFoundError, ConfigError) as e:
                 raise click.ClickException(f"{e}") from e
-        elif not self.no_default_config:
+        elif not self.no_config_lookup:
             for config_path in DEFAULT_CONFIG_FILES:
                 try:
                     config_list = read_config_list(config_path)

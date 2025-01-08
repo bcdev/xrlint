@@ -14,8 +14,8 @@ from xrlint.cli.constants import (
 
 @click.command(name="xrlint")
 @click.option(
-    "--no-default-config",
-    "no_default_config",
+    "--no-config-lookup",
+    "no_config_lookup",
     help=f"Disable use of default configuration from {DEFAULT_CONFIG_BASENAME}.*",
     is_flag=True,
 )
@@ -28,6 +28,12 @@ from xrlint.cli.constants import (
         f" config options if present"
     ),
     metavar="PATH",
+)
+@click.option(
+    "--print-config",
+    "inspect_path",
+    help="Print the configuration for the given file",
+    metavar="FILE",
 )
 @click.option(
     "--plugin",
@@ -91,8 +97,9 @@ from xrlint.cli.constants import (
 @click.version_option(version)
 @click.help_option()
 def main(
-    no_default_config: bool,
+    no_config_lookup: bool,
     config_path: str | None,
+    inspect_path: str | None,
     plugin_specs: tuple[str, ...],
     rule_specs: tuple[str, ...],
     max_warnings: int,
@@ -105,7 +112,7 @@ def main(
     """Validate the given dataset FILES.
 
     Reads configuration from `xrlint.config.*` if file exists and
-    unless `--no-default-config` is set or `--config PATH` is provided.
+    unless `--no_config_lookup` is set or `--config PATH` is provided.
     Then validates each dataset in FILES against the configuration.
     The validation result is dumped to standard output if not otherwise
     stated by `--output-file PATH`. The output format is `simple`. Other
@@ -118,21 +125,28 @@ def main(
         CliEngine.init_config_file()
         raise click.exceptions.Exit(0)
 
-    if not files:
-        raise click.ClickException("No dataset files provided.")
-
     cli_engine = CliEngine(
-        no_default_config=no_default_config,
+        no_config_lookup=no_config_lookup,
         config_path=config_path,
         plugin_specs=plugin_specs,
         rule_specs=rule_specs,
-        files=files,
         output_format=output_format,
         output_path=output_file,
         color_enabled=color_enabled,
+        files=files,
     )
 
     config_list = cli_engine.load_config()
+    if inspect_path:
+        import json
+
+        config = config_list.compute_config(inspect_path)
+        print(json.dumps(config.to_dict(), indent=2))
+        return
+
+    if not files:
+        raise click.ClickException("No dataset files provided.")
+
     results = cli_engine.verify_datasets(config_list)
     report = cli_engine.format_results(results)
     cli_engine.write_report(report)

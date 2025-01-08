@@ -2,7 +2,8 @@
 
 ## Version 0.1.0 (in development)
 
-- ...
+- Added CLI option `--print-config FILE`, see same option in ESLint
+
 
 
 ## Early development snapshots

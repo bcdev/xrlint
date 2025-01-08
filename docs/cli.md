@@ -16,7 +16,7 @@ Usage: xrlint [OPTIONS] [FILES]...
   can by setting the `--format NAME` option.
 
 Options:
-  --no-default-config     Disable use of default configuration from
+  --no-config-lookup      Disable use of default configuration from
                           xrlint_config.*
   -c, --config PATH       Use this configuration, overriding xrlint_config.*
                           config options if present

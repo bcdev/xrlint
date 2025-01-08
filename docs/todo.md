@@ -21,7 +21,6 @@
   from `xrlint.all`
 - add some more tests so we reach 99% coverage
 - support rule op args/kwargs schema validation
-- support CLI option `--print-config FILE`, see ESLint
 - Support `RuleTest.expected`, it is currently unused
 
 ## Nice to have
