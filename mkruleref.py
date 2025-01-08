@@ -35,6 +35,8 @@ def write_plugin_rules(stream, plugin: Plugin):
             f"### :{rule_type_icons.get(rule_meta.type)}: `{rule_meta.name}`\n\n"
         )
         stream.write(rule_meta.description or "_No description._")
+        if rule_meta.docs_url:
+            stream.write(f"\n[More information.]({rule_meta.docs_url})")
         stream.write("\n\n")
         # List the predefined configurations that contain the rule
         stream.write("Contained in: ")
