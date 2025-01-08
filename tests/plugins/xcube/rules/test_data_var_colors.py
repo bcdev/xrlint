@@ -44,14 +44,30 @@ def make_dataset():
 valid_dataset_1 = make_dataset()
 
 invalid_dataset_1 = make_dataset()
-invalid_dataset_1.chl.attrs = {"units": "mg/m^-3"}
+invalid_dataset_1.chl.attrs = {
+    "units": "mg/m^-3",
+    # Missing:
+    # "color_bar_name": "plasma",
+    # "color_value_min": 0,
+    # "color_value_max": 100,
+    # "color_norm": "log",
+}
 invalid_dataset_2 = make_dataset()
 invalid_dataset_2.chl.attrs = {
     "units": "mg/m^-3",
     "color_bar_name": "plasma",
+    # Missing:
+    # "color_value_min": 0,
+    # "color_value_max": 100,
+    # "color_norm": "log",
+}
+invalid_dataset_3 = make_dataset()
+invalid_dataset_3.chl.attrs = {
+    "units": "mg/m^-3",
+    "color_bar_name": "plasma",
     "color_value_min": 0,
     "color_value_max": 100,
-    "color_norm": "exp",
+    "color_norm": "ln",  # wrong
 }
 
 LatLonNamingTest = RuleTester.define_test(
@@ -62,5 +78,7 @@ LatLonNamingTest = RuleTester.define_test(
     ],
     invalid=[
         RuleTest(dataset=invalid_dataset_1),
+        RuleTest(dataset=invalid_dataset_2),
+        RuleTest(dataset=invalid_dataset_3),
     ],
 )
