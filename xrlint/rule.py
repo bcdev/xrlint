@@ -77,6 +77,8 @@ class RuleOp(ABC):
         Args:
             context: The current rule context.
             node: The dataset node.
+        Raises:
+            RuleExit: to exit rule logic and further node traversal
         """
 
     def data_array(self, context: RuleContext, node: DataArrayNode) -> None:
@@ -85,6 +87,8 @@ class RuleOp(ABC):
         Args:
             context: The current rule context.
             node: The data array (variable) node.
+        Raises:
+            RuleExit: to exit rule logic and further node traversal
         """
 
     def attrs(self, context: RuleContext, node: AttrsNode) -> None:
@@ -93,6 +97,8 @@ class RuleOp(ABC):
         Args:
             context: The current rule context.
             node: The attributes node.
+        Raises:
+            RuleExit: to exit rule logic and further node traversal
         """
 
     def attr(self, context: RuleContext, node: AttrNode) -> None:
@@ -101,6 +107,8 @@ class RuleOp(ABC):
         Args:
             context: The current rule context.
             node: The attribute node.
+        Raises:
+            RuleExit: to exit rule logic and further node traversal
         """
 
 
