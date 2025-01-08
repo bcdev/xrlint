@@ -1,4 +1,5 @@
 import json
+from collections.abc import Iterable
 
 from xrlint.formatter import FormatterOp, FormatterContext
 from xrlint.result import Result, get_rules_meta_for_results
@@ -27,8 +28,10 @@ class Json(FormatterOp):
     def format(
         self,
         context: FormatterContext,
-        results: list[Result],
+        results: Iterable[Result],
     ) -> str:
+        results = list(results)  # get them all
+
         omitted_props = {"config"}
         results_json = {
             "results": [

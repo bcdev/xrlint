@@ -1,5 +1,6 @@
 import os
-from collections.abc import Generator
+from collections.abc import Iterable
+from typing import Iterator
 
 import click
 import fsspec
@@ -39,7 +40,7 @@ class CliEngine:
         rule_specs: tuple[str, ...] = (),
         output_format: str = DEFAULT_OUTPUT_FORMAT,
         output_path: str | None = None,
-        color_enabled: bool = True,
+        styled: bool = True,
         files: tuple[str, ...] = (),
     ):
         self.no_default_config = no_default_config
@@ -48,7 +49,7 @@ class CliEngine:
         self.rule_specs = rule_specs
         self.output_format = output_format
         self.output_path = output_path
-        self.color_enabled = color_enabled
+        self.styled = styled
         self.files = files
 
     def load_config(self) -> ConfigList:
@@ -74,6 +75,7 @@ class CliEngine:
             for config_path in DEFAULT_CONFIG_FILES:
                 try:
                     config_list = read_config_list(config_path)
+                    break
                 except FileNotFoundError:
                     pass
                 except ConfigError as e:
@@ -92,16 +94,15 @@ class CliEngine:
 
         return ConfigList.from_value(configs)
 
-    def verify_datasets(self, config_list: ConfigList) -> list[Result]:
+    def verify_datasets(self, config_list: ConfigList) -> Iterator[Result]:
         global_filter = config_list.get_global_filter(default=DEFAULT_GLOBAL_FILTER)
-        results: list[Result] = []
+        linter = Linter()
         for file_path, is_dir in get_files(self.files, global_filter):
             config = config_list.compute_config(file_path)
             if config is not None:
-                linter = Linter(config=config)
-                result = linter.verify_dataset(file_path)
+                yield linter.verify_dataset(file_path, config=config)
             else:
-                result = Result.new(
+                yield Result.new(
                     config=config,
                     file_path=file_path,
                     messages=[
@@ -111,11 +112,8 @@ class CliEngine:
                         )
                     ],
                 )
-            results.append(result)
 
-        return results
-
-    def format_results(self, results: list[Result]) -> str:
+    def format_results(self, results: Iterable[Result]) -> str:
         output_format = (
             self.output_format if self.output_format else DEFAULT_OUTPUT_FORMAT
         )
@@ -130,7 +128,10 @@ class CliEngine:
         # TODO: pass and validate format-specific args/kwargs
         #   against formatter.meta.schema
         if output_format == "simple":
-            formatter_kwargs = {"color_enabled": self.color_enabled}
+            formatter_kwargs = {
+                "styled": self.styled and self.output_path is None,
+                "output": self.output_path is None,
+            }
         else:
             formatter_kwargs = {}
         # noinspection PyArgumentList
@@ -138,11 +139,12 @@ class CliEngine:
         return formatter_op.format(FormatterContext(False), results)
 
     def write_report(self, report: str):
-        if not self.output_path:
-            print(report)
-        else:
+        if self.output_path:
             with fsspec.open(self.output_path, mode="w") as f:
                 f.write(report)
+        elif self.output_format != "simple":
+            # The simple formatters outputs incrementally to console
+            print(report)
 
     @classmethod
     def init_config_file(cls):
@@ -156,7 +158,7 @@ class CliEngine:
 
 def get_files(
     file_paths: tuple[str, ...], global_filter: FileFilter
-) -> Generator[tuple[str, bool | None]]:
+) -> Iterator[tuple[str, bool | None]]:
     for file_path in file_paths:
         _fs, root = fsspec.url_to_fs(file_path)
         fs: fsspec.AbstractFileSystem = _fs

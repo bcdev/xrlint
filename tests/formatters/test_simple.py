@@ -21,7 +21,7 @@ class SimpleTest(TestCase):
     ]
 
     def test_no_color(self):
-        formatter = Simple(color_enabled=False)
+        formatter = Simple(styled=False)
         text = formatter.format(
             context=FormatterContext(),
             results=self.results,
@@ -30,7 +30,7 @@ class SimpleTest(TestCase):
         self.assertNotIn("\033]", text)
 
     def test_color(self):
-        formatter = Simple(color_enabled=True)
+        formatter = Simple(styled=True)
         text = formatter.format(
             context=FormatterContext(),
             results=self.results,

@@ -14,8 +14,6 @@
 - use `RuleMeta.docs_url` in formatters to create links
 - implement xarray backend for xcube 'levels' format
   so can validate them too
-- CLI should output result for file immediately,
-  not only after all results have been collected
 - rename `xrlint.cli.CliEngine` into `xrlint.cli.XRLint`
   (with similar API as the `ESLint` class) and export it 
   from `xrlint.all`

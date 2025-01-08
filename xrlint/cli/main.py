@@ -2,6 +2,8 @@ import sys
 
 import click
 
+from xrlint.cli.stats import Stats
+
 # Warning: do not import heavy stuff here, it can
 # slow down commands like "xrlint --help" otherwise.
 from xrlint.version import version
@@ -129,16 +131,18 @@ def main(
         files=files,
         output_format=output_format,
         output_path=output_file,
-        color_enabled=color_enabled,
+        styled=color_enabled,
     )
+    stats = Stats()
 
     config_list = cli_engine.load_config()
     results = cli_engine.verify_datasets(config_list)
+    results = stats.collect(results)
     report = cli_engine.format_results(results)
     cli_engine.write_report(report)
 
-    error_status = sum(r.error_count for r in results) > 0
-    max_warn_status = sum(r.warning_count for r in results) > max_warnings
+    error_status = stats.error_count > 0
+    max_warn_status = stats.warning_count > max_warnings
     if max_warn_status and not error_status:
         click.echo("maximum number of warnings exceeded.")
     if max_warn_status or error_status:
