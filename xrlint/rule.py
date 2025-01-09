@@ -195,6 +195,25 @@ class Rule:
     The class must implement the `RuleOp` interface.
     """
 
+    @classmethod
+    def from_value(cls, value: Any) -> "Rule":
+        """Convert `value` into a `Rule` object.
+
+        Args:
+            value: Can be the name of a module that exposes a function
+                `export_rule` which must return a `Rule`.
+                If the value is already of type `RuleConfig` it is
+                returned as-is.
+
+        Returns:
+            A `Rule` object.
+        """
+        if isinstance(value, Rule):
+            return value
+        if isinstance(value, str):
+            return import_value(value, "export_rule", Rule.from_value)
+        raise TypeError(format_message_type_of("value", value, "Rule|str"))
+
 
 @dataclass(frozen=True)
 class RuleConfig:

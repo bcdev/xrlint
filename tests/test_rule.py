@@ -2,7 +2,38 @@ from unittest import TestCase
 
 import pytest
 
+from xrlint.rule import Rule
 from xrlint.rule import RuleConfig
+from xrlint.rule import RuleMeta
+from xrlint.rule import RuleOp
+
+
+class MyRule1Op(RuleOp):
+    pass
+
+
+def export_rule():
+    return Rule(meta=RuleMeta(name="my-rule-1"), op_class=MyRule1Op)
+
+
+class RuleTest(TestCase):
+    def test_from_value_ok_rule(self):
+        rule = export_rule()
+        rule2 = Rule.from_value(rule)
+        self.assertIs(rule, rule2)
+
+    def test_from_value_ok_str(self):
+        rule = Rule.from_value("tests.test_rule")
+        self.assertIsInstance(rule, Rule)
+        self.assertEqual("my-rule-1", rule.meta.name)
+        self.assertIs(MyRule1Op, rule.op_class)
+
+    # noinspection PyMethodMayBeStatic
+    def test_from_value_fails(self):
+        with pytest.raises(
+            TypeError, match="value must be of type Rule|str, but was int"
+        ):
+            Rule.from_value(73)
 
 
 class RuleConfigTest(TestCase):
