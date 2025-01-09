@@ -108,6 +108,7 @@ class FilePattern:
 
         Args:
             path: File system path or URI
+
         Returns:
             `True` if `path` matches.
         """

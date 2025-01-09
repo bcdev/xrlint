@@ -8,11 +8,12 @@ from xrlint.constants import SEVERITY_ENUM, SEVERITY_ENUM_TEXT
 from xrlint.node import DatasetNode, DataArrayNode, AttrsNode, AttrNode
 from xrlint.result import Suggestion
 from xrlint.util.formatting import format_message_type_of, format_message_one_of
+from xrlint.util.importutil import import_value
 from xrlint.util.todict import ToDictMixin
 
 
 class RuleContext(ABC):
-    """The context passed to the verifier of a rule.
+    """The context passed to a [xrlint.rule.RuleOp][] instance.
 
     You should never create instances of this class yourself.
     Instances of this interface are passed to the `RuleOp`'s
@@ -77,6 +78,7 @@ class RuleOp(ABC):
         Args:
             context: The current rule context.
             node: The dataset node.
+
         Raises:
             RuleExit: to exit rule logic and further node traversal
         """
@@ -87,6 +89,7 @@ class RuleOp(ABC):
         Args:
             context: The current rule context.
             node: The data array (variable) node.
+
         Raises:
             RuleExit: to exit rule logic and further node traversal
         """
@@ -97,6 +100,7 @@ class RuleOp(ABC):
         Args:
             context: The current rule context.
             node: The attributes node.
+
         Raises:
             RuleExit: to exit rule logic and further node traversal
         """
@@ -107,6 +111,7 @@ class RuleOp(ABC):
         Args:
             context: The current rule context.
             node: The attribute node.
+
         Raises:
             RuleExit: to exit rule logic and further node traversal
         """
@@ -129,17 +134,17 @@ class RuleMeta(ToDictMixin):
     """Rule documentation URL."""
 
     schema: dict[str, Any] | list[dict[str, Any]] | bool | None = None
-    """JSON Schema used to specify and validate the rule verifier's
+    """JSON Schema used to specify and validate the rule operation
     options.
 
     It can take the following values:
 
-    - Use `None` (the default) to indicate that the rule verifier
+    - Use `None` (the default) to indicate that the rule operation
       as no options at all.
-    - Use a schema to indicate that the rule verifier
+    - Use a schema to indicate that the rule operation
       takes keyword arguments only.
       The schema's type must be `"object"`.
-    - Use a list of schemas to indicate that the rule verifier
+    - Use a list of schemas to indicate that the rule operation
       takes positional arguments only.
       If given, the number of schemas in the list specifies the
       number of positional arguments that must be configured.
@@ -232,9 +237,11 @@ class RuleConfig:
         - one of `2` (error), `1` (warn), `0` (off)
 
         Args:
-            value: A rule severity or a list where the first element is a rule
-                severity and subsequent elements are rule arguments.
-                If the value is already of type `RuleConfig`it is returned as-is.
+            value: A rule severity or a list where the first element
+                is a rule severity and subsequent elements are rule
+                arguments. If the value is already of type `RuleConfig`
+                it is returned as-is.
+
         Returns:
             A `RuleConfig` object.
         """
