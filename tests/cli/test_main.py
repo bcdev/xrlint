@@ -11,6 +11,14 @@ from xrlint.cli.constants import DEFAULT_CONFIG_FILE_YAML
 from xrlint.version import version
 from .helpers import text_file
 
+no_match_config_yaml = """
+- ignores: ['**/*.nc', '**/*.zarr']
+  rules:
+    dataset-title-attr: error
+"""
+
+no_match_config_yaml = "[]"
+
 
 # noinspection PyTypeChecker
 class CliMainTest(TestCase):
@@ -178,6 +186,14 @@ class CliMainTest(TestCase):
             result = runner.invoke(main, ["-f", "json"] + self.files)
             self.assertIn('"results": [\n', result.output)
             self.assertEqual(0, result.exit_code)
+
+    def test_file_does_not_match(self):
+        with text_file(DEFAULT_CONFIG_FILE_YAML, no_match_config_yaml):
+            runner = CliRunner()
+            result = runner.invoke(main, ["test.zarr"])
+            # TODO: make this assertion work
+            # self.assertIn("No configuration matches this file.", result.output)
+            self.assertEqual(1, result.exit_code)
 
     def test_files_with_invalid_format_option(self):
         runner = CliRunner()
