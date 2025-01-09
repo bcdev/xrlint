@@ -2,9 +2,10 @@
 
 ## Version 0.1.0 (in development)
 
-- Added CLI option `--print-config FILE`, see same option in ESLint
+- Added CLI option `--print-config PATH`, see same option in ESLint
 - XRLint CLI now outputs single results immediately to console,
   instead only after all results have been collected.
+- Refactored and renamed `CliEngine` into `XRLint`. Documented the class.
 
 
 ## Early development snapshots

@@ -1,9 +1,29 @@
 from xrlint.config import Config
+from xrlint.formatter import FormatterContext
 from xrlint.plugin import Plugin
 from xrlint.plugin import PluginMeta
-from xrlint.result import Message
+from xrlint.result import Message, ResultStats
 from xrlint.result import Result
 from xrlint.rule import RuleOp
+
+
+class FormatterContextImpl(FormatterContext):
+
+    def __init__(self, max_warnings: int = -1):
+        self._max_warnings = max_warnings
+        self._result_stats = ResultStats()
+
+    @property
+    def max_warnings_exceeded(self) -> bool:
+        return self._result_stats.warning_count > self._max_warnings
+
+    @property
+    def result_stats(self) -> ResultStats:
+        return self._result_stats
+
+
+def get_context(max_warnings: int = -1) -> FormatterContext:
+    return FormatterContextImpl(max_warnings)
 
 
 def get_test_results():

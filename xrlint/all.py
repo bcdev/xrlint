@@ -1,4 +1,4 @@
-from xrlint.cli.engine import CliEngine
+from xrlint.cli.engine import XRLint
 from xrlint.config import Config
 from xrlint.config import ConfigList
 from xrlint.formatter import Formatter
@@ -34,7 +34,7 @@ from xrlint.testing import RuleTester
 from xrlint.version import version
 
 __all__ = [
-    "CliEngine",
+    "XRLint",
     "Config",
     "ConfigList",
     "Linter",

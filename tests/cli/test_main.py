@@ -3,6 +3,7 @@ import tempfile
 import shutil
 from unittest import TestCase
 
+import click.testing
 from click.testing import CliRunner
 import xarray as xr
 
@@ -16,8 +17,6 @@ no_match_config_yaml = """
   rules:
     dataset-title-attr: error
 """
-
-no_match_config_yaml = "[]"
 
 
 # noinspection PyTypeChecker
@@ -55,23 +54,32 @@ class CliMainTest(TestCase):
         os.chdir(cls.last_cwd)
         shutil.rmtree(cls.temp_dir)
 
-    def test_no_files(self):
+    def xrlint(self, *args: tuple[str, ...]) -> click.testing.Result:
         runner = CliRunner()
-        result = runner.invoke(main)
-        self.assertIn("No dataset files provided.", result.output)
-        self.assertEqual(1, result.exit_code)
+        result = runner.invoke(main, args)
+        if not isinstance(result.exception, SystemExit):
+            self.assertIsNone(None, result.exception)
+        return result
 
-    def test_files_no_rules(self):
-        runner = CliRunner()
-        result = runner.invoke(main, self.files)
-        self.assertIn("Warning: no configuration file found.", result.output)
-        self.assertIn("No rules configured or applicable.", result.output)
+    def test_no_files_no_config(self):
+        result = self.xrlint()
+        self.assertEqual("", result.output)
+        self.assertEqual(0, result.exit_code)
+
+    def test_config_no_files(self):
+        with text_file(DEFAULT_CONFIG_FILE_YAML, self.ok_config_yaml):
+            result = self.xrlint()
+            self.assertEqual("", result.output)
+            self.assertEqual(0, result.exit_code)
+
+    def test_files_no_config(self):
+        result = self.xrlint(*self.files)
+        self.assertIn("Warning: no configuration file found.\n", result.output)
         self.assertEqual(1, result.exit_code)
 
     def test_files_one_rule(self):
         with text_file(DEFAULT_CONFIG_FILE_YAML, self.ok_config_yaml):
-            runner = CliRunner()
-            result = runner.invoke(main, ["--no-color"] + self.files)
+            result = self.xrlint("--no-color", *self.files)
             self.assertEqual(
                 "\n"
                 "dataset1.zarr - ok\n\n"
@@ -84,16 +92,14 @@ class CliMainTest(TestCase):
             self.assertEqual(0, result.exit_code)
 
         with text_file(DEFAULT_CONFIG_FILE_YAML, self.fail_config_yaml):
-            runner = CliRunner()
-            result = runner.invoke(main, self.files)
+            result = self.xrlint(*self.files)
             self.assertIn("Missing metadata, attributes are empty.", result.output)
             self.assertIn("no-empty-attrs", result.output)
             self.assertEqual(1, result.exit_code)
 
     def test_dir_one_rule(self):
         with text_file(DEFAULT_CONFIG_FILE_YAML, self.ok_config_yaml):
-            runner = CliRunner()
-            result = runner.invoke(main, ["--no-color", "."])
+            result = self.xrlint("--no-color", ".")
             prefix = self.temp_dir.replace("\\", "/")
             self.assertIn(f"{prefix}/dataset1.zarr - ok\n\n", result.output)
             self.assertIn(f"{prefix}/dataset1.nc - ok\n\n", result.output)
@@ -103,16 +109,15 @@ class CliMainTest(TestCase):
             self.assertEqual(0, result.exit_code)
 
         with text_file(DEFAULT_CONFIG_FILE_YAML, self.fail_config_yaml):
-            runner = CliRunner()
-            result = runner.invoke(main, self.files)
+            result = self.xrlint(*self.files)
             self.assertIn("Missing metadata, attributes are empty.", result.output)
             self.assertIn("no-empty-attrs", result.output)
             self.assertEqual(1, result.exit_code)
 
     def test_color_no_color(self):
         with text_file(DEFAULT_CONFIG_FILE_YAML, self.ok_config_yaml):
-            runner = CliRunner()
-            result = runner.invoke(main, ["--no-color"] + self.files)
+            result = self.xrlint("--no-color", *self.files)
+            self.assertIsNone(result.exception)
             self.assertEqual(
                 "\n"
                 "dataset1.zarr - ok\n\n"
@@ -138,30 +143,18 @@ class CliMainTest(TestCase):
             self.assertEqual(0, result.exit_code)
 
     def test_files_with_rule_option(self):
-        runner = CliRunner()
-        result = runner.invoke(
-            main,
-            [
-                "--rule",
-                "no-empty-attrs: error",
-            ]
-            + self.files,
-        )
+        result = self.xrlint("--rule", "no-empty-attrs: error", *self.files)
         self.assertIn("Missing metadata, attributes are empty.", result.output)
         self.assertIn("no-empty-attrs", result.output)
         self.assertEqual(1, result.exit_code)
 
     def test_files_with_plugin_and_rule_options(self):
-        runner = CliRunner()
-        result = runner.invoke(
-            main,
-            [
-                "--plugin",
-                "xrlint.plugins.xcube",
-                "--rule",
-                "xcube/any-spatial-data-var: error",
-            ]
-            + self.files,
+        result = self.xrlint(
+            "--plugin",
+            "xrlint.plugins.xcube",
+            "--rule",
+            "xcube/any-spatial-data-var: error",
+            *self.files,
         )
         self.assertIn("No spatial data variables found.", result.output)
         self.assertIn("xcube/any-spatial-data-var", result.output)
@@ -169,35 +162,49 @@ class CliMainTest(TestCase):
 
     def test_files_with_output_file(self):
         with text_file(DEFAULT_CONFIG_FILE_YAML, self.ok_config_yaml):
-            runner = CliRunner()
-            result = runner.invoke(main, ["-o", "memory://report.txt"] + self.files)
+            result = self.xrlint("-o", "memory://report.txt", *self.files)
             self.assertEqual("", result.output)
             self.assertEqual(0, result.exit_code)
 
     def test_files_but_config_file_missing(self):
-        runner = CliRunner()
-        result = runner.invoke(main, ["-c", "pippo.py"] + self.files)
+        result = self.xrlint("-c", "pippo.py", *self.files)
         self.assertIn("Error: file not found: pippo.py", result.output)
         self.assertEqual(1, result.exit_code)
 
     def test_files_with_format_option(self):
         with text_file(DEFAULT_CONFIG_FILE_YAML, self.ok_config_yaml):
-            runner = CliRunner()
-            result = runner.invoke(main, ["-f", "json"] + self.files)
+            result = self.xrlint("-f", "json", *self.files)
             self.assertIn('"results": [\n', result.output)
             self.assertEqual(0, result.exit_code)
 
     def test_file_does_not_match(self):
         with text_file(DEFAULT_CONFIG_FILE_YAML, no_match_config_yaml):
-            runner = CliRunner()
-            result = runner.invoke(main, ["test.zarr"])
+            result = self.xrlint("test.zarr")
             # TODO: make this assertion work
             # self.assertIn("No configuration matches this file.", result.output)
             self.assertEqual(1, result.exit_code)
 
+    def test_print_config_option(self):
+        with text_file(DEFAULT_CONFIG_FILE_YAML, self.ok_config_yaml):
+            result = self.xrlint("--print-config", "dataset2.zarr")
+            self.assertEqual(
+                (
+                    "{\n"
+                    '  "name": "<computed>",\n'
+                    '  "plugins": {\n'
+                    '    "__core__": "xrlint.plugins.core"\n'
+                    "  },\n"
+                    '  "rules": {\n'
+                    '    "dataset-title-attr": 2\n'
+                    "  }\n"
+                    "}\n"
+                ),
+                result.output,
+            )
+            self.assertEqual(0, result.exit_code)
+
     def test_files_with_invalid_format_option(self):
-        runner = CliRunner()
-        result = runner.invoke(main, ["-f", "foo"] + self.files)
+        result = self.xrlint("-f", "foo", *self.files)
         self.assertIn(
             "Error: unknown format 'foo'. The available formats are '", result.output
         )
@@ -208,8 +215,7 @@ class CliMainTest(TestCase):
         exists = os.path.exists(config_file)
         self.assertFalse(exists)
         try:
-            runner = CliRunner()
-            result = runner.invoke(main, ["--init"])
+            result = self.xrlint("--init")
             self.assertEqual(
                 f"Configuration template written to {config_file}\n", result.output
             )
@@ -225,8 +231,7 @@ class CliMainTest(TestCase):
         exists = os.path.exists(config_file)
         self.assertFalse(exists)
         with text_file(config_file, ""):
-            runner = CliRunner()
-            result = runner.invoke(main, ["--init"])
+            result = self.xrlint("--init")
             self.assertEqual(
                 f"Error: file {config_file} already exists.\n", result.output
             )

@@ -4,15 +4,22 @@ from dataclasses import dataclass
 from typing import Any, Callable, Type
 
 from xrlint.result import Result
+from xrlint.result import ResultStats
 from xrlint.util.naming import to_kebab_case
 
 
-class FormatterContext:
+class FormatterContext(ABC):
     """A formatter context is passed to `FormatOp`."""
 
-    def __init__(self, max_warnings_exceeded: bool = False):
-        self.max_warnings_exceeded = max_warnings_exceeded
-        """`True` if the maximum number of results has been exceeded."""
+    @property
+    @abstractmethod
+    def max_warnings_exceeded(self) -> bool:
+        """`True` if the maximum number of warnings has been exceeded."""
+
+    @property
+    @abstractmethod
+    def result_stats(self) -> ResultStats:
+        """Get current result statistics."""
 
 
 class FormatterOp(ABC):

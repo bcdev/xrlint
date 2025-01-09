@@ -2,7 +2,13 @@ from unittest import TestCase
 
 from xrlint.config import Config
 from xrlint.plugin import Plugin, PluginMeta
-from xrlint.result import get_rules_meta_for_results, Result, Message, Suggestion
+from xrlint.result import (
+    get_rules_meta_for_results,
+    Result,
+    Message,
+    Suggestion,
+    ResultStats,
+)
 from xrlint.rule import RuleOp, RuleMeta
 
 
@@ -89,3 +95,40 @@ class SuggestionTest(TestCase):
 
         suggestion = Suggestion("Use xr.transpose()")
         self.assertIs(suggestion, Suggestion.from_value(suggestion))
+
+
+class ResultStatsTest(TestCase):
+    def test_collect(self):
+        stats = ResultStats()
+
+        self.assertEqual(0, stats.error_count)
+        self.assertEqual(0, stats.warning_count)
+        self.assertEqual(0, stats.result_count)
+
+        results = [
+            Result.new(
+                messages=[
+                    Message("R1 M1", severity=1),
+                    Message("R1 M2", severity=2),
+                ]
+            ),
+            Result.new(
+                messages=[
+                    Message("R2 M1", severity=2),
+                ]
+            ),
+            Result.new(
+                messages=[
+                    Message("R3 M1", severity=1),
+                    Message("R3 M2", severity=2),
+                    Message("R3 M3", severity=2),
+                ]
+            ),
+        ]
+
+        results2 = list(stats.collect(results))
+
+        self.assertEqual(results, results2)
+        self.assertEqual(4, stats.error_count)
+        self.assertEqual(2, stats.warning_count)
+        self.assertEqual(3, stats.result_count)
