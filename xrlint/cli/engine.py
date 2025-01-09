@@ -33,10 +33,9 @@ DEFAULT_GLOBAL_FILTER = FileFilter.from_patterns(
 
 
 class XRLint(FormatterContext):
-    """The engine behind the XRLint CLI application.
-
-    The arguments are mostly 1:1 equivalents of the
-    CLI options.
+    """This class provides the engine behind the XRLint
+    CLI application.
+    It represents the highest level component in the Python API.
     """
 
     # noinspection PyShadowingBuiltins

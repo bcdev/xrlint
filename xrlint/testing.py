@@ -28,10 +28,10 @@ class RuleTest:
     """A name that helps identifying the test case."""
 
     args: tuple | list | None = None
-    """Optional positional arguments passed to the rule verifier's constructor."""
+    """Optional positional arguments passed to the rule operation's constructor."""
 
     kwargs: dict[str, Any] | None = None
-    """Optional keyword arguments passed to the rule verifier's constructor."""
+    """Optional keyword arguments passed to the rule operation's constructor."""
 
     expected: list[Message] | int | None = 0
     """Expected messages.
@@ -55,7 +55,7 @@ class RuleTester:
     def run(
         self,
         rule_name: str,
-        rule_verifier_class: Type[RuleOp],
+        rule_op_class: Type[RuleOp],
         *,
         valid: list[RuleTest] | None = None,
         invalid: list[RuleTest] | None = None,
@@ -65,7 +65,7 @@ class RuleTester:
 
         Args:
             rule_name: the rule's name
-            rule_verifier_class: the class derived from `RuleVerifier`
+            rule_op_class: a class derived from `RuleOp`
             valid: list of tests that expect no reported problems
             invalid: list of tests that expect reported problems
 
@@ -73,7 +73,7 @@ class RuleTester:
             AssertionError: if one of the checks fails
         """
         tests = self._create_tests(
-            rule_name, rule_verifier_class, valid=valid, invalid=invalid
+            rule_name, rule_op_class, valid=valid, invalid=invalid
         )
         for test in tests.values():
             print(f"Rule {rule_name!r}: running {test.__name__}()...")

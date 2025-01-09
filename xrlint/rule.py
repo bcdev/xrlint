@@ -13,7 +13,7 @@ from xrlint.util.todict import ToDictMixin
 
 
 class RuleContext(ABC):
-    """The context passed to the verifier of a rule.
+    """The context passed to a [xrlint.rule.RuleOp][] instance.
 
     You should never create instances of this class yourself.
     Instances of this interface are passed to the `RuleOp`'s
@@ -134,17 +134,17 @@ class RuleMeta(ToDictMixin):
     """Rule documentation URL."""
 
     schema: dict[str, Any] | list[dict[str, Any]] | bool | None = None
-    """JSON Schema used to specify and validate the rule verifier's
+    """JSON Schema used to specify and validate the rule operation
     options.
 
     It can take the following values:
 
-    - Use `None` (the default) to indicate that the rule verifier
+    - Use `None` (the default) to indicate that the rule operation
       as no options at all.
-    - Use a schema to indicate that the rule verifier
+    - Use a schema to indicate that the rule operation
       takes keyword arguments only.
       The schema's type must be `"object"`.
-    - Use a list of schemas to indicate that the rule verifier
+    - Use a list of schemas to indicate that the rule operation
       takes positional arguments only.
       If given, the number of schemas in the list specifies the
       number of positional arguments that must be configured.
@@ -194,25 +194,6 @@ class Rule:
     """The class the implements the rule's verification operation.
     The class must implement the `RuleOp` interface.
     """
-
-    @classmethod
-    def from_value(cls, value: Any) -> "Rule":
-        """Convert `value` into a `Rule` object.
-
-        Args:
-            value: Can be the name of a module that exposes a function
-                `export_rule` which must return a `Rule`.
-                If the value is already of type `RuleConfig` it is
-                returned as-is.
-
-        Returns:
-            A `Rule` object.
-        """
-        if isinstance(value, Rule):
-            return value
-        if isinstance(value, str):
-            return import_value(value, "export_rule", Rule.from_value)
-        raise TypeError(format_message_type_of("value", value, "Rule|str"))
 
 
 @dataclass(frozen=True)

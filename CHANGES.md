@@ -1,5 +1,9 @@
 # XRLint Change History
 
+## Version 0.2.0 (in development)
+
+- Make all docstrings comply to google-style
+
 ## Version 0.1.0 (09.01.2025)
 
 - Added CLI option `--print-config PATH`, see same option in ESLint
