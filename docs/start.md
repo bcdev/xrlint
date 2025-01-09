@@ -6,7 +6,7 @@
 pip install xrlint
 ```
 
-or (not yet)
+or
 
 ```bash
 conda install -c conda-forge xrlint
