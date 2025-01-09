@@ -27,7 +27,7 @@ from xrlint.cli.constants import (
         f"Use this configuration, overriding {DEFAULT_CONFIG_BASENAME}.*"
         f" config options if present"
     ),
-    metavar="PATH",
+    metavar="FILE",
 )
 @click.option(
     "--print-config",
@@ -60,7 +60,7 @@ from xrlint.cli.constants import (
     "--output-file",
     "output_file",
     help="Specify file to write report to",
-    metavar="PATH",
+    metavar="FILE",
 )
 @click.option(
     "-f",
@@ -111,13 +111,17 @@ def main(
 ):
     """Validate the given dataset FILES.
 
-    Reads configuration from `xrlint.config.*` if file exists and
-    unless `--no_config_lookup` is set or `--config PATH` is provided.
+    Reads configuration from `./xrlint_config.*` if such file
+    exists and unless `--no_config_lookup` is set or `--config` is
+    provided.
     Then validates each dataset in FILES against the configuration.
+    The default dataset patters are `**/*.zarr` and `**/.nc`.
+    FILES may comprise also directories. If a directory is not matched
+    by any file pattern, it will be traversed recursively.
     The validation result is dumped to standard output if not otherwise
-    stated by `--output-file PATH`. The output format is `simple`. Other
-    inbuilt formats are `json` and `html` which can by setting the
-    `--format NAME` option.
+    stated by `--output-file`. The output format is `simple` by default.
+    Other inbuilt formats are `json` and `html` which you can specify
+    using the `--format` option.
     """
     from xrlint.cli.engine import CliEngine
 
