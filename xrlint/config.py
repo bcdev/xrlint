@@ -39,6 +39,7 @@ def get_core_config(config_name: Literal["all", "recommended"] | None = None):
             option either in `config` or `config_kwargs`. Otherwise, calling
             `verify_dataset()` without any rule configuration will never
             succeed for any given dataset.
+
     Returns:
         A new `Config` object
     """
@@ -154,6 +155,7 @@ class Config(ToDictMixin):
             value: A `Config` object, a `dict` containing the
                 configuration properties, or `None` which
                 converts into an empty configuration.
+
         Returns:
             A `Config` object.
         """
@@ -216,13 +218,16 @@ class Config(ToDictMixin):
         """Get the rule for the given rule identifier `rule_id`.
 
         Args:
-            rule_id: The rule identifier including plugin namespace, if any.
-                Format `<rule-name>` (builtin rules) or `<plugin-name>/<rule-name>`.
+            rule_id: The rule identifier including plugin namespace,
+                if any. Format `<rule-name>` (builtin rules) or
+                `<plugin-name>/<rule-name>`.
+
         Returns:
             A `Rule` object.
+
         Raises:
-            ValueError: If either the plugin is unknown in this configuration
-                or the rule name is unknown.
+            ValueError: If either the plugin is unknown in this
+                configuration or the rule name is unknown.
         """
         plugin_name, rule_name = split_config_spec(rule_id)
         plugin = self.get_plugin(plugin_name)
@@ -417,6 +422,7 @@ class ConfigList:
                 converted into `Config` objects including configuration
                 names of tyype `str`. The latter are resolved against
                 the plugin configurations seen so far in the list.
+
         Returns:
             A `ConfigList` object.
         """
@@ -473,6 +479,7 @@ class ConfigList:
 
         Args:
             file_path: A dataset file path.
+
         Returns:
             A `Config` object which may be empty, or `None`
             if `file_path` is not included by any `files` pattern

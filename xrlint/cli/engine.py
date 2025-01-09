@@ -123,7 +123,8 @@ class XRLint(FormatterContext):
 
         Args:
             file_path: A file path.
-        Return:
+
+        Returns:
             A configuration object or `None` if no item
             in the configuration list applies.
         """
@@ -145,7 +146,8 @@ class XRLint(FormatterContext):
 
         Args:
             files: Iterable of files.
-        Return:
+
+        Returns:
             Iterator of reports.
         """
         global_filter = self.config_list.get_global_filter(
@@ -173,7 +175,8 @@ class XRLint(FormatterContext):
 
         Args:
             results: Iterable of results.
-        Return:
+
+        Returns:
             A report in plain text.
         """
         output_format = (
@@ -226,6 +229,7 @@ def get_files(
     file_paths: Iterable[str], global_filter: FileFilter
 ) -> Iterator[tuple[str, bool | None]]:
     """Provide an iterator for the list of files or directories.
+
     Directories in `files` that are not filtered out will be
     recursively traversed.
 
@@ -234,7 +238,8 @@ def get_files(
         global_filter: A file filter that includes files that
             covered by global file patterns and not excluded
             by global ignore patterns.
-    Return:
+
+    Returns:
         An iterator of filtered files or directories.
     """
     for file_path in file_paths:

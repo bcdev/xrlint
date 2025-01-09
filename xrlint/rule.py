@@ -8,6 +8,7 @@ from xrlint.constants import SEVERITY_ENUM, SEVERITY_ENUM_TEXT
 from xrlint.node import DatasetNode, DataArrayNode, AttrsNode, AttrNode
 from xrlint.result import Suggestion
 from xrlint.util.formatting import format_message_type_of, format_message_one_of
+from xrlint.util.importutil import import_value
 from xrlint.util.todict import ToDictMixin
 
 
@@ -77,6 +78,7 @@ class RuleOp(ABC):
         Args:
             context: The current rule context.
             node: The dataset node.
+
         Raises:
             RuleExit: to exit rule logic and further node traversal
         """
@@ -87,6 +89,7 @@ class RuleOp(ABC):
         Args:
             context: The current rule context.
             node: The data array (variable) node.
+
         Raises:
             RuleExit: to exit rule logic and further node traversal
         """
@@ -97,6 +100,7 @@ class RuleOp(ABC):
         Args:
             context: The current rule context.
             node: The attributes node.
+
         Raises:
             RuleExit: to exit rule logic and further node traversal
         """
@@ -107,6 +111,7 @@ class RuleOp(ABC):
         Args:
             context: The current rule context.
             node: The attribute node.
+
         Raises:
             RuleExit: to exit rule logic and further node traversal
         """
@@ -190,6 +195,25 @@ class Rule:
     The class must implement the `RuleOp` interface.
     """
 
+    @classmethod
+    def from_value(cls, value: Any) -> "Rule":
+        """Convert `value` into a `Rule` object.
+
+        Args:
+            value: Can be the name of a module that exposes a function
+                `export_rule` which must return a `Rule`.
+                If the value is already of type `RuleConfig` it is
+                returned as-is.
+
+        Returns:
+            A `Rule` object.
+        """
+        if isinstance(value, Rule):
+            return value
+        if isinstance(value, str):
+            return import_value(value, "export_rule", Rule.from_value)
+        raise TypeError(format_message_type_of("value", value, "Rule|str"))
+
 
 @dataclass(frozen=True)
 class RuleConfig:
@@ -232,9 +256,11 @@ class RuleConfig:
         - one of `2` (error), `1` (warn), `0` (off)
 
         Args:
-            value: A rule severity or a list where the first element is a rule
-                severity and subsequent elements are rule arguments.
-                If the value is already of type `RuleConfig`it is returned as-is.
+            value: A rule severity or a list where the first element
+                is a rule severity and subsequent elements are rule
+                arguments. If the value is already of type `RuleConfig`
+                it is returned as-is.
+
         Returns:
             A `RuleConfig` object.
         """

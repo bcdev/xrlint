@@ -26,6 +26,7 @@ def new_linter(
         config: The `config` keyword argument passed to the `Linter` class
         config_kwargs: The `config_kwargs` keyword arguments passed to
             the `Linter` class
+
     Returns:
         A new linter instance
     """
@@ -85,6 +86,7 @@ class Linter:
             config_kwargs: Individual linter configuration options
                 to be merged with `config` if any. The merged result
                 will be merged with the linter's configuration.
+
         Returns:
             Result of the verification.
         """

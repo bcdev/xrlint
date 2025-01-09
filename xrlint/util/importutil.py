@@ -53,9 +53,11 @@ def import_value(
             the exported value, e.g., "export_plugin", "export_configs".
         factory:
             The 1-arg factory function that converts a value
-            into T.
+            into `T`.
+
     Returns:
-        The imported value of type T.
+        The imported value of type `T`.
+
     Raises:
         ValueImportError: if the value could not be imported
     """

@@ -42,6 +42,7 @@ class Suggestion(ToDictMixin):
         Args:
             value: A `Suggestion` object or a `str` containing the
                 suggestion text.
+
         Returns:
             A `Suggestion` object.
         """

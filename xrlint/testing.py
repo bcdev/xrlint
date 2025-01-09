@@ -84,7 +84,7 @@ class RuleTester:
     def define_test(
         cls,
         rule_name: str,
-        rule_verifier_class: Type[RuleOp],
+        rule_op_class: Type[RuleOp],
         *,
         valid: list[RuleTest] | None = None,
         invalid: list[RuleTest] | None = None,
@@ -98,24 +98,25 @@ class RuleTester:
 
         Args:
             rule_name: the rule's name
-            rule_verifier_class: the class derived from `RuleVerifier`
+            rule_op_class: the class derived from `RuleOp`
             valid: list of tests that expect no reported problems
             invalid: list of tests that expect reported problems
             config: optional xrlint configuration
+
         Returns:
             A new class derived from `unittest.TestCase`.
         """
         tester = RuleTester(**(config or {}))
         tests = tester._create_tests(
-            rule_name, rule_verifier_class, valid=valid, invalid=invalid
+            rule_name, rule_op_class, valid=valid, invalid=invalid
         )
         # noinspection PyTypeChecker
-        return type(f"{rule_verifier_class.__name__}Test", (unittest.TestCase,), tests)
+        return type(f"{rule_op_class.__name__}Test", (unittest.TestCase,), tests)
 
     def _create_tests(
         self,
         rule_name: str,
-        rule_verifier_class: Type[RuleOp],
+        rule_op_class: Type[RuleOp],
         valid: list[RuleTest] | None,
         invalid: list[RuleTest] | None,
     ) -> dict[str, Callable[[unittest.TestCase | None], None]]:
@@ -123,14 +124,14 @@ class RuleTester:
             return [(test, index, mode) for index, test in enumerate(tests or [])]
 
         return dict(
-            self._create_test(rule_name, rule_verifier_class, *args)
+            self._create_test(rule_name, rule_op_class, *args)
             for args in make_args(valid, "valid") + make_args(invalid, "invalid")
         )
 
     def _create_test(
         self,
         rule_name: str,
-        rule_verifier_class: Type[RuleOp],
+        rule_op_class: Type[RuleOp],
         test: RuleTest,
         test_index: int,
         test_mode: Literal["valid", "invalid"],
@@ -139,7 +140,7 @@ class RuleTester:
 
         def test_fn(_self: unittest.TestCase):
             error_message = self._test_rule(
-                rule_name, rule_verifier_class, test, test_id, test_mode
+                rule_name, rule_op_class, test, test_id, test_mode
             )
             if error_message:
                 raise AssertionError(error_message)

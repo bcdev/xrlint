@@ -15,8 +15,10 @@ def read_config_list(config_path: str | Path | PathLike[str]) -> ConfigList:
 
     Args:
         config_path: configuration file path.
+
     Returns:
         A configuration list instance.
+
     Raises:
         TypeError: if `config_path` is not a path-like object
         FileNotFoundError: if configuration file could not be found

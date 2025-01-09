@@ -21,6 +21,7 @@ class ProcessorOp(ABC):
         Args:
             file_path: A file path
             opener_options: The configuration's `opener_options`.
+
         Returns:
             A list of (dataset, file_path) pairs
         """
