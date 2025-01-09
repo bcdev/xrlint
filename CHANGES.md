@@ -1,6 +1,6 @@
 # XRLint Change History
 
-## Version 0.1.0 (in development)
+## Version 0.1.0 (09.01.2025)
 
 - Added CLI option `--print-config PATH`, see same option in ESLint
 - XRLint CLI now outputs single results immediately to console,
@@ -8,6 +8,7 @@
 - Refactored and renamed `CliEngine` into `XRLint`. Documented the class.
 - `new_linter()` now uses a config name arg instead of a bool arg.
 - Split example notebook into two
+
 
 ## Early development snapshots
 

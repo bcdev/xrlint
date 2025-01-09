@@ -11,9 +11,6 @@ XRLint is a [linting](https://en.wikipedia.org/wiki/Lint_(software))
 tool and library for [xarray]() datasets.
 Its design is heavily inspired by [ESLint](https://eslint.org/).
 
-**IMPORTANT NOTE**: This project just started and is under development, 
-there is no stable release yet. See 
-[to-do list](docs/todo.md).
 
 ## Features 
 
