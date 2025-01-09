@@ -37,13 +37,20 @@ class LinterTest(TestCase):
         self.assertEqual({CORE_PLUGIN_NAME}, set(linter.config.plugins.keys()))
         self.assertEqual(None, linter.config.rules)
 
-        linter = new_linter(recommended=False)
+        linter = new_linter(config_name=None)
         self.assertIsInstance(linter, xrl.Linter)
         self.assertIsInstance(linter.config.plugins, dict)
         self.assertEqual({CORE_PLUGIN_NAME}, set(linter.config.plugins.keys()))
         self.assertEqual(None, linter.config.rules)
 
-        linter = new_linter(recommended=True)
+        linter = new_linter("recommended")
+        self.assertIsInstance(linter, xrl.Linter)
+        self.assertIsInstance(linter.config.plugins, dict)
+        self.assertEqual({CORE_PLUGIN_NAME}, set(linter.config.plugins.keys()))
+        self.assertIsInstance(linter.config.rules, dict)
+        self.assertIn("coords-for-dims", linter.config.rules)
+
+        linter = new_linter("all")
         self.assertIsInstance(linter, xrl.Linter)
         self.assertIsInstance(linter.config.plugins, dict)
         self.assertEqual({CORE_PLUGIN_NAME}, set(linter.config.plugins.keys()))

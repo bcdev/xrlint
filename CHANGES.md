@@ -6,7 +6,8 @@
 - XRLint CLI now outputs single results immediately to console,
   instead only after all results have been collected.
 - Refactored and renamed `CliEngine` into `XRLint`. Documented the class.
-
+- `new_linter()` now uses a config name arg instead of a bool arg.
+- Split example notebook into two
 
 ## Early development snapshots
 
