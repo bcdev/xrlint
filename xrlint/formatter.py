@@ -1,5 +1,5 @@
 from abc import abstractmethod, ABC
-from collections.abc import Mapping
+from collections.abc import Mapping, Iterable
 from dataclasses import dataclass
 from typing import Any, Callable, Type
 
@@ -22,13 +22,13 @@ class FormatterOp(ABC):
     def format(
         self,
         context: FormatterContext,
-        results: list[Result],
+        results: Iterable[Result],
     ) -> str:
         """Format the given results.
 
         Args:
             context: formatting context
-            results: the results to format
+            results: an iterable of results to format
         Returns:
             A text representing the results in a given format
         """

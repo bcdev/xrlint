@@ -1,3 +1,5 @@
+from collections.abc import Iterable
+
 from xrlint.formatter import FormatterOp, FormatterContext
 from xrlint.formatters import registry
 from xrlint.result import Result
@@ -9,7 +11,7 @@ class Markdown(FormatterOp):
     def format(
         self,
         context: FormatterContext,
-        results: list[Result],
+        results: Iterable[Result],
     ) -> str:
         # TODO: implement "markdown" format
         raise NotImplementedError()
