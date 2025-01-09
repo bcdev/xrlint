@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from functools import cached_property
-from typing import Any, TYPE_CHECKING, Union
+from typing import Any, TYPE_CHECKING, Union, Literal
 
 from xrlint.constants import CORE_PLUGIN_NAME
 from xrlint.util.filefilter import FileFilter
@@ -28,22 +28,30 @@ def get_core_plugin() -> "Plugin":
     return export_plugin()
 
 
-def get_core_config(recommended: bool = False):
+def get_core_config(config_name: Literal["all", "recommended"] | None = None):
     """Create a base configuration for the built-in plugins.
 
     Args:
-        recommended: `True` (the default) if the recommended
-            rule configurations of the built-in plugins should be used.
+        config_name: `"recommended"` if the recommended configuration
+            of the builtin rules should be used, or `"all"` if all rules
+            shall be used. Pass `None` (the default) if you don't want this.
+            In the latter case, you should configure the `rules`
+            option either in `config` or `config_kwargs`. Otherwise, calling
+            `verify_dataset()` without any rule configuration will never
+            succeed for any given dataset.
     Returns:
         A new `Config` object
     """
     core_plugin = get_core_plugin()
-    return Config(
+    config = Config(
         plugins={
             CORE_PLUGIN_NAME: core_plugin,
         },
-        rules=core_plugin.configs["recommended"].rules if recommended else None,
     )
+    if config_name:
+        return config.merge(core_plugin.configs[config_name])
+    else:
+        return config
 
 
 def split_config_spec(config_spec: str) -> tuple[str, str]:
@@ -368,6 +376,23 @@ class Config(ToDictMixin):
             return {k: v for k, v in settings.items()}
         if settings is not None:
             raise TypeError(format_message_type_of(name, settings, "dict[str,Any]"))
+
+    def to_dict(self):
+        d = super().to_dict()
+        plugins: dict[str, Plugin] | None = d.get("plugins")
+        if plugins is not None:
+            d["plugins"] = {k: v.meta.module or "?" for k, v in plugins.items()}
+        rules: dict[str, RuleConfig] | None = d.get("rules")
+        if rules is not None:
+            d["rules"] = {
+                k: (
+                    v.severity
+                    if not (v.args or v.kwargs)
+                    else [v.severity, v.args, v.kwargs]
+                )
+                for k, v in rules.items()
+            }
+        return d
 
 
 @dataclass(frozen=True)

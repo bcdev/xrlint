@@ -46,10 +46,10 @@ class RuleTester:
     """Utility that helps to test rules.
 
     Args:
-        config: optional xrlint configuration
+        config: optional XRLint configuration.
     """
 
-    def __init__(self, **config):
+    def __init__(self, **config: dict[str, Any]):
         self._config = config
 
     def run(

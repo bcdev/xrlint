@@ -13,16 +13,11 @@
 - project logo
 - if configuration for given FILE is empty,
   report an error, see TODO in CLI main tests
-- rename `xrlint.cli.CliEngine` into `xrlint.cli.XRLint`
-  (with similar API as the `ESLint` class) and export it 
-  from `xrlint.all`. Value of `FILES` should be passed to
-  `verify_datasets()` methods.
 - use `RuleMeta.docs_url` in formatters to create links
 - implement xarray backend for xcube 'levels' format
   so can validate them too
 - add some more tests so we reach 99% coverage
 - support rule op args/kwargs schema validation
-- support CLI option `--print-config FILE`, see ESLint
 - Support `RuleTest.expected`, it is currently unused
 
 ## Nice to have

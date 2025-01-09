@@ -2,7 +2,6 @@ import sys
 
 import click
 
-from xrlint.cli.stats import Stats
 
 # Warning: do not import heavy stuff here, it can
 # slow down commands like "xrlint --help" otherwise.
@@ -16,8 +15,8 @@ from xrlint.cli.constants import (
 
 @click.command(name="xrlint")
 @click.option(
-    "--no-default-config",
-    "no_default_config",
+    "--no-config-lookup",
+    "no_config_lookup",
     help=f"Disable use of default configuration from {DEFAULT_CONFIG_BASENAME}.*",
     is_flag=True,
 )
@@ -29,7 +28,13 @@ from xrlint.cli.constants import (
         f"Use this configuration, overriding {DEFAULT_CONFIG_BASENAME}.*"
         f" config options if present"
     ),
-    metavar="PATH",
+    metavar="FILE",
+)
+@click.option(
+    "--print-config",
+    "inspect_path",
+    help="Print the configuration for the given file",
+    metavar="FILE",
 )
 @click.option(
     "--plugin",
@@ -56,7 +61,7 @@ from xrlint.cli.constants import (
     "--output-file",
     "output_file",
     help="Specify file to write report to",
-    metavar="PATH",
+    metavar="FILE",
 )
 @click.option(
     "-f",
@@ -93,8 +98,9 @@ from xrlint.cli.constants import (
 @click.version_option(version)
 @click.help_option()
 def main(
-    no_default_config: bool,
+    no_config_lookup: bool,
     config_path: str | None,
+    inspect_path: str | None,
     plugin_specs: tuple[str, ...],
     rule_specs: tuple[str, ...],
     max_warnings: int,
@@ -106,47 +112,53 @@ def main(
 ):
     """Validate the given dataset FILES.
 
-    Reads configuration from `xrlint.config.*` if file exists and
-    unless `--no-default-config` is set or `--config PATH` is provided.
+    Reads configuration from `./xrlint_config.*` if such file
+    exists and unless `--no_config_lookup` is set or `--config` is
+    provided.
     Then validates each dataset in FILES against the configuration.
+    The default dataset patters are `**/*.zarr` and `**/.nc`.
+    FILES may comprise also directories. If a directory is not matched
+    by any file pattern, it will be traversed recursively.
     The validation result is dumped to standard output if not otherwise
-    stated by `--output-file PATH`. The output format is `simple`. Other
-    inbuilt formats are `json` and `html` which can by setting the
-    `--format NAME` option.
+    stated by `--output-file`. The output format is `simple` by default.
+    Other inbuilt formats are `json` and `html` which you can specify
+    using the `--format` option.
     """
-    from xrlint.cli.engine import CliEngine
+    from xrlint.cli.engine import XRLint
 
     if init_mode:
-        CliEngine.init_config_file()
-        raise click.exceptions.Exit(0)
+        XRLint.init_config_file()
+        return
 
-    if not files:
-        raise click.ClickException("No dataset files provided.")
-
-    cli_engine = CliEngine(
-        no_default_config=no_default_config,
+    cli_engine = XRLint(
+        no_config_lookup=no_config_lookup,
         config_path=config_path,
         plugin_specs=plugin_specs,
         rule_specs=rule_specs,
-        files=files,
         output_format=output_format,
         output_path=output_file,
-        styled=color_enabled,
+        output_styled=color_enabled,
+        max_warnings=max_warnings,
     )
-    stats = Stats()
 
-    config_list = cli_engine.load_config()
-    results = cli_engine.verify_datasets(config_list)
-    results = stats.collect(results)
-    report = cli_engine.format_results(results)
-    cli_engine.write_report(report)
+    if inspect_path:
+        cli_engine.load_config_list()
+        cli_engine.print_config_for_file(inspect_path)
+        return
 
-    error_status = stats.error_count > 0
-    max_warn_status = stats.warning_count > max_warnings
-    if max_warn_status and not error_status:
-        click.echo("maximum number of warnings exceeded.")
-    if max_warn_status or error_status:
-        raise click.exceptions.Exit(1)
+    if files:
+        cli_engine.load_config_list()
+        results = cli_engine.verify_datasets(files)
+        report = cli_engine.format_results(results)
+        cli_engine.write_report(report)
+
+        result_stats = cli_engine.result_stats
+        error_status = result_stats.error_count > 0
+        max_warn_status = result_stats.warning_count > max_warnings
+        if max_warn_status and not error_status:
+            click.echo("Maximum number of warnings exceeded.")
+        if max_warn_status or error_status:
+            raise click.exceptions.Exit(1)
 
 
 if __name__ == "__main__":  # pragma: no cover

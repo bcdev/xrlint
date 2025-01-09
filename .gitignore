@@ -1,5 +1,6 @@
 # xrlint
 /xrlint_config.*
+/notebooks/xrlint_config.*
 
 # Logs
 *.log

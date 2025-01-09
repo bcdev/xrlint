@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Literal
 
 from xrlint.config import Config
 from xrlint.config import get_core_config
@@ -8,16 +8,18 @@ from ._linter.verify import verify_dataset
 
 
 def new_linter(
-    recommended: bool = False,
+    config_name: Literal["all", "recommended"] | None = None,
+    *,
     config: Config | dict | None = None,
     **config_kwargs: dict[str, Any],
 ) -> "Linter":
-    """Create a new `Linter` with core rules loaded.
+    """Create a new `Linter` with the given configuration.
 
     Args:
-        recommended: `True` if the recommended configurations of the builtin
-            rules should be used.
-            If set to `False` (the default), you should configure the `rules`
+        config_name: `"recommended"` if the recommended configuration
+            of the builtin rules should be used, or `"all"` if all rules
+            shall be used. Pass `None` (the default) if you don't want this.
+            In the latter case, you should configure the `rules`
             option either in `config` or `config_kwargs`. Otherwise, calling
             `verify_dataset()` without any rule configuration will never
             succeed for any given dataset.
@@ -28,7 +30,7 @@ def new_linter(
         A new linter instance
     """
     return Linter(
-        config=merge_configs(get_core_config(recommended=recommended), config),
+        config=merge_configs(get_core_config(config_name=config_name), config),
         **config_kwargs,
     )
 

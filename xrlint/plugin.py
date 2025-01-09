@@ -18,6 +18,9 @@ class PluginMeta:
     version: str = "0.0.0"
     """Plugin version."""
 
+    module: str | None = None
+    """Plugin module."""
+
 
 @dataclass(frozen=True, kw_only=True)
 class Plugin:

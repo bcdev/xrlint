@@ -1,3 +1,4 @@
+from collections.abc import Iterable
 from dataclasses import dataclass, field
 from typing import Literal, TYPE_CHECKING, Any, Union
 import html
@@ -196,3 +197,20 @@ def get_rules_meta_for_results(results: list[Result]) -> dict[str, "RuleMeta"]:
                 rule = result.config.get_rule(message.rule_id)
                 rules_meta[message.rule_id] = rule.meta
     return rules_meta
+
+
+@dataclass()
+class ResultStats:
+    """Utility for collecting simple statistics from results."""
+
+    error_count: int = 0
+    warning_count: int = 0
+    result_count: int = 0
+
+    def collect(self, results: Iterable[Result]) -> Iterable[Result]:
+        """Collect statistics from `results`."""
+        for result in results:
+            self.error_count += result.error_count
+            self.warning_count += result.warning_count
+            self.result_count += 1
+            yield result
