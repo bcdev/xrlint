@@ -482,8 +482,8 @@ class ConfigList:
 
         Returns:
             A `Config` object which may be empty, or `None`
-            if `file_path` is not included by any `files` pattern
-            or intentionally ignored by global `ignores`.
+                if `file_path` is not included by any `files` pattern
+                or intentionally ignored by global `ignores`.
         """
 
         config = None

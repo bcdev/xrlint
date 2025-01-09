@@ -126,7 +126,7 @@ class XRLint(FormatterContext):
 
         Returns:
             A configuration object or `None` if no item
-            in the configuration list applies.
+                in the configuration list applies.
         """
         return self.config_list.compute_config(file_path)
 
