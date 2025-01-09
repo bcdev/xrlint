@@ -507,7 +507,7 @@
 <h1 id="xrlint-a-linter-for-xarray-datasets">XRLint - A linter for xarray datasets</h1>
 <p>XRLint is a <a href="https://en.wikipedia.org/wiki/Lint_(software)">linting</a> 
 tool and library for <a href="">xarray</a> datasets.
-Its design is heavily inspired by <a href="https://eslint.org/">ESLint</a>.</p>
+Its design is heavily inspired by the awesome <a href="https://eslint.org/">ESLint</a>.</p>
 <h2 id="features">Features</h2>
 <ul>
 <li>Flexible validation for <code>xarray.Dataset</code> objects by configurable rules.</li>
@@ -518,13 +518,13 @@ Its design is heavily inspired by <a href="https://eslint.org/">ESLint</a>.</p>
   rules and file-specific settings.</li>
 </ul>
 <h2 id="inbuilt-rules">Inbuilt Rules</h2>
-<p>The following rule plugins are currently built into the code base:</p>
+<p>The following plugins provide XRLint's <a href="rule-ref/">inbuilt rules</a>:</p>
 <ul>
-<li><code>core</code>: Implementing the rules for
+<li><code>core</code>: implementing the rules for
   <a href="https://tutorial.xarray.dev/intermediate/data_cleaning/05.1_intro.html">tidy data</a>
   and the 
   <a href="https://cfconventions.org/cf-conventions/cf-conventions.html">CF-Conventions</a>.</li>
-<li><code>xcube</code>: Implementing the rules for 
+<li><code>xcube</code>: implementing the rules for 
   <a href="https://xcube.readthedocs.io/en/latest/cubespec.html">xcube datasets</a>.
   Note, this plugin is fully optional. You must manually configure 
   it to apply its rules. It may be moved into a separate GitHub repo 
