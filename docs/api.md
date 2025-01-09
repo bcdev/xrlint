@@ -2,6 +2,10 @@
 
 All described objects can be imported from the `xrlint.all` module.
 
+## Class `XRLint`
+
+::: xrlint.cli.engine.XRLint
+
 ## Function `new_linter()`
 
 ::: xrlint.linter.new_linter

@@ -129,7 +129,7 @@ class XRLint(FormatterContext):
         """
         return self.config_list.compute_config(file_path)
 
-    def print_config_for_file(self, file_path) -> None:
+    def print_config_for_file(self, file_path: str) -> None:
         """Print computed configuration for the given file.
 
         Args:

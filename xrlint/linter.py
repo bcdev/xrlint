@@ -12,7 +12,7 @@ def new_linter(
     config: Config | dict | None = None,
     **config_kwargs: dict[str, Any],
 ) -> "Linter":
-    """Create a new `Linter` with core rules loaded.
+    """Create a new `Linter` with just the core plugin configured.
 
     Args:
         recommended: `True` if the recommended configurations of the builtin
