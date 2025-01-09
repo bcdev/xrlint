@@ -528,7 +528,7 @@
 <h2 id="installation">Installation</h2>
 <div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>xrlint
 </code></pre></div>
-<p>or (not yet)</p>
+<p>or</p>
 <div class="highlight"><pre><span></span><code>conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>xrlint
 </code></pre></div>
 <h2 id="command-line-interface">Command line interface</h2>
@@ -590,7 +590,7 @@ using the <code>new_linter()</code> function .</p>
 
 <span class="n">test_ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Test Dataset&quot;</span><span class="p">})</span>
 
-<span class="n">linter</span> <span class="o">=</span> <span class="n">xrl</span><span class="o">.</span><span class="n">new_linter</span><span class="p">(</span><span class="n">recommended</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">linter</span> <span class="o">=</span> <span class="n">xrl</span><span class="o">.</span><span class="n">new_linter</span><span class="p">(</span><span class="s2">&quot;recommended&quot;</span><span class="p">)</span>
 <span class="n">linter</span><span class="o">.</span><span class="n">verify_dataset</span><span class="p">(</span><span class="n">test_ds</span><span class="p">)</span>
 </code></pre></div>
 

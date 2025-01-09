@@ -465,17 +465,13 @@
 <h2 id="desired">Desired</h2>
 <ul>
 <li>project logo</li>
+<li>if configuration for given FILE is empty,
+  report an error, see TODO in CLI main tests</li>
 <li>use <code>RuleMeta.docs_url</code> in formatters to create links</li>
 <li>implement xarray backend for xcube 'levels' format
   so can validate them too</li>
-<li>CLI should output result for file immediately,
-  not only after all results have been collected</li>
-<li>rename <code>xrlint.cli.CliEngine</code> into <code>xrlint.cli.XRLint</code>
-  (with similar API as the <code>ESLint</code> class) and export it 
-  from <code>xrlint.all</code></li>
 <li>add some more tests so we reach 99% coverage</li>
 <li>support rule op args/kwargs schema validation</li>
-<li>support CLI option <code>--print-config FILE</code>, see ESLint</li>
 <li>Support <code>RuleTest.expected</code>, it is currently unused</li>
 </ul>
 <h2 id="nice-to-have">Nice to have</h2>
