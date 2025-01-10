@@ -29,6 +29,7 @@ from xrlint.rule import RuleContext
 from xrlint.rule import RuleExit
 from xrlint.rule import RuleMeta
 from xrlint.rule import RuleOp
+from xrlint.rule import define_rule
 from xrlint.testing import RuleTest
 from xrlint.testing import RuleTester
 from xrlint.version import version
@@ -65,6 +66,7 @@ __all__ = [
     "RuleExit",
     "RuleMeta",
     "RuleOp",
+    "define_rule",
     "RuleTest",
     "RuleTester",
     "version",

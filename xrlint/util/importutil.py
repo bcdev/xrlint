@@ -1,6 +1,6 @@
 import importlib
 import pathlib
-from typing import TypeVar, Callable, Any
+from typing import TypeVar, Callable, Any, Type
 
 from xrlint.util.formatting import format_message_type_of
 
@@ -41,48 +41,86 @@ T = TypeVar("T")
 
 
 def import_value(
-    module_name: str,
-    function_name: str,
-    factory: Callable[[Any], T],
+    module_ref: str,
+    attr_ref: str | None = None,
+    *,
+    constant: bool = False,
+    factory: Callable[[Any], T] | None = None,
+    expected_type: Type[T] | None = None,
 ) -> T:
-    """Import an exported value from given module.
+    """Import an exported value from given module reference.
 
     Args:
-        module_name: Module name.
-        function_name: Name of the function used to provide
-            the exported value, e.g., "export_plugin", "export_configs".
-        factory:
-            The 1-arg factory function that converts a value
-            into `T`.
+        module_ref: Module reference. A string comprising either a fully
+            qualified module name plus an optional attribute reference
+            using format "<module-name>:<attr-ref>" or just a module name.
+            In this case, `attr_ref` should be given.
+            If it is not given, the module itself will be the exported value.
+        attr_ref: Attribute reference. Should be given in the case where
+            `module_ref` does not contain an attribute reference.
+            Example values are "export_plugin", "export_configs".
+        constant: If `True` the value is expected to be a constant.
+            If `False`, the default, the referenced attribute can
+            be a no-arg callable that yields the actual exported value.
+        factory: 1-arg factory function that converts a value of unknown
+            type into `T`. Optional.
+        expected_type: The expected value type that is a `T`. Optional.
 
     Returns:
-        The imported value of type `T`.
+        value: The imported value of type `T`.
+        value_ref: The reference from which the value was imported.
 
     Raises:
         ValueImportError: if the value could not be imported
     """
-    config_module = importlib.import_module(module_name)
+    if ":" in module_ref:
+        module_name, attr_ref = module_ref
+    else:
+        module_name = module_ref
+        if attr_ref:
+            module_ref = f"{module_name}:{attr_ref}"
 
     try:
-        export_function = getattr(config_module, function_name)
-    except AttributeError:
-        raise ValueImportError(f"missing {function_name}()")
-
-    if not callable(export_function):
+        module = importlib.import_module(module_name)
+    except ImportError as e:
         raise ValueImportError(
-            format_message_type_of(
-                function_name,
-                export_function,
-                "function",
-            )
+            f"failed to import value from {module_ref!r}: {e}"
+        ) from e
+
+    attr_value = module
+    if attr_ref:
+        attr_names = attr_ref.split(".")
+        for i, attr_name in enumerate(attr_names):
+            try:
+                attr_value = getattr(attr_value, attr_name)
+            except AttributeError:
+                raise ValueImportError(
+                    f"attribute {'.'.join(attr_names[:i+1])!r}"
+                    f" not found in module {module_name!r}"
+                )
+
+    if not constant and callable(attr_value):
+        # We don't catch exceptions here,
+        # because they occur in user land.
+        # noinspection PyCallingNonCallable
+        exported_value = attr_value()
+    else:
+        exported_value = attr_ref
+
+    if factory is not None:
+        try:
+            exported_value = factory(exported_value)
+        except (ValueError, TypeError) as e:
+            raise ValueImportError(
+                f"failed converting value of {module_ref!r}: {e}"
+            ) from e
+
+    if expected_type is not None and not isinstance(exported_value, expected_type):
+        raise ValueImportError(
+            format_message_type_of(module_ref, exported_value, expected_type)
         )
 
-    exported_value = export_function()
-
-    try:
-        return factory(exported_value)
-    except (ValueError, TypeError) as e:
-        raise ValueImportError(f"return value of {function_name}(): {e}") from e
+    return exported_value, module_ref
 
 
 class ValueImportError(ImportError):

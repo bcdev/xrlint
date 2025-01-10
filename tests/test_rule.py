@@ -1,19 +1,24 @@
+import unittest
 from unittest import TestCase
 
 import pytest
 
-from xrlint.rule import Rule
+from xrlint.rule import Rule, define_rule
 from xrlint.rule import RuleConfig
 from xrlint.rule import RuleMeta
 from xrlint.rule import RuleOp
 
 
-class MyRule1Op(RuleOp):
-    pass
+class MyRule1(RuleOp):
+    """This is my 1st rule."""
+
+
+class MyRule2(RuleOp):
+    """This is my 2nd rule."""
 
 
 def export_rule():
-    return Rule(meta=RuleMeta(name="my-rule-1"), op_class=MyRule1Op)
+    return Rule(meta=RuleMeta(name="my-rule-1"), op_class=MyRule1)
 
 
 class RuleTest(TestCase):
@@ -22,11 +27,16 @@ class RuleTest(TestCase):
         rule2 = Rule.from_value(rule)
         self.assertIs(rule, rule2)
 
+    def test_from_value_ok_rule_op(self):
+        rule = export_rule()
+        rule2 = Rule.from_value(rule)
+        self.assertIs(rule, rule2)
+
     def test_from_value_ok_str(self):
         rule = Rule.from_value("tests.test_rule")
         self.assertIsInstance(rule, Rule)
         self.assertEqual("my-rule-1", rule.meta.name)
-        self.assertIs(MyRule1Op, rule.op_class)
+        self.assertIs(MyRule1, rule.op_class)
 
     # noinspection PyMethodMayBeStatic
     def test_from_value_fails(self):
@@ -34,6 +44,40 @@ class RuleTest(TestCase):
             TypeError, match="value must be of type Rule|str, but was int"
         ):
             Rule.from_value(73)
+
+        class MyRule3(RuleOp):
+            """This is my 3rd rule."""
+
+        with pytest.raises(
+            ValueError,
+            match="missing rule metadata, apply define_rule\\(\\) to class MyRule3",
+        ):
+            Rule.from_value(MyRule3)
+
+
+class DefineRuleTest(unittest.TestCase):
+
+    def test_decorator(self):
+        deco = define_rule()
+        self.assertTrue(callable(deco))
+        op_class = deco(MyRule1)
+        self.assertIs(MyRule1, op_class)
+        self.assertTrue(hasattr(MyRule1, "meta"))
+        # noinspection PyUnresolvedReferences
+        self.assertEqual("my-rule-1", MyRule1.meta.name)
+
+    def test_function(self):
+        rule = define_rule(op_class=MyRule1)
+        self.assertIsInstance(rule, Rule)
+        self.assertEqual("my-rule-1", rule.meta.name)
+        self.assertIs(MyRule1, rule.op_class)
+
+    def test_with_registry(self):
+        registry = {}
+        rule1 = define_rule(op_class=MyRule1, registry=registry)
+        rule2 = define_rule(op_class=MyRule2, registry=registry)
+        self.assertIs(rule1, registry["my-rule-1"])
+        self.assertIs(rule2, registry["my-rule-2"])
 
 
 class RuleConfigTest(TestCase):

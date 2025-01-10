@@ -388,7 +388,7 @@ class Config(ToDictMixin):
         d = super().to_dict()
         plugins: dict[str, Plugin] | None = d.get("plugins")
         if plugins is not None:
-            d["plugins"] = {k: v.meta.module or "?" for k, v in plugins.items()}
+            d["plugins"] = {k: v.meta.ref or "?" for k, v in plugins.items()}
         rules: dict[str, RuleConfig] | None = d.get("rules")
         if rules is not None:
             d["rules"] = {

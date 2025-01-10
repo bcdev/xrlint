@@ -192,7 +192,7 @@ class CliMainTest(TestCase):
                     "{\n"
                     '  "name": "<computed>",\n'
                     '  "plugins": {\n'
-                    '    "__core__": "xrlint.plugins.core"\n'
+                    '    "__core__": "xrlint.plugins.core:export_plugin"\n'
                     "  },\n"
                     '  "rules": {\n'
                     '    "dataset-title-attr": 2\n'

@@ -1,5 +1,7 @@
 from abc import abstractmethod, ABC
+from collections.abc import MutableMapping
 from dataclasses import dataclass, field
+from inspect import isclass
 from typing import Type, Literal, Any, Callable
 
 import xarray as xr
@@ -9,6 +11,7 @@ from xrlint.node import DatasetNode, DataArrayNode, AttrsNode, AttrNode
 from xrlint.result import Suggestion
 from xrlint.util.formatting import format_message_type_of, format_message_one_of
 from xrlint.util.importutil import import_value
+from xrlint.util.naming import to_kebab_case
 from xrlint.util.todict import ToDictMixin
 
 
@@ -117,7 +120,7 @@ class RuleOp(ABC):
         """
 
 
-@dataclass(frozen=True, kw_only=True)
+@dataclass(kw_only=True)
 class RuleMeta(ToDictMixin):
     """Rule metadata."""
 
@@ -210,8 +213,21 @@ class Rule:
         """
         if isinstance(value, Rule):
             return value
+        if isclass(value) and issubclass(value, RuleOp):
+            try:
+                # noinspection PyUnresolvedReferences
+                # Note, the value.meta attribute is set by
+                # the define_rule
+                return Rule(value.meta, value)
+            except AttributeError:
+                raise ValueError(
+                    f"missing rule metadata, apply define_rule()"
+                    f" to class {value.__name__}"
+                )
         if isinstance(value, str):
-            return import_value(value, "export_rule", Rule.from_value)
+            rule, rule_ref = import_value(value, "export_rule", factory=Rule.from_value)
+            rule.meta.ref = rule_ref
+            return rule
         raise TypeError(format_message_type_of("value", value, "Rule|str"))
 
 
@@ -220,7 +236,8 @@ class RuleConfig:
     """A rule configuration.
 
     You should not use the class constructor directly.
-    Instead, use the `RuleConfig.from_value()` function.
+    Instead, use its [from_value][xrlint.rule.RuleConfig.from_value]
+    class method.
 
     Args:
         severity: rule severity, one of `2` (error), `1` (warn), or `0` (off)
@@ -296,37 +313,75 @@ class RuleConfig:
         return RuleConfig(severity, tuple(args), dict(kwargs))
 
 
-def register_rule(
-    registry: dict[str, Rule],
-    name: str,
+def define_rule(
+    name: str | None = None,
     version: str = "0.0.0",
     schema: dict[str, Any] | list[dict[str, Any]] | bool | None = None,
     type: Literal["problem", "suggestion", "layout"] | None = None,
     description: str | None = None,
     docs_url: str | None = None,
+    registry: MutableMapping[str, Rule] | None = None,
     op_class: Type[RuleOp] | None = None,
-) -> Callable[[Any], Type[RuleOp]] | None:
-    def _register_rule(_op_class: Any) -> Type[RuleOp]:
-        from inspect import isclass
+) -> Callable[[Any], Type[RuleOp]] | Rule:
+    """Define a rule.
 
+    This function can be used to decorate your rule operation class
+    definitions. When used as a decorator, the decorated operator class
+    will receive a `meta` attribute of type [RuleMeta][xrlint.rule.RuleMeta].
+    In addition, the `registry` if given, will be updated using `name`
+    as key and a new [Rule][xrlint.rule.Rule] as value.
+
+    Args:
+        name: Rule name, see [RuleMeta][xrlint.rule.RuleMeta].
+        version: Rule version, see [RuleMeta][xrlint.rule.RuleMeta].
+        schema: Rule operation arguments schema,
+            see [RuleMeta][xrlint.rule.RuleMeta].
+        type: Rule type, see [RuleMeta][xrlint.rule.RuleMeta].
+        description: Rule description,
+            see [RuleMeta][xrlint.rule.RuleMeta].
+        docs_url: Rule documentation URL,
+            see [RuleMeta][xrlint.rule.RuleMeta].
+        registry: Rule registry. Can be provided to register the
+            defined rule using its `name`.
+        op_class: Rule operation class. Must not be provided
+            if this function is used as a class decorator.
+
+    Returns:
+        A decorator function, if `op_class` is `None` otherwise
+            the value of `op_class`.
+
+    Raises:
+        TypeError: If either `op_class` or the decorated object is not a
+            a class derived from [RuleOp][xrlint.rule.RuleOp].
+    """
+
+    def _define_rule(_op_class: Type[RuleOp], no_deco=False) -> Type[RuleOp] | Rule:
         if not isclass(_op_class) or not issubclass(_op_class, RuleOp):
             raise TypeError(
                 f"component decorated by define_rule()"
                 f" must be a subclass of {RuleOp.__name__}"
             )
         meta = RuleMeta(
-            name=name,
+            name=name or to_kebab_case(_op_class.__name__),
             version=version,
-            description=description,
+            description=description or _op_class.__doc__,
             docs_url=docs_url,
             type=type if type is not None else "problem",
+            # TODO: if schema not given,
+            #   derive it from _op_class' ctor arguments
             schema=schema,
         )
-        registry[name] = Rule(meta=meta, op_class=_op_class)
-        return _op_class
+        # Register rule metadata in rule operation class
+        setattr(_op_class, "meta", meta)
+        rule = Rule(meta=meta, op_class=_op_class)
+        if registry is not None:
+            # Register rule in rule registry
+            registry[meta.name] = rule
+        return rule if no_deco else _op_class
 
     if op_class is None:
-        # decorator case
-        return _register_rule
-
-    _register_rule(op_class)
+        # decorator case: return decorated class
+        return _define_rule
+    else:
+        # called as function: return new rule
+        return _define_rule(op_class, no_deco=True)

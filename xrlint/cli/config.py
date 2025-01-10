@@ -85,7 +85,11 @@ def _read_config_python(config_path: str) -> Any:
     old_sys_path = sys.path
     sys.path = [module_parent.as_posix()] + sys.path
     try:
-        return import_value(module_name, "export_configs", ConfigList.from_value)
+        return import_value(
+            module_name,
+            "export_configs",
+            factory=ConfigList.from_value,
+        )[0]
     except ValueImportError as e:
         raise ConfigError(config_path, e) from e
     finally:

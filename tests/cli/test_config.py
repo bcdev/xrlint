@@ -142,7 +142,10 @@ class CliConfigTest(TestCase):
         with text_file(self.new_config_py(), py_code) as config_path:
             with pytest.raises(
                 ConfigError,
-                match=".py: missing export_configs()",
+                match=(
+                    "config_1002.py: attribute 'export_configs'"
+                    " not found in module 'config_1002'"
+                ),
             ):
                 read_config_list(config_path)
 

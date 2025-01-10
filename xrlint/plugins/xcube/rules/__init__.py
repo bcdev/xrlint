@@ -7,6 +7,6 @@ plugin = Plugin(
     meta=PluginMeta(
         name="xcube",
         version=version,
-        module=__package__.rsplit(".", maxsplit=1)[0],
+        ref="xrlint.plugins.xcube:export_plugin",
     )
 )
