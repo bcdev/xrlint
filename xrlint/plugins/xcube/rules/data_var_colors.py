@@ -1,5 +1,3 @@
-import numpy as np
-
 from xrlint.node import DataArrayNode
 from xrlint.plugins.xcube.rules import plugin
 from xrlint.plugins.xcube.util import is_spatial_var

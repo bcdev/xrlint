@@ -1,15 +1,19 @@
 from abc import abstractmethod, ABC
-from collections.abc import MutableMapping
+from collections.abc import MutableMapping, Sequence
 from dataclasses import dataclass, field
 from inspect import isclass
 from typing import Type, Literal, Any, Callable
 
 import xarray as xr
 
-from xrlint.constants import SEVERITY_ENUM, SEVERITY_ENUM_TEXT
+from xrlint.constants import (
+    SEVERITY_ENUM,
+    SEVERITY_ENUM_TEXT,
+)
 from xrlint.node import DatasetNode, DataArrayNode, AttrsNode, AttrNode
 from xrlint.result import Suggestion
-from xrlint.util.formatting import format_message_type_of, format_message_one_of
+from xrlint.util.codec import ValueConstructible
+from xrlint.util.formatting import format_message_one_of
 from xrlint.util.importutil import import_value
 from xrlint.util.naming import to_kebab_case
 from xrlint.util.todict import ToDictMixin
@@ -121,7 +125,7 @@ class RuleOp(ABC):
 
 
 @dataclass(kw_only=True)
-class RuleMeta(ToDictMixin):
+class RuleMeta(ValueConstructible, ToDictMixin):
     """Rule metadata."""
 
     name: str
@@ -178,7 +182,7 @@ class RuleMeta(ToDictMixin):
 
 
 @dataclass(frozen=True)
-class Rule:
+class Rule(ValueConstructible):
     """A rule comprises rule metadata and a reference to the
     class that implements the rule's logic.
 
@@ -199,45 +203,50 @@ class Rule:
     """
 
     @classmethod
-    def from_value(cls, value: Any) -> "Rule":
-        """Convert `value` into a `Rule` object.
+    def _from_str(cls, value: str, name: str) -> "Rule":
+        rule, rule_ref = import_value(value, "export_rule", factory=Rule.from_value)
+        rule.meta.ref = rule_ref
+        return rule
 
-        Args:
-            value: Can be the name of a module that exposes a function
-                `export_rule` which must return a `Rule`.
-                If the value is already of type `RuleConfig` it is
-                returned as-is.
+    @classmethod
+    def _from_class(cls, value: Type, name: str) -> "Rule":
+        if not issubclass(value, RuleOp):
+            return super()._from_class(value, name)
+        try:
+            # noinspection PyUnresolvedReferences
+            # Note, the value.meta attribute is set by
+            # the define_rule
+            return Rule(value.meta, value)
+        except AttributeError:
+            raise ValueError(
+                f"missing rule metadata, apply define_rule()"
+                f" to class {value.__name__}"
+            )
 
-        Returns:
-            A `Rule` object.
-        """
-        if isinstance(value, Rule):
-            return value
-        if isclass(value) and issubclass(value, RuleOp):
-            try:
-                # noinspection PyUnresolvedReferences
-                # Note, the value.meta attribute is set by
-                # the define_rule
-                return Rule(value.meta, value)
-            except AttributeError:
-                raise ValueError(
-                    f"missing rule metadata, apply define_rule()"
-                    f" to class {value.__name__}"
-                )
-        if isinstance(value, str):
-            rule, rule_ref = import_value(value, "export_rule", factory=Rule.from_value)
-            rule.meta.ref = rule_ref
-            return rule
-        raise TypeError(format_message_type_of("value", value, "Rule|str"))
+    @classmethod
+    def _get_type_name(cls) -> str:
+        return "Rule|str"
 
 
 @dataclass(frozen=True)
-class RuleConfig:
+class RuleConfig(ValueConstructible):
     """A rule configuration.
 
     You should not use the class constructor directly.
     Instead, use its [from_value][xrlint.rule.RuleConfig.from_value]
-    class method.
+    class method. The method's argument value can either be a
+    rule _severity_, or a list where the first element is a rule
+    _severity_ and subsequent elements are rule arguments:
+
+    - _severity_
+    - `[`_severity_`]`
+    - `[`_severity_`,` _arg-1 | kwargs_ `]`
+    - `[`_severity_`,` _arg-1_`,` _arg-2_`,` ...`,` _arg-n | kwargs_`]`
+
+    The rule _severity_ is either
+
+    - one of `"error"`, `"warn"`, `"off"` or
+    - one of `2` (error), `1` (warn), `0` (off)
 
     Args:
         severity: rule severity, one of `2` (error), `1` (warn), or `0` (off)
@@ -255,62 +264,49 @@ class RuleConfig:
     """Rule operation keyword-arguments."""
 
     @classmethod
-    def from_value(cls, value: Any) -> "RuleConfig":
-        """Convert `value` into a `RuleConfig` object.
-
-        A rule configuration value can either be a rule _severity_,
-        or a list where the first element is a rule
-        _severity_ and subsequent elements are rule arguments:
-
-        - _severity_
-        - `[`_severity_`]`
-        - `[`_severity_`,` _arg-1 | kwargs_ `]`
-        - `[`_severity_`,` _arg-1_`,` _arg-2_`,` ...`,` _arg-n | kwargs_`]`
-
-        The rule _severity_ is either
-
-        - one of `"error"`, `"warn"`, `"off"` or
-        - one of `2` (error), `1` (warn), `0` (off)
-
-        Args:
-            value: A rule severity or a list where the first element
-                is a rule severity and subsequent elements are rule
-                arguments. If the value is already of type `RuleConfig`
-                it is returned as-is.
-
-        Returns:
-            A `RuleConfig` object.
-        """
-        if isinstance(value, RuleConfig):
-            return value
-
-        if isinstance(value, (int, str)):
-            severity_value, options = value, ()
-        elif isinstance(value, (list, tuple)):
-            severity_value, options = (value[0], value[1:]) if value else (0, ())
-        else:
-            raise TypeError(
-                format_message_type_of(
-                    "rule configuration", value, "int|str|tuple|list"
-                )
-            )
-
+    def _convert_severity(cls, value: int | str) -> Literal[2, 1, 0]:
         try:
-            severity = SEVERITY_ENUM[severity_value]
+            # noinspection PyTypeChecker
+            return SEVERITY_ENUM[value]
         except KeyError:
             raise ValueError(
-                format_message_one_of("severity", severity_value, SEVERITY_ENUM_TEXT)
+                format_message_one_of("severity", value, SEVERITY_ENUM_TEXT)
             )
 
+    @classmethod
+    def _from_bool(cls, value: bool, name: str) -> "RuleConfig":
+        return RuleConfig(cls._convert_severity(int(value)))
+
+    @classmethod
+    def _from_int(cls, value: int, name: str) -> "RuleConfig":
+        return RuleConfig(cls._convert_severity(value))
+
+    @classmethod
+    def _from_str(cls, value: str, name: str) -> "RuleConfig":
+        return RuleConfig(cls._convert_severity(value))
+
+    @classmethod
+    def _from_sequence(cls, value: Sequence, name: str) -> "RuleConfig":
+        if not value:
+            raise ValueError()
+        severity = cls._convert_severity(value[0])
+        options = value[1:]
         if not options:
             args, kwargs = (), {}
         elif isinstance(options[-1], dict):
             args, kwargs = options[:-1], options[-1]
         else:
             args, kwargs = options, {}
-
         # noinspection PyTypeChecker
         return RuleConfig(severity, tuple(args), dict(kwargs))
+
+    @classmethod
+    def _get_value_name(cls) -> str:
+        return "rule configuration"
+
+    @classmethod
+    def _get_type_name(cls) -> str:
+        return "int|str|tuple|list"
 
 
 def define_rule(

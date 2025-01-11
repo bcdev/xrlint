@@ -148,7 +148,7 @@ class Config(ToDictMixin):
     """
 
     @classmethod
-    def from_value(cls, value: Any) -> "Config":
+    def from_value(cls, value: Any, name: str | None = None) -> "Config":
         """Convert given `value` into a `Config` object.
 
         If `value` is already a `Config` then it is returned as-is.
@@ -404,17 +404,18 @@ class Config(ToDictMixin):
 
 @dataclass(frozen=True)
 class ConfigList:
-    """A holder for a list of `Config` objects.
+    """A holder for a list of configuration objects of
+    type [Config][xrlint.config.Config].
 
     You should not use the class constructor directly.
     Instead, use the `ConfigList.from_value()` function.
     """
 
     configs: list[Config] = field(default_factory=list)
-    """The list of `Config` objects."""
+    """The list of configuration objects."""
 
     @classmethod
-    def from_value(cls, value: Any) -> "ConfigList":
+    def from_value(cls, value: Any, name: str | None = None) -> "ConfigList":
         """Convert given `value` into a `ConfigList` object.
 
         If `value` is already a `ConfigList` then it is returned as-is.

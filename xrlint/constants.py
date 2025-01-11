@@ -8,10 +8,9 @@ SEVERITY_NAME_TO_CODE = {
     "off": SEVERITY_OFF,
 }
 SEVERITY_CODE_TO_NAME = {v: k for k, v in SEVERITY_NAME_TO_CODE.items()}
+SEVERITY_CODE_TO_CODE = {v: v for v in SEVERITY_NAME_TO_CODE.values()}
 
-SEVERITY_ENUM: dict[int | str, int] = SEVERITY_NAME_TO_CODE | {
-    v: v for v in SEVERITY_NAME_TO_CODE.values()
-}
+SEVERITY_ENUM: dict[int | str, int] = SEVERITY_NAME_TO_CODE | SEVERITY_CODE_TO_CODE
 SEVERITY_ENUM_TEXT = ", ".join(f"{k!r}" for k in SEVERITY_ENUM.keys())
 
 MISSING_DATASET_FILE_PATH = "<dataset>"

@@ -10,7 +10,7 @@ from xrlint.rule import RuleOp
 from xrlint.rule import define_rule
 
 
-@define_rule("good-title", description=f"Dataset title should be 'Hello World!'.")
+@define_rule("good-title", description="Dataset title should be 'Hello World!'.")
 class GoodTitle(RuleOp):
     def dataset(self, ctx: RuleContext, node: DatasetNode):
         good_title = "Hello World!"

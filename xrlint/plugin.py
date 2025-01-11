@@ -19,13 +19,13 @@ class PluginMeta:
     """Plugin version."""
 
     ref: str | None = None
-    """Plugin module reference. 
+    """Plugin module reference.
     Specifies the location from where the plugin can be loaded.
     Must have the form "<module>:<attr>".
     """
 
     @classmethod
-    def from_value(cls, value: Any) -> "PluginMeta":
+    def from_value(cls, value: Any, name: str | None = None) -> "PluginMeta":
         if isinstance(value, PluginMeta):
             return value
         if isinstance(value, dict):
@@ -55,7 +55,7 @@ class Plugin:
     """
 
     @classmethod
-    def from_value(cls, value: Any) -> "Plugin":
+    def from_value(cls, value: Any, name: str | None = None) -> "Plugin":
         if isinstance(value, Plugin):
             return value
         if isinstance(value, dict):

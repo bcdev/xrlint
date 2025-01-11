@@ -3,5 +3,5 @@
 - recommended
 - xcube/recommended
 - rules:
-    "dataset-title-attr": error
-    "xcube/single-grid-mapping": off
+    "dataset-title-attr": "error"
+    "xcube/single-grid-mapping": "off"

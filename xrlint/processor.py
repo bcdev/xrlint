@@ -59,13 +59,13 @@ class ProcessorMeta:
     """Processor version."""
 
     ref: str | None = None
-    """Processor module reference. 
+    """Processor module reference.
     Specifies the location from where the processor can be loaded.
     Must have the form "<module>:<attr>".
     """
 
     @classmethod
-    def from_value(cls, value: Any) -> "ProcessorMeta":
+    def from_value(cls, value: Any, name: str | None = None) -> "ProcessorMeta":
         if isinstance(value, ProcessorMeta):
             return value
         if isinstance(value, dict):
@@ -94,7 +94,7 @@ class Processor:
     # """`True` if this processor supports auto-fixing of datasets."""
 
     @classmethod
-    def from_value(cls, value: Any) -> "Processor":
+    def from_value(cls, value: Any, name: str | None = None) -> "Processor":
         if isinstance(value, Processor):
             return value
         if isclass(value) and issubclass(value, ProcessorOp):
