@@ -25,7 +25,7 @@ class SchemaTest(TestCase):
     # noinspection PyTypeChecker,PyMethodMayBeStatic
     def test_type_name_invalid(self):
         with pytest.raises(
-            TypeError, match="type must be of type str|list[str], but was str"
+            TypeError, match="type must be of type str|list[str], but got str"
         ):
             schema(type=str)
         with pytest.raises(
@@ -34,7 +34,7 @@ class SchemaTest(TestCase):
                 "type name must be one of "
                 "'null', 'boolean', 'integer', 'number',"
                 " 'string', 'array', 'object',"
-                " but was 'float'"
+                " but got 'float'"
             ),
         ):
             schema(type="float")
@@ -42,7 +42,7 @@ class SchemaTest(TestCase):
     # noinspection PyTypeChecker,PyMethodMayBeStatic
     def test_type_name_list_invalid(self):
         with pytest.raises(
-            TypeError, match="type must be of type str|list[str], but was int"
+            TypeError, match="type must be of type str|list[str], but got int"
         ):
             schema(type=["string", 2])
         with pytest.raises(
@@ -51,7 +51,7 @@ class SchemaTest(TestCase):
                 "type name must be one of"
                 " 'null', 'boolean', 'integer', 'number',"
                 " 'string', 'array', 'object',"
-                " but was 'list'"
+                " but got 'list'"
             ),
         ):
             schema(type=["string", "list"])

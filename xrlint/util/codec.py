@@ -1,12 +1,12 @@
 from collections.abc import Mapping, Sequence
-from inspect import getfullargspec, isclass
+from inspect import formatannotation, signature, isclass, Signature, Parameter
 from types import NoneType, UnionType
 from typing import Any, Generic, TypeVar, Type, TypeAlias, Union, get_origin, get_args
 
 from xrlint.util.formatting import format_message_type_of
 
 
-JSON_TYPE_SPEC = "None|bool|int|float|str|dict|list|tuple"
+JSON_VALUE_TYPE_NAME = "None|bool|int|float|str|dict|list|tuple"
 
 JsonValue: TypeAlias = (
     NoneType | bool | int | float | str | dict[str, "JsonValue"] | list["JsonValue"]
@@ -14,92 +14,265 @@ JsonValue: TypeAlias = (
 
 T = TypeVar("T")
 
-_PROPERTIES: dict[type, dict[str, Any]] = {}
+_SIGNATURES: dict[type, Signature] = {}
 
 
 class ValueConstructible(Generic[T]):
+    """Can be used to make data classes constructible from a class method
+    [from_value][xrlint.util.codec.ValueConstructible.from_value].
+    """
 
     @classmethod
-    def from_value(cls, value: Any, name: str | None = None) -> T:
-        """Decode value of any type into T."""
-        name = name or cls._get_value_name()
+    def from_value(cls, value: Any, value_name: str | None = None) -> T:
+        """Create an instance of this class from a value.
+
+        Args:
+            value: The value
+            value_name: An identifier used for error messages.
+                Defaults to the value returned by `cls._get_value_name()`.
+
+        Returns:
+            An instance of this class.
+
+        Raises:
+            TypeError: If `value` cannot be converted.
+        """
+        value_name = value_name or cls._get_value_name()
         if isinstance(value, cls):
             return value
         if value is None:
-            return cls._from_null(name)
+            return cls._from_null(value_name)
         if isinstance(value, bool):
-            return cls._from_bool(value, name)
+            return cls._from_bool(value, value_name)
         if isinstance(value, int):
-            return cls._from_int(value, name)
+            return cls._from_int(value, value_name)
         if isinstance(value, float):
-            return cls._from_float(value, name)
+            return cls._from_float(value, value_name)
         if isinstance(value, str):
-            return cls._from_str(value, name)
+            return cls._from_str(value, value_name)
         if isinstance(value, Mapping):
-            return cls._from_mapping(value, name)
+            return cls._from_mapping(value, value_name)
         if isinstance(value, Sequence):
-            return cls._from_sequence(value, name)
-        if isclass(value):
-            return cls._from_class(value, name)
-        return cls._from_other(value, name)
+            return cls._from_sequence(value, value_name)
+        if isinstance(value, type):
+            if isclass(value) and issubclass(value, cls):
+                return cls._from_class(value, value_name)
+            else:
+                return cls._from_type(value, value_name)
+        return cls._from_other(value, value_name)
 
     @classmethod
     def _from_null(cls, name: str) -> T:
-        raise TypeError(cls._format_type_error(name, None))
+        """Create an instance of this class from a `None` value.
+        The default implementation raises a `TypeError`.
+        Override to implement a different behaviour.
+        """
+        raise TypeError(cls._format_type_error(None, name))
 
     @classmethod
     def _from_bool(cls, value: bool, name: str) -> T:
-        raise TypeError(cls._format_type_error(name, value))
+        """Create an instance of this class from a bool value.
+        The default implementation raises a `TypeError`.
+        Override to implement a different behaviour.
+        """
+        raise TypeError(cls._format_type_error(value, name))
 
     @classmethod
     def _from_int(cls, value: int, name: str) -> T:
-        raise TypeError(cls._format_type_error(name, value))
+        """Create an instance of this class from an int value.
+        The default implementation raises a `TypeError`.
+        Override to implement a different behaviour.
+        """
+        raise TypeError(cls._format_type_error(value, name))
 
     @classmethod
     def _from_float(cls, value: float, name: str) -> T:
-        raise TypeError(cls._format_type_error(name, value))
+        """Create an instance of this class from a float value.
+        The default implementation raises a `TypeError`.
+        Override to implement a different behaviour.
+        """
+        raise TypeError(cls._format_type_error(value, name))
 
     @classmethod
     def _from_str(cls, value: str, name: str) -> T:
-        raise TypeError(cls._format_type_error(name, value))
+        """Create an instance of this class from a str value.
+        The default implementation raises a `TypeError`.
+        Override to implement a different behaviour.
+        """
+        raise TypeError(cls._format_type_error(value, name))
 
     @classmethod
-    def _from_class(cls, value: Type, name: str) -> T:
-        raise TypeError(cls._format_type_error(name, value))
+    def _from_class(cls, value: Type[T], name: str) -> T:
+        """Create an instance of this class from a class value
+        that is a subclass of `cls`.
+        The default implementation raises a `TypeError`.
+        Override to implement a different behaviour.
+        """
+        raise TypeError(cls._format_type_error(value, name))
 
     @classmethod
-    def _from_mapping(cls, mapping: Mapping, name: str) -> T:
-        for k in mapping.keys():
-            if not isinstance(k, str):
-                raise TypeError(
-                    f"{name} of type {type(mapping).__name__}"
-                    f" must have keys of type str, but key type was {type(k).__name__}"
+    def _from_type(cls, value: Type, name: str) -> T:
+        """Create an instance of this class from a type value.
+        The default implementation raises a `TypeError`.
+        Override to implement a different behaviour.
+        """
+        raise TypeError(cls._format_type_error(value, name))
+
+    @classmethod
+    def _from_other(cls, value: Any, name: str) -> T:
+        """Create an instance of this class from a value of
+        an unknown type.
+        The default implementation raises a `TypeError`.
+        Override to implement a different behaviour.
+        """
+        raise TypeError(cls._format_type_error(value, name))
+
+    @classmethod
+    def _from_sequence(cls, value: Sequence, name: str) -> T:
+        """Create an instance of this class from a sequence value.
+        The default implementation raises a `TypeError`.
+        Override to implement a different behaviour.
+        """
+        raise TypeError(cls._format_type_error(value, name))
+
+    @classmethod
+    def _from_mapping(cls, mapping: Mapping, value_name: str) -> T:
+        """Create an instance of this class from a mapping value.
+
+        The default implementation treats the mapping as keyword
+        arguments passed to the class constructor.
+
+        The use case for this is constructing instances of this class
+        from JSON-objects.
+        """
+
+        mapping_keys = set(mapping.keys())
+        properties = cls._get_signature().parameters
+
+        args = []
+        kwargs = {}
+        for prop_name, prop_param in properties.items():
+            if prop_name in mapping:
+                mapping_keys.remove(prop_name)
+
+                if prop_param.annotation is Parameter.empty:
+                    prop_annotation = Any
+                else:
+                    prop_annotation = prop_param.annotation
+
+                prop_value = cls._from_value_with_type(
+                    mapping[prop_name],
+                    prop_annotation,
+                    value_name=f"{value_name}.{prop_name}",
                 )
-        properties = cls._get_properties()
-        unexpected = set(mapping.keys()).difference(properties.keys())
-        if unexpected:
+                if prop_param.kind == Parameter.POSITIONAL_ONLY:
+                    args.append(prop_value)
+                else:
+                    kwargs[prop_name] = prop_value
+            elif (
+                prop_param.default is Parameter.empty
+            ) or prop_param.kind == Parameter.POSITIONAL_ONLY:
+                raise TypeError(
+                    f"missing value for required property {value_name}.{prop_name}"
+                    f" of type {cls._get_value_type_name()}"
+                )
+
+        if mapping_keys:
+            invalid_keys = tuple(
+                filter(lambda k: not isinstance(k, str), mapping.keys())
+            )
+            if invalid_keys:
+                invalid_type = type(invalid_keys[0])
+                raise TypeError(
+                    f"mappings used to instantiate {value_name}"
+                    f" of type {cls.__name__}"
+                    f" must have keys of type str,"
+                    f" but found key of type {invalid_type.__name__}"
+                )
+
             raise TypeError(
-                f"{', '.join(sorted(unexpected))}"
-                f" {'is not a member' if len(unexpected) == 1 else 'are not members'}"
-                f" of {name} of type {cls.__name__}"
+                f"{', '.join(sorted(mapping_keys))}"
+                f" {'is not a member' if len(mapping_keys) == 1 else 'are not members'}"
+                f" of {value_name} of type {cls.__name__}"
             )
-        kwargs = {
-            prop_name: cls.from_property(
-                prop_name,
-                mapping[prop_name],
-                prop_annotation,
-                name=f"{name}.{prop_name}",
-            )
-            for prop_name, prop_annotation in properties.items()
-            if prop_name in mapping
-        }
+
         # noinspection PyArgumentList
-        return cls(**kwargs)
+        return cls(*args, **kwargs)
 
     @classmethod
-    def from_property(
-        cls, prop_name: str, prop_value: Any, prop_annotation: Any, name: str
-    ):
+    def _from_value_with_type(cls, value: Any, type_annotation: Any, value_name: str):
+        type_origin, type_args = cls._process_annotation(type_annotation)
+
+        if value is None:
+            # If value is None, ensure value is nullable.
+            nullable = (
+                type_origin is Any
+                or type_origin is NoneType
+                or type_origin is Union
+                and (Any in type_args or NoneType in type_args)
+            )
+            if not nullable:
+                raise TypeError(cls._format_type_error(value, value_name))
+            return None
+
+        if type_origin is Any:
+            # We cannot do any further type checking,
+            # therefore return the value as-is
+            return value
+
+        if type_origin is Union:
+            # For unions try converting the alternatives.
+            # Return the first successfully converted value.
+            assert len(type_args) > 0
+            first_e = None
+            for type_arg in type_args:
+                try:
+                    return cls._from_value_with_type(value, type_arg, value_name)
+                except TypeError as e:
+                    first_e = e if first_e is None else first_e
+            raise first_e
+
+        if issubclass(type_origin, ValueConstructible):
+            # If origin is also a ValueConstructible, we are happy
+            return type_origin.from_value(value, value_name=value_name)
+
+        if isinstance(value, type_origin):
+            # If value has a compatible type, check first if we
+            # can take care of special types, i.e., mappings and sequences.
+            if isinstance(value, (bool, int, float, str)):
+                # We take a shortcut here. However, str test
+                # is important, because str is also a sequence!
+                return value
+            if issubclass(type_origin, Mapping):
+                key_type, item_type = type_args if type_args else (Any, Any)
+                mapping_value = {}
+                # noinspection PyUnresolvedReferences
+                for k, v in value.items():
+                    if not isinstance(k, key_type):
+                        raise TypeError(
+                            format_message_type_of(f"keys of {value_name}", k, key_type)
+                        )
+                    mapping_value[k] = cls._from_value_with_type(
+                        v, item_type, f"{value_name}[{k!r}]"
+                    )
+                return mapping_value
+            if issubclass(type_origin, Sequence):
+                item_type = type_args[0] if type_args else Any
+                # noinspection PyTypeChecker
+                return [
+                    cls._from_value_with_type(v, item_type, f"{value_name}[{i}]")
+                    for i, v in enumerate(value)
+                ]
+            return value
+
+        raise TypeError(
+            format_message_type_of(value_name, value, formatannotation(type_annotation))
+        )
+
+    @classmethod
+    def _process_annotation(
+        cls, prop_annotation: Any
+    ) -> tuple[type | UnionType, tuple[type | UnionType, ...]]:
         type_origin = get_origin(prop_annotation)
         if type_origin is not None:
             type_origin = Union if type_origin is UnionType else type_origin
@@ -107,88 +280,35 @@ class ValueConstructible(Generic[T]):
         else:
             type_origin = prop_annotation
             type_args = ()
-
-        if prop_value is None:
-            if (
-                type_origin is Any
-                or type_origin is NoneType
-                or type_origin is Union
-                and (Any in type_args or NoneType in type_args)
-            ):
-                return None
-            raise TypeError(cls._format_type_error(name, prop_value))
-
-        if type_origin is Union:
-            assert len(type_args) > 0
-            first_e = None
-            for type_arg in type_args:
-                try:
-                    return cls.from_property(prop_name, prop_value, type_arg, name)
-                except TypeError as e:
-                    first_e = e if first_e is None else first_e
-            raise first_e
-
-        if issubclass(type_origin, ValueConstructible):
-            return type_origin.from_value(prop_value, name=name)
-
-        if type_origin is Any:
-            return prop_value
-
-        if isinstance(prop_value, type_origin):
-            if isinstance(prop_value, (bool, int, float, str)):
-                return prop_value
-            if issubclass(type_origin, Mapping):
-                key_type, item_type = type_args if type_args else (Any, Any)
-                mapping_value = {}
-                # noinspection PyUnresolvedReferences
-                for k, v in prop_value.items():
-                    if not isinstance(k, key_type):
-                        raise TypeError("Aaaaaaaaaaaaargh!")
-                    mapping_value[k] = cls.from_property(
-                        prop_name, v, item_type, name=f"{name}.{k}"
-                    )
-                return mapping_value
-            if issubclass(type_origin, Sequence):
-                item_type = type_args[0] if type_args else Any
-                # noinspection PyTypeChecker
-                return [
-                    cls.from_property(prop_name, v, item_type, name=f"{name}.{i}")
-                    for i, v in enumerate(prop_value)
-                ]
-            return prop_value
-
-        raise TypeError("invalid type")  # TODO: format message
+        return type_origin, type_args
 
     @classmethod
-    def _from_sequence(cls, value: Sequence, name: str) -> T:
-        raise TypeError(cls._format_type_error(name, value))
+    def _format_type_error(cls, value: Any, value_name: str) -> str:
+        return format_message_type_of(value_name, value, cls._get_value_type_name())
 
     @classmethod
-    def _from_other(cls, value: Any, name: str) -> T:
-        raise TypeError(cls._format_type_error(name, value))
-
-    @classmethod
-    def _format_type_error(cls, name: str, value: Any) -> str:
-        return format_message_type_of(name, value, cls._get_type_name())
-
-    @classmethod
-    def _get_properties(cls) -> dict[str, Any]:
-        properties = _PROPERTIES.get(cls)
-        if properties is None:
-            properties = {
-                k: v
-                for k, v in getfullargspec(cls).annotations.items()
-                if k != "return"
-            }
-            _PROPERTIES[cls] = properties
-        return properties
+    def _get_signature(cls) -> Signature:
+        """Get the (cached) signature of this class' constructor."""
+        sig = _SIGNATURES.get(cls)
+        if sig is None:
+            sig = signature(cls)
+            _SIGNATURES[cls] = sig
+        return sig
 
     @classmethod
     def _get_value_name(cls) -> str:
+        """Get an identifier for values that can
+        be used to create instances of this class.
+        Defaults to `"value"`.
+        """
         return "value"
 
     @classmethod
-    def _get_type_name(cls) -> str:
+    def _get_value_type_name(cls) -> str:
+        """Get a descriptive name for the value types that can
+        be used to create instances of this class, e.g., `"Rule|str"`.
+        Defaults to the name of this class.
+        """
         return cls.__name__
 
 
@@ -219,7 +339,9 @@ class JsonSerializable:
             return cls._mapping_to_json(value, name)
         if isinstance(value, Sequence):
             return cls._sequence_to_json(value, name)
-        raise TypeError(format_message_type_of(name, value, JSON_TYPE_SPEC))
+        if isinstance(value, type):
+            return value.__name__
+        raise TypeError(format_message_type_of(name, value, JSON_VALUE_TYPE_NAME))
 
     @classmethod
     def _mapping_to_json(cls, mapping: Mapping, name: str) -> dict[str, JsonValue]:

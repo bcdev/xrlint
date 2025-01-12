@@ -6,6 +6,7 @@ from typing import Type, Any, Callable
 import xarray as xr
 
 from xrlint.result import Message
+from xrlint.util.codec import ValueConstructible
 from xrlint.util.formatting import format_message_type_of
 from xrlint.util.importutil import import_value
 from xrlint.util.naming import to_kebab_case
@@ -49,7 +50,7 @@ class ProcessorOp(ABC):
 
 
 @dataclass(frozen=True, kw_only=True)
-class ProcessorMeta:
+class ProcessorMeta(ValueConstructible):
     """Processor metadata."""
 
     name: str
@@ -65,20 +66,12 @@ class ProcessorMeta:
     """
 
     @classmethod
-    def from_value(cls, value: Any, name: str | None = None) -> "ProcessorMeta":
-        if isinstance(value, ProcessorMeta):
-            return value
-        if isinstance(value, dict):
-            return ProcessorMeta(
-                name=value.get("name"),
-                version=value.get("version"),
-                ref=value.get("ref"),
-            )
-        raise TypeError(format_message_type_of("value", value, "ProcessorMeta|dict"))
+    def _get_value_type_name(cls) -> str:
+        return "ProcessorMeta|dict"
 
 
 @dataclass(frozen=True, kw_only=True)
-class Processor:
+class Processor(ValueConstructible):
     """Processors tell XRLint how to process files other than
     standard xarray datasets.
     """
@@ -94,46 +87,35 @@ class Processor:
     # """`True` if this processor supports auto-fixing of datasets."""
 
     @classmethod
-    def from_value(cls, value: Any, name: str | None = None) -> "Processor":
-        if isinstance(value, Processor):
-            return value
-        if isclass(value) and issubclass(value, ProcessorOp):
-            # TODO: see code duplication in Rule.from_value()
-            try:
-                # Note, the value.meta attribute is set by
-                # the define_rule
-                # noinspection PyUnresolvedReferences
-                return Processor(meta=value.meta, op_class=value)
-            except AttributeError:
-                raise ValueError(
-                    f"missing processor metadata, apply define_processor()"
-                    f" to class {value.__name__}"
-                )
-        if isinstance(value, str):
-            processor, processor_ref = import_value(
-                value,
-                "export_processor",
-                factory=Processor.from_value,
-                expected_type=type,
+    def _from_class(
+        cls, value: Type[ProcessorOp], name: str | None = None
+    ) -> "Processor":
+        # TODO: see code duplication in Rule._from_class()
+        try:
+            # Note, the value.meta attribute is set by
+            # the define_rule
+            # noinspection PyUnresolvedReferences
+            return Processor(meta=value.meta, op_class=value)
+        except AttributeError:
+            raise ValueError(
+                f"missing processor metadata, apply define_processor()"
+                f" to class {value.__name__}"
             )
-            processor.meta.ref = processor_ref
-            return processor
-        if isinstance(value, dict):
-            return Processor(
-                meta=cls._parse_meta(value), op_class=cls._parse_op_class(value)
-            )
-        raise TypeError(
-            format_message_type_of(
-                "value", value, "str|dict|Processor|Type[ProcessorOp]"
-            )
-        )
 
     @classmethod
-    def _parse_meta(cls, value: dict) -> "ProcessorMeta":
-        meta = value.get("meta")
-        if meta is None:
-            raise ValueError("missing 'meta' property")
-        return ProcessorMeta.from_value(meta)
+    def _from_str(cls, value: str, name: str | None = None) -> "Processor":
+        processor, processor_ref = import_value(
+            value,
+            "export_processor",
+            factory=Processor.from_value,
+            expected_type=type,
+        )
+        processor.meta.ref = processor_ref
+        return processor
+
+    @classmethod
+    def _get_value_type_name(cls) -> str:
+        return "str|dict|Processor|Type[ProcessorOp]"
 
     @classmethod
     def _parse_op_class(cls, value: dict) -> Type["ProcessorOp"]:

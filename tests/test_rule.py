@@ -41,7 +41,7 @@ class RuleTest(TestCase):
     # noinspection PyMethodMayBeStatic
     def test_from_value_fails(self):
         with pytest.raises(
-            TypeError, match="value must be of type Rule|str, but was int"
+            TypeError, match="value must be of type Rule|str, but got int"
         ):
             Rule.from_value(73)
 
@@ -126,19 +126,19 @@ class RuleConfigTest(TestCase):
     def test_from_value_fails(self):
         with pytest.raises(
             TypeError,
-            match="rule configuration must be of type int|str|tuple|list, but was None",
+            match="rule configuration must be of type int|str|tuple|list, but got None",
         ):
             RuleConfig.from_value(None)
         with pytest.raises(
             ValueError,
-            match="severity must be one of 'error', 'warn', 'off', 2, 1, 0, but was 4",
+            match="severity must be one of 'error', 'warn', 'off', 2, 1, 0, but got 4",
         ):
             RuleConfig.from_value(4)
         with pytest.raises(
             ValueError,
             match=(
                 "severity must be one of 'error', 'warn', 'off',"
-                " 2, 1, 0, but was 'debug'"
+                " 2, 1, 0, but got 'debug'"
             ),
         ):
             RuleConfig.from_value("debug")

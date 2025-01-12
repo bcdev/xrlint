@@ -209,22 +209,24 @@ class Rule(ValueConstructible):
         return rule
 
     @classmethod
-    def _from_class(cls, value: Type, name: str) -> "Rule":
-        if not issubclass(value, RuleOp):
-            return super()._from_class(value, name)
-        try:
-            # noinspection PyUnresolvedReferences
-            # Note, the value.meta attribute is set by
-            # the define_rule
-            return Rule(value.meta, value)
-        except AttributeError:
-            raise ValueError(
-                f"missing rule metadata, apply define_rule()"
-                f" to class {value.__name__}"
-            )
+    def _from_type(cls, value: Type, value_name: str) -> "Rule":
+        if issubclass(value, RuleOp):
+            op_class = value
+            try:
+                # noinspection PyUnresolvedReferences
+                # Note, the value.meta attribute is set by
+                # the define_rule() function.
+                meta = value.meta
+            except AttributeError:
+                raise ValueError(
+                    f"missing rule metadata, apply define_rule()"
+                    f" to class {value.__name__}"
+                )
+            return Rule(meta=meta, op_class=op_class)
+        super()._from_type(value, value_name)
 
     @classmethod
-    def _get_type_name(cls) -> str:
+    def _get_value_type_name(cls) -> str:
         return "Rule|str"
 
 
@@ -305,7 +307,7 @@ class RuleConfig(ValueConstructible):
         return "rule configuration"
 
     @classmethod
-    def _get_type_name(cls) -> str:
+    def _get_value_type_name(cls) -> str:
         return "int|str|tuple|list"
 
 

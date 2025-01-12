@@ -60,13 +60,13 @@ def format_message_one_of(name: str, value: Any, enum_value) -> str:
         enum_text = enum_value
     else:
         enum_text = ", ".join(f"{v!r}" for v in enum_value)
-    return f"{name} must be one of {enum_text}, but was {value!r}"
+    return f"{name} must be one of {enum_text}, but got {value!r}"
 
 
 def format_message_type_of(name: str, value: Any, type_value: type | str) -> str:
     return (
         f"{name} must be of type {format_type_of(type_value)},"
-        f" but was {format_type_of(type(value))}"
+        f" but got {format_type_of(type(value))}"
     )
 
 

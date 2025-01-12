@@ -45,24 +45,24 @@ class ConfigTest(TestCase):
 
     def test_from_value_fails(self):
         with pytest.raises(
-            TypeError, match="configuration must be of type dict, but was int"
+            TypeError, match="configuration must be of type dict, but got int"
         ):
             Config.from_value(4)
         with pytest.raises(
-            TypeError, match="configuration must be of type dict, but was str"
+            TypeError, match="configuration must be of type dict, but got str"
         ):
             Config.from_value("abc")
         with pytest.raises(
-            TypeError, match="configuration must be of type dict, but was tuple"
+            TypeError, match="configuration must be of type dict, but got tuple"
         ):
             Config.from_value(())
         with pytest.raises(
             TypeError,
-            match="linter_options must be of type dict\\[str,Any\\], but was list",
+            match="linter_options must be of type dict\\[str,Any\\], but got list",
         ):
             Config.from_value({"linter_options": [1, 2, 3]})
         with pytest.raises(
-            TypeError, match="settings keys must be of type str, but was int"
+            TypeError, match="settings keys must be of type str, but got int"
         ):
             Config.from_value({"settings": {8: 9}})
 
@@ -84,7 +84,7 @@ class ConfigListTest(TestCase):
             TypeError,
             match=(
                 "configuration list must be of type"
-                " ConfigList|list\\[Config|dict\\], but was dict"
+                " ConfigList|list\\[Config|dict\\], but got dict"
             ),
         ):
             ConfigList.from_value({})
