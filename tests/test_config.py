@@ -64,6 +64,37 @@ class ConfigTest(TestCase):
             ),
         )
 
+    def test_to_json(self):
+        config = Config(
+            name="xXx",
+            files=["**/*.zarr", "**/*.nc"],
+            linter_options={"a": 4},
+            opener_options={"b": 5},
+            settings={"c": 6},
+            rules={
+                "hello/no-spaces-in-titles": RuleConfig(severity=2),
+                "hello/time-without-tz": RuleConfig(severity=0),
+                "hello/no-empty-units": RuleConfig(
+                    severity=1, args=(12,), kwargs={"indent": 4}
+                ),
+            },
+        )
+        self.assertEqual(
+            {
+                "name": "xXx",
+                "files": ["**/*.zarr", "**/*.nc"],
+                "linter_options": {"a": 4},
+                "opener_options": {"b": 5},
+                "settings": {"c": 6},
+                "rules": {
+                    "hello/no-empty-units": [1, 12, {"indent": 4}],
+                    "hello/no-spaces-in-titles": 2,
+                    "hello/time-without-tz": 0,
+                },
+            },
+            config.to_json(),
+        )
+
     def test_from_value_fails(self):
         with pytest.raises(
             TypeError,
