@@ -58,7 +58,7 @@ class CliMainTest(TestCase):
         runner = CliRunner()
         result = runner.invoke(main, args)
         if not isinstance(result.exception, SystemExit):
-            self.assertIsNone(None, result.exception)
+            self.assertIsNone(result.exception)
         return result
 
     def test_no_files_no_config(self):

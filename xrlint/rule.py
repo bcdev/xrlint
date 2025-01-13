@@ -12,11 +12,10 @@ from xrlint.constants import (
 )
 from xrlint.node import DatasetNode, DataArrayNode, AttrsNode, AttrNode
 from xrlint.result import Suggestion
-from xrlint.util.codec import MappingConstructible, ValueConstructible
+from xrlint.util.codec import MappingConstructible, ValueConstructible, JsonSerializable
 from xrlint.util.formatting import format_message_one_of
 from xrlint.util.importutil import import_value
 from xrlint.util.naming import to_kebab_case
-from xrlint.util.todict import ToDictMixin
 
 
 class RuleContext(ABC):
@@ -125,7 +124,7 @@ class RuleOp(ABC):
 
 
 @dataclass(kw_only=True)
-class RuleMeta(MappingConstructible, ToDictMixin):
+class RuleMeta(MappingConstructible, JsonSerializable):
     """Rule metadata."""
 
     name: str
@@ -180,13 +179,16 @@ class RuleMeta(MappingConstructible, ToDictMixin):
     by the rule’s implementation and its configured severity.
     """
 
+    ref: str | None = None
+    """Reference to the origin."""
+
     @classmethod
     def _get_value_type_name(cls) -> str:
         return "RuleMeta | dict"
 
 
 @dataclass(frozen=True)
-class Rule(MappingConstructible):
+class Rule(MappingConstructible, JsonSerializable):
     """A rule comprises rule metadata and a reference to the
     class that implements the rule's logic.
 
@@ -233,9 +235,15 @@ class Rule(MappingConstructible):
     def _get_value_type_name(cls) -> str:
         return "Rule | dict | str"
 
+    # noinspection PyUnusedLocal
+    def to_json(self, value_name: str | None = None) -> str:
+        if self.meta.ref:
+            return self.meta.ref
+        return repr(self)
+
 
 @dataclass(frozen=True)
-class RuleConfig(ValueConstructible):
+class RuleConfig(ValueConstructible, JsonSerializable):
     """A rule configuration.
 
     You should not use the class constructor directly.
@@ -314,6 +322,13 @@ class RuleConfig(ValueConstructible):
     def _get_value_type_name(cls) -> str:
         return "int | str | list"
 
+    # noinspection PyUnusedLocal
+    def to_json(self, value_name: str | None = None) -> int | list:
+        if not self.args and not self.kwargs:
+            return self.severity
+        else:
+            return [self.severity, *self.args, self.kwargs]
+
 
 def define_rule(
     name: str | None = None,
@@ -353,7 +368,7 @@ def define_rule(
             the value of `op_class`.
 
     Raises:
-        TypeError: If either `op_class` or the decorated object is not a
+        TypeError: If either `op_class` or the decorated object is not
             a class derived from [RuleOp][xrlint.rule.RuleOp].
     """
 

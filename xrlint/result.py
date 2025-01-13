@@ -8,9 +8,9 @@ from tabulate import tabulate
 from xrlint.constants import SEVERITY_CODE_TO_NAME, MISSING_DATASET_FILE_PATH
 from xrlint.constants import SEVERITY_ERROR
 from xrlint.constants import SEVERITY_WARN
+from xrlint.util.codec import JsonSerializable
 from xrlint.util.formatting import format_problems
 from xrlint.util.formatting import format_message_type_of
-from xrlint.util.todict import ToDictMixin
 
 if TYPE_CHECKING:  # pragma: no cover
     from xrlint.config import Config
@@ -18,12 +18,12 @@ if TYPE_CHECKING:  # pragma: no cover
 
 
 @dataclass(frozen=True, kw_only=True)
-class EditInfo(ToDictMixin):
+class EditInfo(JsonSerializable):
     """Not used yet."""
 
 
 @dataclass(frozen=True)
-class Suggestion(ToDictMixin):
+class Suggestion(JsonSerializable):
     desc: str
     """Description of the suggestion."""
 
@@ -54,7 +54,7 @@ class Suggestion(ToDictMixin):
 
 
 @dataclass()
-class Message(ToDictMixin):
+class Message(JsonSerializable):
     message: str
     """The error message."""
 
@@ -98,7 +98,7 @@ class Message(ToDictMixin):
 
 
 @dataclass()
-class Result(ToDictMixin):
+class Result(JsonSerializable):
     """The aggregated information of linting a dataset."""
 
     config: Union["Config", None] = None

@@ -28,6 +28,20 @@ class UselessContainer(ValueConstructible):
 
 
 @dataclass()
+class RequiredPropsContainer(MappingConstructible):
+    x: float
+    y: float
+    z: float
+
+
+class NoTypesContainer(MappingConstructible):
+    def __init__(self, u, v, w):
+        self.u = u
+        self.v = v
+        self.w = w
+
+
+@dataclass()
 class SimpleTypesContainer(MappingConstructible, JsonSerializable):
     a: Any = None
     b: bool = False
@@ -50,20 +64,6 @@ class ComplexTypesContainer(MappingConstructible, JsonSerializable):
 @dataclass()
 class UnionTypesContainer(MappingConstructible, JsonSerializable):
     m: SimpleTypesContainer | ComplexTypesContainer | None = None
-
-
-@dataclass()
-class RequiredPropsContainer(MappingConstructible, JsonSerializable):
-    x: float
-    y: float
-    z: float
-
-
-@dataclass()
-class NoTypesContainer(MappingConstructible, JsonSerializable):
-    u = 0
-    v = 0
-    w = 0
 
 
 if TYPE_CHECKING:
@@ -193,7 +193,7 @@ class JsonSerializableTest(TestCase):
                 " None|bool|int|float|str|dict|list|tuple, but got object"
             ),
         ):
-            Problematic(data=object()).to_json(name="problematic")
+            Problematic(data=object()).to_json(value_name="problematic")
 
 
 class ValueConstructibleTest(TestCase):
@@ -262,6 +262,27 @@ class ValueConstructibleTest(TestCase):
             match="utc must be of type UselessContainer, but got type",
         ):
             UselessContainer.from_value(UselessContainer, value_name="utc")
+
+    def test_required_props_ok(self):
+        rpc = RequiredPropsContainer.from_value({"x": 12.0, "y": 23.0, "z": 34.0})
+        self.assertEqual(RequiredPropsContainer(x=12.0, y=23.0, z=34.0), rpc)
+
+    # noinspection PyMethodMayBeStatic
+    def test_required_props_fail(self):
+        with pytest.raises(
+            TypeError,
+            match=(
+                r"missing value for required property rpc.y"
+                r" of type RequiredPropsContainer \| dict\[str, Any\]"
+            ),
+        ):
+            RequiredPropsContainer.from_value({"x": 12.0, "z": 34.0}, "rpc")
+
+    def test_no_types_ok(self):
+        ntc = NoTypesContainer.from_value(dict(u=True, v=654, w="abc"))
+        self.assertEqual(True, ntc.u)
+        self.assertEqual(654, ntc.v)
+        self.assertEqual("abc", ntc.w)
 
 
 class MappingConstructibleTest(TestCase):

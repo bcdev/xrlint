@@ -136,7 +136,7 @@ class XRLint(FormatterContext):
             file_path: A file path.
         """
         config = self.get_config_for_file(file_path)
-        config_json_obj = config.to_dict() if config is not None else None
+        config_json_obj = config.to_json() if config is not None else None
         click.echo(json.dumps(config_json_obj, indent=2))
 
     def verify_datasets(self, files: Iterable[str]) -> Iterator[Result]:
