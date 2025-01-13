@@ -2,8 +2,7 @@ name: xrlint-310
 channels:
   - conda-forge
 dependencies:
-  - python ==3.10
-  #- python >=3.10
+  - python >=3.10
   # Library Dependencies
   - click
   - fsspec
