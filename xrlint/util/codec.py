@@ -1,6 +1,7 @@
+import sys
 from collections.abc import Mapping, Sequence
 from functools import lru_cache
-from inspect import formatannotation, signature, isclass, Signature, Parameter
+from inspect import formatannotation, isclass, signature, Parameter
 from types import NoneType, UnionType
 from typing import (
     Any,
@@ -26,7 +27,7 @@ JsonValue: TypeAlias = (
 
 T = TypeVar("T")
 
-_SIGNATURES: dict[type, Signature] = {}
+_IS_PYTHON_3_10 = (3, 10) <= sys.version_info < (3, 11)
 
 
 class ValueConstructible(Generic[T]):
@@ -199,44 +200,53 @@ class ValueConstructible(Generic[T]):
                 try:
                     return cls._convert_value(value, type_arg, value_name)
                 except (TypeError, ValueError) as e:
-                    errors.append(e)
-            # Note, this error message constructed here is suboptimal.
+                    errors.append((type_arg, e))
+            # Note, the error message constructed here is suboptimal.
             # But we sometimes need all details to trace back to the
             # root cause while conversion failed.
-            raise TypeError("\n".join(str(e) for e in errors))
+            raise TypeError(
+                "all type alternatives failed:\n"
+                + "\n".join(f"  {formatannotation(a)} --> {e}" for a, e in errors)
+            )
 
-        if issubclass(type_origin, ValueConstructible):
+        # if origin is a real type and value is of type origin
+        if isclass(type_origin):
             # If origin is also a ValueConstructible, we are happy
-            return type_origin.from_value(value, value_name=value_name)
+            if issubclass(type_origin, ValueConstructible):
+                return type_origin.from_value(value, value_name=value_name)
 
-        if isinstance(value, type_origin):
-            # If value has a compatible type, check first if we
-            # can take care of special types, i.e., mappings and sequences.
-            if isinstance(value, (bool, int, float, str)):
-                # We take a shortcut here. However, str test
-                # is important, because str is also a sequence!
-                return value
-            if issubclass(type_origin, Mapping):
-                key_type, item_type = type_args if type_args else (Any, Any)
-                mapping_value = {}
-                # noinspection PyUnresolvedReferences
-                for k, v in value.items():
-                    if not isinstance(k, key_type):
-                        raise TypeError(
-                            format_message_type_of(f"keys of {value_name}", k, key_type)
+            if isinstance(value, type_origin):
+                # If value has a compatible type, check first if we
+                # can take care of special types, i.e., mappings and sequences.
+                if isinstance(value, (bool, int, float, str)):
+                    # We take a shortcut here. However, str test
+                    # is important, because str is also a sequence!
+                    return value
+
+                if issubclass(type_origin, Mapping):
+                    key_type, item_type = type_args if type_args else (Any, Any)
+                    mapping_value = {}
+                    # noinspection PyUnresolvedReferences
+                    for k, v in value.items():
+                        if not isinstance(k, key_type):
+                            raise TypeError(
+                                format_message_type_of(
+                                    f"keys of {value_name}", k, key_type
+                                )
+                            )
+                        mapping_value[k] = cls._convert_value(
+                            v, item_type, f"{value_name}[{k!r}]"
                         )
-                    mapping_value[k] = cls._convert_value(
-                        v, item_type, f"{value_name}[{k!r}]"
-                    )
-                return mapping_value
-            if issubclass(type_origin, Sequence):
-                item_type = type_args[0] if type_args else Any
-                # noinspection PyTypeChecker
-                return [
-                    cls._convert_value(v, item_type, f"{value_name}[{i}]")
-                    for i, v in enumerate(value)
-                ]
-            return value
+                    return mapping_value
+
+                if issubclass(type_origin, Sequence):
+                    item_type = type_args[0] if type_args else Any
+                    # noinspection PyTypeChecker
+                    return [
+                        cls._convert_value(v, item_type, f"{value_name}[{i}]")
+                        for i, v in enumerate(value)
+                    ]
+                return value
 
         raise TypeError(
             format_message_type_of(value_name, value, formatannotation(type_annotation))
@@ -295,7 +305,21 @@ class ValueConstructible(Generic[T]):
         else:
             type_origin = prop_annotation
             type_args = ()
+        if _IS_PYTHON_3_10:  # pragma: no cover
+            forward_refs = cls._get_forward_refs()
+            type_origin = cls._resolve_forward_ref(forward_refs, type_origin)
+            type_args = tuple(
+                cls._resolve_forward_ref(forward_refs, type_arg)
+                for type_arg in type_args
+            )
         return type_origin, type_args
+
+    @classmethod
+    def _resolve_forward_ref(cls, namespace, ref: Any) -> Any:  # pragma: no cover
+        if isinstance(ref, str) and namespace:
+            return namespace.get(ref, ref)
+        else:
+            return ref
 
     @classmethod
     def _format_type_error(cls, value: Any, value_name: str) -> str:

@@ -85,23 +85,13 @@ class ConfigTest(TestCase):
 
         with pytest.raises(
             TypeError,
-            match=(
-                r"config.linter_options must be of type dict\[str, typing.Any\],"
-                r" but got list\n"
-                r"config.linter_options must be of type NoneType,"
-                r" but got list"
-            ),
+            match=r" config.linter_options must be of type dict.*, but got list",
         ):
             Config.from_value({"linter_options": [1, 2, 3]})
 
         with pytest.raises(
             TypeError,
-            match=(
-                "keys of config.settings must be of type str,"
-                " but got int\n"
-                "config.settings must be of type NoneType,"
-                " but got dict"
-            ),
+            match=r" keys of config.settings must be of type str, but got int",
         ):
             Config.from_value({"settings": {8: 9}})
 
