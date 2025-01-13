@@ -23,12 +23,14 @@ from xrlint.plugin import PluginMeta
 from xrlint.processor import Processor
 from xrlint.processor import ProcessorMeta
 from xrlint.processor import ProcessorOp
+from xrlint.processor import define_processor
 from xrlint.rule import Rule
 from xrlint.rule import RuleConfig
 from xrlint.rule import RuleContext
 from xrlint.rule import RuleExit
 from xrlint.rule import RuleMeta
 from xrlint.rule import RuleOp
+from xrlint.rule import define_rule
 from xrlint.testing import RuleTest
 from xrlint.testing import RuleTester
 from xrlint.version import version
@@ -59,12 +61,14 @@ __all__ = [
     "Processor",
     "ProcessorMeta",
     "ProcessorOp",
+    "define_processor",
     "Rule",
     "RuleConfig",
     "RuleContext",
     "RuleExit",
     "RuleMeta",
     "RuleOp",
+    "define_rule",
     "RuleTest",
     "RuleTester",
     "version",

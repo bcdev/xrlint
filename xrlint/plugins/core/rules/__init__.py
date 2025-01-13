@@ -8,6 +8,6 @@ plugin = Plugin(
     meta=PluginMeta(
         name=CORE_PLUGIN_NAME,
         version=version,
-        module=__package__.rsplit(".", maxsplit=1)[0],
+        ref="xrlint.plugins.core:export_plugin",
     )
 )

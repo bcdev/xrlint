@@ -3,6 +3,15 @@
 ## Version 0.2.0 (in development)
 
 - Make all docstrings comply to google-style
+- Rule description is now your `RuleOp`'s docstring
+  if `description` is not explicitly provided.
+- Supporting _virtual plugins_: plugins provided by Python 
+  dictionaries with rules defined by the `RuleOp` classes.
+- Added more configuration examples in the `examples` folder.
+- Introduced utilities `ValueConstructible` and 
+  derived `MappingConstructible` which greatly simplify
+  flexible instantiation of configuration objects and their 
+  children from Python and JSON/YAML values.
 
 ## Version 0.1.0 (09.01.2025)
 

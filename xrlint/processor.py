@@ -1,10 +1,14 @@
 from abc import abstractmethod, ABC
 from dataclasses import dataclass
+from inspect import isclass
 from typing import Type, Any, Callable
 
 import xarray as xr
 
 from xrlint.result import Message
+from xrlint.util.codec import MappingConstructible
+from xrlint.util.importutil import import_value
+from xrlint.util.naming import to_kebab_case
 
 
 class ProcessorOp(ABC):
@@ -45,18 +49,28 @@ class ProcessorOp(ABC):
 
 
 @dataclass(frozen=True, kw_only=True)
-class ProcessorMeta:
+class ProcessorMeta(MappingConstructible):
     """Processor metadata."""
 
     name: str
-    """Name of the processor."""
+    """Processor name."""
 
     version: str = "0.0.0"
-    """Version of the processor."""
+    """Processor version."""
+
+    ref: str | None = None
+    """Processor module reference.
+    Specifies the location from where the processor can be loaded.
+    Must have the form "<module>:<attr>".
+    """
+
+    @classmethod
+    def _get_value_type_name(cls) -> str:
+        return "ProcessorMeta | dict"
 
 
 @dataclass(frozen=True, kw_only=True)
-class Processor:
+class Processor(MappingConstructible):
     """Processors tell XRLint how to process files other than
     standard xarray datasets.
     """
@@ -67,30 +81,97 @@ class Processor:
     op_class: Type[ProcessorOp]
     """A class that implements the processor operations."""
 
-    supports_auto_fix: bool = False
-    """`True` if this processor supports auto-fixing of datasets."""
+    # Not yet:
+    # supports_auto_fix: bool = False
+    # """`True` if this processor supports auto-fixing of datasets."""
+
+    @classmethod
+    def _from_class(
+        cls, value: Type[ProcessorOp], name: str | None = None
+    ) -> "Processor":
+        # TODO: see code duplication in Rule._from_class()
+        try:
+            # Note, the value.meta attribute is set by
+            # the define_rule
+            # noinspection PyUnresolvedReferences
+            return Processor(meta=value.meta, op_class=value)
+        except AttributeError:
+            raise ValueError(
+                f"missing processor metadata, apply define_processor()"
+                f" to class {value.__name__}"
+            )
+
+    @classmethod
+    def _from_str(cls, value: str, name: str | None = None) -> "Processor":
+        processor, processor_ref = import_value(
+            value,
+            "export_processor",
+            factory=Processor.from_value,
+            expected_type=type,
+        )
+        processor.meta.ref = processor_ref
+        return processor
+
+    @classmethod
+    def _get_value_type_name(cls) -> str:
+        return "str | dict | Processor | Type[ProcessorOp]"
 
 
-def register_processor(
-    registry: dict[str, Processor],
-    name: str,
+# TODO: see code duplication in define_rule()
+def define_processor(
+    name: str | None = None,
     version: str = "0.0.0",
+    registry: dict[str, Processor] | None = None,
     op_class: Type[ProcessorOp] | None = None,
-) -> Callable[[Any], Type[ProcessorOp]] | None:
-    def _register_processor(_op_class: Any) -> Type[ProcessorOp]:
-        from inspect import isclass
+) -> Callable[[Any], Type[ProcessorOp]] | Processor:
+    """Define a processor.
 
+    This function can be used to decorate your processor operation class
+    definitions. When used as a decorator, the decorated operator class
+    will receive a `meta` attribute of type
+    [ProcessorMeta][xrlint.processor.ProcessorMeta].
+    In addition, the `registry` if given, will be updated using `name`
+    as key and a new [Processor][xrlint.processor.Processor] as value.
+
+    Args:
+        name: Processor name,
+            see [ProcessorMeta][xrlint.processor.ProcessorMeta].
+        version: Processor version,
+            see [ProcessorMeta][xrlint.processor.ProcessorMeta].
+        registry: Processor registry. Can be provided to register the
+            defined processor using its `name`.
+        op_class: Processor operation class. Must not be provided
+            if this function is used as a class decorator.
+
+    Returns:
+        A decorator function, if `op_class` is `None` otherwise
+            the value of `op_class`.
+
+    Raises:
+        TypeError: If either `op_class` or the decorated object is not a
+            a class derived from [ProcessorOp][xrlint.processor.ProcessorOp].
+    """
+
+    def _define_processor(
+        _op_class: Any, no_deco=False
+    ) -> Type[ProcessorOp] | Processor:
         if not isclass(_op_class) or not issubclass(_op_class, ProcessorOp):
             raise TypeError(
                 f"component decorated by define_processor()"
                 f" must be a subclass of {ProcessorOp.__name__}"
             )
-        meta = ProcessorMeta(name=name, version=version)
-        registry[name] = Processor(meta=meta, op_class=_op_class)
-        return _op_class
+        meta = ProcessorMeta(
+            name=name or to_kebab_case(_op_class.__name__),
+            version=version,
+        )
+        setattr(_op_class, "meta", meta)
+        processor = Processor(meta=meta, op_class=_op_class)
+        if registry is not None:
+            registry[meta.name] = processor
+        return processor if no_deco else _op_class
 
     if op_class is None:
         # decorator case
-        return _register_processor
-
-    _register_processor(op_class)
+        return _define_processor
+    else:
+        return _define_processor(op_class, no_deco=True)

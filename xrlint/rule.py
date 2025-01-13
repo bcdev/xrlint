@@ -1,14 +1,21 @@
 from abc import abstractmethod, ABC
+from collections.abc import MutableMapping, Sequence
 from dataclasses import dataclass, field
+from inspect import isclass
 from typing import Type, Literal, Any, Callable
 
 import xarray as xr
 
-from xrlint.constants import SEVERITY_ENUM, SEVERITY_ENUM_TEXT
+from xrlint.constants import (
+    SEVERITY_ENUM,
+    SEVERITY_ENUM_TEXT,
+)
 from xrlint.node import DatasetNode, DataArrayNode, AttrsNode, AttrNode
 from xrlint.result import Suggestion
-from xrlint.util.formatting import format_message_type_of, format_message_one_of
+from xrlint.util.codec import MappingConstructible, ValueConstructible
+from xrlint.util.formatting import format_message_one_of
 from xrlint.util.importutil import import_value
+from xrlint.util.naming import to_kebab_case
 from xrlint.util.todict import ToDictMixin
 
 
@@ -117,8 +124,8 @@ class RuleOp(ABC):
         """
 
 
-@dataclass(frozen=True, kw_only=True)
-class RuleMeta(ToDictMixin):
+@dataclass(kw_only=True)
+class RuleMeta(MappingConstructible, ToDictMixin):
     """Rule metadata."""
 
     name: str
@@ -173,9 +180,13 @@ class RuleMeta(ToDictMixin):
     by the rule’s implementation and its configured severity.
     """
 
+    @classmethod
+    def _get_value_type_name(cls) -> str:
+        return "RuleMeta | dict"
+
 
 @dataclass(frozen=True)
-class Rule:
+class Rule(MappingConstructible):
     """A rule comprises rule metadata and a reference to the
     class that implements the rule's logic.
 
@@ -195,13 +206,53 @@ class Rule:
     The class must implement the `RuleOp` interface.
     """
 
+    @classmethod
+    def _from_str(cls, value: str, name: str) -> "Rule":
+        rule, rule_ref = import_value(value, "export_rule", factory=Rule.from_value)
+        rule.meta.ref = rule_ref
+        return rule
+
+    @classmethod
+    def _from_type(cls, value: Type, value_name: str) -> "Rule":
+        if issubclass(value, RuleOp):
+            op_class = value
+            try:
+                # noinspection PyUnresolvedReferences
+                # Note, the value.meta attribute is set by
+                # the define_rule() function.
+                meta = value.meta
+            except AttributeError:
+                raise ValueError(
+                    f"missing rule metadata, apply define_rule()"
+                    f" to class {value.__name__}"
+                )
+            return Rule(meta=meta, op_class=op_class)
+        super()._from_type(value, value_name)
+
+    @classmethod
+    def _get_value_type_name(cls) -> str:
+        return "Rule | dict | str"
+
 
 @dataclass(frozen=True)
-class RuleConfig:
+class RuleConfig(ValueConstructible):
     """A rule configuration.
 
     You should not use the class constructor directly.
-    Instead, use the `RuleConfig.from_value()` function.
+    Instead, use its [from_value][xrlint.rule.RuleConfig.from_value]
+    class method. The method's argument value can either be a
+    rule _severity_, or a list where the first element is a rule
+    _severity_ and subsequent elements are rule arguments:
+
+    - _severity_
+    - `[`_severity_`]`
+    - `[`_severity_`,` _arg-1 | kwargs_ `]`
+    - `[`_severity_`,` _arg-1_`,` _arg-2_`,` ...`,` _arg-n | kwargs_`]`
+
+    The rule _severity_ is either
+
+    - one of `"error"`, `"warn"`, `"off"` or
+    - one of `2` (error), `1` (warn), `0` (off)
 
     Args:
         severity: rule severity, one of `2` (error), `1` (warn), or `0` (off)
@@ -219,95 +270,120 @@ class RuleConfig:
     """Rule operation keyword-arguments."""
 
     @classmethod
-    def from_value(cls, value: Any) -> "RuleConfig":
-        """Convert `value` into a `RuleConfig` object.
-
-        A rule configuration value can either be a rule _severity_,
-        or a list where the first element is a rule
-        _severity_ and subsequent elements are rule arguments:
-
-        - _severity_
-        - `[`_severity_`]`
-        - `[`_severity_`,` _arg-1 | kwargs_ `]`
-        - `[`_severity_`,` _arg-1_`,` _arg-2_`,` ...`,` _arg-n | kwargs_`]`
-
-        The rule _severity_ is either
-
-        - one of `"error"`, `"warn"`, `"off"` or
-        - one of `2` (error), `1` (warn), `0` (off)
-
-        Args:
-            value: A rule severity or a list where the first element
-                is a rule severity and subsequent elements are rule
-                arguments. If the value is already of type `RuleConfig`
-                it is returned as-is.
-
-        Returns:
-            A `RuleConfig` object.
-        """
-        if isinstance(value, RuleConfig):
-            return value
-
-        if isinstance(value, (int, str)):
-            severity_value, options = value, ()
-        elif isinstance(value, (list, tuple)):
-            severity_value, options = (value[0], value[1:]) if value else (0, ())
-        else:
-            raise TypeError(
-                format_message_type_of(
-                    "rule configuration", value, "int|str|tuple|list"
-                )
-            )
-
+    def _convert_severity(cls, value: int | str) -> Literal[2, 1, 0]:
         try:
-            severity = SEVERITY_ENUM[severity_value]
+            # noinspection PyTypeChecker
+            return SEVERITY_ENUM[value]
         except KeyError:
             raise ValueError(
-                format_message_one_of("severity", severity_value, SEVERITY_ENUM_TEXT)
+                format_message_one_of("severity", value, SEVERITY_ENUM_TEXT)
             )
 
+    @classmethod
+    def _from_bool(cls, value: bool, name: str) -> "RuleConfig":
+        return RuleConfig(cls._convert_severity(int(value)))
+
+    @classmethod
+    def _from_int(cls, value: int, name: str) -> "RuleConfig":
+        return RuleConfig(cls._convert_severity(value))
+
+    @classmethod
+    def _from_str(cls, value: str, name: str) -> "RuleConfig":
+        return RuleConfig(cls._convert_severity(value))
+
+    @classmethod
+    def _from_sequence(cls, value: Sequence, name: str) -> "RuleConfig":
+        if not value:
+            raise ValueError()
+        severity = cls._convert_severity(value[0])
+        options = value[1:]
         if not options:
             args, kwargs = (), {}
         elif isinstance(options[-1], dict):
             args, kwargs = options[:-1], options[-1]
         else:
             args, kwargs = options, {}
-
         # noinspection PyTypeChecker
         return RuleConfig(severity, tuple(args), dict(kwargs))
 
+    @classmethod
+    def _get_value_name(cls) -> str:
+        return "rule configuration"
 
-def register_rule(
-    registry: dict[str, Rule],
-    name: str,
+    @classmethod
+    def _get_value_type_name(cls) -> str:
+        return "int | str | list"
+
+
+def define_rule(
+    name: str | None = None,
     version: str = "0.0.0",
     schema: dict[str, Any] | list[dict[str, Any]] | bool | None = None,
     type: Literal["problem", "suggestion", "layout"] | None = None,
     description: str | None = None,
     docs_url: str | None = None,
+    registry: MutableMapping[str, Rule] | None = None,
     op_class: Type[RuleOp] | None = None,
-) -> Callable[[Any], Type[RuleOp]] | None:
-    def _register_rule(_op_class: Any) -> Type[RuleOp]:
-        from inspect import isclass
+) -> Callable[[Any], Type[RuleOp]] | Rule:
+    """Define a rule.
 
+    This function can be used to decorate your rule operation class
+    definitions. When used as a decorator, the decorated operator class
+    will receive a `meta` attribute of type [RuleMeta][xrlint.rule.RuleMeta].
+    In addition, the `registry` if given, will be updated using `name`
+    as key and a new [Rule][xrlint.rule.Rule] as value.
+
+    Args:
+        name: Rule name, see [RuleMeta][xrlint.rule.RuleMeta].
+        version: Rule version, see [RuleMeta][xrlint.rule.RuleMeta].
+        schema: Rule operation arguments schema,
+            see [RuleMeta][xrlint.rule.RuleMeta].
+        type: Rule type, see [RuleMeta][xrlint.rule.RuleMeta].
+        description: Rule description,
+            see [RuleMeta][xrlint.rule.RuleMeta].
+        docs_url: Rule documentation URL,
+            see [RuleMeta][xrlint.rule.RuleMeta].
+        registry: Rule registry. Can be provided to register the
+            defined rule using its `name`.
+        op_class: Rule operation class. Must not be provided
+            if this function is used as a class decorator.
+
+    Returns:
+        A decorator function, if `op_class` is `None` otherwise
+            the value of `op_class`.
+
+    Raises:
+        TypeError: If either `op_class` or the decorated object is not a
+            a class derived from [RuleOp][xrlint.rule.RuleOp].
+    """
+
+    def _define_rule(_op_class: Type[RuleOp], no_deco=False) -> Type[RuleOp] | Rule:
         if not isclass(_op_class) or not issubclass(_op_class, RuleOp):
             raise TypeError(
                 f"component decorated by define_rule()"
                 f" must be a subclass of {RuleOp.__name__}"
             )
         meta = RuleMeta(
-            name=name,
+            name=name or to_kebab_case(_op_class.__name__),
             version=version,
-            description=description,
+            description=description or _op_class.__doc__,
             docs_url=docs_url,
             type=type if type is not None else "problem",
+            # TODO: if schema not given,
+            #   derive it from _op_class' ctor arguments
             schema=schema,
         )
-        registry[name] = Rule(meta=meta, op_class=_op_class)
-        return _op_class
+        # Register rule metadata in rule operation class
+        setattr(_op_class, "meta", meta)
+        rule = Rule(meta=meta, op_class=_op_class)
+        if registry is not None:
+            # Register rule in rule registry
+            registry[meta.name] = rule
+        return rule if no_deco else _op_class
 
     if op_class is None:
-        # decorator case
-        return _register_rule
-
-    _register_rule(op_class)
+        # decorator case: return decorated class
+        return _define_rule
+    else:
+        # called as function: return new rule
+        return _define_rule(op_class, no_deco=True)

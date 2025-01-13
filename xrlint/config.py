@@ -1,10 +1,10 @@
 from dataclasses import dataclass, field
 from functools import cached_property
-from typing import Any, TYPE_CHECKING, Union, Literal
+from typing import Any, TYPE_CHECKING, Union, Literal, Sequence
 
 from xrlint.constants import CORE_PLUGIN_NAME
+from xrlint.util.codec import MappingConstructible, ValueConstructible
 from xrlint.util.filefilter import FileFilter
-from xrlint.util.formatting import format_message_type_of
 from xrlint.util.todict import ToDictMixin
 from xrlint.util.merge import (
     merge_arrays,
@@ -15,6 +15,7 @@ from xrlint.util.merge import (
 
 
 if TYPE_CHECKING:  # pragma: no cover
+    # make IDEs and flake8 happy
     from xrlint.rule import Rule
     from xrlint.rule import RuleConfig
     from xrlint.plugin import Plugin
@@ -79,7 +80,7 @@ def merge_configs(
 
 
 @dataclass(frozen=True, kw_only=True)
-class Config(ToDictMixin):
+class Config(MappingConstructible, ToDictMixin):
     """Configuration object.
     A configuration object contains all the information XRLint
     needs to execute on a set of dataset files.
@@ -147,52 +148,8 @@ class Config(ToDictMixin):
     that should be available to all rules.
     """
 
-    @classmethod
-    def from_value(cls, value: Any) -> "Config":
-        """Convert given `value` into a `Config` object.
-
-        If `value` is already a `Config` then it is returned as-is.
-
-        Args:
-            value: A `Config` object, a `dict` containing the
-                configuration properties, or `None` which
-                converts into an empty configuration.
-
-        Returns:
-            A `Config` object.
-        """
-        if isinstance(value, Config):
-            return value
-        if value is None:
-            return Config()
-        if not isinstance(value, dict):
-            raise TypeError(format_message_type_of("configuration", value, "dict"))
-        if not value:
-            return Config()
-
-        files = cls._parse_pattern_list(value, "files")
-        ignores = cls._parse_pattern_list(value, "ignores")
-        linter_options = cls._parse_options("linter_options", value)
-        opener_options = cls._parse_options("opener_options", value)
-        processor = cls._parse_processor(value)
-        plugins = cls._parse_plugins(value)
-        rules = cls._parse_rules(value)
-        settings = cls._parse_options("settings", value)
-
-        return Config(
-            name=value.get("name"),
-            files=files,
-            ignores=ignores,
-            linter_options=linter_options,
-            opener_options=opener_options,
-            processor=processor,
-            plugins=plugins,
-            rules=rules,
-            settings=settings,
-        )
-
     @cached_property
-    def file_filter(self) -> "FileFilter":
+    def file_filter(self) -> FileFilter:
         """The file filter specified by this configuration. May be empty."""
         return FileFilter.from_patterns(self.files, self.ignores)
 
@@ -319,76 +276,36 @@ class Config(ToDictMixin):
         return merge_dicts(plugins1, plugins2, merge_items=merge_items)
 
     @classmethod
-    def _parse_pattern_list(cls, config_dict: dict, name) -> list[str]:
-        patterns = config_dict.get(name)
-        if isinstance(patterns, list):
-            return [cls._parse_pattern(name, v) for v in patterns]
-        if patterns is not None:
-            raise TypeError(
-                format_message_type_of(f"{name} configuration", patterns, "list[str]")
-            )
+    def _from_none(cls, value_name: str) -> "Config":
+        return Config()
 
     @classmethod
-    def _parse_pattern(cls, name, pattern):
-        if not isinstance(pattern, str):
-            raise TypeError(
-                format_message_type_of(f"pattern in {name} configuration", pattern, str)
-            )
-        return pattern
-
-    @classmethod
-    def _parse_processor(cls, config_dict: dict) -> Union["ProcessorOp", str, None]:
+    def _get_forward_refs(cls) -> dict[str, type]:
         from xrlint.processor import ProcessorOp
-
-        processor = config_dict.get("processor")
-        if processor is None or isinstance(processor, (str, ProcessorOp)):
-            return processor
-        raise TypeError(
-            format_message_type_of(
-                "processor configuration", processor, "ProcessorOp|str|None"
-            )
-        )
-
-    @classmethod
-    def _parse_plugins(cls, config_dict: dict) -> dict[str, "Plugin"]:
         from xrlint.plugin import Plugin
-
-        plugins = config_dict.get("plugins")
-        if isinstance(plugins, dict):
-            return {k: Plugin.from_value(v) for k, v in plugins.items()}
-        if plugins is not None:
-            raise TypeError(
-                format_message_type_of("plugins configuration", plugins, "dict")
-            )
-
-    @classmethod
-    def _parse_rules(cls, config_dict: dict) -> dict[str, "RuleConfig"]:
+        from xrlint.rule import Rule
         from xrlint.rule import RuleConfig
 
-        rules = config_dict.get("rules")
-        if isinstance(rules, dict):
-            return {rn: RuleConfig.from_value(rc) for rn, rc in rules.items()}
-        if rules is not None:
-            raise TypeError(
-                format_message_type_of("rules configuration", rules, "dict")
-            )
+        return {
+            "ProcessorOp": ProcessorOp,
+            "Plugin": Plugin,
+            "Rule": Rule,
+            "RuleConfig": RuleConfig,
+        }
 
     @classmethod
-    def _parse_options(cls, name: str, config_dict: dict) -> dict[str, Any]:
-        settings = config_dict.get(name)
-        if isinstance(settings, dict):
-            for k, v in settings.items():
-                if not isinstance(k, str):
-                    raise TypeError(format_message_type_of(f"{name} keys", k, str))
-            return {k: v for k, v in settings.items()}
-        if settings is not None:
-            raise TypeError(format_message_type_of(name, settings, "dict[str,Any]"))
+    def _get_value_name(cls) -> str:
+        return "config"
+
+    @classmethod
+    def _get_value_type_name(cls) -> str:
+        return "Config | dict | None"
 
     def to_dict(self):
         d = super().to_dict()
         plugins: dict[str, Plugin] | None = d.get("plugins")
         if plugins is not None:
-            d["plugins"] = {k: v.meta.module or "?" for k, v in plugins.items()}
+            d["plugins"] = {k: v.meta.ref or "?" for k, v in plugins.items()}
         rules: dict[str, RuleConfig] | None = d.get("rules")
         if rules is not None:
             d["rules"] = {
@@ -403,69 +320,18 @@ class Config(ToDictMixin):
 
 
 @dataclass(frozen=True)
-class ConfigList:
-    """A holder for a list of `Config` objects.
+class ConfigList(ValueConstructible):
+    """A holder for a list of configuration objects of
+    type [Config][xrlint.config.Config].
 
     You should not use the class constructor directly.
     Instead, use the `ConfigList.from_value()` function.
     """
 
     configs: list[Config] = field(default_factory=list)
-    """The list of `Config` objects."""
+    """The list of configuration objects."""
 
-    @classmethod
-    def from_value(cls, value: Any) -> "ConfigList":
-        """Convert given `value` into a `ConfigList` object.
-
-        If `value` is already a `ConfigList` then it is returned as-is.
-
-        Args:
-            value: A `ConfigList` object or `list` of items which can be
-                converted into `Config` objects including configuration
-                names of tyype `str`. The latter are resolved against
-                the plugin configurations seen so far in the list.
-
-        Returns:
-            A `ConfigList` object.
-        """
-        if isinstance(value, ConfigList):
-            return value
-
-        if not isinstance(value, list):
-            raise TypeError(
-                format_message_type_of(
-                    "configuration list", value, "ConfigList|list[Config|dict|str]"
-                )
-            )
-
-        configs: list[Config] = []
-        plugins: dict[str, Plugin] = {}
-        for item in value:
-            if isinstance(item, str):
-                if CORE_PLUGIN_NAME not in plugins:
-                    plugins.update({CORE_PLUGIN_NAME: get_core_plugin()})
-                config = cls._get_named_config(item, plugins)
-            else:
-                config = Config.from_value(item)
-            configs.append(config)
-            plugins.update(config.plugins if config.plugins else {})
-
-        return ConfigList(configs)
-
-    @classmethod
-    def _get_named_config(cls, config_spec: str, plugins: dict[str, "Plugin"]):
-        plugin_name, config_name = (
-            config_spec.split("/", maxsplit=1)
-            if "/" in config_spec
-            else (CORE_PLUGIN_NAME, config_spec)
-        )
-        plugin: Plugin | None = plugins.get(plugin_name)
-        if plugin is None or not plugin.configs or config_name not in plugin.configs:
-            raise ValueError(f"configuration {config_spec!r} not found")
-        config_value = plugin.configs[config_name]
-        return config_value
-
-    def get_global_filter(self, default: FileFilter | None = None) -> "FileFilter":
+    def get_global_filter(self, default: FileFilter | None = None) -> FileFilter:
         """Get a global file filter for this configuration list."""
         global_filter = FileFilter(
             default.files if default else (),
@@ -506,3 +372,56 @@ class ConfigList:
             rules=config.rules,
             settings=config.settings,
         )
+
+    @classmethod
+    def from_value(cls, value: Any, value_name: str | None = None) -> "ConfigList":
+        """Convert given `value` into a `ConfigList` object.
+
+        If `value` is already a `ConfigList` then it is returned as-is.
+
+        Args:
+            value: A `ConfigList` object or `list` of items which can be
+                converted into `Config` objects including configuration
+                names of tyype `str`. The latter are resolved against
+                the plugin configurations seen so far in the list.
+            value_name: A value's name.
+        Returns:
+            A `ConfigList` object.
+        """
+        return super().from_value(value, value_name=value_name)
+
+    @classmethod
+    def _from_sequence(cls, value: Sequence, value_name: str) -> "ConfigList":
+        configs: list[Config] = []
+        plugins: dict[str, Plugin] = {}
+        for item in value:
+            if isinstance(item, str):
+                if CORE_PLUGIN_NAME not in plugins:
+                    plugins.update({CORE_PLUGIN_NAME: get_core_plugin()})
+                config = cls._get_named_config(item, plugins)
+            else:
+                config = Config.from_value(item)
+            configs.append(config)
+            plugins.update(config.plugins if config.plugins else {})
+        return ConfigList(configs)
+
+    @classmethod
+    def _get_value_name(cls) -> str:
+        return "config_list"
+
+    @classmethod
+    def _get_value_type_name(cls) -> str:
+        return "ConfigList | list[Config | dict]"
+
+    @classmethod
+    def _get_named_config(cls, config_spec: str, plugins: dict[str, "Plugin"]):
+        plugin_name, config_name = (
+            config_spec.split("/", maxsplit=1)
+            if "/" in config_spec
+            else (CORE_PLUGIN_NAME, config_spec)
+        )
+        plugin: Plugin | None = plugins.get(plugin_name)
+        if plugin is None or not plugin.configs or config_name not in plugin.configs:
+            raise ValueError(f"configuration {config_spec!r} not found")
+        config_value = plugin.configs[config_name]
+        return config_value

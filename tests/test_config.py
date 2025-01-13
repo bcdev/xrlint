@@ -3,6 +3,7 @@ from unittest import TestCase
 import pytest
 
 from xrlint.config import Config, ConfigList
+from xrlint.rule import RuleConfig
 from xrlint.util.filefilter import FileFilter
 
 
@@ -42,33 +43,61 @@ class ConfigTest(TestCase):
                 }
             ),
         )
+        self.assertEqual(
+            Config(
+                rules={
+                    "hello/no-spaces-in-titles": RuleConfig(severity=2),
+                    "hello/time-without-tz": RuleConfig(severity=0),
+                    "hello/no-empty-units": RuleConfig(
+                        severity=1, args=(12,), kwargs={"indent": 4}
+                    ),
+                },
+            ),
+            Config.from_value(
+                {
+                    "rules": {
+                        "hello/no-spaces-in-titles": 2,
+                        "hello/time-without-tz": "off",
+                        "hello/no-empty-units": ["warn", 12, {"indent": 4}],
+                    },
+                }
+            ),
+        )
 
     def test_from_value_fails(self):
         with pytest.raises(
-            TypeError, match="configuration must be of type dict, but was int"
+            TypeError,
+            match=r"config must be of type Config \| dict \| None, but got int",
         ):
             Config.from_value(4)
-        with pytest.raises(
-            TypeError, match="configuration must be of type dict, but was str"
-        ):
-            Config.from_value("abc")
-        with pytest.raises(
-            TypeError, match="configuration must be of type dict, but was tuple"
-        ):
-            Config.from_value(())
+
         with pytest.raises(
             TypeError,
-            match="linter_options must be of type dict\\[str,Any\\], but was list",
+            match=r"config must be of type Config \| dict \| None, but got str",
+        ):
+            Config.from_value("abc")
+
+        with pytest.raises(
+            TypeError,
+            match=r"config must be of type Config \| dict \| None, but got tuple",
+        ):
+            Config.from_value(())
+
+        with pytest.raises(
+            TypeError,
+            match=r" config.linter_options must be of type dict.*, but got list",
         ):
             Config.from_value({"linter_options": [1, 2, 3]})
+
         with pytest.raises(
-            TypeError, match="settings keys must be of type str, but was int"
+            TypeError,
+            match=r" keys of config.settings must be of type str, but got int",
         ):
             Config.from_value({"settings": {8: 9}})
 
 
 class ConfigListTest(TestCase):
-    def test_from_value(self):
+    def test_from_value_ok(self):
         config_list = ConfigList.from_value([])
         self.assertIsInstance(config_list, ConfigList)
         self.assertEqual([], config_list.configs)
@@ -80,11 +109,13 @@ class ConfigListTest(TestCase):
         self.assertIsInstance(config_list, ConfigList)
         self.assertEqual([Config()], config_list.configs)
 
+    # noinspection PyMethodMayBeStatic
+    def test_from_value_fail(self):
         with pytest.raises(
             TypeError,
             match=(
-                "configuration list must be of type"
-                " ConfigList|list\\[Config|dict\\], but was dict"
+                r"config_list must be of type"
+                r" ConfigList \| list\[Config \| dict\], but got dict"
             ),
         ):
             ConfigList.from_value({})

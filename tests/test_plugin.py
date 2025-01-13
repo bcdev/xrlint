@@ -6,7 +6,52 @@ import xarray as xr
 from xrlint.plugin import Plugin, PluginMeta
 from xrlint.processor import ProcessorOp, Processor
 from xrlint.result import Message
-from xrlint.rule import Rule, RuleOp
+from xrlint.rule import Rule, RuleOp, define_rule
+
+
+class PluginTest(TestCase):
+    def test_from_value_ok_plugin(self):
+        plugin = Plugin(meta=PluginMeta(name="hello"))
+        self.assertIs(plugin, Plugin.from_value(plugin))
+
+    def test_from_value_ok_dict(self):
+        @define_rule()
+        class MyRule1(RuleOp):
+            """This is my 1st rule."""
+
+        @define_rule()
+        class MyRule2(RuleOp):
+            """This is my 2nd rule."""
+
+        plugin = Plugin.from_value(
+            {
+                "meta": {
+                    "name": "hello",
+                    "version": "1.2.3",
+                },
+                "rules": {
+                    "r1": MyRule1,
+                    "r2": MyRule2,
+                },
+                "configs": {
+                    "recommended": {
+                        "rules": {
+                            "hello/r1": "warn",
+                            "hello/r2": "error",
+                        },
+                    },
+                },
+            }
+        )
+        self.assertIsInstance(plugin, Plugin)
+
+
+class PluginMetaTest(TestCase):
+    def test_from_value(self):
+        self.assertEqual(
+            PluginMeta(name="p", ref="a.b.c:p"),
+            PluginMeta.from_value({"name": "p", "version": "0.0.0", "ref": "a.b.c:p"}),
+        )
 
 
 class PluginDefineRuleDecoratorTest(TestCase):

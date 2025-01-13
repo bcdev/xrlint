@@ -16,20 +16,23 @@ This chapter provides a plain reference for the XRLint Python API.
 - The `config` module provides classes that represent 
   configuration information and provide related functionality:
   [Config][xrlint.config.Config] and [ConfigList][xrlint.config.ConfigList].
-- The `rule` module provides rule related classes:
+- The `rule` module provides rule related classes and functions:
   [Rule][xrlint.rule.Rule] comprising rule metadata 
   [RuleMeta][xrlint.rule.RuleMeta] and the rule operation 
   [RuleOp][xrlint.rule.RuleOp], as well as related to the latter
   [RuleContext][xrlint.rule.RuleContext] and [RuleExit][xrlint.rule.RuleExit].
+  Decorator [define_rule][xrlint.rule.define_rule] allows defining rules.
 - The `node` module defines the nodes passed to [xrlint.rule.RuleOp]:
   base classes [None][xrlint.node.Node], [XarrayNode][xrlint.node.XarrayNode]
   and the specific [DatasetNode][xrlint.node.DatasetNode],
   [DataArray][xrlint.node.DataArrayNode], [AttrsNode][xrlint.node.AttrsNode], 
   and [AttrNode][xrlint.node.AttrNode] nodes.
-- The `processor` module provides processor related classes:
+- The `processor` module provides processor related classes and functions:
   [Processor][xrlint.processor.Processor] comprising processor metadata
   [ProcessorMeta][xrlint.processor.ProcessorMeta] 
   and the processor operation [ProcessorOp][xrlint.processor.ProcessorOp].
+  Decorator [define_processor][xrlint.processor.define_processor] allows defining 
+  processors.
 - The `result` module provides data classes that are used to 
   represent validation results:
   [Result][xrlint.result.Result] composed of [Messages][xrlint.result.Message],
@@ -50,6 +53,8 @@ Note: the `xrlint.all` convenience module exports all of the above from a
 ::: xrlint.config.Config
 
 ::: xrlint.config.ConfigList
+
+::: xrlint.rule.define_rule
 
 ::: xrlint.rule.Rule
 
@@ -76,6 +81,8 @@ Note: the `xrlint.all` convenience module exports all of the above from a
 ::: xrlint.plugin.Plugin
 
 ::: xrlint.plugin.PluginMeta
+
+::: xrlint.processor.define_processor
 
 ::: xrlint.processor.Processor
 

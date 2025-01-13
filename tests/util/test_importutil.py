@@ -26,7 +26,8 @@ class ImportSubmodulesTest(TestCase):
         )
 
     def test_import_exported_value(self):
-        core_plugin = import_value(
-            "xrlint.plugins.core", "export_plugin", Plugin.from_value
+        plugin, plugin_ref = import_value(
+            "xrlint.plugins.core", "export_plugin", factory=Plugin.from_value
         )
-        self.assertIsInstance(core_plugin, Plugin)
+        self.assertIsInstance(plugin, Plugin)
+        self.assertEqual("xrlint.plugins.core:export_plugin", plugin_ref)

@@ -70,4 +70,3 @@ class AttrNode(XarrayNode):
 
     value: Any
     """Attribute value."""
-

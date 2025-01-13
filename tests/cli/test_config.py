@@ -93,7 +93,7 @@ class CliConfigTest(TestCase):
         with pytest.raises(
             TypeError,
             match="configuration file must be of type str|Path|PathLike,"
-            " but was None",
+            " but got None",
         ):
             # noinspection PyTypeChecker
             read_config_list(None)
@@ -125,7 +125,7 @@ class CliConfigTest(TestCase):
                 match=(
                     "'config.yaml: configuration list must be of"
                     " type ConfigList|list\\[Config|dict|str\\],"
-                    " but was dict'"
+                    " but got dict'"
                 ),
             ):
                 read_config_list(config_path)
@@ -142,7 +142,10 @@ class CliConfigTest(TestCase):
         with text_file(self.new_config_py(), py_code) as config_path:
             with pytest.raises(
                 ConfigError,
-                match=".py: missing export_configs()",
+                match=(
+                    "config_1002.py: attribute 'export_configs'"
+                    " not found in module 'config_1002'"
+                ),
             ):
                 read_config_list(config_path)
 
@@ -173,7 +176,7 @@ class CliConfigTest(TestCase):
                     ".py: return value of export_configs\\(\\):"
                     " configuration list must be of type"
                     " ConfigList|list\\[Config|dict|str\\],"
-                    " but was int"
+                    " but got int"
                 ),
             ):
                 read_config_list(config_path)

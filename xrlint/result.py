@@ -34,7 +34,7 @@ class Suggestion(ToDictMixin):
     """Not used yet."""
 
     @classmethod
-    def from_value(cls, value: Any) -> "Suggestion":
+    def from_value(cls, value: Any, name: str | None = None) -> "Suggestion":
         """Convert given `value` into a `Suggestion` object.
 
         If `value` is already a `Suggestion` then it is returned as-is.

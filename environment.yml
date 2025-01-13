@@ -1,4 +1,4 @@
-name: xrlint
+name: xrlint-310
 channels:
   - conda-forge
 dependencies:
