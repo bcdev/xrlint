@@ -7,7 +7,6 @@ import xarray as xr
 
 from xrlint.result import Message
 from xrlint.util.codec import MappingConstructible
-from xrlint.util.formatting import format_message_type_of
 from xrlint.util.importutil import import_value
 from xrlint.util.naming import to_kebab_case
 
@@ -117,17 +116,6 @@ class Processor(MappingConstructible):
     def _get_value_type_name(cls) -> str:
         return "str | dict | Processor | Type[ProcessorOp]"
 
-    @classmethod
-    def _parse_op_class(cls, value: dict) -> Type["ProcessorOp"]:
-        op_class = value.get("op_class")
-        if op_class is None:
-            raise ValueError("missing 'op_class' property")
-        if isclass(op_class) and issubclass(op_class, ProcessorOp):
-            return op_class
-        raise TypeError(
-            format_message_type_of("op_class", op_class, "Type[ProcessorOp]")
-        )
-
 
 # TODO: see code duplication in define_rule()
 def define_processor(
@@ -151,7 +139,7 @@ def define_processor(
         setattr(_op_class, "meta", meta)
         processor = Processor(meta=meta, op_class=_op_class)
         if registry is not None:
-            registry[name] = processor
+            registry[meta.name] = processor
         return processor if no_deco else _op_class
 
     if op_class is None:
