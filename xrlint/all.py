@@ -23,6 +23,7 @@ from xrlint.plugin import PluginMeta
 from xrlint.processor import Processor
 from xrlint.processor import ProcessorMeta
 from xrlint.processor import ProcessorOp
+from xrlint.processor import define_processor
 from xrlint.rule import Rule
 from xrlint.rule import RuleConfig
 from xrlint.rule import RuleContext
@@ -60,6 +61,7 @@ __all__ = [
     "Processor",
     "ProcessorMeta",
     "ProcessorOp",
+    "define_processor",
     "Rule",
     "RuleConfig",
     "RuleContext",

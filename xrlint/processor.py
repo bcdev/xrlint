@@ -124,6 +124,34 @@ def define_processor(
     registry: dict[str, Processor] | None = None,
     op_class: Type[ProcessorOp] | None = None,
 ) -> Callable[[Any], Type[ProcessorOp]] | Processor:
+    """Define a processor.
+
+    This function can be used to decorate your processor operation class
+    definitions. When used as a decorator, the decorated operator class
+    will receive a `meta` attribute of type
+    [ProcessorMeta][xrlint.processor.ProcessorMeta].
+    In addition, the `registry` if given, will be updated using `name`
+    as key and a new [Processor][xrlint.processor.Processor] as value.
+
+    Args:
+        name: Processor name,
+            see [ProcessorMeta][xrlint.processor.ProcessorMeta].
+        version: Processor version,
+            see [ProcessorMeta][xrlint.processor.ProcessorMeta].
+        registry: Processor registry. Can be provided to register the
+            defined processor using its `name`.
+        op_class: Processor operation class. Must not be provided
+            if this function is used as a class decorator.
+
+    Returns:
+        A decorator function, if `op_class` is `None` otherwise
+            the value of `op_class`.
+
+    Raises:
+        TypeError: If either `op_class` or the decorated object is not a
+            a class derived from [ProcessorOp][xrlint.processor.ProcessorOp].
+    """
+
     def _define_processor(
         _op_class: Any, no_deco=False
     ) -> Type[ProcessorOp] | Processor:
