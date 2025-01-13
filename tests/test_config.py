@@ -107,7 +107,7 @@ class ConfigTest(TestCase):
 
 
 class ConfigListTest(TestCase):
-    def test_from_value(self):
+    def test_from_value_ok(self):
         config_list = ConfigList.from_value([])
         self.assertIsInstance(config_list, ConfigList)
         self.assertEqual([], config_list.configs)
@@ -119,6 +119,8 @@ class ConfigListTest(TestCase):
         self.assertIsInstance(config_list, ConfigList)
         self.assertEqual([Config()], config_list.configs)
 
+    # noinspection PyMethodMayBeStatic
+    def test_from_value_fail(self):
         with pytest.raises(
             TypeError,
             match=(
