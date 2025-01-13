@@ -4,9 +4,8 @@ from typing import Any, TYPE_CHECKING, Union, Literal, Sequence
 
 import xrlint  # required for type forward refs
 from xrlint.constants import CORE_PLUGIN_NAME
-from xrlint.util.codec import MappingConstructible, T, ValueConstructible
+from xrlint.util.codec import MappingConstructible, ValueConstructible
 from xrlint.util.filefilter import FileFilter
-from xrlint.util.formatting import format_message_type_of
 from xrlint.util.todict import ToDictMixin
 from xrlint.util.merge import (
     merge_arrays,
@@ -277,7 +276,7 @@ class Config(MappingConstructible, ToDictMixin):
         return merge_dicts(plugins1, plugins2, merge_items=merge_items)
 
     @classmethod
-    def _from_none(cls, value_name: str) -> T:
+    def _from_none(cls, value_name: str) -> "Config":
         return Config()
 
     @classmethod
@@ -318,7 +317,7 @@ class ConfigList(ValueConstructible):
     configs: list[Config] = field(default_factory=list)
     """The list of configuration objects."""
 
-    def get_global_filter(self, default: FileFilter | None = None) -> "FileFilter":
+    def get_global_filter(self, default: FileFilter | None = None) -> FileFilter:
         """Get a global file filter for this configuration list."""
         global_filter = FileFilter(
             default.files if default else (),
@@ -378,7 +377,7 @@ class ConfigList(ValueConstructible):
         return super().from_value(value, value_name=value_name)
 
     @classmethod
-    def _from_sequence(cls, value: Sequence, value_name: str) -> T:
+    def _from_sequence(cls, value: Sequence, value_name: str) -> "ConfigList":
         configs: list[Config] = []
         plugins: dict[str, Plugin] = {}
         for item in value:
