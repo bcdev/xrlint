@@ -1,6 +1,15 @@
 from dataclasses import dataclass, field
 from types import NoneType, UnionType
-from typing import Any, Union, Optional, TypeAlias, get_args, get_origin
+from typing import (
+    Any,
+    Union,
+    Optional,
+    TypeAlias,
+    get_args,
+    get_origin,
+    Mapping,
+    TYPE_CHECKING,
+)
 from unittest import TestCase
 
 import pytest
@@ -55,6 +64,28 @@ class NoTypesContainer(MappingConstructible, JsonSerializable):
     u = 0
     v = 0
     w = 0
+
+
+if TYPE_CHECKING:
+    # make IDEs and flake8 happy
+    from xrlint.rule import RuleConfig
+    from xrlint.plugin import Plugin
+
+
+@dataclass()
+class UnresolvedTypesContainer(ComplexTypesContainer, SimpleTypesContainer):
+    rules: dict[str, "RuleConfig"] = field(default_factory=dict)
+    plugins: dict[str, "Plugin"] = field(default_factory=dict)
+
+    @classmethod
+    def _get_forward_refs(cls) -> Optional[Mapping[str, type]]:
+        from xrlint.rule import RuleConfig
+        from xrlint.plugin import Plugin
+
+        return {
+            "RuleConfig": RuleConfig,
+            "Plugin": Plugin,
+        }
 
 
 T1: TypeAlias = int | str | Union[bool, None] | None
@@ -174,61 +205,61 @@ class ValueConstructibleTest(TestCase):
     def test_useless_fail(self):
         with pytest.raises(
             TypeError,
-            match=f"uc must be of type UselessContainer, but got None",
+            match="uc must be of type UselessContainer, but got None",
         ):
             UselessContainer.from_value(None, value_name="uc")
 
         with pytest.raises(
             TypeError,
-            match=r"uc must be of type UselessContainer, but got bool",
+            match="uc must be of type UselessContainer, but got bool",
         ):
             UselessContainer.from_value(True, value_name="uc")
 
         with pytest.raises(
             TypeError,
-            match=r"uc must be of type UselessContainer, but got int",
+            match="uc must be of type UselessContainer, but got int",
         ):
             UselessContainer.from_value(1, value_name="uc")
 
         with pytest.raises(
             TypeError,
-            match=r"uc must be of type UselessContainer, but got float",
+            match="uc must be of type UselessContainer, but got float",
         ):
             UselessContainer.from_value(0.1, value_name="uc")
 
         with pytest.raises(
             TypeError,
-            match=r"uc must be of type UselessContainer, but got str",
+            match="uc must be of type UselessContainer, but got str",
         ):
             UselessContainer.from_value("abc", value_name="uc")
 
         with pytest.raises(
             TypeError,
-            match=r"utc must be of type UselessContainer, but got dict",
+            match="utc must be of type UselessContainer, but got dict",
         ):
             UselessContainer.from_value({}, value_name="utc")
 
         with pytest.raises(
             TypeError,
-            match=r"uc must be of type UselessContainer, but got list",
+            match="uc must be of type UselessContainer, but got list",
         ):
             UselessContainer.from_value([], value_name="uc")
 
         with pytest.raises(
             TypeError,
-            match=r"utc must be of type UselessContainer, but got object",
+            match="utc must be of type UselessContainer, but got object",
         ):
             UselessContainer.from_value(object(), value_name="utc")
 
         with pytest.raises(
             TypeError,
-            match=r"utc must be of type UselessContainer, but got type",
+            match="utc must be of type UselessContainer, but got type",
         ):
             UselessContainer.from_value(int, value_name="utc")
 
         with pytest.raises(
             TypeError,
-            match=r"utc must be of type UselessContainer, but got type",
+            match="utc must be of type UselessContainer, but got type",
         ):
             UselessContainer.from_value(UselessContainer, value_name="utc")
 
@@ -301,7 +332,10 @@ class MappingConstructibleTest(TestCase):
 
         with pytest.raises(
             TypeError,
-            match=r"stc.b must be of type SimpleTypesContainer | dict\[str, Any\], but got None",
+            match=(
+                r"stc.b must be of type SimpleTypesContainer | dict\[str, Any\],"
+                r" but got None"
+            ),
         ):
             SimpleTypesContainer.from_value({"b": None}, value_name="stc")
 
@@ -326,7 +360,10 @@ class MappingConstructibleTest(TestCase):
 
         with pytest.raises(
             TypeError,
-            match=r"stc must be of type SimpleTypesContainer | dict\[str, Any\], but got type",
+            match=(
+                r"stc must be of type SimpleTypesContainer | dict\[str, Any\],"
+                r" but got type"
+            ),
         ):
             SimpleTypesContainer.from_value(SimpleTypesContainer, value_name="stc")
 
@@ -360,7 +397,10 @@ class MappingConstructibleTest(TestCase):
     def test_union_fail(self):
         with pytest.raises(
             TypeError,
-            match=r"utc must be of type UnionTypesContainer | dict\[str, Any\], but got int",
+            match=(
+                r"utc must be of type UnionTypesContainer | dict\[str, Any\],"
+                r" but got int"
+            ),
         ):
             UnionTypesContainer.from_value(21, value_name="utc")
 
@@ -375,20 +415,21 @@ class MappingConstructibleTest(TestCase):
         ):
             UnionTypesContainer.from_value({"m": "pippo"}, value_name="utc")
 
-
-import xrlint
-
-
-@dataclass()
-class UnresolvedTypesContainer(ComplexTypesContainer, SimpleTypesContainer):
-    rules: dict[str, "xrlint.rule.RuleConfig"] = field(default_factory=dict)
-    plugins: dict[str, "xrlint.plugin.Plugin"] = field(default_factory=dict)
+    def test_get_class_parameters_is_cached(self):
+        ctc_param = ComplexTypesContainer._get_class_parameters()
+        stc_param = SimpleTypesContainer._get_class_parameters()
+        self.assertIs(stc_param, SimpleTypesContainer._get_class_parameters())
+        self.assertIs(ctc_param, ComplexTypesContainer._get_class_parameters())
+        self.assertIsNot(ctc_param, stc_param)
 
 
 class GetClassParametersTest(TestCase):
 
     def test_resolves_types(self):
-        ctc_params = get_class_parameters(UnresolvedTypesContainer)
+        ctc_params = get_class_parameters(
+            UnresolvedTypesContainer,
+            forward_refs=UnresolvedTypesContainer._get_forward_refs(),
+        )
         expected_annotations = {
             "a": "typing.Any",
             "b": "<class 'bool'>",
@@ -409,10 +450,3 @@ class GetClassParametersTest(TestCase):
             expected_annotations,
             {k: str(v.annotation) for k, v in ctc_params.items()},
         )
-
-    def test_is_cached(self):
-        ctc_param = get_class_parameters(ComplexTypesContainer)
-        stc_param = get_class_parameters(SimpleTypesContainer)
-        self.assertIs(stc_param, get_class_parameters(SimpleTypesContainer))
-        self.assertIs(ctc_param, get_class_parameters(ComplexTypesContainer))
-        self.assertIsNot(ctc_param, stc_param)

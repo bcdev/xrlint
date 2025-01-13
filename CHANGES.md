@@ -5,6 +5,11 @@
 - Make all docstrings comply to google-style
 - Rule description is now your `RuleOp`'s docstring
   if `description` is not explicitly provided.
+- Added more configuration examples in the `examples` folder.
+- Introduced utilities `ValueConstructible` and 
+  derived `MappingConstructible` which greatly simplify
+  flexible instantiation of configuration objects and their 
+  children from Python and JSON/YAML values.
 
 ## Version 0.1.0 (09.01.2025)
 

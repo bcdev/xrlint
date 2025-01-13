@@ -2,7 +2,6 @@ from dataclasses import dataclass, field
 from functools import cached_property
 from typing import Any, TYPE_CHECKING, Union, Literal, Sequence
 
-import xrlint  # required for type forward refs
 from xrlint.constants import CORE_PLUGIN_NAME
 from xrlint.util.codec import MappingConstructible, ValueConstructible
 from xrlint.util.filefilter import FileFilter
@@ -16,6 +15,7 @@ from xrlint.util.merge import (
 
 
 if TYPE_CHECKING:  # pragma: no cover
+    # make IDEs and flake8 happy
     from xrlint.rule import Rule
     from xrlint.rule import RuleConfig
     from xrlint.plugin import Plugin
@@ -125,19 +125,19 @@ class Config(MappingConstructible, ToDictMixin):
     the dataset opener.
     """
 
-    processor: Union["xrlint.processor.ProcessorOp", str, None] = None
+    processor: Union["ProcessorOp", str, None] = None
     """Either an object compatible with the `ProcessorOp`
     interface or a string indicating the name of a processor inside
     of a plugin (i.e., `"pluginName/processorName"`).
     """
 
-    plugins: dict[str, "xrlint.plugin.Plugin"] | None = None
+    plugins: dict[str, "Plugin"] | None = None
     """A dictionary containing a name-value mapping of plugin names to
     plugin objects. When `files` is specified, these plugins are only
     available to the matching files.
     """
 
-    rules: dict[str, "xrlint.rule.RuleConfig"] | None = None
+    rules: dict[str, "RuleConfig"] | None = None
     """A dictionary containing the configured rules.
     When `files` or `ignores` are specified, these rule configurations
     are only available to the matching files.
@@ -278,6 +278,20 @@ class Config(MappingConstructible, ToDictMixin):
     @classmethod
     def _from_none(cls, value_name: str) -> "Config":
         return Config()
+
+    @classmethod
+    def _get_forward_refs(cls) -> dict[str, type]:
+        from xrlint.processor import ProcessorOp
+        from xrlint.plugin import Plugin
+        from xrlint.rule import Rule
+        from xrlint.rule import RuleConfig
+
+        return {
+            "ProcessorOp": ProcessorOp,
+            "Plugin": Plugin,
+            "Rule": Rule,
+            "RuleConfig": RuleConfig,
+        }
 
     @classmethod
     def _get_value_name(cls) -> str:

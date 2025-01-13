@@ -4,8 +4,7 @@ from typing import Any, Type, Callable, Literal
 from xrlint.config import Config
 from xrlint.processor import Processor, ProcessorOp, define_processor
 from xrlint.rule import Rule, RuleOp, define_rule
-from xrlint.util.codec import MappingConstructible, T
-from xrlint.util.formatting import format_message_type_of
+from xrlint.util.codec import MappingConstructible
 from xrlint.util.importutil import import_value
 
 
@@ -82,7 +81,7 @@ class Plugin(MappingConstructible):
         )
 
     @classmethod
-    def _from_str(cls, value: str, value_name: str) -> T:
+    def _from_str(cls, value: str, value_name: str) -> "Plugin":
         plugin, plugin_ref = import_value(
             value, "export_plugin", factory=Plugin.from_value
         )

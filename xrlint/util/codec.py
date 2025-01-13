@@ -1,6 +1,3 @@
-import importlib
-import sys
-import warnings
 from collections.abc import Mapping, Sequence
 from functools import lru_cache
 from inspect import formatannotation, signature, isclass, Signature, Parameter
@@ -15,12 +12,13 @@ from typing import (
     get_origin,
     get_args,
     get_type_hints,
+    Optional,
 )
 
 from xrlint.util.formatting import format_message_type_of
 
 
-JSON_VALUE_TYPE_NAME = "None|bool|int|float|str|dict|list|tuple"
+JSON_VALUE_TYPE_NAME = "None | bool | int | float | str | dict | list"
 
 JsonValue: TypeAlias = (
     NoneType | bool | int | float | str | dict[str, "JsonValue"] | list["JsonValue"]
@@ -169,6 +167,9 @@ class ValueConstructible(Generic[T]):
                type specified by `type_annotation`.
             type_annotation: The annotation representing the target type.
             value_name: An identifier for `value`.
+
+        Returns:
+            The converted value.
         """
         type_origin, type_args = cls._process_annotation(type_annotation)
 
@@ -242,6 +243,48 @@ class ValueConstructible(Generic[T]):
         )
 
     @classmethod
+    @lru_cache(maxsize=1000)
+    def _get_class_parameters(cls) -> Mapping[str, Parameter]:
+        """Get the type-resolved parameters of this class' constructor.
+        The method returns a cached value for `cls`.
+
+        Can be used by subclasses to process annotations.
+        """
+        forward_refs = cls._get_forward_refs()
+        return get_class_parameters(cls, forward_refs=forward_refs)
+
+    @classmethod
+    def _get_forward_refs(cls) -> Optional[Mapping[str, type]]:
+        """Get an extra namespace to be used for resolving parameter type hints.
+        Called from [ValueConstructible._get_class_parameters][].
+
+        Can be overridden to provide a namespace for resolving type
+        forward references for your class.
+        Defaults to `None`.
+        """
+        return None
+
+    @classmethod
+    def _get_value_name(cls) -> str:
+        """Get an identifier for values that can be used to create
+        instances of this class.
+
+        Can be overridden to provide a custom, user-friendly value name.
+        Defaults to `"value"`.
+        """
+        return "value"
+
+    @classmethod
+    def _get_value_type_name(cls) -> str:
+        """Get a descriptive name for the value types that can
+        be used to create instances of this class, e.g., `"Rule | str"`.
+
+        Can be overridden to provide a custom, user-friendly type name.
+        Defaults to this class' name.
+        """
+        return cls.__name__
+
+    @classmethod
     def _process_annotation(
         cls, prop_annotation: Any
     ) -> tuple[type | UnionType, tuple[type | UnionType, ...]]:
@@ -257,22 +300,6 @@ class ValueConstructible(Generic[T]):
     @classmethod
     def _format_type_error(cls, value: Any, value_name: str) -> str:
         return format_message_type_of(value_name, value, cls._get_value_type_name())
-
-    @classmethod
-    def _get_value_name(cls) -> str:
-        """Get an identifier for values that can
-        be used to create instances of this class.
-        Defaults to `"value"`.
-        """
-        return "value"
-
-    @classmethod
-    def _get_value_type_name(cls) -> str:
-        """Get a descriptive name for the value types that can
-        be used to create instances of this class, e.g., `"Rule|str"`.
-        Defaults to this class' name.
-        """
-        return cls.__name__
 
 
 class MappingConstructible(Generic[T], ValueConstructible[T]):
@@ -292,7 +319,7 @@ class MappingConstructible(Generic[T], ValueConstructible[T]):
         """
 
         mapping_keys = set(mapping.keys())
-        properties = get_class_parameters(cls)
+        properties = cls._get_class_parameters()
 
         args = []
         kwargs = {}
@@ -347,56 +374,31 @@ class MappingConstructible(Generic[T], ValueConstructible[T]):
     @classmethod
     def _get_value_type_name(cls) -> str:
         """Get a descriptive name for the value types that can
-        be used to create instances of this class, e.g., `"Rule|str"`.
+        be used to create instances of this class, e.g., `"Rule | str"`.
         Defaults to `f"{cls.__name__} | dict[str, Any]"`.
         """
         return f"{cls.__name__} | dict[str, Any]"
 
 
-def _import_modules_from_annotations(annotation):
-    if isinstance(annotation, str):
-        module_path = annotation.split(".")
-        for i in range(len(module_path) - 1):
-            try:
-                importlib.import_module(".".join(module_path[: i + 1]))
-            except ImportError as e:
-                warnings.warn(str(e))
-    else:
-        origin = get_origin(annotation)
-        if origin is not None:
-            args = get_args(annotation)
-            for arg in args:
-                _import_modules_from_annotations(arg)
-
-
-@lru_cache(maxsize=1000)
-def get_class_parameters(cls) -> Mapping[str, Parameter]:
+def get_class_parameters(
+    cls, forward_refs: Mapping[str, type] | None = None
+) -> Mapping[str, Parameter]:
     """Get the type-resolved parameters of this class' constructor.
     The returned value is cached.
 
     Args:
         cls: The class to inspect.
+        forward_refs: Optional extra namespace from which to
+            resolve forward references.
 
     Returns:
         A mapping from parameter names to parameters.
     """
-
     # Get the signature of the constructor
     sig = signature(cls.__init__)
 
-    for param in sig.parameters.values():
-        param_annotation = param.annotation
-        if param_annotation is not None:
-            _import_modules_from_annotations(param_annotation)
-
-    # Dynamically load the module where the class is defined
-    module_name = cls.__module__
-    module_globals = (
-        sys.modules[module_name].__dict__ if module_name in sys.modules else globals()
-    )
-
-    # Resolve annotations using `get_type_hints`
-    resolved_hints = get_type_hints(cls.__init__, module_globals, locals())
+    # Resolve annotations
+    resolved_hints = get_type_hints(cls.__init__, localns=forward_refs)
 
     # Process the parameters
     resolved_params = {}
