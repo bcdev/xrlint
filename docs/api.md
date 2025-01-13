@@ -31,7 +31,7 @@ This chapter provides a plain reference for the XRLint Python API.
   [Processor][xrlint.processor.Processor] comprising processor metadata
   [ProcessorMeta][xrlint.processor.ProcessorMeta] 
   and the processor operation [ProcessorOp][xrlint.processor.ProcessorOp].
-  Decorator [define_processor][xrlint.rule.define_rule] allows defining 
+  Decorator [define_processor][xrlint.processor.define_processor] allows defining 
   processors.
 - The `result` module provides data classes that are used to 
   represent validation results:

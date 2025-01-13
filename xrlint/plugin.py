@@ -56,6 +56,12 @@ class Plugin(MappingConstructible):
         docs_url: str | None = None,
         op_class: Type[RuleOp] | None = None,
     ) -> Callable[[Any], Type[RuleOp]] | None:
+        """Decorator to define a plugin rule.
+        The method registers a new rule with the plugin.
+
+        Refer to [define_rule][xrlint.rule.define_rule]
+        for details.
+        """
         return define_rule(
             name=name,
             version=version,
@@ -73,6 +79,12 @@ class Plugin(MappingConstructible):
         version: str = "0.0.0",
         op_class: Type[ProcessorOp] | None = None,
     ):
+        """Decorator to define a plugin processor.
+        The method registers a new processor with the plugin.
+
+        Refer to [define_processor][xrlint.processor.define_processor]
+        for details.
+        """
         return define_processor(
             name=name,
             version=version,
