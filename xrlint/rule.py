@@ -12,7 +12,7 @@ from xrlint.constants import (
 )
 from xrlint.node import DatasetNode, DataArrayNode, AttrsNode, AttrNode
 from xrlint.result import Suggestion
-from xrlint.util.codec import ValueConstructible
+from xrlint.util.codec import MappingConstructible, ValueConstructible
 from xrlint.util.formatting import format_message_one_of
 from xrlint.util.importutil import import_value
 from xrlint.util.naming import to_kebab_case
@@ -125,7 +125,7 @@ class RuleOp(ABC):
 
 
 @dataclass(kw_only=True)
-class RuleMeta(ValueConstructible, ToDictMixin):
+class RuleMeta(MappingConstructible, ToDictMixin):
     """Rule metadata."""
 
     name: str
@@ -180,9 +180,13 @@ class RuleMeta(ValueConstructible, ToDictMixin):
     by the rule’s implementation and its configured severity.
     """
 
+    @classmethod
+    def _get_value_type_name(cls) -> str:
+        return "RuleMeta | dict"
+
 
 @dataclass(frozen=True)
-class Rule(ValueConstructible):
+class Rule(MappingConstructible):
     """A rule comprises rule metadata and a reference to the
     class that implements the rule's logic.
 
@@ -227,7 +231,7 @@ class Rule(ValueConstructible):
 
     @classmethod
     def _get_value_type_name(cls) -> str:
-        return "Rule|str"
+        return "Rule | dict | str"
 
 
 @dataclass(frozen=True)
@@ -308,7 +312,7 @@ class RuleConfig(ValueConstructible):
 
     @classmethod
     def _get_value_type_name(cls) -> str:
-        return "int|str|tuple|list"
+        return "int | str | list"
 
 
 def define_rule(

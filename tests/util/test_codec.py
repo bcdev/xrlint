@@ -8,11 +8,18 @@ import pytest
 from xrlint.util.codec import (
     ValueConstructible,
     JsonSerializable,
+    MappingConstructible,
+    get_class_parameters,
 )
 
 
 @dataclass()
-class SimpleTypesContainer(ValueConstructible, JsonSerializable):
+class UselessContainer(ValueConstructible):
+    pass
+
+
+@dataclass()
+class SimpleTypesContainer(MappingConstructible, JsonSerializable):
     a: Any = None
     b: bool = False
     c: int = 0
@@ -22,13 +29,32 @@ class SimpleTypesContainer(ValueConstructible, JsonSerializable):
 
 
 @dataclass()
-class ComplexTypesContainer(ValueConstructible, JsonSerializable):
+class ComplexTypesContainer(MappingConstructible, JsonSerializable):
     p: SimpleTypesContainer = field(default_factory=SimpleTypesContainer)
     q: dict[str, bool] = field(default_factory=dict)
     r: dict[str, SimpleTypesContainer] = field(default_factory=dict)
     s: list[int] = field(default_factory=list)
     t: list[SimpleTypesContainer] = field(default_factory=list)
     u: int | float | None = None
+
+
+@dataclass()
+class UnionTypesContainer(MappingConstructible, JsonSerializable):
+    m: SimpleTypesContainer | ComplexTypesContainer | None = None
+
+
+@dataclass()
+class RequiredPropsContainer(MappingConstructible, JsonSerializable):
+    x: float
+    y: float
+    z: float
+
+
+@dataclass()
+class NoTypesContainer(MappingConstructible, JsonSerializable):
+    u = 0
+    v = 0
+    w = 0
 
 
 T1: TypeAlias = int | str | Union[bool, None] | None
@@ -43,6 +69,13 @@ class TypingTest(TestCase):
         self.assertTrue(not isinstance(Union, type))
         self.assertTrue(not isinstance(Union, UnionType))
         self.assertTrue(Union != UnionType)
+
+        self.assertEqual(None, get_origin("NoTypesContainer"))
+        self.assertEqual(None, get_origin("dict"))
+        self.assertEqual(dict, get_origin(dict[str, "NoTypesContainer"]))
+        self.assertEqual(
+            (str, "NoTypesContainer"), get_args(dict[str, "NoTypesContainer"])
+        )
 
         self.assertEqual(Union, get_origin(T1))
         self.assertEqual({bool, int, str, NoneType}, set(get_args(T1)))
@@ -133,6 +166,74 @@ class JsonSerializableTest(TestCase):
 
 
 class ValueConstructibleTest(TestCase):
+    def test_useless_ok(self):
+        container = UselessContainer()
+        self.assertIs(container, UselessContainer.from_value(container))
+
+    # noinspection PyMethodMayBeStatic
+    def test_useless_fail(self):
+        with pytest.raises(
+            TypeError,
+            match=f"uc must be of type UselessContainer, but got None",
+        ):
+            UselessContainer.from_value(None, value_name="uc")
+
+        with pytest.raises(
+            TypeError,
+            match=r"uc must be of type UselessContainer, but got bool",
+        ):
+            UselessContainer.from_value(True, value_name="uc")
+
+        with pytest.raises(
+            TypeError,
+            match=r"uc must be of type UselessContainer, but got int",
+        ):
+            UselessContainer.from_value(1, value_name="uc")
+
+        with pytest.raises(
+            TypeError,
+            match=r"uc must be of type UselessContainer, but got float",
+        ):
+            UselessContainer.from_value(0.1, value_name="uc")
+
+        with pytest.raises(
+            TypeError,
+            match=r"uc must be of type UselessContainer, but got str",
+        ):
+            UselessContainer.from_value("abc", value_name="uc")
+
+        with pytest.raises(
+            TypeError,
+            match=r"utc must be of type UselessContainer, but got dict",
+        ):
+            UselessContainer.from_value({}, value_name="utc")
+
+        with pytest.raises(
+            TypeError,
+            match=r"uc must be of type UselessContainer, but got list",
+        ):
+            UselessContainer.from_value([], value_name="uc")
+
+        with pytest.raises(
+            TypeError,
+            match=r"utc must be of type UselessContainer, but got object",
+        ):
+            UselessContainer.from_value(object(), value_name="utc")
+
+        with pytest.raises(
+            TypeError,
+            match=r"utc must be of type UselessContainer, but got type",
+        ):
+            UselessContainer.from_value(int, value_name="utc")
+
+        with pytest.raises(
+            TypeError,
+            match=r"utc must be of type UselessContainer, but got type",
+        ):
+            UselessContainer.from_value(UselessContainer, value_name="utc")
+
+
+class MappingConstructibleTest(TestCase):
 
     def test_simple_ok(self):
         kwargs = dict(a="?", b=True, c=12, d=34.56, e="uvw", f=bytes)
@@ -173,41 +274,34 @@ class ValueConstructibleTest(TestCase):
             expected_container, ComplexTypesContainer.from_value(expected_container)
         )
 
+    def test_union_ok(self):
+        expected_union = UnionTypesContainer(m=SimpleTypesContainer())
+        self.assertEqual(
+            expected_union,
+            UnionTypesContainer.from_value({"m": SimpleTypesContainer()}),
+        )
+        self.assertIs(expected_union, UnionTypesContainer.from_value(expected_union))
+
+        expected_union = UnionTypesContainer(m=ComplexTypesContainer())
+        self.assertEqual(
+            expected_union,
+            UnionTypesContainer.from_value({"m": ComplexTypesContainer()}),
+        )
+        self.assertIs(expected_union, UnionTypesContainer.from_value(expected_union))
+
+        expected_union = UnionTypesContainer(m=None)
+        self.assertEqual(
+            expected_union,
+            UnionTypesContainer.from_value({"m": None}),
+        )
+        self.assertIs(expected_union, UnionTypesContainer.from_value(expected_union))
+
     # noinspection PyMethodMayBeStatic
     def test_simple_fail(self):
-        with pytest.raises(
-            TypeError, match="stc must be of type SimpleTypesContainer, but got None"
-        ):
-            SimpleTypesContainer.from_value(None, value_name="stc")
-
-        with pytest.raises(
-            TypeError, match="stc must be of type SimpleTypesContainer, but got bool"
-        ):
-            SimpleTypesContainer.from_value(True, value_name="stc")
-
-        with pytest.raises(
-            TypeError, match="stc must be of type SimpleTypesContainer, but got int"
-        ):
-            SimpleTypesContainer.from_value(1, value_name="stc")
-
-        with pytest.raises(
-            TypeError, match="stc must be of type SimpleTypesContainer, but got float"
-        ):
-            SimpleTypesContainer.from_value(0.1, value_name="stc")
-
-        with pytest.raises(
-            TypeError, match="stc must be of type SimpleTypesContainer, but got str"
-        ):
-            SimpleTypesContainer.from_value("abc", value_name="stc")
-
-        with pytest.raises(
-            TypeError, match="stc must be of type SimpleTypesContainer, but got list"
-        ):
-            SimpleTypesContainer.from_value([], value_name="stc")
 
         with pytest.raises(
             TypeError,
-            match="stc.b must be of type SimpleTypesContainer, but got None",
+            match=r"stc.b must be of type SimpleTypesContainer | dict\[str, Any\], but got None",
         ):
             SimpleTypesContainer.from_value({"b": None}, value_name="stc")
 
@@ -232,18 +326,9 @@ class ValueConstructibleTest(TestCase):
 
         with pytest.raises(
             TypeError,
-            match="stc must be of type SimpleTypesContainer, but got type",
+            match=r"stc must be of type SimpleTypesContainer | dict\[str, Any\], but got type",
         ):
             SimpleTypesContainer.from_value(SimpleTypesContainer, value_name="stc")
-
-        with pytest.raises(
-            TypeError,
-            match=(
-                "stc must be of type SimpleTypesContainer,"
-                " but got ComplexTypesContainer"
-            ),
-        ):
-            SimpleTypesContainer.from_value(ComplexTypesContainer(), value_name="stc")
 
         with pytest.raises(
             TypeError,
@@ -271,34 +356,63 @@ class ValueConstructibleTest(TestCase):
         ):
             ComplexTypesContainer.from_value({"s": [1, "x", 3]}, value_name="ctc")
 
-    def test_signatures(self):
-        @dataclass()
-        class CombinedTypesContainer(ComplexTypesContainer, SimpleTypesContainer):
-            pass
+    # noinspection PyMethodMayBeStatic
+    def test_union_fail(self):
+        with pytest.raises(
+            TypeError,
+            match=r"utc must be of type UnionTypesContainer | dict\[str, Any\], but got int",
+        ):
+            UnionTypesContainer.from_value(21, value_name="utc")
 
-        sig = CombinedTypesContainer._get_signature()
-        expected_sig_str = (
-            "("
-            "a: Any = None, "
-            "b: bool = False, "
-            "c: int = 0, "
-            "d: float = 0.0, "
-            "e: str = 'abc', "
-            "f: type = <class 'int'>, "
-            "p: tests.util.test_codec.SimpleTypesContainer = <factory>, "
-            "q: dict[str, bool] = <factory>, "
-            "r: dict[str, tests.util.test_codec.SimpleTypesContainer] = <factory>, "
-            "s: list[int] = <factory>, "
-            "t: list[tests.util.test_codec.SimpleTypesContainer] = <factory>, "
-            "u: int | float | None = None"
-            ") -> None"
-        )
+        with pytest.raises(
+            TypeError,
+            match=(
+                "utc.m must be of type SimpleTypesContainer"
+                " | ComplexTypesContainer"
+                " | None,"
+                " but got str"
+            ),
+        ):
+            UnionTypesContainer.from_value({"m": "pippo"}, value_name="utc")
+
+
+import xrlint
+
+
+@dataclass()
+class UnresolvedTypesContainer(ComplexTypesContainer, SimpleTypesContainer):
+    rules: dict[str, "xrlint.rule.RuleConfig"] = field(default_factory=dict)
+    plugins: dict[str, "xrlint.plugin.Plugin"] = field(default_factory=dict)
+
+
+class GetClassParametersTest(TestCase):
+
+    def test_resolves_types(self):
+        ctc_params = get_class_parameters(UnresolvedTypesContainer)
+        expected_annotations = {
+            "a": "typing.Any",
+            "b": "<class 'bool'>",
+            "c": "<class 'int'>",
+            "d": "<class 'float'>",
+            "e": "<class 'str'>",
+            "f": "<class 'type'>",
+            "p": "<class 'tests.util.test_codec.SimpleTypesContainer'>",
+            "q": "dict[str, bool]",
+            "r": "dict[str, tests.util.test_codec.SimpleTypesContainer]",
+            "s": "list[int]",
+            "t": "list[tests.util.test_codec.SimpleTypesContainer]",
+            "u": "int | float | None",
+            "rules": "dict[str, xrlint.rule.RuleConfig]",
+            "plugins": "dict[str, xrlint.plugin.Plugin]",
+        }
         self.assertEqual(
-            expected_sig_str,
-            str(sig),
+            expected_annotations,
+            {k: str(v.annotation) for k, v in ctc_params.items()},
         )
 
-        other_sig = SimpleTypesContainer._get_signature()
-        self.assertIs(other_sig, SimpleTypesContainer._get_signature())
-
-        self.assertIs(sig, CombinedTypesContainer._get_signature())
+    def test_is_cached(self):
+        ctc_param = get_class_parameters(ComplexTypesContainer)
+        stc_param = get_class_parameters(SimpleTypesContainer)
+        self.assertIs(stc_param, get_class_parameters(SimpleTypesContainer))
+        self.assertIs(ctc_param, get_class_parameters(ComplexTypesContainer))
+        self.assertIsNot(ctc_param, stc_param)

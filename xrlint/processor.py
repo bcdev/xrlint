@@ -6,7 +6,7 @@ from typing import Type, Any, Callable
 import xarray as xr
 
 from xrlint.result import Message
-from xrlint.util.codec import ValueConstructible
+from xrlint.util.codec import MappingConstructible
 from xrlint.util.formatting import format_message_type_of
 from xrlint.util.importutil import import_value
 from xrlint.util.naming import to_kebab_case
@@ -50,7 +50,7 @@ class ProcessorOp(ABC):
 
 
 @dataclass(frozen=True, kw_only=True)
-class ProcessorMeta(ValueConstructible):
+class ProcessorMeta(MappingConstructible):
     """Processor metadata."""
 
     name: str
@@ -67,11 +67,11 @@ class ProcessorMeta(ValueConstructible):
 
     @classmethod
     def _get_value_type_name(cls) -> str:
-        return "ProcessorMeta|dict"
+        return "ProcessorMeta | dict"
 
 
 @dataclass(frozen=True, kw_only=True)
-class Processor(ValueConstructible):
+class Processor(MappingConstructible):
     """Processors tell XRLint how to process files other than
     standard xarray datasets.
     """
@@ -115,7 +115,7 @@ class Processor(ValueConstructible):
 
     @classmethod
     def _get_value_type_name(cls) -> str:
-        return "str|dict|Processor|Type[ProcessorOp]"
+        return "str | dict | Processor | Type[ProcessorOp]"
 
     @classmethod
     def _parse_op_class(cls, value: dict) -> Type["ProcessorOp"]:

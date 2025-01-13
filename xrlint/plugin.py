@@ -4,12 +4,13 @@ from typing import Any, Type, Callable, Literal
 from xrlint.config import Config
 from xrlint.processor import Processor, ProcessorOp, define_processor
 from xrlint.rule import Rule, RuleOp, define_rule
+from xrlint.util.codec import MappingConstructible, T
 from xrlint.util.formatting import format_message_type_of
 from xrlint.util.importutil import import_value
 
 
 @dataclass(kw_only=True)
-class PluginMeta:
+class PluginMeta(MappingConstructible):
     """XRLint plugin metadata."""
 
     name: str
@@ -25,20 +26,12 @@ class PluginMeta:
     """
 
     @classmethod
-    def from_value(cls, value: Any, name: str | None = None) -> "PluginMeta":
-        if isinstance(value, PluginMeta):
-            return value
-        if isinstance(value, dict):
-            return PluginMeta(
-                name=value.get("name"),
-                version=value.get("version"),
-                ref=value.get("ref"),
-            )
-        raise TypeError(format_message_type_of("value", value, "dict[str,str]"))
+    def _get_value_type_name(cls) -> str:
+        return "PluginMeta | dict"
 
 
 @dataclass(frozen=True, kw_only=True)
-class Plugin:
+class Plugin(MappingConstructible):
     """An XRLint plugin."""
 
     meta: PluginMeta
@@ -53,20 +46,6 @@ class Plugin:
     processors: dict[str, Processor] = field(default_factory=dict)
     """A dictionary containing named processors.
     """
-
-    @classmethod
-    def from_value(cls, value: Any, name: str | None = None) -> "Plugin":
-        if isinstance(value, Plugin):
-            return value
-        if isinstance(value, dict):
-            return cls._parse_plugin(value)
-        if isinstance(value, str):
-            plugin, plugin_ref = import_value(
-                value, "export_plugin", factory=Plugin.from_value
-            )
-            plugin.meta.ref = plugin_ref
-            return plugin
-        raise TypeError(format_message_type_of("value", value, "Plugin|str"))
 
     def define_rule(
         self,
@@ -103,45 +82,13 @@ class Plugin:
         )
 
     @classmethod
-    def _parse_plugin(cls, value: dict):
-        return Plugin(
-            meta=(Plugin._parse_meta(value)),
-            rules=cls._parse_rules(value),
-            processors=cls._parse_processors(value),
-            configs=cls._parse_configs(value),
+    def _from_str(cls, value: str, value_name: str) -> T:
+        plugin, plugin_ref = import_value(
+            value, "export_plugin", factory=Plugin.from_value
         )
+        plugin.meta.ref = plugin_ref
+        return plugin
 
     @classmethod
-    def _parse_meta(cls, value):
-        return PluginMeta.from_value(value.get("meta"))
-
-    @classmethod
-    def _parse_rules(cls, value) -> dict[str, Rule] | None:
-        rules = value.get("rules", {})
-        if value is None:
-            return None
-        if isinstance(rules, dict):
-            return {k: Rule.from_value(v) for k, v in rules.items()}
-        raise TypeError(format_message_type_of("rules", rules, "dict[str,Rule]|None"))
-
-    @classmethod
-    def _parse_processors(cls, value) -> dict[str, Processor] | None:
-        processors = value.get("processors", {})
-        if value is None:
-            return None
-        if isinstance(processors, dict):
-            return {k: Processor.from_value(v) for k, v in processors.items()}
-        raise TypeError(
-            format_message_type_of("processors", processors, "dict[str,Processor]|None")
-        )
-
-    @classmethod
-    def _parse_configs(cls, value) -> dict[str, Config] | None:
-        configs = value.get("configs", {})
-        if value is None:
-            return None
-        if isinstance(configs, dict):
-            return {k: Config.from_value(v) for k, v in configs.items()}
-        raise TypeError(
-            format_message_type_of("configs", configs, "dict[str,Config]|None")
-        )
+    def _get_value_type_name(cls) -> str:
+        return "Plugin | dict | str"
