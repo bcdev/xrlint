@@ -13,7 +13,7 @@
   derived `MappingConstructible` which greatly simplify
   flexible instantiation of XRLint's configuration objects 
   and their children from Python and JSON/YAML values.
-- Make all docstrings comply to google-style.
+- Made all docstrings comply to google-style.
 
 ## Version 0.1.0 (09.01.2025)
 
