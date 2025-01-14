@@ -69,24 +69,75 @@ these properties:
 * `files` - A list of glob patterns indicating the files that the 
   configuration object should apply to. If not specified, the configuration 
   object applies to all files matched by any other configuration object.
+  See section [File and Ignore Patterns](#file-and-ignore-patterns) below.
 * `ignores` - A list of glob patterns indicating the files that the 
   configuration object should not apply to. If not specified, the configuration 
   object applies to all files matched by files. If ignores is used without any 
   other keys in the configuration object, then the patterns act as _global ignores_.
+  See section [File and Ignore Patterns](#file-and-ignore-patterns) below.
 * `opener_options` - A dictionary specifying keyword-arguments that are passed 
   directly to the `xarray.open_dataset()` function. The available options are 
   dependent on the xarray backend selected by the `engine` option.
+  See section [Opener Options](#opener-options) below.
 * `linter_options` - A dictionary containing settings related to 
   the linting process. (Currently not used.)
+  See section [Linter Options](#linter-options) below.
+* `settings` - An object containing name-value pairs of information that should 
+  be available to all rules.
+* `plugins` - A dictionary containing a name-value mapping of plugin names 
+  to either plugin module names or `Plugin` objects. When `files` is specified, 
+  these plugins are only available to the matching files.
+  See sections [Configuring Plugins](#configuring-plugins) 
+  and [Custom Plugins](#custom-plugins) below.
+* `rules` - An object containing the configured rules. 
+  When `files` or `ignores` are specified, these rule configurations are only 
+  available to the matching files.
+  See sections [Configuring Rules](#configuring-rules) 
+  and [Custom Rules](#custom-rules) below.
 * `processor` - A string indicating the name of a processor inside of a plugin, 
   i.e., `"<plugin-name>/<processor-name>"`. In Python configurations 
   it can also be an object of type `ProcessorOp` containing
   `preprocess()` and `postprocess()` methods.
-* `plugins` - A dictionary containing a name-value mapping of plugin names 
-  to either plugin module names or `Plugin` objects. When `files` is specified, 
-  these plugins are only available to the matching files.
-* `rules` - An object containing the configured rules. 
-  When `files` or `ignores` are specified, these rule configurations are only 
-  available to the matching files.
-* `settings` - An object containing name-value pairs of information that should 
-  be available to all rules.
+  See sections [Configuring Processors](#custom-processors) 
+  and [Custom Processors](#custom-processors) below.
+
+## File and Ignore Patterns
+
+_Coming soon_
+
+## Opener Options
+
+_Coming soon_
+
+## Linter Options
+
+_Coming soon_
+
+## Configuring Plugins
+
+_Coming soon_
+
+## Configuring Rules
+
+_Coming soon_
+
+## Configuring Processors
+
+_Coming soon_
+
+## Predefined Configuration Objects
+
+_Coming soon_
+
+## Custom Plugins
+
+_Coming soon_
+
+## Custom Rules
+
+_Coming soon_
+
+## Custom Processors
+
+_Coming soon_
+
