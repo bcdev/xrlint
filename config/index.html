@@ -356,6 +356,96 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#file-and-ignore-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      File and Ignore Patterns
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#opener-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      Opener Options
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#linter-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      Linter Options
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuring-plugins" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuring Plugins
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuring-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuring Rules
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuring-processors" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuring Processors
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#predefined-configuration-objects" class="md-nav__link">
+    <span class="md-ellipsis">
+      Predefined Configuration Objects
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#custom-plugins" class="md-nav__link">
+    <span class="md-ellipsis">
+      Custom Plugins
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#custom-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      Custom Rules
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#custom-processors" class="md-nav__link">
+    <span class="md-ellipsis">
+      Custom Processors
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -488,6 +578,96 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#file-and-ignore-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      File and Ignore Patterns
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#opener-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      Opener Options
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#linter-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      Linter Options
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuring-plugins" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuring Plugins
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuring-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuring Rules
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuring-processors" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuring Processors
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#predefined-configuration-objects" class="md-nav__link">
+    <span class="md-ellipsis">
+      Predefined Configuration Objects
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#custom-plugins" class="md-nav__link">
+    <span class="md-ellipsis">
+      Custom Plugins
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#custom-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      Custom Rules
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#custom-processors" class="md-nav__link">
+    <span class="md-ellipsis">
+      Custom Processors
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -561,29 +741,59 @@ these properties:</p>
   configuration object is being used.</li>
 <li><code>files</code> - A list of glob patterns indicating the files that the 
   configuration object should apply to. If not specified, the configuration 
-  object applies to all files matched by any other configuration object.</li>
+  object applies to all files matched by any other configuration object.
+  See section <a href="#file-and-ignore-patterns">File and Ignore Patterns</a> below.</li>
 <li><code>ignores</code> - A list of glob patterns indicating the files that the 
   configuration object should not apply to. If not specified, the configuration 
   object applies to all files matched by files. If ignores is used without any 
-  other keys in the configuration object, then the patterns act as <em>global ignores</em>.</li>
+  other keys in the configuration object, then the patterns act as <em>global ignores</em>.
+  See section <a href="#file-and-ignore-patterns">File and Ignore Patterns</a> below.</li>
 <li><code>opener_options</code> - A dictionary specifying keyword-arguments that are passed 
   directly to the <code>xarray.open_dataset()</code> function. The available options are 
-  dependent on the xarray backend selected by the <code>engine</code> option.</li>
+  dependent on the xarray backend selected by the <code>engine</code> option.
+  See section <a href="#opener-options">Opener Options</a> below.</li>
 <li><code>linter_options</code> - A dictionary containing settings related to 
-  the linting process. (Currently not used.)</li>
+  the linting process. (Currently not used.)
+  See section <a href="#linter-options">Linter Options</a> below.</li>
+<li><code>settings</code> - An object containing name-value pairs of information that should 
+  be available to all rules.</li>
+<li><code>plugins</code> - A dictionary containing a name-value mapping of plugin names 
+  to either plugin module names or <code>Plugin</code> objects. When <code>files</code> is specified, 
+  these plugins are only available to the matching files.
+  See sections <a href="#configuring-plugins">Configuring Plugins</a> 
+  and <a href="#custom-plugins">Custom Plugins</a> below.</li>
+<li><code>rules</code> - An object containing the configured rules. 
+  When <code>files</code> or <code>ignores</code> are specified, these rule configurations are only 
+  available to the matching files.
+  See sections <a href="#configuring-rules">Configuring Rules</a> 
+  and <a href="#custom-rules">Custom Rules</a> below.</li>
 <li><code>processor</code> - A string indicating the name of a processor inside of a plugin, 
   i.e., <code>"&lt;plugin-name&gt;/&lt;processor-name&gt;"</code>. In Python configurations 
   it can also be an object of type <code>ProcessorOp</code> containing
-  <code>preprocess()</code> and <code>postprocess()</code> methods.</li>
-<li><code>plugins</code> - A dictionary containing a name-value mapping of plugin names 
-  to either plugin module names or <code>Plugin</code> objects. When <code>files</code> is specified, 
-  these plugins are only available to the matching files.</li>
-<li><code>rules</code> - An object containing the configured rules. 
-  When <code>files</code> or <code>ignores</code> are specified, these rule configurations are only 
-  available to the matching files.</li>
-<li><code>settings</code> - An object containing name-value pairs of information that should 
-  be available to all rules.</li>
+  <code>preprocess()</code> and <code>postprocess()</code> methods.
+  See sections <a href="#custom-processors">Configuring Processors</a> 
+  and <a href="#custom-processors">Custom Processors</a> below.</li>
 </ul>
+<h2 id="file-and-ignore-patterns">File and Ignore Patterns</h2>
+<p><em>Coming soon</em></p>
+<h2 id="opener-options">Opener Options</h2>
+<p><em>Coming soon</em></p>
+<h2 id="linter-options">Linter Options</h2>
+<p><em>Coming soon</em></p>
+<h2 id="configuring-plugins">Configuring Plugins</h2>
+<p><em>Coming soon</em></p>
+<h2 id="configuring-rules">Configuring Rules</h2>
+<p><em>Coming soon</em></p>
+<h2 id="configuring-processors">Configuring Processors</h2>
+<p><em>Coming soon</em></p>
+<h2 id="predefined-configuration-objects">Predefined Configuration Objects</h2>
+<p><em>Coming soon</em></p>
+<h2 id="custom-plugins">Custom Plugins</h2>
+<p><em>Coming soon</em></p>
+<h2 id="custom-rules">Custom Rules</h2>
+<p><em>Coming soon</em></p>
+<h2 id="custom-processors">Custom Processors</h2>
+<p><em>Coming soon</em></p>
 
 
 

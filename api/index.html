@@ -3079,19 +3079,19 @@
   configuration information and provide related functionality:
   <a class="autorefs autorefs-internal" href="#xrlint.config.Config">Config</a> and <a class="autorefs autorefs-internal" href="#xrlint.config.ConfigList">ConfigList</a>.</li>
 <li>The <code>rule</code> module provides rule related classes and functions:
-  <a class="autorefs autorefs-internal" href="#xrlint.rule.Rule">Rule</a> comprising rule metadata 
-  <a class="autorefs autorefs-internal" href="#xrlint.rule.RuleMeta">RuleMeta</a> and the rule operation 
+  <a class="autorefs autorefs-internal" href="#xrlint.rule.Rule">Rule</a> comprising rule metadata, 
+  <a class="autorefs autorefs-internal" href="#xrlint.rule.RuleMeta">RuleMeta</a>, the rule validation operations in 
   <a class="autorefs autorefs-internal" href="#xrlint.rule.RuleOp">RuleOp</a>, as well as related to the latter
   <a class="autorefs autorefs-internal" href="#xrlint.rule.RuleContext">RuleContext</a> and <a class="autorefs autorefs-internal" href="#xrlint.rule.RuleExit">RuleExit</a>.
   Decorator <a class="autorefs autorefs-internal" href="#xrlint.rule.define_rule">define_rule</a> allows defining rules.</li>
-<li>The <code>node</code> module defines the nodes passed to [xrlint.rule.RuleOp]:
-  base classes <a class="autorefs autorefs-internal" href="#xrlint.node.Node">None</a>, <a class="autorefs autorefs-internal" href="#xrlint.node.XarrayNode">XarrayNode</a>
+<li>The <code>node</code> module defines the nodes passed to <a class="autorefs autorefs-internal" href="#xrlint.rule.RuleOp">RuleOp</a>:
+  base classes <a class="autorefs autorefs-internal" href="#xrlint.node.Node">None</a>, <a class="autorefs autorefs-internal" href="#xrlint.node.XarrayNode">XarrayNode</a>,
   and the specific <a class="autorefs autorefs-internal" href="#xrlint.node.DatasetNode">DatasetNode</a>,
   <a class="autorefs autorefs-internal" href="#xrlint.node.DataArrayNode">DataArray</a>, <a class="autorefs autorefs-internal" href="#xrlint.node.AttrsNode">AttrsNode</a>, 
   and <a class="autorefs autorefs-internal" href="#xrlint.node.AttrNode">AttrNode</a> nodes.</li>
 <li>The <code>processor</code> module provides processor related classes and functions:
   <a class="autorefs autorefs-internal" href="#xrlint.processor.Processor">Processor</a> comprising processor metadata
-  <a class="autorefs autorefs-internal" href="#xrlint.processor.ProcessorMeta">ProcessorMeta</a> 
+  <a class="autorefs autorefs-internal" href="#xrlint.processor.ProcessorMeta">ProcessorMeta</a>, 
   and the processor operation <a class="autorefs autorefs-internal" href="#xrlint.processor.ProcessorOp">ProcessorOp</a>.
   Decorator <a class="autorefs autorefs-internal" href="#xrlint.processor.define_processor">define_processor</a> allows defining 
   processors.</li>
@@ -3103,7 +3103,8 @@
   <a class="autorefs autorefs-internal" href="#xrlint.testing.RuleTester">RuleTester</a> that is made up 
   of <a class="autorefs autorefs-internal" href="#xrlint.testing.RuleTest">RuleTest</a>s.</li>
 </ul>
-<p>Note: the <code>xrlint.all</code> convenience module exports all of the above from a 
+<p>Note: 
+  the <code>xrlint.all</code> convenience module exports all of the above from a 
   single module.</p>
 
 
