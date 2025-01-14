@@ -66,13 +66,13 @@ these properties:
 * `name` - A name for the configuration object. 
   This is used in error messages and config inspector to help identify which 
   configuration object is being used.
-* `files` - A list of glob patterns indicating the files that the 
+* `files` - A list of glob patterns indicating the files or URLs that the 
   configuration object should apply to. If not specified, the configuration 
   object applies to all files matched by any other configuration object.
   See section [File and Ignore Patterns](#file-and-ignore-patterns) below.
-* `ignores` - A list of glob patterns indicating the files that the 
+* `ignores` - A list of glob patterns indicating the files and URLs that the 
   configuration object should not apply to. If not specified, the configuration 
-  object applies to all files matched by files. If ignores is used without any 
+  object applies to all files matched by `files`. If ignores is used without any 
   other keys in the configuration object, then the patterns act as _global ignores_.
   See section [File and Ignore Patterns](#file-and-ignore-patterns) below.
 * `opener_options` - A dictionary specifying keyword-arguments that are passed 

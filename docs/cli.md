@@ -8,15 +8,19 @@ Usage: xrlint [OPTIONS] [FILES]...
 
   Validate the given dataset FILES.
 
-  Reads configuration from `./xrlint_config.*` if such file exists and unless
-  `--no_config_lookup` is set or `--config` is provided. Then validates each
-  dataset in FILES against the configuration. The default dataset patters are
-  `**/*.zarr` and `**/.nc`. FILES may comprise also directories. If a
-  directory is not matched by any file pattern, it will be traversed
-  recursively. The validation result is dumped to standard output if not
-  otherwise stated by `--output-file`. The output format is `simple` by
-  default. Other inbuilt formats are `json` and `html` which you can specify
-  using the `--format` option.
+  Reads configuration from './xrlint_config.*' if such file exists and unless
+  '--no_config_lookup' is set or '--config' is provided. It then validates
+  each dataset in FILES against the configuration. The default dataset patters
+  are '**/*.zarr' and '**/.nc'. FILES may comprise also directories or URLs.
+  The supported URL protocols are the ones supported by xarray. Using remote
+  protocols may require installing additional packages such as S3Fs
+  (https://s3fs.readthedocs.io/) for the 's3' protocol.
+
+  If a directory is provided that not matched by any file pattern, it will be
+  traversed recursively. The validation result is dumped to standard output if
+  not otherwise stated by '--output-file'. The output format is 'simple' by
+  default. Other inbuilt formats are 'json' and 'html' which you can specify
+  using the '--format' option.
 
 Options:
   --no-config-lookup      Disable use of default configuration from
@@ -36,5 +40,4 @@ Options:
   --init                  Write initial configuration file and exit.
   --version               Show the version and exit.
   --help                  Show this message and exit.
-
 ```
