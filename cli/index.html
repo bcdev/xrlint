@@ -439,15 +439,19 @@ The following are the command's options and arguments:</p>
 
   Validate the given dataset FILES.
 
-  Reads configuration from `./xrlint_config.*` if such file exists and unless
-  `--no_config_lookup` is set or `--config` is provided. Then validates each
-  dataset in FILES against the configuration. The default dataset patters are
-  `**/*.zarr` and `**/.nc`. FILES may comprise also directories. If a
-  directory is not matched by any file pattern, it will be traversed
-  recursively. The validation result is dumped to standard output if not
-  otherwise stated by `--output-file`. The output format is `simple` by
-  default. Other inbuilt formats are `json` and `html` which you can specify
-  using the `--format` option.
+  Reads configuration from &#39;./xrlint_config.*&#39; if such file exists and unless
+  &#39;--no_config_lookup&#39; is set or &#39;--config&#39; is provided. It then validates
+  each dataset in FILES against the configuration. The default dataset patters
+  are &#39;**/*.zarr&#39; and &#39;**/.nc&#39;. FILES may comprise also directories or URLs.
+  The supported URL protocols are the ones supported by xarray. Using remote
+  protocols may require installing additional packages such as S3Fs
+  (https://s3fs.readthedocs.io/) for the &#39;s3&#39; protocol.
+
+  If a directory is provided that not matched by any file pattern, it will be
+  traversed recursively. The validation result is dumped to standard output if
+  not otherwise stated by &#39;--output-file&#39;. The output format is &#39;simple&#39; by
+  default. Other inbuilt formats are &#39;json&#39; and &#39;html&#39; which you can specify
+  using the &#39;--format&#39; option.
 
 Options:
   --no-config-lookup      Disable use of default configuration from

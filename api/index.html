@@ -3324,7 +3324,8 @@ It represents the highest level component in the Python API.</p>
 <span class="normal">221</span>
 <span class="normal">222</span>
 <span class="normal">223</span>
-<span class="normal">224</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">XRLint</span><span class="p">(</span><span class="n">FormatterContext</span><span class="p">):</span>
+<span class="normal">224</span>
+<span class="normal">225</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">XRLint</span><span class="p">(</span><span class="n">FormatterContext</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;This class provides the engine behind the XRLint</span>
 <span class="sd">    CLI application.</span>
 <span class="sd">    It represents the highest level component in the Python API.</span>
@@ -3365,9 +3366,10 @@ It represents the highest level component in the Python API.</p>
 
     <span class="k">def</span> <span class="nf">load_config_list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Load configuration list.</span>
-<span class="sd">        The function considers any `plugin` and `rule`</span>
-<span class="sd">        options, the default configuration file names or a specified</span>
-<span class="sd">        configuration file.</span>
+<span class="sd">        The function will load the configuration list from a specified</span>
+<span class="sd">        configuration file, if any.</span>
+<span class="sd">        Otherwise it will search for the default configuration files</span>
+<span class="sd">        in the current working directory.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">plugins</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">plugin_spec</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugin_specs</span><span class="p">:</span>
@@ -3413,7 +3415,7 @@ It represents the highest level component in the Python API.</p>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute configuration for the given file.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            file_path: A file path.</span>
+<span class="sd">            file_path: A file path or URL.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            A configuration object or `None` if no item</span>
@@ -3425,14 +3427,14 @@ It represents the highest level component in the Python API.</p>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Print computed configuration for the given file.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            file_path: A file path.</span>
+<span class="sd">            file_path: A file path or URL.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_config_for_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
         <span class="n">config_json_obj</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">to_json</span><span class="p">()</span> <span class="k">if</span> <span class="n">config</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
         <span class="n">click</span><span class="o">.</span><span class="n">echo</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">config_json_obj</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">verify_datasets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">Result</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Verify given files.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Verify given files or directories which may also be given as URLs.</span>
 <span class="sd">        The function produces a validation result for each file.</span>
 
 <span class="sd">        Args:</span>
@@ -3583,9 +3585,10 @@ It represents the highest level component in the Python API.</p>
     <div class="doc doc-contents ">
 
         <p>Load configuration list.
-The function considers any <code>plugin</code> and <code>rule</code>
-options, the default configuration file names or a specified
-configuration file.</p>
+The function will load the configuration list from a specified
+configuration file, if any.
+Otherwise it will search for the default configuration files
+in the current working directory.</p>
 
             <details class="quote">
               <summary>Source code in <code>xrlint\cli\engine.py</code></summary>
@@ -3633,11 +3636,13 @@ configuration file.</p>
 <span class="normal">115</span>
 <span class="normal">116</span>
 <span class="normal">117</span>
-<span class="normal">118</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">load_config_list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">118</span>
+<span class="normal">119</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">load_config_list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Load configuration list.</span>
-<span class="sd">    The function considers any `plugin` and `rule`</span>
-<span class="sd">    options, the default configuration file names or a specified</span>
-<span class="sd">    configuration file.</span>
+<span class="sd">    The function will load the configuration list from a specified</span>
+<span class="sd">    configuration file, if any.</span>
+<span class="sd">    Otherwise it will search for the default configuration files</span>
+<span class="sd">    in the current working directory.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">plugins</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">plugin_spec</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugin_specs</span><span class="p">:</span>
@@ -3718,7 +3723,7 @@ configuration file.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>A file path.</p>
+                <p>A file path or URL.</p>
               </div>
             </td>
             <td>
@@ -3754,8 +3759,7 @@ in the configuration list applies.</p>
 
             <details class="quote">
               <summary>Source code in <code>xrlint\cli\engine.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">120</span>
-<span class="normal">121</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">121</span>
 <span class="normal">122</span>
 <span class="normal">123</span>
 <span class="normal">124</span>
@@ -3764,11 +3768,12 @@ in the configuration list applies.</p>
 <span class="normal">127</span>
 <span class="normal">128</span>
 <span class="normal">129</span>
-<span class="normal">130</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_config_for_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Config</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">130</span>
+<span class="normal">131</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_config_for_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Config</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute configuration for the given file.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        file_path: A file path.</span>
+<span class="sd">        file_path: A file path or URL.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        A configuration object or `None` if no item</span>
@@ -3815,7 +3820,7 @@ in the configuration list applies.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>A file path.</p>
+                <p>A file path or URL.</p>
               </div>
             </td>
             <td>
@@ -3827,19 +3832,19 @@ in the configuration list applies.</p>
 
             <details class="quote">
               <summary>Source code in <code>xrlint\cli\engine.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">132</span>
-<span class="normal">133</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">133</span>
 <span class="normal">134</span>
 <span class="normal">135</span>
 <span class="normal">136</span>
 <span class="normal">137</span>
 <span class="normal">138</span>
 <span class="normal">139</span>
-<span class="normal">140</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">print_config_for_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">140</span>
+<span class="normal">141</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">print_config_for_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print computed configuration for the given file.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        file_path: A file path.</span>
+<span class="sd">        file_path: A file path or URL.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_config_for_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
     <span class="n">config_json_obj</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">to_json</span><span class="p">()</span> <span class="k">if</span> <span class="n">config</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
@@ -3861,7 +3866,7 @@ in the configuration list applies.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Verify given files.
+        <p>Verify given files or directories which may also be given as URLs.
 The function produces a validation result for each file.</p>
 
 
@@ -3920,8 +3925,7 @@ The function produces a validation result for each file.</p>
 
             <details class="quote">
               <summary>Source code in <code>xrlint\cli\engine.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">142</span>
-<span class="normal">143</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">143</span>
 <span class="normal">144</span>
 <span class="normal">145</span>
 <span class="normal">146</span>
@@ -3948,8 +3952,9 @@ The function produces a validation result for each file.</p>
 <span class="normal">167</span>
 <span class="normal">168</span>
 <span class="normal">169</span>
-<span class="normal">170</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">verify_datasets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">Result</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verify given files.</span>
+<span class="normal">170</span>
+<span class="normal">171</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">verify_datasets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">Result</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verify given files or directories which may also be given as URLs.</span>
 <span class="sd">    The function produces a validation result for each file.</span>
 
 <span class="sd">    Args:</span>
@@ -4052,8 +4057,7 @@ The function produces a validation result for each file.</p>
 
             <details class="quote">
               <summary>Source code in <code>xrlint\cli\engine.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">172</span>
-<span class="normal">173</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">173</span>
 <span class="normal">174</span>
 <span class="normal">175</span>
 <span class="normal">176</span>
@@ -4083,7 +4087,8 @@ The function produces a validation result for each file.</p>
 <span class="normal">200</span>
 <span class="normal">201</span>
 <span class="normal">202</span>
-<span class="normal">203</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">format_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">results</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Result</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="normal">203</span>
+<span class="normal">204</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">format_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">results</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Result</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Format the given results.</span>
 
 <span class="sd">    Args:</span>
@@ -4136,14 +4141,14 @@ The function produces a validation result for each file.</p>
 
             <details class="quote">
               <summary>Source code in <code>xrlint\cli\engine.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">205</span>
-<span class="normal">206</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">206</span>
 <span class="normal">207</span>
 <span class="normal">208</span>
 <span class="normal">209</span>
 <span class="normal">210</span>
 <span class="normal">211</span>
-<span class="normal">212</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">write_report</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">report</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">212</span>
+<span class="normal">213</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">write_report</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">report</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Write the validation report provided as plain text.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_path</span><span class="p">:</span>
         <span class="k">with</span> <span class="n">fsspec</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_path</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
@@ -4177,8 +4182,7 @@ The file is written into the current working directory.</p>
 
             <details class="quote">
               <summary>Source code in <code>xrlint\cli\engine.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">214</span>
-<span class="normal">215</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">215</span>
 <span class="normal">216</span>
 <span class="normal">217</span>
 <span class="normal">218</span>
@@ -4187,7 +4191,8 @@ The file is written into the current working directory.</p>
 <span class="normal">221</span>
 <span class="normal">222</span>
 <span class="normal">223</span>
-<span class="normal">224</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="normal">224</span>
+<span class="normal">225</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">init_config_file</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Write an initial configuration file.</span>
 <span class="sd">    The file is written into the current working directory.</span>

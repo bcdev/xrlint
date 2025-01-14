@@ -739,13 +739,13 @@ these properties:</p>
 <li><code>name</code> - A name for the configuration object. 
   This is used in error messages and config inspector to help identify which 
   configuration object is being used.</li>
-<li><code>files</code> - A list of glob patterns indicating the files that the 
+<li><code>files</code> - A list of glob patterns indicating the files or URLs that the 
   configuration object should apply to. If not specified, the configuration 
   object applies to all files matched by any other configuration object.
   See section <a href="#file-and-ignore-patterns">File and Ignore Patterns</a> below.</li>
-<li><code>ignores</code> - A list of glob patterns indicating the files that the 
+<li><code>ignores</code> - A list of glob patterns indicating the files and URLs that the 
   configuration object should not apply to. If not specified, the configuration 
-  object applies to all files matched by files. If ignores is used without any 
+  object applies to all files matched by <code>files</code>. If ignores is used without any 
   other keys in the configuration object, then the patterns act as <em>global ignores</em>.
   See section <a href="#file-and-ignore-patterns">File and Ignore Patterns</a> below.</li>
 <li><code>opener_options</code> - A dictionary specifying keyword-arguments that are passed 
