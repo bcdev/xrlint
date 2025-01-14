@@ -20,6 +20,8 @@ Its design is heavily inspired by the awesome [ESLint](https://eslint.org/).
   different dataset conventions.
 - Project-specific configurations including configuration of individual 
   rules and file-specific settings.
+- Works with dataset files in the local filesystem or any of the remote 
+  filesystems supported by xarray.
 
 ## Inbuilt Rules
 

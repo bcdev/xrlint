@@ -17,19 +17,19 @@ This chapter provides a plain reference for the XRLint Python API.
   configuration information and provide related functionality:
   [Config][xrlint.config.Config] and [ConfigList][xrlint.config.ConfigList].
 - The `rule` module provides rule related classes and functions:
-  [Rule][xrlint.rule.Rule] comprising rule metadata 
-  [RuleMeta][xrlint.rule.RuleMeta] and the rule operation 
+  [Rule][xrlint.rule.Rule] comprising rule metadata, 
+  [RuleMeta][xrlint.rule.RuleMeta], the rule validation operations in 
   [RuleOp][xrlint.rule.RuleOp], as well as related to the latter
   [RuleContext][xrlint.rule.RuleContext] and [RuleExit][xrlint.rule.RuleExit].
   Decorator [define_rule][xrlint.rule.define_rule] allows defining rules.
-- The `node` module defines the nodes passed to [xrlint.rule.RuleOp]:
-  base classes [None][xrlint.node.Node], [XarrayNode][xrlint.node.XarrayNode]
+- The `node` module defines the nodes passed to [RuleOp][xrlint.rule.RuleOp]:
+  base classes [None][xrlint.node.Node], [XarrayNode][xrlint.node.XarrayNode],
   and the specific [DatasetNode][xrlint.node.DatasetNode],
   [DataArray][xrlint.node.DataArrayNode], [AttrsNode][xrlint.node.AttrsNode], 
   and [AttrNode][xrlint.node.AttrNode] nodes.
 - The `processor` module provides processor related classes and functions:
   [Processor][xrlint.processor.Processor] comprising processor metadata
-  [ProcessorMeta][xrlint.processor.ProcessorMeta] 
+  [ProcessorMeta][xrlint.processor.ProcessorMeta], 
   and the processor operation [ProcessorOp][xrlint.processor.ProcessorOp].
   Decorator [define_processor][xrlint.processor.define_processor] allows defining 
   processors.
@@ -41,7 +41,8 @@ This chapter provides a plain reference for the XRLint Python API.
   [RuleTester][xrlint.testing.RuleTester] that is made up 
   of [RuleTest][xrlint.testing.RuleTest]s.
 
-Note: the `xrlint.all` convenience module exports all of the above from a 
+Note: 
+  the `xrlint.all` convenience module exports all of the above from a 
   single module.
   
 ::: xrlint.cli.engine.XRLint

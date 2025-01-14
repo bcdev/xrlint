@@ -33,7 +33,7 @@ To install the XRLint development environment into an existing Python environmen
 pip install .[dev,doc]
 ```
 
-or create a new environment using
+or create a new environment using `conda` or `mamba`
 
 ```bash
 mamba env create 
