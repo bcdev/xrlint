@@ -9,6 +9,9 @@ from xrlint.rule import RuleOp, RuleContext
     version="1.0.0",
     type="problem",
     description="A datacube should have spatial data variables.",
+    docs_url=(
+        "https://xcube.readthedocs.io/en/latest/cubespec.html#data-model-and-format"
+    ),
 )
 class AnySpatialDataVar(RuleOp):
     def dataset(self, ctx: RuleContext, node: DatasetNode):

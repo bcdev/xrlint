@@ -12,6 +12,7 @@ from xrlint.rule import RuleOp, RuleContext
         f"Grid mapping variables should be called {GM_NAMES_TEXT}"
         f" for compatibility with rioxarray and other packages."
     ),
+    docs_url="https://xcube.readthedocs.io/en/latest/cubespec.html#spatial-reference",
 )
 class GridMappingNaming(RuleOp):
     def dataset(self, ctx: RuleContext, node: DatasetNode):
