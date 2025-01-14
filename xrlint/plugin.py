@@ -19,9 +19,10 @@ class PluginMeta(MappingConstructible, JsonSerializable):
     """Plugin version."""
 
     ref: str | None = None
-    """Plugin module reference.
-    Specifies the location from where the plugin can be loaded.
-    Must have the form "<module>:<attr>".
+    """Plugin reference.
+    Specifies the location from where the plugin can be
+    dynamically imported.
+    Must have the form "<module>:<attr>", if given.
     """
 
     @classmethod

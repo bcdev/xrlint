@@ -15,6 +15,7 @@ INVALID_LON_NAMES = {"lng", "long", "longitude"}
         f"Latitude and longitude coordinates and dimensions"
         f" should be called {LAT_NAME !r} and {LON_NAME !r}."
     ),
+    docs_url="https://xcube.readthedocs.io/en/latest/cubespec.html#spatial-reference",
 )
 class LatLonNaming(RuleOp):
     def dataset(self, ctx: RuleContext, node: DatasetNode):

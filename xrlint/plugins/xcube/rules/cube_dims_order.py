@@ -12,6 +12,9 @@ from xrlint.rule import RuleOp, RuleContext
         f"Order of dimensions in spatio-temporal datacube variables"
         f" should be [{T_NAME}, ..., {Y_NAME}, {X_NAME}]."
     ),
+    docs_url=(
+        "https://xcube.readthedocs.io/en/latest/cubespec.html#data-model-and-format"
+    ),
 )
 class CubeDimsOrder(RuleOp):
     def data_array(self, ctx: RuleContext, node: DataArrayNode):

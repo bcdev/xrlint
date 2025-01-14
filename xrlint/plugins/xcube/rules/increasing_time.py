@@ -14,6 +14,9 @@ from xrlint.util.formatting import format_seq
     version="1.0.0",
     type="problem",
     description="Time coordinate labels should be monotonically increasing.",
+    docs_url=(
+        "https://xcube.readthedocs.io/en/latest/cubespec.html#temporal-reference"
+    ),
 )
 class IncreasingTime(RuleOp):
     def data_array(self, ctx: RuleContext, node: DataArrayNode):

@@ -13,6 +13,7 @@ from xrlint.rule import RuleOp, RuleContext
         "A single grid mapping shall be used for all"
         " spatial data variables of a datacube."
     ),
+    docs_url="https://xcube.readthedocs.io/en/latest/cubespec.html#spatial-reference",
 )
 class SingleGridMapping(RuleOp):
     def dataset(self, ctx: RuleContext, node: DatasetNode):
