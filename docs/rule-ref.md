@@ -1,5 +1,8 @@
 # Rule Reference
 
+This page is auto-generated from XRLint's builtin rules (`python -m mkruleref`).
+New rules will be added by upcoming XRLint releases.
+
 ## Core Rules
 
 ### :material-bug: `coords-for-dims`

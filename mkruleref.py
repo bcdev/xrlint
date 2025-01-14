@@ -21,6 +21,11 @@ def write_rule_ref_page():
     xcube = xrlint.plugins.xcube.export_plugin()
     with open("docs/rule-ref.md", "w") as stream:
         stream.write("# Rule Reference\n\n")
+        stream.write(
+            "This page is auto-generated from XRLint's builtin"
+            " rules (`python -m mkruleref`).\n"
+            "New rules will be added by upcoming XRLint releases.\n\n"
+        )
         stream.write("## Core Rules\n\n")
         write_plugin_rules(stream, core)
         stream.write("## xcube Rules\n\n")

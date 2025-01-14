@@ -1,5 +1,8 @@
 # XRLint Change History
 
+## Version 0.3.0 (in development)
+
+
 ## Version 0.2.0 (14.01.2025)
 
 - Rule description is now your `RuleOp`'s docstring
