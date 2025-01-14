@@ -465,11 +465,12 @@
 <h2 id="desired">Desired</h2>
 <ul>
 <li>project logo</li>
-<li>if configuration for given FILE is empty,
-  report an error, see TODO in CLI main tests</li>
-<li>use <code>RuleMeta.docs_url</code> in formatters to create links</li>
-<li>implement xarray backend for xcube 'levels' format
-  so can validate them too</li>
+<li>support validating xcube 'levels' format. Options:<ul>
+<li>implement xarray backend so we can open them using <code>xr.open_dataset</code>
+  with <code>opener_options: {"engine": "xc-levels"}</code>.</li>
+<li>implement a <code>xrlint.processor.Processor</code> for that purpose.</li>
+</ul>
+</li>
 <li>add some more tests so we reach 99% coverage</li>
 <li>support rule op args/kwargs schema validation</li>
 <li>Support <code>RuleTest.expected</code>, it is currently unused</li>
