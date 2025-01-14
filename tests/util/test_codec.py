@@ -9,6 +9,7 @@ from typing import (
     get_origin,
     Mapping,
     TYPE_CHECKING,
+    Literal,
 )
 from unittest import TestCase
 
@@ -49,6 +50,7 @@ class SimpleTypesContainer(MappingConstructible, JsonSerializable):
     d: float = 0.0
     e: str = "abc"
     f: type = int
+    g: Literal[0, 1, True, False, "on", "off"] = 0
 
 
 @dataclass()
@@ -122,13 +124,29 @@ class TypingTest(TestCase):
 class JsonSerializableTest(TestCase):
     def test_simple_ok(self):
         self.assertEqual(
-            {"a": None, "b": False, "c": 0, "d": 0.0, "e": "abc", "f": "int"},
+            {
+                "a": None,
+                "b": False,
+                "c": 0,
+                "d": 0.0,
+                "e": "abc",
+                "f": "<class 'int'>",
+                "g": 0,
+            },
             SimpleTypesContainer().to_json(),
         )
         self.assertEqual(
-            {"a": "?", "b": True, "c": 12, "d": 34.56, "e": "uvw", "f": "bool"},
+            {
+                "a": "?",
+                "b": True,
+                "c": 12,
+                "d": 34.56,
+                "e": "uvw",
+                "f": "<class 'bool'>",
+                "g": "off",
+            },
             SimpleTypesContainer(
-                a="?", b=True, c=12, d=34.56, e="uvw", f=bool
+                a="?", b=True, c=12, d=34.56, e="uvw", f=bool, g="off"
             ).to_json(),
         )
 
@@ -144,7 +162,15 @@ class JsonSerializableTest(TestCase):
         )
         self.assertEqual(
             {
-                "p": {"a": None, "b": False, "c": 0, "d": 0.0, "e": "abc", "f": "int"},
+                "p": {
+                    "a": None,
+                    "b": False,
+                    "c": 0,
+                    "d": 0.0,
+                    "e": "abc",
+                    "f": "<class 'int'>",
+                    "g": 0,
+                },
                 "q": {"p": True, "q": False},
                 "r": {
                     "u": {
@@ -153,7 +179,8 @@ class JsonSerializableTest(TestCase):
                         "c": 0,
                         "d": 0.0,
                         "e": "abc",
-                        "f": "int",
+                        "f": "<class 'int'>",
+                        "g": 0,
                     },
                     "v": {
                         "a": None,
@@ -161,19 +188,29 @@ class JsonSerializableTest(TestCase):
                         "c": 0,
                         "d": 0.0,
                         "e": "abc",
-                        "f": "int",
+                        "f": "<class 'int'>",
+                        "g": 0,
                     },
                 },
                 "s": [1, 2, 3],
                 "t": [
-                    {"a": None, "b": False, "c": 5, "d": 6.7, "e": "abc", "f": "int"},
+                    {
+                        "a": None,
+                        "b": False,
+                        "c": 5,
+                        "d": 6.7,
+                        "e": "abc",
+                        "f": "<class 'int'>",
+                        "g": 0,
+                    },
                     {
                         "a": None,
                         "b": False,
                         "c": 8,
                         "d": 9.1,
                         "e": "abc",
-                        "f": "SimpleTypesContainer",
+                        "f": "<class 'tests.util.test_codec.SimpleTypesContainer'>",
+                        "g": 0,
                     },
                 ],
                 "u": None,
@@ -288,7 +325,7 @@ class ValueConstructibleTest(TestCase):
 class MappingConstructibleTest(TestCase):
 
     def test_simple_ok(self):
-        kwargs = dict(a="?", b=True, c=12, d=34.56, e="uvw", f=bytes)
+        kwargs = dict(a="?", b=True, c=12, d=34.56, e="uvw", f=bytes, g="on")
         container = SimpleTypesContainer(**kwargs)
         self.assertEqual(container, SimpleTypesContainer.from_value(kwargs))
         self.assertIs(container, SimpleTypesContainer.from_value(container))
@@ -359,6 +396,12 @@ class MappingConstructibleTest(TestCase):
             ),
         ):
             SimpleTypesContainer.from_value({"b": None}, value_name="stc")
+
+        with pytest.raises(
+            TypeError,
+            match=r"stc.g must be one of 0, 1, True, False, 'on', 'off', but got 74",
+        ):
+            SimpleTypesContainer.from_value({"g": 74}, value_name="stc")
 
         with pytest.raises(
             TypeError, match="x is not a member of stc of type SimpleTypesContainer"
@@ -460,6 +503,7 @@ class GetClassParametersTest(TestCase):
                 "d",
                 "e",
                 "f",
+                "g",
                 "p",
                 "q",
                 "r",

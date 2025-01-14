@@ -12,7 +12,11 @@ from xrlint.constants import (
 )
 from xrlint.node import DatasetNode, DataArrayNode, AttrsNode, AttrNode
 from xrlint.result import Suggestion
-from xrlint.util.codec import MappingConstructible, ValueConstructible, JsonSerializable
+from xrlint.util.codec import (
+    MappingConstructible,
+    ValueConstructible,
+    JsonSerializable,
+)
 from xrlint.util.formatting import format_message_one_of
 from xrlint.util.importutil import import_value
 from xrlint.util.naming import to_kebab_case
@@ -186,6 +190,13 @@ class RuleMeta(MappingConstructible, JsonSerializable):
     def _get_value_type_name(cls) -> str:
         return "RuleMeta | dict"
 
+    def to_dict(self, value_name: str | None = None) -> dict[str, str]:
+        return {
+            k: v
+            for k, v in super().to_dict(value_name=value_name).items()
+            if v is not None
+        }
+
 
 @dataclass(frozen=True)
 class Rule(MappingConstructible, JsonSerializable):
@@ -239,7 +250,7 @@ class Rule(MappingConstructible, JsonSerializable):
     def to_json(self, value_name: str | None = None) -> str:
         if self.meta.ref:
             return self.meta.ref
-        return repr(self)
+        return super().to_json(value_name=value_name)
 
 
 @dataclass(frozen=True)

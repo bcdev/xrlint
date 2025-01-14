@@ -14,15 +14,15 @@ from typing import (
     get_args,
     get_type_hints,
     Optional,
+    Literal,
 )
 
-from xrlint.util.formatting import format_message_type_of
-
+from xrlint.util.formatting import format_message_type_of, format_message_one_of
 
 JSON_VALUE_TYPE_NAME = "None | bool | int | float | str | dict | list"
 
 JsonValue: TypeAlias = (
-    NoneType | bool | int | float | str | dict[str, "JsonValue"] | list["JsonValue"]
+    None | bool | int | float | str | dict[str, "JsonValue"] | list["JsonValue"]
 )
 
 T = TypeVar("T")
@@ -196,6 +196,12 @@ class ValueConstructible(Generic[T]):
         if type_origin is Any:
             # We cannot do any further type checking,
             # therefore return the value as-is
+            return value
+
+        if type_origin is Literal:
+            # Value must be one of literal arguments
+            if value not in type_args:
+                raise TypeError(format_message_one_of(value_name, value, type_args))
             return value
 
         if type_origin is Union:
@@ -480,7 +486,6 @@ class JsonSerializable:
     @classmethod
     def _value_to_json(cls, value: Any, value_name: str) -> JsonValue:
         if value is None:
-            # noinspection PyTypeChecker
             return None
         if isinstance(value, JsonSerializable):
             return value.to_json(value_name=value_name)
@@ -497,7 +502,7 @@ class JsonSerializable:
         if isinstance(value, Sequence):
             return cls._sequence_to_json(value, value_name)
         if isinstance(value, type):
-            return value.__name__
+            return repr(value)
         raise TypeError(format_message_type_of(value_name, value, JSON_VALUE_TYPE_NAME))
 
     @classmethod
