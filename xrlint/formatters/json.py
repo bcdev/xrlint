@@ -35,7 +35,7 @@ class Json(FormatterOp):
         omitted_props = {"config"}
         results_json = {
             "results": [
-                {k: v for k, v in r.to_dict().items() if k not in omitted_props}
+                {k: v for k, v in r.to_json().items() if k not in omitted_props}
                 for r in results
             ],
         }
@@ -43,7 +43,7 @@ class Json(FormatterOp):
             rules_meta = get_rules_meta_for_results(results)
             results_json.update(
                 {
-                    "rules_meta": [rm.to_dict() for rm in rules_meta.values()],
+                    "rules_meta": [rm.to_json() for rm in rules_meta.values()],
                 }
             )
         return json.dumps(results_json, indent=self.indent)

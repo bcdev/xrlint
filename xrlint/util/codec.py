@@ -14,15 +14,15 @@ from typing import (
     get_args,
     get_type_hints,
     Optional,
+    Literal,
 )
 
-from xrlint.util.formatting import format_message_type_of
-
+from xrlint.util.formatting import format_message_type_of, format_message_one_of
 
 JSON_VALUE_TYPE_NAME = "None | bool | int | float | str | dict | list"
 
 JsonValue: TypeAlias = (
-    NoneType | bool | int | float | str | dict[str, "JsonValue"] | list["JsonValue"]
+    None | bool | int | float | str | dict[str, "JsonValue"] | list["JsonValue"]
 )
 
 T = TypeVar("T")
@@ -31,7 +31,8 @@ _IS_PYTHON_3_10 = (3, 10) <= sys.version_info < (3, 11)
 
 
 class ValueConstructible(Generic[T]):
-    """Can be used to make data classes constructible from a value.
+    """A mixin that makes your classes constructible from a single value
+    of any type.
 
     The factory for this purpose is the
     class method [from_value][xrlint.util.codec.ValueConstructible.from_value].
@@ -40,6 +41,12 @@ class ValueConstructible(Generic[T]):
     @classmethod
     def from_value(cls, value: Any, value_name: str | None = None) -> T:
         """Create an instance of this class from a value.
+
+        The default implementation checks if `value` is already an
+        instance of this class. If so, it is returned unchanged.
+
+        It then delegates to various `_from_<type>()` methods which
+        all raise `TypeError` by default.
 
         Args:
             value: The value
@@ -191,6 +198,12 @@ class ValueConstructible(Generic[T]):
             # therefore return the value as-is
             return value
 
+        if type_origin is Literal:
+            # Value must be one of literal arguments
+            if value not in type_args:
+                raise TypeError(format_message_one_of(value_name, value, type_args))
+            return value
+
         if type_origin is Union:
             # For unions try converting the alternatives.
             # Return the first successfully converted value.
@@ -327,20 +340,26 @@ class ValueConstructible(Generic[T]):
 
 
 class MappingConstructible(Generic[T], ValueConstructible[T]):
-    """A `ValueConstructible` that accepts both instances of `T` and
-    mappings (e.g., `dict`) as input values.
+    """A mixin that makes your classes constructible from mappings,
+    such as a `dict`.
+
+    The default implementation checks if `value` is already an
+    instance of this class. If so, it is returned unchanged.
+
+    It then delegates to various `_from_<type>()` methods which
+    all raise `TypeError` by default, except for `_from_mapping()`.
+    The latter is overridden to deserialize the items of the given
+    mapping into values that will be passed to match constructor
+    parameters. Type annotations of the parameters will be used
+    to perform a type-safe conversion of the mapping values.
+
+    The major use case for this is constructing instances of this
+    class from JSON objects.
     """
 
     @classmethod
     def _from_mapping(cls, mapping: Mapping, value_name: str) -> T:
-        """Create an instance of this class from a mapping value.
-
-        The default implementation treats the mapping as keyword
-        arguments passed to the class constructor.
-
-        The use case for this is constructing instances of this class
-        from JSON-objects.
-        """
+        """Create an instance of this class from a mapping value."""
 
         mapping_keys = set(mapping.keys())
         properties = cls._get_class_parameters()
@@ -428,7 +447,7 @@ def get_class_parameters(
     resolved_params = {}
     for i, (name, param) in enumerate(sig.parameters.items()):
         if i > 0:  # Skip `self`
-            annotation = resolved_hints[name]
+            annotation = resolved_hints.get(name, Parameter.empty)
             resolved_params[name] = Parameter(
                 name, param.kind, default=param.default, annotation=annotation
             )
@@ -437,20 +456,39 @@ def get_class_parameters(
 
 
 class JsonSerializable:
+    """A mixin that makes your classes serializable to JSON values
+    and JSON-serializable dictionaries.
 
-    def to_json(self, name: str | None = None) -> JsonValue:
-        return self.to_dict(name=name)
+    It adds two methods:
 
-    def to_dict(self, name: str | None = None) -> dict[str, JsonValue]:
-        return self._mapping_to_json(self.__dict__, name or type(self).__name__)
+    * [to_json][JsonSerializable.to_json] converts to JSON values
+    * [to_dict][JsonSerializable.to_dict] converts to JSON-serializable
+        dictionaries
+
+    """
+
+    def to_json(self, value_name: str | None = None) -> JsonValue:
+        """Convert this object into a JSON value.
+
+        The default implementation calls `self.to_dict()` and returns
+        its value as-is.
+        """
+        return self.to_dict(value_name=value_name)
+
+    def to_dict(self, value_name: str | None = None) -> dict[str, JsonValue]:
+        """Convert this object into a JSON-serializable dictionary.
+
+        The default implementation naively serializes the non-protected
+        attributes of this object's dictionary given by `vars(self)`.
+        """
+        return self._object_to_json(self, value_name or type(self).__name__)
 
     @classmethod
-    def _value_to_json(cls, value: Any, name: str) -> JsonValue:
+    def _value_to_json(cls, value: Any, value_name: str) -> JsonValue:
         if value is None:
-            # noinspection PyTypeChecker
             return None
         if isinstance(value, JsonSerializable):
-            return value.to_json(name=name)
+            return value.to_json(value_name=value_name)
         if isinstance(value, bool):
             return bool(value)
         if isinstance(value, int):
@@ -460,30 +498,41 @@ class JsonSerializable:
         if isinstance(value, str):
             return str(value)
         if isinstance(value, Mapping):
-            return cls._mapping_to_json(value, name)
+            return cls._mapping_to_json(value, value_name)
         if isinstance(value, Sequence):
-            return cls._sequence_to_json(value, name)
+            return cls._sequence_to_json(value, value_name)
         if isinstance(value, type):
-            return value.__name__
-        raise TypeError(format_message_type_of(name, value, JSON_VALUE_TYPE_NAME))
+            return repr(value)
+        raise TypeError(format_message_type_of(value_name, value, JSON_VALUE_TYPE_NAME))
 
     @classmethod
-    def _mapping_to_json(cls, mapping: Mapping, name: str) -> dict[str, JsonValue]:
+    def _object_to_json(cls, value: Any, value_name: str) -> dict[str, JsonValue]:
         return {
-            k: cls._value_to_json(v, f"{name}.{k}")
-            for k, v in mapping.items()
-            if is_public_property_name(k)
+            k: cls._value_to_json(v, f"{value_name}.{k}")
+            for k, v in vars(value).items()
+            if cls._is_non_protected_property_name(k)
         }
 
     @classmethod
-    def _sequence_to_json(cls, sequence: Sequence, name: str) -> list[JsonValue]:
-        return [cls._value_to_json(v, f"{name}[{i}]") for i, v in enumerate(sequence)]
+    def _mapping_to_json(
+        cls, mapping: Mapping, value_name: str
+    ) -> dict[str, JsonValue]:
+        return {
+            str(k): cls._value_to_json(v, f"{value_name}[{k!r}]")
+            for k, v in mapping.items()
+        }
 
+    @classmethod
+    def _sequence_to_json(cls, sequence: Sequence, value_name: str) -> list[JsonValue]:
+        return [
+            cls._value_to_json(v, f"{value_name}[{i}]") for i, v in enumerate(sequence)
+        ]
 
-def is_public_property_name(key: Any) -> bool:
-    return (
-        isinstance(key, str)
-        and key.isidentifier()
-        and not key[0].isupper()
-        and not key[0] == "_"
-    )
+    @classmethod
+    def _is_non_protected_property_name(cls, key: Any) -> bool:
+        return (
+            isinstance(key, str)
+            and key.isidentifier()
+            and not key[0].isupper()
+            and not key[0] == "_"
+        )

@@ -47,7 +47,7 @@ def import_value(
     constant: bool = False,
     factory: Callable[[Any], T] | None = None,
     expected_type: Type[T] | None = None,
-) -> T:
+) -> tuple[T, str]:
     """Import an exported value from given module reference.
 
     Args:

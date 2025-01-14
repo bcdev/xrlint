@@ -50,9 +50,62 @@ class RuleTest(TestCase):
 
         with pytest.raises(
             ValueError,
-            match="missing rule metadata, apply define_rule\\(\\) to class MyRule3",
+            match=r"missing rule metadata, apply define_rule\(\) to class MyRule3",
         ):
             Rule.from_value(MyRule3)
+
+    def test_to_json(self):
+        class MyRule3(RuleOp):
+            """This is my 3rd rule."""
+
+        rule = Rule.from_value("tests.test_rule")
+        self.assertEqual("tests.test_rule:export_rule", rule.to_json())
+
+        rule = Rule(meta=RuleMeta(name="r3", ref="mymod.rules:r3"), op_class=MyRule3)
+        self.assertEqual("mymod.rules:r3", rule.to_json())
+
+        rule = Rule(meta=RuleMeta(name="r3"), op_class=MyRule3)
+        self.assertEqual(
+            {
+                "meta": {"name": "r3", "version": "0.0.0", "type": "problem"},
+                "op_class": "<class"
+                " 'tests.test_rule.RuleTest.test_to_json.<locals>.MyRule3'>",
+            },
+            rule.to_json(),
+        )
+
+
+class RuleMetaTest(unittest.TestCase):
+    def test_from_value(self):
+        rule_meta = RuleMeta.from_value(
+            {
+                "name": "r-4",
+                "version": "2.0.1",
+                "type": "suggestion",
+                "description": "Be nice, always.",
+            }
+        )
+        self.assertEqual(
+            RuleMeta(
+                name="r-4",
+                version="2.0.1",
+                type="suggestion",
+                description="Be nice, always.",
+            ),
+            rule_meta,
+        )
+
+    def test_to_json(self):
+        rule_meta = RuleMeta(name="r1", version="0.1.2", description="Nice one.")
+        self.assertEqual(
+            {
+                "name": "r1",
+                "version": "0.1.2",
+                "type": "problem",
+                "description": "Nice one.",
+            },
+            rule_meta.to_json(),
+        )
 
 
 class DefineRuleTest(unittest.TestCase):
@@ -78,6 +131,18 @@ class DefineRuleTest(unittest.TestCase):
         rule2 = define_rule(op_class=MyRule2, registry=registry)
         self.assertIs(rule1, registry["my-rule-1"])
         self.assertIs(rule2, registry["my-rule-2"])
+
+    # noinspection PyMethodMayBeStatic
+    def test_fail(self):
+        with pytest.raises(
+            TypeError,
+            match=(
+                r"component decorated by define_rule\(\)"
+                r" must be a subclass of RuleOp"
+            ),
+        ):
+            # noinspection PyTypeChecker
+            define_rule(op_class=DefineRuleTest)
 
 
 class RuleConfigTest(TestCase):

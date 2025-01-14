@@ -3,9 +3,13 @@ from functools import cached_property
 from typing import Any, TYPE_CHECKING, Union, Literal, Sequence
 
 from xrlint.constants import CORE_PLUGIN_NAME
-from xrlint.util.codec import MappingConstructible, ValueConstructible
+from xrlint.util.codec import (
+    MappingConstructible,
+    ValueConstructible,
+    JsonSerializable,
+    JsonValue,
+)
 from xrlint.util.filefilter import FileFilter
-from xrlint.util.todict import ToDictMixin
 from xrlint.util.merge import (
     merge_arrays,
     merge_set_lists,
@@ -80,7 +84,7 @@ def merge_configs(
 
 
 @dataclass(frozen=True, kw_only=True)
-class Config(MappingConstructible, ToDictMixin):
+class Config(MappingConstructible, JsonSerializable):
     """Configuration object.
     A configuration object contains all the information XRLint
     needs to execute on a set of dataset files.
@@ -301,26 +305,12 @@ class Config(MappingConstructible, ToDictMixin):
     def _get_value_type_name(cls) -> str:
         return "Config | dict | None"
 
-    def to_dict(self):
-        d = super().to_dict()
-        plugins: dict[str, Plugin] | None = d.get("plugins")
-        if plugins is not None:
-            d["plugins"] = {k: v.meta.ref or "?" for k, v in plugins.items()}
-        rules: dict[str, RuleConfig] | None = d.get("rules")
-        if rules is not None:
-            d["rules"] = {
-                k: (
-                    v.severity
-                    if not (v.args or v.kwargs)
-                    else [v.severity, v.args, v.kwargs]
-                )
-                for k, v in rules.items()
-            }
-        return d
+    def to_dict(self, value_name: str | None = None) -> dict[str, JsonValue]:
+        return {k: v for k, v in super().to_dict().items() if v is not None}
 
 
 @dataclass(frozen=True)
-class ConfigList(ValueConstructible):
+class ConfigList(ValueConstructible, JsonSerializable):
     """A holder for a list of configuration objects of
     type [Config][xrlint.config.Config].
 

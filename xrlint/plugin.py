@@ -4,12 +4,12 @@ from typing import Any, Type, Callable, Literal
 from xrlint.config import Config
 from xrlint.processor import Processor, ProcessorOp, define_processor
 from xrlint.rule import Rule, RuleOp, define_rule
-from xrlint.util.codec import MappingConstructible
+from xrlint.util.codec import MappingConstructible, JsonSerializable, JsonValue
 from xrlint.util.importutil import import_value
 
 
 @dataclass(kw_only=True)
-class PluginMeta(MappingConstructible):
+class PluginMeta(MappingConstructible, JsonSerializable):
     """XRLint plugin metadata."""
 
     name: str
@@ -30,7 +30,7 @@ class PluginMeta(MappingConstructible):
 
 
 @dataclass(frozen=True, kw_only=True)
-class Plugin(MappingConstructible):
+class Plugin(MappingConstructible, JsonSerializable):
     """An XRLint plugin."""
 
     meta: PluginMeta
@@ -103,3 +103,8 @@ class Plugin(MappingConstructible):
     @classmethod
     def _get_value_type_name(cls) -> str:
         return "Plugin | dict | str"
+
+    def to_json(self, value_name: str | None = None) -> JsonValue:
+        if self.meta.ref:
+            return self.meta.ref
+        return super().to_json(value_name=value_name)
