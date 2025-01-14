@@ -41,16 +41,25 @@ class FormatterOp(ABC):
         """
 
 
-@dataclass(frozen=True, kw_only=True)
+@dataclass(kw_only=True)
 class FormatterMeta:
     """Formatter metadata."""
 
     name: str
     """Formatter name."""
+
     version: str = "0.0.0"
     """Formatter version."""
+
     schema: dict[str, Any] | list[dict[str, Any]] | bool | None = None
     """Formatter options schema."""
+
+    ref: str | None = None
+    """Formatter reference.
+    Specifies the location from where the formatter can be
+    dynamically imported.
+    Must have the form "<module>:<attr>", if given.
+    """
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -69,6 +78,7 @@ class FormatterRegistry(Mapping[str, Formatter]):
     def __init__(self):
         self._registrations = {}
 
+    # TODO: fix this code duplication in define_rule()
     def define_formatter(
         self,
         name: str | None = None,

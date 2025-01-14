@@ -23,27 +23,28 @@ from xrlint.util.naming import to_kebab_case
 
 
 class RuleContext(ABC):
-    """The context passed to a [xrlint.rule.RuleOp][] instance.
+    """The context passed to a [RuleOp][xrlint.rule.RuleOp] instance.
 
-    You should never create instances of this class yourself.
-    Instances of this interface are passed to the `RuleOp`'s
-    methods.
+    Instances of this interface are passed to the validation
+    methods of your `RuleOp`.
+    There should be no reason to create instances of this class
+    yourself.
     """
 
     @property
     @abstractmethod
+    def file_path(self) -> str:
+        """The current dataset's file path."""
+
+    @property
+    @abstractmethod
     def settings(self) -> dict[str, Any]:
-        """Configuration settings."""
+        """Applicable subset of settings from configuration `settings`."""
 
     @property
     @abstractmethod
     def dataset(self) -> xr.Dataset:
-        """Get the current dataset."""
-
-    @property
-    @abstractmethod
-    def file_path(self) -> str:
-        """Get the current dataset's file path."""
+        """The current dataset."""
 
     @abstractmethod
     def report(
@@ -184,7 +185,11 @@ class RuleMeta(MappingConstructible, JsonSerializable):
     """
 
     ref: str | None = None
-    """Reference to the origin."""
+    """Rule reference.
+    Specifies the location from where the rule can be
+    dynamically imported.
+    Must have the form "<module>:<attr>", if given.
+    """
 
     @classmethod
     def _get_value_type_name(cls) -> str:
@@ -220,7 +225,7 @@ class Rule(MappingConstructible, JsonSerializable):
     """
 
     @classmethod
-    def _from_str(cls, value: str, name: str) -> "Rule":
+    def _from_str(cls, value: str, value_name: str) -> "Rule":
         rule, rule_ref = import_value(value, "export_rule", factory=Rule.from_value)
         rule.meta.ref = rule_ref
         return rule
@@ -307,13 +312,13 @@ class RuleConfig(ValueConstructible, JsonSerializable):
         return RuleConfig(cls._convert_severity(value))
 
     @classmethod
-    def _from_str(cls, value: str, name: str) -> "RuleConfig":
+    def _from_str(cls, value: str, value_name: str) -> "RuleConfig":
         return RuleConfig(cls._convert_severity(value))
 
     @classmethod
-    def _from_sequence(cls, value: Sequence, name: str) -> "RuleConfig":
+    def _from_sequence(cls, value: Sequence, value_name: str) -> "RuleConfig":
         if not value:
-            raise ValueError()
+            raise ValueError(f"{value_name} must not be empty")
         severity = cls._convert_severity(value[0])
         options = value[1:]
         if not options:

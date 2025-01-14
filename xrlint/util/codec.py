@@ -76,8 +76,8 @@ class ValueConstructible(Generic[T]):
             return cls._from_mapping(value, value_name)
         if isinstance(value, Sequence):
             return cls._from_sequence(value, value_name)
-        if isinstance(value, type):
-            if isclass(value) and issubclass(value, cls):
+        if isclass(value):
+            if issubclass(value, cls):
                 return cls._from_class(value, value_name)
             else:
                 return cls._from_type(value, value_name)

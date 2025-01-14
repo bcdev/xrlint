@@ -48,7 +48,7 @@ class ProcessorOp(ABC):
         """
 
 
-@dataclass(frozen=True, kw_only=True)
+@dataclass(kw_only=True)
 class ProcessorMeta(MappingConstructible):
     """Processor metadata."""
 
@@ -59,9 +59,10 @@ class ProcessorMeta(MappingConstructible):
     """Processor version."""
 
     ref: str | None = None
-    """Processor module reference.
-    Specifies the location from where the processor can be loaded.
-    Must have the form "<module>:<attr>".
+    """Processor reference.
+    Specifies the location from where the processor can be
+    dynamically imported.
+    Must have the form "<module>:<attr>", if given.
     """
 
     @classmethod
@@ -86,29 +87,30 @@ class Processor(MappingConstructible):
     # """`True` if this processor supports auto-fixing of datasets."""
 
     @classmethod
-    def _from_class(
-        cls, value: Type[ProcessorOp], name: str | None = None
-    ) -> "Processor":
-        # TODO: see code duplication in Rule._from_class()
-        try:
-            # Note, the value.meta attribute is set by
-            # the define_rule
-            # noinspection PyUnresolvedReferences
-            return Processor(meta=value.meta, op_class=value)
-        except AttributeError:
-            raise ValueError(
-                f"missing processor metadata, apply define_processor()"
-                f" to class {value.__name__}"
-            )
+    def _from_type(cls, value: Type[ProcessorOp], value_name: str) -> "Processor":
+        # TODO: no test covers Processor._from_type
+        if issubclass(value, ProcessorOp):
+            # TODO: fix code duplication in Rule._from_class()
+            try:
+                # Note, the value.meta attribute is set by
+                # the define_rule
+                # noinspection PyUnresolvedReferences
+                return Processor(meta=value.meta, op_class=value)
+            except AttributeError:
+                raise ValueError(
+                    f"missing processor metadata, apply define_processor()"
+                    f" to class {value.__name__}"
+                )
+        return super()._from_type(value, value_name)
 
     @classmethod
-    def _from_str(cls, value: str, name: str | None = None) -> "Processor":
+    def _from_str(cls, value: str, value_name: str) -> "Processor":
         processor, processor_ref = import_value(
             value,
             "export_processor",
             factory=Processor.from_value,
-            expected_type=type,
         )
+        # noinspection PyUnresolvedReferences
         processor.meta.ref = processor_ref
         return processor
 
@@ -117,7 +119,7 @@ class Processor(MappingConstructible):
         return "str | dict | Processor | Type[ProcessorOp]"
 
 
-# TODO: see code duplication in define_rule()
+# TODO: fix this code duplication in define_rule()
 def define_processor(
     name: str | None = None,
     version: str = "0.0.0",
