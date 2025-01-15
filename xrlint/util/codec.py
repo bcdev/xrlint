@@ -77,10 +77,7 @@ class ValueConstructible(Generic[T]):
         if isinstance(value, Sequence):
             return cls._from_sequence(value, value_name)
         if isclass(value):
-            if issubclass(value, cls):
-                return cls._from_class(value, value_name)
-            else:
-                return cls._from_type(value, value_name)
+            return cls._from_class(value, value_name)
         return cls._from_other(value, value_name)
 
     @classmethod
@@ -124,16 +121,7 @@ class ValueConstructible(Generic[T]):
         raise TypeError(cls._format_type_error(value, value_name))
 
     @classmethod
-    def _from_class(cls, value: Type[T], value_name: str) -> T:
-        """Create an instance of this class from a class value
-        that is a subclass of `cls`.
-        The default implementation raises a `TypeError`.
-        Override to implement a different behaviour.
-        """
-        raise TypeError(cls._format_type_error(value, value_name))
-
-    @classmethod
-    def _from_type(cls, value: Type, value_name: str) -> T:
+    def _from_class(cls, value: Type, value_name: str) -> T:
         """Create an instance of this class from a type value.
         The default implementation raises a `TypeError`.
         Override to implement a different behaviour.
@@ -287,6 +275,7 @@ class ValueConstructible(Generic[T]):
         """
         return None
 
+    # TODO: turn into class property
     @classmethod
     def _get_value_name(cls) -> str:
         """Get an identifier for values that can be used to create
@@ -297,6 +286,7 @@ class ValueConstructible(Generic[T]):
         """
         return "value"
 
+    # TODO: turn into class property
     @classmethod
     def _get_value_type_name(cls) -> str:
         """Get a descriptive name for the value types that can
@@ -339,6 +329,7 @@ class ValueConstructible(Generic[T]):
         return format_message_type_of(value_name, value, cls._get_value_type_name())
 
 
+# TODO: Rename to ObjectConstructible
 class MappingConstructible(Generic[T], ValueConstructible[T]):
     """A mixin that makes your classes constructible from mappings,
     such as a `dict`.
@@ -375,6 +366,8 @@ class MappingConstructible(Generic[T], ValueConstructible[T]):
                 else:
                     prop_annotation = prop_param.annotation
 
+                # TODO: Use cls._from_property_value
+                #   which delegates to cls._convert_value
                 prop_value = cls._convert_value(
                     mapping[prop_name],
                     prop_annotation,

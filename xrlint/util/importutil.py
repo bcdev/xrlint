@@ -74,7 +74,7 @@ def import_value(
         ValueImportError: if the value could not be imported
     """
     if ":" in module_ref:
-        module_name, attr_ref = module_ref
+        module_name, attr_ref = module_ref.rsplit(":", maxsplit=1)
     else:
         module_name = module_ref
         if attr_ref:
@@ -105,7 +105,7 @@ def import_value(
         # noinspection PyCallingNonCallable
         exported_value = attr_value()
     else:
-        exported_value = attr_ref
+        exported_value = attr_value
 
     if factory is not None:
         try:

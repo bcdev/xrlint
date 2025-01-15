@@ -231,7 +231,7 @@ class Rule(MappingConstructible, JsonSerializable):
         return rule
 
     @classmethod
-    def _from_type(cls, value: Type, value_name: str) -> "Rule":
+    def _from_class(cls, value: Type, value_name: str) -> "Rule":
         if issubclass(value, RuleOp):
             op_class = value
             try:
@@ -245,13 +245,12 @@ class Rule(MappingConstructible, JsonSerializable):
                     f" to class {value.__name__}"
                 )
             return Rule(meta=meta, op_class=op_class)
-        super()._from_type(value, value_name)
+        super()._from_class(value, value_name)
 
     @classmethod
     def _get_value_type_name(cls) -> str:
         return "Rule | dict | str"
 
-    # noinspection PyUnusedLocal
     def to_json(self, value_name: str | None = None) -> str:
         if self.meta.ref:
             return self.meta.ref

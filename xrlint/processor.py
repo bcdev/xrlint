@@ -87,7 +87,7 @@ class Processor(MappingConstructible):
     # """`True` if this processor supports auto-fixing of datasets."""
 
     @classmethod
-    def _from_type(cls, value: Type[ProcessorOp], value_name: str) -> "Processor":
+    def _from_class(cls, value: Type[ProcessorOp], value_name: str) -> "Processor":
         # TODO: no test covers Processor._from_type
         if issubclass(value, ProcessorOp):
             # TODO: fix code duplication in Rule._from_class()
@@ -101,7 +101,7 @@ class Processor(MappingConstructible):
                     f"missing processor metadata, apply define_processor()"
                     f" to class {value.__name__}"
                 )
-        return super()._from_type(value, value_name)
+        return super()._from_class(value, value_name)
 
     @classmethod
     def _from_str(cls, value: str, value_name: str) -> "Processor":
