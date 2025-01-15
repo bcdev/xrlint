@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from collections.abc import MutableMapping
 from dataclasses import dataclass
 from inspect import isclass, getdoc
-from typing import TypeVar, Any, Type, Callable, Generic
+from typing import Any, Type, Callable
 
 from xrlint.util.codec import (
     ValueConstructible,
@@ -15,7 +15,7 @@ from xrlint.util.naming import to_kebab_case
 
 
 @dataclass(kw_only=True)
-class OperatorMetadata(MappingConstructible["OperatorMetadata"], JsonSerializable, ABC):
+class OpMetadata(MappingConstructible["OpMetadata"], JsonSerializable):
     # TODO: docs!
     name: str
     version: str = "0.0.0"
@@ -30,15 +30,17 @@ class OperatorMetadata(MappingConstructible["OperatorMetadata"], JsonSerializabl
         }
 
 
-class Operator(ValueConstructible["Operator"], JsonSerializable, ABC):
-    """Abstract base class for operators.
+class OpMixin(ValueConstructible["Operator"], JsonSerializable):
+    """A mixin class that is used by operation classes.
 
-    Operators comprise metadata that describes them and an
-    operation class that provides the operator's
-    implementations.
+    An operation class comprises a `meta` property
+    that provides the operation metadata. See [OpMetadata][]
+    for its interface definition.
 
-    The base class for the operation class specifies the available
-    operations, which are usually abstract.
+    An `op_class` property holds a class that implements the
+    operation's logic.
+
+    Rules, processors, and formatters use this mixin.
 
     Derived classes should provide a constructor that takes at least
     two keyword arguments:
@@ -59,24 +61,27 @@ class Operator(ValueConstructible["Operator"], JsonSerializable, ABC):
         return super().to_json(value_name=value_name)
 
     @classmethod
-    def _from_class(cls, value: Type, value_name: str) -> "Operator":
+    def _from_class(cls, value: Type, value_name: str) -> "OpMixin":
+        # noinspection PyTypeChecker
         if issubclass(value, cls.op_base_class):
             op_class = value
             try:
                 # Note, the value.meta attribute is set by
                 # the define_op
                 #
-                # noinspection PyUnresolvedReferences,PyArgumentList
-                return cls(meta=op_class.meta, op_class=op_class)
+                # noinspection PyUnresolvedReferences
+                meta = op_class.meta
             except AttributeError:
                 raise ValueError(
                     f"missing {cls.op_name} metadata, apply define_{cls.op_name}()"
                     f" to class {op_class.__name__}"
                 )
+            # noinspection PyArgumentList
+            return cls(meta=meta, op_class=op_class)
         return super()._from_class(value, value_name)
 
     @classmethod
-    def _from_str(cls, value: str, value_name: str) -> "Operator":
+    def _from_str(cls, value: str, value_name: str) -> "OpMixin":
         operator, operator_ref = import_value(
             value,
             cls.op_import_attr_name,
@@ -119,16 +124,21 @@ class Operator(ValueConstructible["Operator"], JsonSerializable, ABC):
     @classmethod
     def _define_op(
         cls,
-        meta_class: Type,
         op_class: Type | None,
+        meta_class: Type,
         *,
-        registry: MutableMapping[str, "Operator"] | None = None,
+        registry: MutableMapping[str, "OpMixin"] | None = None,
         meta_kwargs: dict[str, Any] | None = None,
         **kwargs,
-    ) -> Callable[[Any], Type] | "Operator":
+    ) -> Callable[[Any], Type] | "OpMixin":
+        """Defines an operator.
+        Implementation helper that is supposed to be used by
+        subclasses in order to define operator and register
+        them.
+        """
         meta_kwargs = meta_kwargs or {}
 
-        def _define_op(_op_class: Type, decorated=True) -> Type | "Operator":
+        def _define_op(_op_class: Type, decorated=True) -> Type | "OpMixin":
             cls._assert_op_class_ok(f"decorated {cls.op_name} component", _op_class)
 
             name = meta_kwargs.pop("name", None)
@@ -176,6 +186,7 @@ class Operator(ValueConstructible["Operator"], JsonSerializable, ABC):
             raise TypeError(
                 f"{value_name} must be a class, but got {type(op_class).__name__}"
             )
+        # noinspection PyTypeChecker
         if not issubclass(op_class, cls.op_base_class):
             raise TypeError(
                 f"{value_name} must be a subclass of {cls.op_base_class.__name__},"

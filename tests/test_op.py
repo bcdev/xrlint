@@ -5,7 +5,7 @@ from unittest import TestCase
 
 import pytest
 
-from xrlint.util.op import Operator, OperatorMetadata
+from xrlint.op import OpMixin, OpMetadata
 
 
 class ThingOp(ABC):
@@ -14,12 +14,12 @@ class ThingOp(ABC):
 
 
 @dataclass(kw_only=True)
-class ThingMeta(OperatorMetadata):
+class ThingMeta(OpMetadata):
     pass
 
 
 @dataclass(kw_only=True, frozen=True)
-class Thing(Operator):
+class Thing(OpMixin):
     meta: ThingMeta
     op_class: Type[ThingOp]
 
@@ -35,7 +35,7 @@ class Thing(Operator):
 
     @classmethod
     def define(cls, op_class: Type[ThingOp] | None = None, **kwargs):
-        return cls._define_op(ThingMeta, op_class, **kwargs)
+        return cls._define_op(op_class, ThingMeta, **kwargs)
 
 
 class MyThingOp1(ThingOp):
@@ -59,7 +59,7 @@ def export_thing() -> Thing:
     return Thing(meta=ThingMeta(name="my-thing-op-3"), op_class=MyThingOp3)
 
 
-class OperatorTest(TestCase):
+class OpMixinTest(TestCase):
     def test_from_value_ok_rule(self):
         thing1_ = Thing.from_value(thing1)
         self.assertIs(thing1_, thing1)
@@ -81,20 +81,20 @@ class OperatorTest(TestCase):
 
     def test_from_value_ok_str(self):
 
-        thing1_ = Thing.from_value("tests.util.test_op:thing1")
+        thing1_ = Thing.from_value("tests.test_op:thing1")
         self.assertIs(thing1, thing1_)
-        self.assertEqual("tests.util.test_op:thing1", thing1_.meta.ref)
+        self.assertEqual("tests.test_op:thing1", thing1_.meta.ref)
 
-        thing2_ = Thing.from_value("tests.util.test_op:thing2")
+        thing2_ = Thing.from_value("tests.test_op:thing2")
         self.assertIs(thing2, thing2_)
-        self.assertEqual("tests.util.test_op:thing2", thing2_.meta.ref)
+        self.assertEqual("tests.test_op:thing2", thing2_.meta.ref)
 
         # default attribute is "export_thing"
-        thing3 = Thing.from_value("tests.util.test_op")
+        thing3 = Thing.from_value("tests.test_op")
         self.assertIsInstance(thing3, Thing)
         self.assertIs("my-thing-op-3", thing3.meta.name)
         self.assertIsInstance(thing3.op_class, type)
-        self.assertEqual("tests.util.test_op:export_thing", thing3.meta.ref)
+        self.assertEqual("tests.test_op:export_thing", thing3.meta.ref)
 
     # noinspection PyMethodMayBeStatic
     def test_from_value_fails(self):
@@ -114,7 +114,7 @@ class OperatorTest(TestCase):
 
         with pytest.raises(
             TypeError,
-            match=r"thing must be of type Thing \| ThingOp \| str, but got ABCMeta",
+            match=r"thing must be of type Thing \| ThingOp \| str, but got type",
         ):
             Thing.from_value(Thing)
 
@@ -138,20 +138,20 @@ class OperatorTest(TestCase):
                     "description": "What a thing.",
                 },
                 "op_class": "<class"
-                " 'tests.util.test_op.OperatorTest.test_to_json.<locals>.MyThingOp3'>",
+                " 'tests.test_op.OpMixinTest.test_to_json.<locals>.MyThingOp3'>",
             },
             rule.to_json(),
         )
 
 
-class OperatorDefineTest(TestCase):
+class OpMixinDefineTest(TestCase):
 
     def test_define_op(self):
 
         class MyThingOp3(ThingOp):
             """This is my 3rd thing."""
 
-        value = Thing._define_op(ThingMeta, MyThingOp3, meta_kwargs=dict(version="1.0"))
+        value = Thing._define_op(MyThingOp3, ThingMeta, meta_kwargs=dict(version="1.0"))
         self.assertIsInstance(value, Thing)
         self.assertIsInstance(value.meta, ThingMeta)
         self.assertEqual("my-thing-op-3", value.meta.name)
@@ -161,6 +161,21 @@ class OperatorDefineTest(TestCase):
         self.assertTrue(hasattr(MyThingOp3, "meta"))
         # noinspection PyUnresolvedReferences
         self.assertIs(value.meta, MyThingOp3.meta)
+
+    def test_define_op_fail(self):
+
+        class MyThingOp3(ThingOp):
+            """This is my 3rd thing."""
+
+        with pytest.raises(TypeError, match="meta_class must be class, but got int"):
+            # noinspection PyTypeChecker
+            Thing._define_op(MyThingOp3, 0)
+
+        with pytest.raises(
+            TypeError, match="registry must be a MutableMapping, but got int"
+        ):
+            # noinspection PyTypeChecker
+            Thing._define_op(MyThingOp3, ThingMeta, registry=12)
 
     def test_decorator(self):
         class MyThingOp3(ThingOp):
@@ -177,6 +192,23 @@ class OperatorDefineTest(TestCase):
         self.assertEqual("0.0.0", meta.version)
         self.assertEqual("This is my 3rd thing.", meta.description)
 
+    # noinspection PyMethodMayBeStatic
+    def test_decorator_fail(self):
+        closure = Thing.define()
+        with pytest.raises(
+            TypeError, match="decorated thing component must be a class, but got int"
+        ):
+            closure(32)
+
+        with pytest.raises(
+            TypeError,
+            match=(
+                "decorated thing component must be a subclass of ThingOp,"
+                " but got Thing"
+            ),
+        ):
+            closure(Thing)
+
     def test_function(self):
         class MyThingOp3(ThingOp):
             """This is my 3rd thing."""
@@ -191,6 +223,22 @@ class OperatorDefineTest(TestCase):
         self.assertEqual("my-thing-op-3", meta.name)
         self.assertEqual("0.0.0", meta.version)
         self.assertEqual("This is my 3rd thing.", meta.description)
+
+    # noinspection PyMethodMayBeStatic
+    def test_function_fail(self):
+        class MyThingOp3(ThingOp):
+            """This is my 3rd thing."""
+
+        with pytest.raises(TypeError, match="op_class must be a class, but got str"):
+            # noinspection PyTypeChecker
+            Thing.define(op_class="Huh!")
+
+        with pytest.raises(
+            TypeError,
+            match="op_class must be a subclass of ThingOp, but got TestCase",
+        ):
+            # noinspection PyTypeChecker
+            Thing.define(TestCase)
 
     def test_with_registry(self):
         class Op1(ThingOp):
