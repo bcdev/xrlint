@@ -3,7 +3,7 @@ from collections.abc import Mapping, Iterable, MutableMapping
 from dataclasses import dataclass
 from typing import Any, Callable, Type
 
-from xrlint.op import OpMixin, OpMetadata
+from xrlint.operation import Operation, OperationMeta
 from xrlint.result import Result
 from xrlint.result import ResultStats
 from xrlint.util.naming import to_kebab_case
@@ -43,7 +43,7 @@ class FormatterOp(ABC):
 
 
 @dataclass(kw_only=True)
-class FormatterMeta(OpMetadata):
+class FormatterMeta(OperationMeta):
     """Formatter metadata."""
 
     name: str
@@ -64,7 +64,7 @@ class FormatterMeta(OpMetadata):
 
 
 @dataclass(frozen=True, kw_only=True)
-class Formatter(OpMixin):
+class Formatter(Operation):
     """A formatter for linting results."""
 
     meta: FormatterMeta
@@ -75,6 +75,11 @@ class Formatter(OpMixin):
 
     @classmethod
     @property
+    def meta_class(cls) -> Type:
+        return FormatterMeta
+
+    @classmethod
+    @property
     def op_base_class(cls) -> Type:
         return FormatterOp
 
@@ -82,23 +87,6 @@ class Formatter(OpMixin):
     @property
     def op_name(cls) -> str:
         return "formatter"
-
-    @classmethod
-    def define(
-        cls,
-        op_class: Type[FormatterOp] | None = None,
-        *,
-        registry: MutableMapping[str, "Formatter"] | None = None,
-        meta_kwargs: dict[str, Any] | None = None,
-        **kwargs,
-    ) -> Callable[[FormatterOp], Type[FormatterOp]] | "Formatter":
-        return cls._define_op(
-            op_class,
-            FormatterMeta,
-            registry=registry,
-            meta_kwargs=meta_kwargs,
-            **kwargs,
-        )
 
 
 class FormatterRegistry(Mapping[str, Formatter]):
@@ -111,8 +99,9 @@ class FormatterRegistry(Mapping[str, Formatter]):
         name: str | None = None,
         version: str | None = None,
         schema: dict[str, Any] | list[dict[str, Any]] | bool | None = None,
-    ) -> Callable[[Any], Type[FormatterOp]]:
-        return Formatter.define(
+    ) -> Callable[[FormatterOp], Type[FormatterOp]] | Formatter:
+        """Decorator function."""
+        return Formatter.define_operation(
             None,
             registry=self._registrations,
             meta_kwargs=dict(name=name, version=version, schema=schema),

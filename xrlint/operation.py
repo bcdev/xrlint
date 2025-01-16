@@ -5,7 +5,6 @@ from inspect import isclass, getdoc
 from typing import Any, Type, Callable
 
 from xrlint.util.codec import (
-    ValueConstructible,
     JsonSerializable,
     MappingConstructible,
     JsonValue,
@@ -15,7 +14,7 @@ from xrlint.util.naming import to_kebab_case
 
 
 @dataclass(kw_only=True)
-class OpMetadata(MappingConstructible["OpMetadata"], JsonSerializable):
+class OperationMeta(MappingConstructible["OpMetadata"], JsonSerializable):
     """Operation metadata."""
 
     name: str
@@ -26,6 +25,23 @@ class OpMetadata(MappingConstructible["OpMetadata"], JsonSerializable):
 
     """Operation description. Optional."""
     description: str | None = None
+
+    schema: dict[str, JsonValue] | list[dict[str, JsonValue]] | None = None
+    """JSON Schema used to specify and validate the operation's'
+    options, if any.
+
+    It can take the following values:
+
+    - Use `None` (the default) to indicate that the operation
+      as no options at all.
+    - Use a schema to indicate that the operation
+      takes keyword arguments only.
+      The schema's JSON type must be `"object"`.
+    - Use a list of schemas to indicate that the operation
+      takes positional-only arguments.
+      If given, the number of schemas in the list specifies the
+      number of positional arguments that must be provided by users.
+    """
 
     ref: str | None = None
     """Operation reference.
@@ -42,7 +58,7 @@ class OpMetadata(MappingConstructible["OpMetadata"], JsonSerializable):
         }
 
 
-class OpMixin(ValueConstructible["OpMixin"], JsonSerializable):
+class Operation(MappingConstructible["Operation"], JsonSerializable):
     """A mixin class that is used by operation classes.
 
     An operation class comprises a `meta` property
@@ -73,7 +89,7 @@ class OpMixin(ValueConstructible["OpMixin"], JsonSerializable):
         return super().to_json(value_name=value_name)
 
     @classmethod
-    def _from_class(cls, value: Type, value_name: str) -> "OpMixin":
+    def _from_class(cls, value: Type, value_name: str) -> "Operation":
         # noinspection PyTypeChecker
         if issubclass(value, cls.op_base_class):
             op_class = value
@@ -93,7 +109,7 @@ class OpMixin(ValueConstructible["OpMixin"], JsonSerializable):
         return super()._from_class(value, value_name)
 
     @classmethod
-    def _from_str(cls, value: str, value_name: str) -> "OpMixin":
+    def _from_str(cls, value: str, value_name: str) -> "Operation":
         # noinspection PyTypeChecker
         operator, operator_ref = import_value(
             value,
@@ -114,9 +130,19 @@ class OpMixin(ValueConstructible["OpMixin"], JsonSerializable):
 
     @classmethod
     @property
+    def meta_class(cls) -> Type:
+        """Get the class of the instances of the `meta` field.
+        Defaults to [OperationMeta][xrlint.operation.OperationMeta].
+        """
+        return OperationMeta
+
+    @classmethod
+    @property
     @abstractmethod
     def op_base_class(cls) -> Type:
-        """Get the operation base class."""
+        """Get the base class from which all instances of the `op_class`
+        must derive from.
+        ."""
 
     @classmethod
     @property
@@ -133,26 +159,21 @@ class OpMixin(ValueConstructible["OpMixin"], JsonSerializable):
 
     @classmethod
     def _get_value_type_name(cls) -> str:
-        return f"{cls.__name__} | Type[{cls.op_base_class.__name__}] | str"
+        return f"{cls.__name__} | Type[{cls.op_base_class.__name__}] | dict | str"
 
     @classmethod
-    def _define_op(
+    def define_operation(
         cls,
         op_class: Type | None,
-        meta_class: Type,
         *,
-        registry: MutableMapping[str, "OpMixin"] | None = None,
+        registry: MutableMapping[str, "Operation"] | None = None,
         meta_kwargs: dict[str, Any] | None = None,
         **kwargs,
-    ) -> Callable[[Type], Type] | "OpMixin":
-        """Defines an operator.
-        Implementation helper that is supposed to be used by
-        subclasses in order to define operator and register
-        them.
-        """
+    ) -> Callable[[Type], Type] | "Operation":
+        """Defines an operation."""
         meta_kwargs = meta_kwargs or {}
 
-        def _define_op(_op_class: Type, decorated=True) -> Type | "OpMixin":
+        def _define_op(_op_class: Type, decorated=True) -> Type | "Operation":
             cls._assert_op_class_ok(f"decorated {cls.op_name} component", _op_class)
 
             name = meta_kwargs.pop("name", None)
@@ -161,7 +182,16 @@ class OpMixin(ValueConstructible["OpMixin"], JsonSerializable):
             description = meta_kwargs.pop("description", None)
             if not description:
                 description = getdoc(_op_class)
-            meta = meta_class(name=name, description=description, **meta_kwargs)
+            schema = meta_kwargs.pop("schema", None)
+            if schema is None:
+                # TODO: if schema not given,
+                #   derive it from _op_class' ctor arguments
+                # schema = cls._derive_schema(_op_class)
+                pass
+            # noinspection PyCallingNonCallable
+            meta = cls.meta_class(
+                name=name, description=description, schema=schema, **meta_kwargs
+            )
 
             # Register rule metadata in rule operation class
             _op_class.meta = meta
@@ -179,11 +209,6 @@ class OpMixin(ValueConstructible["OpMixin"], JsonSerializable):
         if registry is not None and not isinstance(registry, MutableMapping):
             raise TypeError(
                 f"registry must be a MutableMapping, but got {type(registry).__name__}"
-            )
-
-        if not isclass(meta_class):
-            raise TypeError(
-                f"meta_class must be class, but got {type(meta_class).__name__}"
             )
 
         if op_class is not None:

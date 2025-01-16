@@ -5,7 +5,7 @@ from unittest import TestCase
 
 import pytest
 
-from xrlint.op import OpMixin, OpMetadata
+from xrlint.operation import Operation, OperationMeta
 
 
 class ThingOp(ABC):
@@ -14,14 +14,19 @@ class ThingOp(ABC):
 
 
 @dataclass(kw_only=True)
-class ThingMeta(OpMetadata):
+class ThingMeta(OperationMeta):
     pass
 
 
 @dataclass(kw_only=True, frozen=True)
-class Thing(OpMixin):
+class Thing(Operation):
     meta: ThingMeta
     op_class: Type[ThingOp]
+
+    @classmethod
+    @property
+    def meta_class(cls) -> Type:
+        return ThingMeta
 
     @classmethod
     @property
@@ -35,7 +40,7 @@ class Thing(OpMixin):
 
     @classmethod
     def define(cls, op_class: Type[ThingOp] | None = None, **kwargs):
-        return cls._define_op(op_class, ThingMeta, **kwargs)
+        return cls.define_operation(op_class, **kwargs)
 
 
 class MyThingOp1(ThingOp):
@@ -114,7 +119,7 @@ class OpMixinTest(TestCase):
 
         with pytest.raises(
             TypeError,
-            match=r"thing must be of type Thing \| Type\[ThingOp\] \| str, but got type",
+            match=r"thing must be of type Thing \| Type\[ThingOp\] \| dict | str, but got type",
         ):
             Thing.from_value(Thing)
 
@@ -151,7 +156,7 @@ class OpMixinDefineTest(TestCase):
         class MyThingOp3(ThingOp):
             """This is my 3rd thing."""
 
-        value = Thing._define_op(MyThingOp3, ThingMeta, meta_kwargs=dict(version="1.0"))
+        value = Thing.define_operation(MyThingOp3, meta_kwargs=dict(version="1.0"))
         self.assertIsInstance(value, Thing)
         self.assertIsInstance(value.meta, ThingMeta)
         self.assertEqual("my-thing-op-3", value.meta.name)
@@ -167,15 +172,11 @@ class OpMixinDefineTest(TestCase):
         class MyThingOp3(ThingOp):
             """This is my 3rd thing."""
 
-        with pytest.raises(TypeError, match="meta_class must be class, but got int"):
-            # noinspection PyTypeChecker
-            Thing._define_op(MyThingOp3, 0)
-
         with pytest.raises(
             TypeError, match="registry must be a MutableMapping, but got int"
         ):
             # noinspection PyTypeChecker
-            Thing._define_op(MyThingOp3, ThingMeta, registry=12)
+            Thing.define_operation(MyThingOp3, registry=12)
 
     def test_decorator(self):
         class MyThingOp3(ThingOp):

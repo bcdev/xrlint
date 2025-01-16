@@ -6,7 +6,7 @@ from typing import Type, Any, Callable
 
 import xarray as xr
 
-from xrlint.op import OpMetadata, OpMixin
+from xrlint.operation import OperationMeta, Operation
 from xrlint.result import Message
 from xrlint.util.naming import to_kebab_case
 
@@ -49,7 +49,7 @@ class ProcessorOp(ABC):
 
 
 @dataclass(kw_only=True)
-class ProcessorMeta(OpMetadata):
+class ProcessorMeta(OperationMeta):
     """Processor metadata."""
 
     name: str
@@ -74,7 +74,7 @@ class ProcessorMeta(OpMetadata):
 
 
 @dataclass(frozen=True, kw_only=True)
-class Processor(OpMixin):
+class Processor(Operation):
     """Processors tell XRLint how to process files other than
     standard xarray datasets.
     """
@@ -91,6 +91,11 @@ class Processor(OpMixin):
 
     @classmethod
     @property
+    def meta_class(cls) -> Type:
+        return ProcessorMeta
+
+    @classmethod
+    @property
     def op_base_class(cls) -> Type:
         return ProcessorOp
 
@@ -98,23 +103,6 @@ class Processor(OpMixin):
     @property
     def op_name(cls) -> str:
         return "processor"
-
-    @classmethod
-    def define(
-        cls,
-        op_class: Type[ProcessorOp] | None = None,
-        *,
-        registry: MutableMapping[str, "Processor"] | None = None,
-        meta_kwargs: dict[str, Any] | None = None,
-        **kwargs,
-    ):
-        return cls._define_op(
-            op_class,
-            ProcessorMeta,
-            registry=registry,
-            meta_kwargs=meta_kwargs,
-            **kwargs,
-        )
 
 
 def define_processor(
@@ -139,7 +127,7 @@ def define_processor(
             see [ProcessorMeta][xrlint.processor.ProcessorMeta].
         registry: Processor registry. Can be provided to register the
             defined processor using its `name`.
-        op_class: Processor operation class. Must not be provided
+        op_class: Processor operation class. Must be `None`
             if this function is used as a class decorator.
 
     Returns:
@@ -150,8 +138,6 @@ def define_processor(
         TypeError: If either `op_class` or the decorated object is not a
             a class derived from [ProcessorOp][xrlint.processor.ProcessorOp].
     """
-    return Processor.define(
-        op_class=op_class,
-        registry=registry,
-        meta_kwargs=dict(name=name, version=version),
+    return Processor.define_operation(
+        op_class, registry=registry, meta_kwargs=dict(name=name, version=version)
     )
