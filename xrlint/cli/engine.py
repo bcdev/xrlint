@@ -73,9 +73,10 @@ class XRLint(FormatterContext):
 
     def load_config_list(self) -> None:
         """Load configuration list.
-        The function considers any `plugin` and `rule`
-        options, the default configuration file names or a specified
-        configuration file.
+        The function will load the configuration list from a specified
+        configuration file, if any.
+        Otherwise it will search for the default configuration files
+        in the current working directory.
         """
         plugins = {}
         for plugin_spec in self.plugin_specs:
@@ -121,7 +122,7 @@ class XRLint(FormatterContext):
         """Compute configuration for the given file.
 
         Args:
-            file_path: A file path.
+            file_path: A file path or URL.
 
         Returns:
             A configuration object or `None` if no item
@@ -133,14 +134,14 @@ class XRLint(FormatterContext):
         """Print computed configuration for the given file.
 
         Args:
-            file_path: A file path.
+            file_path: A file path or URL.
         """
         config = self.get_config_for_file(file_path)
         config_json_obj = config.to_json() if config is not None else None
         click.echo(json.dumps(config_json_obj, indent=2))
 
     def verify_datasets(self, files: Iterable[str]) -> Iterator[Result]:
-        """Verify given files.
+        """Verify given files or directories which may also be given as URLs.
         The function produces a validation result for each file.
 
         Args:
