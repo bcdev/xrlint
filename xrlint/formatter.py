@@ -1,12 +1,11 @@
 from abc import abstractmethod, ABC
-from collections.abc import Mapping, Iterable, MutableMapping
+from collections.abc import Mapping, Iterable
 from dataclasses import dataclass
 from typing import Any, Callable, Type
 
 from xrlint.operation import Operation, OperationMeta
 from xrlint.result import Result
 from xrlint.result import ResultStats
-from xrlint.util.naming import to_kebab_case
 
 
 class FormatterContext(ABC):

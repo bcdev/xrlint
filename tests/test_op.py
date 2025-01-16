@@ -119,7 +119,10 @@ class OpMixinTest(TestCase):
 
         with pytest.raises(
             TypeError,
-            match=r"thing must be of type Thing \| Type\[ThingOp\] \| dict | str, but got type",
+            match=(
+                r"thing must be of type Thing \| Type\[ThingOp\] \|"
+                r" dict | str, but got type"
+            ),
         ):
             Thing.from_value(Thing)
 

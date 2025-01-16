@@ -1,14 +1,11 @@
 from abc import abstractmethod, ABC
-from collections.abc import MutableMapping
 from dataclasses import dataclass
-from inspect import isclass
 from typing import Type, Any, Callable
 
 import xarray as xr
 
 from xrlint.operation import OperationMeta, Operation
 from xrlint.result import Message
-from xrlint.util.naming import to_kebab_case
 
 
 class ProcessorOp(ABC):

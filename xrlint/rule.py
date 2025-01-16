@@ -1,7 +1,6 @@
 from abc import abstractmethod, ABC
 from collections.abc import MutableMapping, Sequence
 from dataclasses import dataclass, field
-from inspect import isclass
 from typing import Type, Literal, Any, Callable
 
 import xarray as xr
@@ -12,14 +11,12 @@ from xrlint.constants import (
 )
 from xrlint.node import DatasetNode, DataArrayNode, AttrsNode, AttrNode
 from xrlint.operation import OperationMeta, Operation
-from xrlint.processor import ProcessorMeta
 from xrlint.result import Suggestion
 from xrlint.util.codec import (
     ValueConstructible,
     JsonSerializable,
 )
 from xrlint.util.formatting import format_message_one_of
-from xrlint.util.naming import to_kebab_case
 
 
 class RuleContext(ABC):
