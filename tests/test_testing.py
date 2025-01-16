@@ -27,7 +27,7 @@ INVALID_DATASET_2 = xr.Dataset(attrs=dict(title=""))
 # noinspection PyMethodMayBeStatic
 class RuleTesterTest(TestCase):
     def test_ok(self):
-        tester = RuleTester(rules={"test/force-title": "error"})
+        tester = RuleTester(rules={"testing/force-title": "error"})
         tester.run(
             "force-title",
             ForceTitle,
@@ -42,7 +42,7 @@ class RuleTesterTest(TestCase):
         )
 
     def test_raises_valid(self):
-        tester = RuleTester(rules={"test/force-title": "error"})
+        tester = RuleTester(rules={"testing/force-title": "error"})
         with pytest.raises(
             AssertionError,
             match=(
@@ -61,7 +61,7 @@ class RuleTesterTest(TestCase):
             )
 
     def test_raises_invalid(self):
-        tester = RuleTester(rules={"test/force-title": "error"})
+        tester = RuleTester(rules={"testing/force-title": "error"})
         with pytest.raises(
             AssertionError,
             match=(

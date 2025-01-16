@@ -4,8 +4,7 @@ from unittest import TestCase
 import pytest
 import xarray as xr
 
-from xrlint.plugin import Plugin
-from xrlint.plugin import PluginMeta
+from xrlint.plugin import new_plugin
 from xrlint.processor import Processor
 from xrlint.processor import ProcessorMeta
 from xrlint.processor import ProcessorOp
@@ -79,7 +78,7 @@ class ProcessorTest(TestCase):
                 pass
 
     def test_define_processor_with_plugin(self):
-        plugin = Plugin(meta=PluginMeta(name="my-plugin"))
+        plugin = new_plugin(name="my-plugin")
 
         @plugin.define_processor()
         class MyProcessorOp(ProcessorOp):

@@ -7,8 +7,6 @@
 - add `docs`
   - use mkdocstrings ref syntax in docstrings
   - provide configuration examples (use as tests?)
-- Bug: referring to stuff in modules via "<module>:<attr>" 
-    raises 
 
 ## Desired
  

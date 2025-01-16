@@ -10,9 +10,10 @@ This chapter provides a plain reference for the XRLint Python API.
   dataset:
   [new_linter()][xrlint.linter.new_linter] factory function and the
   [Linter][xrlint.linter.Linter] class.
-- The `plugin` module provides plugin related classes:
-  [Plugin][xrlint.plugin.Plugin] and its 
-  metadata [PluginMeta][xrlint.plugin.PluginMeta].
+- The `plugin` module provides plugin related components:
+  A factory [new_plugin][xrlint.plugin.new_plugin] to create instances of
+  the [Plugin][xrlint.plugin.Plugin] class that comprises 
+  plugin metadata represented by [PluginMeta][xrlint.plugin.PluginMeta].
 - The `config` module provides classes that represent 
   configuration information and provide related functionality:
   [Config][xrlint.config.Config] and [ConfigList][xrlint.config.ConfigList].
@@ -51,6 +52,12 @@ Note:
 
 ::: xrlint.linter.Linter
 
+::: xrlint.plugin.new_plugin
+
+::: xrlint.plugin.Plugin
+
+::: xrlint.plugin.PluginMeta
+
 ::: xrlint.config.Config
 
 ::: xrlint.config.ConfigList
@@ -78,10 +85,6 @@ Note:
 ::: xrlint.node.AttrsNode
 
 ::: xrlint.node.AttrNode
-
-::: xrlint.plugin.Plugin
-
-::: xrlint.plugin.PluginMeta
 
 ::: xrlint.processor.define_processor
 

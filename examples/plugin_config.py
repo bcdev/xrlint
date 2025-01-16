@@ -5,14 +5,14 @@ using the `Plugin` class and its `define_rule()` decorator method.
 
 from xrlint.config import Config
 from xrlint.node import DatasetNode
-from xrlint.plugin import Plugin
-from xrlint.plugin import PluginMeta
+from xrlint.plugin import new_plugin
 from xrlint.rule import RuleContext
 from xrlint.rule import RuleOp
 
 
-plugin = Plugin(
-    meta=PluginMeta(name="hello-plugin", version="1.0.0"),
+plugin = new_plugin(
+    name="hello-plugin",
+    version="1.0.0",
     configs={
         # "configs" entries must be `Config` objects!
         "recommended": Config.from_value(

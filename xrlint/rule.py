@@ -12,10 +12,10 @@ from xrlint.constants import (
 from xrlint.node import DatasetNode, DataArrayNode, AttrsNode, AttrNode
 from xrlint.operation import OperationMeta, Operation
 from xrlint.result import Suggestion
-from xrlint.util.codec import (
+from xrlint.util.constructible import (
     ValueConstructible,
-    JsonSerializable,
 )
+from xrlint.util.serializable import JsonSerializable
 from xrlint.util.formatting import format_message_one_of
 
 

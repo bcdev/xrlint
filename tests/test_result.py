@@ -1,7 +1,7 @@
 from unittest import TestCase
 
 from xrlint.config import Config
-from xrlint.plugin import Plugin, PluginMeta
+from xrlint.plugin import new_plugin
 from xrlint.result import (
     get_rules_meta_for_results,
     Result,
@@ -17,7 +17,7 @@ class ResultTest(TestCase):
     # noinspection PyUnusedLocal
     def test_get_rules_meta_for_results(self):
 
-        plugin = Plugin(meta=PluginMeta(name="test"))
+        plugin = new_plugin(name="test")
 
         @plugin.define_rule("my-rule-1")
         class MyRule1(RuleOp):

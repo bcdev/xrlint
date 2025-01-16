@@ -3,12 +3,11 @@ from functools import cached_property
 from typing import Any, TYPE_CHECKING, Union, Literal, Sequence
 
 from xrlint.constants import CORE_PLUGIN_NAME
-from xrlint.util.codec import (
+from xrlint.util.constructible import (
     MappingConstructible,
     ValueConstructible,
-    JsonSerializable,
-    JsonValue,
 )
+from xrlint.util.serializable import JsonSerializable, JsonValue
 from xrlint.util.filefilter import FileFilter
 from xrlint.util.merge import (
     merge_arrays,

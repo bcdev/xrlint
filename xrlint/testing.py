@@ -1,13 +1,12 @@
 import unittest
 from dataclasses import dataclass
-from typing import Type, Callable, Literal, Any
+from typing import Any, Callable, Final, Literal, Type
 
 import xarray as xr
 
 from xrlint.constants import SEVERITY_ERROR
 from xrlint.linter import Linter
-from xrlint.plugin import Plugin
-from xrlint.plugin import PluginMeta
+from xrlint.plugin import new_plugin
 from xrlint.result import Message
 from xrlint.result import Result
 from xrlint.rule import Rule
@@ -15,6 +14,8 @@ from xrlint.rule import RuleMeta
 from xrlint.rule import RuleOp
 from xrlint.util.naming import to_snake_case
 from xrlint.util.formatting import format_problems
+
+_PLUGIN_NAME: Final = "testing"
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -164,9 +165,9 @@ class RuleTester:
         result = linter.verify_dataset(
             test.dataset,
             plugins={
-                "test": (
-                    Plugin(
-                        meta=PluginMeta(name="test"),
+                _PLUGIN_NAME: (
+                    new_plugin(
+                        name=_PLUGIN_NAME,
                         rules={
                             rule_name: Rule(
                                 meta=RuleMeta(name=rule_name), op_class=rule_op_class
@@ -176,7 +177,7 @@ class RuleTester:
                 )
             },
             rules={
-                f"test/{rule_name}": (
+                f"{_PLUGIN_NAME}/{rule_name}": (
                     [severity, *(test.args or ()), (test.kwargs or {})]
                     if test.args or test.kwargs
                     else severity

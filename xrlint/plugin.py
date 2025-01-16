@@ -4,13 +4,14 @@ from typing import Any, Type, Callable, Literal
 from xrlint.config import Config
 from xrlint.processor import Processor, ProcessorOp, define_processor
 from xrlint.rule import Rule, RuleOp, define_rule
-from xrlint.util.codec import MappingConstructible, JsonSerializable, JsonValue
+from xrlint.util.constructible import MappingConstructible
+from xrlint.util.serializable import JsonSerializable, JsonValue
 from xrlint.util.importutil import import_value
 
 
 @dataclass(kw_only=True)
 class PluginMeta(MappingConstructible, JsonSerializable):
-    """XRLint plugin metadata."""
+    """Plugin metadata."""
 
     name: str
     """Plugin name."""
@@ -32,13 +33,15 @@ class PluginMeta(MappingConstructible, JsonSerializable):
 
 @dataclass(frozen=True, kw_only=True)
 class Plugin(MappingConstructible, JsonSerializable):
-    """An XRLint plugin."""
+    """A plugin that can contribute rules, processors,
+    and predefined configurations to XRLint.
+
+    Use the factory [new_plugin][xrlint.plugin.new_plugin]
+    to create plugin instances.
+    """
 
     meta: PluginMeta
     """Information about the plugin."""
-
-    configs: dict[str, Config] = field(default_factory=dict)
-    """A dictionary containing named configurations."""
 
     rules: dict[str, Rule] = field(default_factory=dict)
     """A dictionary containing the definitions of custom rules."""
@@ -47,12 +50,15 @@ class Plugin(MappingConstructible, JsonSerializable):
     """A dictionary containing named processors.
     """
 
+    configs: dict[str, Config] = field(default_factory=dict)
+    """A dictionary containing named configurations."""
+
     def define_rule(
         self,
         name: str,
         version: str = "0.0.0",
         schema: dict[str, Any] | list[dict[str, Any]] | bool | None = None,
-        type: Literal["problem", "suggestion", "layout"] | None = None,
+        type: Literal["problem", "suggestion", "layout"] = "problem",
         description: str | None = None,
         docs_url: str | None = None,
         op_class: Type[RuleOp] | None = None,
@@ -109,3 +115,30 @@ class Plugin(MappingConstructible, JsonSerializable):
         if self.meta.ref:
             return self.meta.ref
         return super().to_json(value_name=value_name)
+
+
+def new_plugin(
+    name: str,
+    version: str = "0.0.0",
+    ref: str | None = None,
+    rules: dict[str, Rule] | None = None,
+    processors: dict[str, Processor] | None = None,
+    configs: dict[str, Config] | None = None,
+) -> Plugin:
+    """Create a new plugin object that can contribute rules, processors,
+    and predefined configurations to XRLint.
+
+    Args:
+        name: Plugin name. Required.
+        version: Plugin version. Defaults to `"0.0.0"`.
+        ref: Plugin reference. Optional.
+        rules: A dictionary containing the definitions of custom rules. Optional.
+        processors: A dictionary containing custom processors. Optional.
+        configs: A dictionary containing predefined configurations. Optional.
+    """
+    return Plugin(
+        meta=PluginMeta(name=name, version=version, ref=ref),
+        rules=rules or {},
+        processors=processors or {},
+        configs=configs or {},
+    )

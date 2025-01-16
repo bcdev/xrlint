@@ -2,6 +2,18 @@
 
 ## Version 0.3.0 (in development)
 
+- Fixed problem where referring to values in modules via 
+  the form `"<module>:<attr>"` raised. #21
+
+- Introduced factory method `new_plugin` which simplifies
+  creating plugin objects.
+
+- Refactored out new common mixin class `Operation`
+  which reduces amount of code and simplifies testing
+  of operation classes `Rule`, `Processor`, `Formatter`.
+
+- Improved overall test coverage.
+
 
 ## Version 0.2.0 (14.01.2025)
 

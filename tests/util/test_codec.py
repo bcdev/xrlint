@@ -15,12 +15,12 @@ from unittest import TestCase
 
 import pytest
 
-from xrlint.util.codec import (
+from xrlint.util.constructible import (
     ValueConstructible,
-    JsonSerializable,
     MappingConstructible,
     get_class_parameters,
 )
+from xrlint.util.serializable import JsonSerializable
 
 
 @dataclass()
