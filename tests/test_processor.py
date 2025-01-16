@@ -69,8 +69,8 @@ class ProcessorTest(TestCase):
         with pytest.raises(
             TypeError,
             match=(
-                r"component decorated by define_processor\(\)"
-                r" must be a subclass of ProcessorOp"
+                "decorated processor component must be a subclass of ProcessorOp,"
+                " but got MyProcessorOp"
             ),
         ):
 

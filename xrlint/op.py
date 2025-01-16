@@ -16,11 +16,23 @@ from xrlint.util.naming import to_kebab_case
 
 @dataclass(kw_only=True)
 class OpMetadata(MappingConstructible["OpMetadata"], JsonSerializable):
-    # TODO: docs!
+    """Operation metadata."""
+
     name: str
+    """Operation name."""
+
     version: str = "0.0.0"
+    """Operation version."""
+
+    """Operation description. Optional."""
     description: str | None = None
+
     ref: str | None = None
+    """Operation reference.
+    Specifies the location from where the operation can be
+    dynamically imported.
+    Must have the form "<module>:<attr>", if given.
+    """
 
     def to_dict(self, value_name: str | None = None) -> dict[str, JsonValue]:
         return {
@@ -30,7 +42,7 @@ class OpMetadata(MappingConstructible["OpMetadata"], JsonSerializable):
         }
 
 
-class OpMixin(ValueConstructible["Operator"], JsonSerializable):
+class OpMixin(ValueConstructible["OpMixin"], JsonSerializable):
     """A mixin class that is used by operation classes.
 
     An operation class comprises a `meta` property
@@ -82,6 +94,7 @@ class OpMixin(ValueConstructible["Operator"], JsonSerializable):
 
     @classmethod
     def _from_str(cls, value: str, value_name: str) -> "OpMixin":
+        # noinspection PyTypeChecker
         operator, operator_ref = import_value(
             value,
             cls.op_import_attr_name,
@@ -112,6 +125,7 @@ class OpMixin(ValueConstructible["Operator"], JsonSerializable):
         """Get a name that describes the operation, e.g.,
         "rule", "processor", "formatter".
         """
+        return "operation"
 
     @classmethod
     def _get_value_name(cls) -> str:
@@ -119,7 +133,7 @@ class OpMixin(ValueConstructible["Operator"], JsonSerializable):
 
     @classmethod
     def _get_value_type_name(cls) -> str:
-        return f"{cls.__name__} | {cls.op_base_class.__name__} | str"
+        return f"{cls.__name__} | Type[{cls.op_base_class.__name__}] | str"
 
     @classmethod
     def _define_op(
@@ -130,7 +144,7 @@ class OpMixin(ValueConstructible["Operator"], JsonSerializable):
         registry: MutableMapping[str, "OpMixin"] | None = None,
         meta_kwargs: dict[str, Any] | None = None,
         **kwargs,
-    ) -> Callable[[Any], Type] | "OpMixin":
+    ) -> Callable[[Type], Type] | "OpMixin":
         """Defines an operator.
         Implementation helper that is supposed to be used by
         subclasses in order to define operator and register

@@ -34,6 +34,12 @@ class ValueConstructible(Generic[T]):
     """A mixin that makes your classes constructible from a single value
     of any type.
 
+    Implementing classes override one of the many `_from_<type>()`
+    class methods to implement support converting from values of
+    type `<type>`. They may use the [_from_typed_value][] to convert values
+    from values with given type annotations, such as object properties
+    or constructor parameters.
+
     The factory for this purpose is the
     class method [from_value][xrlint.util.codec.ValueConstructible.from_value].
     """
@@ -154,7 +160,9 @@ class ValueConstructible(Generic[T]):
         raise TypeError(cls._format_type_error(value, value_name))
 
     @classmethod
-    def _convert_value(cls, value: Any, type_annotation: Any, value_name: str) -> Any:
+    def _from_typed_value(
+        cls, value: Any, type_annotation: Any, value_name: str
+    ) -> Any:
         """To be used by subclasses that wish to convert a value with
         known type for the target value.
 
@@ -199,7 +207,7 @@ class ValueConstructible(Generic[T]):
             errors = []
             for type_arg in type_args:
                 try:
-                    return cls._convert_value(value, type_arg, value_name)
+                    return cls._from_typed_value(value, type_arg, value_name)
                 except (TypeError, ValueError) as e:
                     errors.append((type_arg, e))
             # Note, the error message constructed here is suboptimal.
@@ -235,7 +243,7 @@ class ValueConstructible(Generic[T]):
                                     f"keys of {value_name}", k, key_type
                                 )
                             )
-                        mapping_value[k] = cls._convert_value(
+                        mapping_value[k] = cls._from_typed_value(
                             v, item_type, f"{value_name}[{k!r}]"
                         )
                     return mapping_value
@@ -244,7 +252,7 @@ class ValueConstructible(Generic[T]):
                     item_type = type_args[0] if type_args else Any
                     # noinspection PyTypeChecker
                     return [
-                        cls._convert_value(v, item_type, f"{value_name}[{i}]")
+                        cls._from_typed_value(v, item_type, f"{value_name}[{i}]")
                         for i, v in enumerate(value)
                     ]
                 return value
@@ -368,7 +376,7 @@ class MappingConstructible(Generic[T], ValueConstructible[T]):
 
                 # TODO: Use cls._from_property_value
                 #   which delegates to cls._convert_value
-                prop_value = cls._convert_value(
+                prop_value = cls._from_typed_value(
                     mapping[prop_name],
                     prop_annotation,
                     value_name=f"{value_name}.{prop_name}",

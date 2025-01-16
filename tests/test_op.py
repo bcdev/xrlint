@@ -114,7 +114,7 @@ class OpMixinTest(TestCase):
 
         with pytest.raises(
             TypeError,
-            match=r"thing must be of type Thing \| ThingOp \| str, but got type",
+            match=r"thing must be of type Thing \| Type\[ThingOp\] \| str, but got type",
         ):
             Thing.from_value(Thing)
 
@@ -252,20 +252,3 @@ class OpMixinDefineTest(TestCase):
         t2 = Thing.define(op_class=Op2, registry=registry)
         self.assertIs(t1, registry["op-1"])
         self.assertIs(t2, registry["op-2"])
-
-
-"""
-
-
-    # noinspection PyMethodMayBeStatic
-    def test_fail(self):
-        with pytest.raises(
-            TypeError,
-            match=(
-                r"component decorated by define_rule\(\)"
-                r" must be a subclass of RuleOp"
-            ),
-        ):
-            # noinspection PyTypeChecker
-            define_rule(op_class=DefineRuleTest)
-"""

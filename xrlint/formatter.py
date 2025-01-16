@@ -1,8 +1,9 @@
 from abc import abstractmethod, ABC
-from collections.abc import Mapping, Iterable
+from collections.abc import Mapping, Iterable, MutableMapping
 from dataclasses import dataclass
 from typing import Any, Callable, Type
 
+from xrlint.op import OpMixin, OpMetadata
 from xrlint.result import Result
 from xrlint.result import ResultStats
 from xrlint.util.naming import to_kebab_case
@@ -42,7 +43,7 @@ class FormatterOp(ABC):
 
 
 @dataclass(kw_only=True)
-class FormatterMeta:
+class FormatterMeta(OpMetadata):
     """Formatter metadata."""
 
     name: str
@@ -51,9 +52,6 @@ class FormatterMeta:
     version: str = "0.0.0"
     """Formatter version."""
 
-    schema: dict[str, Any] | list[dict[str, Any]] | bool | None = None
-    """Formatter options schema."""
-
     ref: str | None = None
     """Formatter reference.
     Specifies the location from where the formatter can be
@@ -61,9 +59,12 @@ class FormatterMeta:
     Must have the form "<module>:<attr>", if given.
     """
 
+    schema: dict[str, Any] | list[dict[str, Any]] | bool | None = None
+    """Formatter options schema."""
+
 
 @dataclass(frozen=True, kw_only=True)
-class Formatter:
+class Formatter(OpMixin):
     """A formatter for linting results."""
 
     meta: FormatterMeta
@@ -72,37 +73,50 @@ class Formatter:
     op_class: Type[FormatterOp]
     """The class that implements the format operation."""
 
+    @classmethod
+    @property
+    def op_base_class(cls) -> Type:
+        return FormatterOp
+
+    @classmethod
+    @property
+    def op_name(cls) -> str:
+        return "formatter"
+
+    @classmethod
+    def define(
+        cls,
+        op_class: Type[FormatterOp] | None = None,
+        *,
+        registry: MutableMapping[str, "Formatter"] | None = None,
+        meta_kwargs: dict[str, Any] | None = None,
+        **kwargs,
+    ) -> Callable[[FormatterOp], Type[FormatterOp]] | "Formatter":
+        return cls._define_op(
+            op_class,
+            FormatterMeta,
+            registry=registry,
+            meta_kwargs=meta_kwargs,
+            **kwargs,
+        )
+
 
 class FormatterRegistry(Mapping[str, Formatter]):
 
     def __init__(self):
         self._registrations = {}
 
-    # TODO: fix this code duplication in define_rule()
     def define_formatter(
         self,
         name: str | None = None,
         version: str | None = None,
         schema: dict[str, Any] | list[dict[str, Any]] | bool | None = None,
     ) -> Callable[[Any], Type[FormatterOp]]:
-
-        def _define_formatter(op_class: Any) -> Type[FormatterOp]:
-            from inspect import isclass
-
-            if not isclass(op_class) or not issubclass(op_class, FormatterOp):
-                raise TypeError(
-                    f"component decorated by define_formatter()"
-                    f" must be a subclass of {FormatterOp.__name__}"
-                )
-            meta = FormatterMeta(
-                name=name or to_kebab_case(op_class.__name__),
-                version=version,
-                schema=schema,
-            )
-            self._registrations[meta.name] = Formatter(meta=meta, op_class=op_class)
-            return op_class
-
-        return _define_formatter
+        return Formatter.define(
+            None,
+            registry=self._registrations,
+            meta_kwargs=dict(name=name, version=version, schema=schema),
+        )
 
     def __getitem__(self, key: str) -> Formatter:
         return self._registrations[key]
