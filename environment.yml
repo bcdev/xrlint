@@ -6,7 +6,7 @@ dependencies:
   # Library Dependencies
   - click
   - fsspec
-  - pyaml
+  - pyyaml
   - tabulate
   - xarray
   # Dev Dependencies
