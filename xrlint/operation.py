@@ -1,4 +1,3 @@
-from abc import abstractmethod
 from collections.abc import MutableMapping
 from dataclasses import dataclass
 from inspect import isclass, getdoc
