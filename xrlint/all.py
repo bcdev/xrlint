@@ -20,6 +20,7 @@ from xrlint.node import DataArrayNode
 from xrlint.node import Node
 from xrlint.plugin import Plugin
 from xrlint.plugin import PluginMeta
+from xrlint.plugin import new_plugin
 from xrlint.processor import Processor
 from xrlint.processor import ProcessorMeta
 from xrlint.processor import ProcessorOp
@@ -58,6 +59,7 @@ __all__ = [
     "Node",
     "Plugin",
     "PluginMeta",
+    "new_plugin",
     "Processor",
     "ProcessorMeta",
     "ProcessorOp",

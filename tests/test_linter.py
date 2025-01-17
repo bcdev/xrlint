@@ -7,8 +7,7 @@ from xrlint.config import Config
 from xrlint.constants import CORE_PLUGIN_NAME
 from xrlint.linter import Linter
 from xrlint.linter import new_linter
-from xrlint.plugin import Plugin
-from xrlint.plugin import PluginMeta
+from xrlint.plugin import new_plugin
 from xrlint.node import (
     AttrsNode,
     AttrNode,
@@ -62,7 +61,7 @@ class LinterVerifyTest(TestCase):
 
     def setUp(self):
 
-        plugin = Plugin(meta=PluginMeta(name="test"))
+        plugin = new_plugin(name="test")
 
         @plugin.define_rule("no-space-in-attr-name")
         class AttrVer(RuleOp):

@@ -136,10 +136,7 @@ class DefineRuleTest(unittest.TestCase):
     def test_fail(self):
         with pytest.raises(
             TypeError,
-            match=(
-                r"component decorated by define_rule\(\)"
-                r" must be a subclass of RuleOp"
-            ),
+            match="op_class must be a subclass of RuleOp, but got DefineRuleTest",
         ):
             # noinspection PyTypeChecker
             define_rule(op_class=DefineRuleTest)

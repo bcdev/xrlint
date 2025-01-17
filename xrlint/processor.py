@@ -1,14 +1,11 @@
 from abc import abstractmethod, ABC
 from dataclasses import dataclass
-from inspect import isclass
 from typing import Type, Any, Callable
 
 import xarray as xr
 
+from xrlint.operation import OperationMeta, Operation
 from xrlint.result import Message
-from xrlint.util.codec import MappingConstructible
-from xrlint.util.importutil import import_value
-from xrlint.util.naming import to_kebab_case
 
 
 class ProcessorOp(ABC):
@@ -49,7 +46,7 @@ class ProcessorOp(ABC):
 
 
 @dataclass(kw_only=True)
-class ProcessorMeta(MappingConstructible):
+class ProcessorMeta(OperationMeta):
     """Processor metadata."""
 
     name: str
@@ -57,6 +54,9 @@ class ProcessorMeta(MappingConstructible):
 
     version: str = "0.0.0"
     """Processor version."""
+
+    """Processor description. Optional."""
+    description: str | None = None
 
     ref: str | None = None
     """Processor reference.
@@ -66,12 +66,12 @@ class ProcessorMeta(MappingConstructible):
     """
 
     @classmethod
-    def _get_value_type_name(cls) -> str:
+    def value_type_name(cls) -> str:
         return "ProcessorMeta | dict"
 
 
 @dataclass(frozen=True, kw_only=True)
-class Processor(MappingConstructible):
+class Processor(Operation):
     """Processors tell XRLint how to process files other than
     standard xarray datasets.
     """
@@ -87,39 +87,18 @@ class Processor(MappingConstructible):
     # """`True` if this processor supports auto-fixing of datasets."""
 
     @classmethod
-    def _from_type(cls, value: Type[ProcessorOp], value_name: str) -> "Processor":
-        # TODO: no test covers Processor._from_type
-        if issubclass(value, ProcessorOp):
-            # TODO: fix code duplication in Rule._from_class()
-            try:
-                # Note, the value.meta attribute is set by
-                # the define_rule
-                # noinspection PyUnresolvedReferences
-                return Processor(meta=value.meta, op_class=value)
-            except AttributeError:
-                raise ValueError(
-                    f"missing processor metadata, apply define_processor()"
-                    f" to class {value.__name__}"
-                )
-        return super()._from_type(value, value_name)
+    def meta_class(cls) -> Type:
+        return ProcessorMeta
 
     @classmethod
-    def _from_str(cls, value: str, value_name: str) -> "Processor":
-        processor, processor_ref = import_value(
-            value,
-            "export_processor",
-            factory=Processor.from_value,
-        )
-        # noinspection PyUnresolvedReferences
-        processor.meta.ref = processor_ref
-        return processor
+    def op_base_class(cls) -> Type:
+        return ProcessorOp
 
     @classmethod
-    def _get_value_type_name(cls) -> str:
-        return "str | dict | Processor | Type[ProcessorOp]"
+    def op_name(cls) -> str:
+        return "processor"
 
 
-# TODO: fix this code duplication in define_rule()
 def define_processor(
     name: str | None = None,
     version: str = "0.0.0",
@@ -142,7 +121,7 @@ def define_processor(
             see [ProcessorMeta][xrlint.processor.ProcessorMeta].
         registry: Processor registry. Can be provided to register the
             defined processor using its `name`.
-        op_class: Processor operation class. Must not be provided
+        op_class: Processor operation class. Must be `None`
             if this function is used as a class decorator.
 
     Returns:
@@ -153,27 +132,6 @@ def define_processor(
         TypeError: If either `op_class` or the decorated object is not a
             a class derived from [ProcessorOp][xrlint.processor.ProcessorOp].
     """
-
-    def _define_processor(
-        _op_class: Any, no_deco=False
-    ) -> Type[ProcessorOp] | Processor:
-        if not isclass(_op_class) or not issubclass(_op_class, ProcessorOp):
-            raise TypeError(
-                f"component decorated by define_processor()"
-                f" must be a subclass of {ProcessorOp.__name__}"
-            )
-        meta = ProcessorMeta(
-            name=name or to_kebab_case(_op_class.__name__),
-            version=version,
-        )
-        setattr(_op_class, "meta", meta)
-        processor = Processor(meta=meta, op_class=_op_class)
-        if registry is not None:
-            registry[meta.name] = processor
-        return processor if no_deco else _op_class
-
-    if op_class is None:
-        # decorator case
-        return _define_processor
-    else:
-        return _define_processor(op_class, no_deco=True)
+    return Processor.define_operation(
+        op_class, registry=registry, meta_kwargs=dict(name=name, version=version)
+    )

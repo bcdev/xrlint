@@ -3,13 +3,17 @@ from unittest import TestCase
 
 import xarray as xr
 
-from xrlint.plugin import Plugin, PluginMeta
+from xrlint.plugin import new_plugin, Plugin, PluginMeta
 from xrlint.processor import ProcessorOp, Processor
 from xrlint.result import Message
 from xrlint.rule import Rule, RuleOp, define_rule
 
 
 class PluginTest(TestCase):
+    def test_new_plugin(self):
+        plugin = new_plugin(name="hello", version="2.4.5")
+        self.assertEqual(Plugin(meta=PluginMeta(name="hello", version="2.4.5")), plugin)
+
     def test_from_value_ok_plugin(self):
         plugin = Plugin(meta=PluginMeta(name="hello"))
         self.assertIs(plugin, Plugin.from_value(plugin))

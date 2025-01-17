@@ -8,7 +8,7 @@ from tabulate import tabulate
 from xrlint.constants import SEVERITY_CODE_TO_NAME, MISSING_DATASET_FILE_PATH
 from xrlint.constants import SEVERITY_ERROR
 from xrlint.constants import SEVERITY_WARN
-from xrlint.util.codec import JsonSerializable
+from xrlint.util.serializable import JsonSerializable
 from xrlint.util.formatting import format_problems
 from xrlint.util.formatting import format_message_type_of
 

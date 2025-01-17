@@ -1,12 +1,9 @@
-from xrlint.plugin import Plugin
-from xrlint.plugin import PluginMeta
+from xrlint.plugin import new_plugin
 from xrlint.version import version
 
 
-plugin = Plugin(
-    meta=PluginMeta(
-        name="xcube",
-        version=version,
-        ref="xrlint.plugins.xcube:export_plugin",
-    )
+plugin = new_plugin(
+    name="xcube",
+    version=version,
+    ref="xrlint.plugins.xcube:export_plugin",
 )

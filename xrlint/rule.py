@@ -1,7 +1,6 @@
 from abc import abstractmethod, ABC
 from collections.abc import MutableMapping, Sequence
 from dataclasses import dataclass, field
-from inspect import isclass
 from typing import Type, Literal, Any, Callable
 
 import xarray as xr
@@ -11,15 +10,13 @@ from xrlint.constants import (
     SEVERITY_ENUM_TEXT,
 )
 from xrlint.node import DatasetNode, DataArrayNode, AttrsNode, AttrNode
+from xrlint.operation import OperationMeta, Operation
 from xrlint.result import Suggestion
-from xrlint.util.codec import (
-    MappingConstructible,
+from xrlint.util.constructible import (
     ValueConstructible,
-    JsonSerializable,
 )
+from xrlint.util.serializable import JsonSerializable
 from xrlint.util.formatting import format_message_one_of
-from xrlint.util.importutil import import_value
-from xrlint.util.naming import to_kebab_case
 
 
 class RuleContext(ABC):
@@ -129,7 +126,7 @@ class RuleOp(ABC):
 
 
 @dataclass(kw_only=True)
-class RuleMeta(MappingConstructible, JsonSerializable):
+class RuleMeta(OperationMeta):
     """Rule metadata."""
 
     name: str
@@ -184,27 +181,13 @@ class RuleMeta(MappingConstructible, JsonSerializable):
     by the rule’s implementation and its configured severity.
     """
 
-    ref: str | None = None
-    """Rule reference.
-    Specifies the location from where the rule can be
-    dynamically imported.
-    Must have the form "<module>:<attr>", if given.
-    """
-
     @classmethod
-    def _get_value_type_name(cls) -> str:
+    def value_type_name(cls) -> str:
         return "RuleMeta | dict"
-
-    def to_dict(self, value_name: str | None = None) -> dict[str, str]:
-        return {
-            k: v
-            for k, v in super().to_dict(value_name=value_name).items()
-            if v is not None
-        }
 
 
 @dataclass(frozen=True)
-class Rule(MappingConstructible, JsonSerializable):
+class Rule(Operation):
     """A rule comprises rule metadata and a reference to the
     class that implements the rule's logic.
 
@@ -225,37 +208,16 @@ class Rule(MappingConstructible, JsonSerializable):
     """
 
     @classmethod
-    def _from_str(cls, value: str, value_name: str) -> "Rule":
-        rule, rule_ref = import_value(value, "export_rule", factory=Rule.from_value)
-        rule.meta.ref = rule_ref
-        return rule
+    def meta_class(cls) -> Type:
+        return RuleMeta
 
     @classmethod
-    def _from_type(cls, value: Type, value_name: str) -> "Rule":
-        if issubclass(value, RuleOp):
-            op_class = value
-            try:
-                # noinspection PyUnresolvedReferences
-                # Note, the value.meta attribute is set by
-                # the define_rule() function.
-                meta = value.meta
-            except AttributeError:
-                raise ValueError(
-                    f"missing rule metadata, apply define_rule()"
-                    f" to class {value.__name__}"
-                )
-            return Rule(meta=meta, op_class=op_class)
-        super()._from_type(value, value_name)
+    def op_base_class(cls) -> Type:
+        return RuleOp
 
     @classmethod
-    def _get_value_type_name(cls) -> str:
-        return "Rule | dict | str"
-
-    # noinspection PyUnusedLocal
-    def to_json(self, value_name: str | None = None) -> str:
-        if self.meta.ref:
-            return self.meta.ref
-        return super().to_json(value_name=value_name)
+    def op_name(cls) -> str:
+        return "rule"
 
 
 @dataclass(frozen=True)
@@ -331,11 +293,11 @@ class RuleConfig(ValueConstructible, JsonSerializable):
         return RuleConfig(severity, tuple(args), dict(kwargs))
 
     @classmethod
-    def _get_value_name(cls) -> str:
+    def value_name(cls) -> str:
         return "rule configuration"
 
     @classmethod
-    def _get_value_type_name(cls) -> str:
+    def value_type_name(cls) -> str:
         return "int | str | list"
 
     # noinspection PyUnusedLocal
@@ -349,10 +311,10 @@ class RuleConfig(ValueConstructible, JsonSerializable):
 def define_rule(
     name: str | None = None,
     version: str = "0.0.0",
-    schema: dict[str, Any] | list[dict[str, Any]] | bool | None = None,
-    type: Literal["problem", "suggestion", "layout"] | None = None,
+    type: Literal["problem", "suggestion", "layout"] = "problem",
     description: str | None = None,
     docs_url: str | None = None,
+    schema: dict[str, Any] | list[dict[str, Any]] | bool | None = None,
     registry: MutableMapping[str, Rule] | None = None,
     op_class: Type[RuleOp] | None = None,
 ) -> Callable[[Any], Type[RuleOp]] | Rule:
@@ -367,12 +329,12 @@ def define_rule(
     Args:
         name: Rule name, see [RuleMeta][xrlint.rule.RuleMeta].
         version: Rule version, see [RuleMeta][xrlint.rule.RuleMeta].
-        schema: Rule operation arguments schema,
-            see [RuleMeta][xrlint.rule.RuleMeta].
         type: Rule type, see [RuleMeta][xrlint.rule.RuleMeta].
         description: Rule description,
             see [RuleMeta][xrlint.rule.RuleMeta].
         docs_url: Rule documentation URL,
+            see [RuleMeta][xrlint.rule.RuleMeta].
+        schema: Rule operation arguments schema,
             see [RuleMeta][xrlint.rule.RuleMeta].
         registry: Rule registry. Can be provided to register the
             defined rule using its `name`.
@@ -387,34 +349,15 @@ def define_rule(
         TypeError: If either `op_class` or the decorated object is not
             a class derived from [RuleOp][xrlint.rule.RuleOp].
     """
-
-    def _define_rule(_op_class: Type[RuleOp], no_deco=False) -> Type[RuleOp] | Rule:
-        if not isclass(_op_class) or not issubclass(_op_class, RuleOp):
-            raise TypeError(
-                f"component decorated by define_rule()"
-                f" must be a subclass of {RuleOp.__name__}"
-            )
-        meta = RuleMeta(
-            name=name or to_kebab_case(_op_class.__name__),
+    return Rule.define_operation(
+        op_class,
+        registry=registry,
+        meta_kwargs=dict(
+            name=name,
             version=version,
-            description=description or _op_class.__doc__,
+            description=description,
             docs_url=docs_url,
-            type=type if type is not None else "problem",
-            # TODO: if schema not given,
-            #   derive it from _op_class' ctor arguments
+            type=type if type else "problem",
             schema=schema,
-        )
-        # Register rule metadata in rule operation class
-        setattr(_op_class, "meta", meta)
-        rule = Rule(meta=meta, op_class=_op_class)
-        if registry is not None:
-            # Register rule in rule registry
-            registry[meta.name] = rule
-        return rule if no_deco else _op_class
-
-    if op_class is None:
-        # decorator case: return decorated class
-        return _define_rule
-    else:
-        # called as function: return new rule
-        return _define_rule(op_class, no_deco=True)
+        ),
+    )

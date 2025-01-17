@@ -8,7 +8,6 @@ from typing import (
     Generic,
     TypeVar,
     Type,
-    TypeAlias,
     Union,
     get_origin,
     get_args,
@@ -19,12 +18,6 @@ from typing import (
 
 from xrlint.util.formatting import format_message_type_of, format_message_one_of
 
-JSON_VALUE_TYPE_NAME = "None | bool | int | float | str | dict | list"
-
-JsonValue: TypeAlias = (
-    None | bool | int | float | str | dict[str, "JsonValue"] | list["JsonValue"]
-)
-
 T = TypeVar("T")
 
 _IS_PYTHON_3_10 = (3, 10) <= sys.version_info < (3, 11)
@@ -33,6 +26,12 @@ _IS_PYTHON_3_10 = (3, 10) <= sys.version_info < (3, 11)
 class ValueConstructible(Generic[T]):
     """A mixin that makes your classes constructible from a single value
     of any type.
+
+    Implementing classes override one of the many `_from_<type>()`
+    class methods to implement support converting from values of
+    type `<type>`. They may use the [_from_typed_value][] to convert values
+    from values with given type annotations, such as object properties
+    or constructor parameters.
 
     The factory for this purpose is the
     class method [from_value][xrlint.util.codec.ValueConstructible.from_value].
@@ -59,7 +58,7 @@ class ValueConstructible(Generic[T]):
         Raises:
             TypeError: If `value` cannot be converted.
         """
-        value_name = value_name or cls._get_value_name()
+        value_name = value_name or cls.value_name()
         if isinstance(value, cls):
             return value
         if value is None:
@@ -77,10 +76,7 @@ class ValueConstructible(Generic[T]):
         if isinstance(value, Sequence):
             return cls._from_sequence(value, value_name)
         if isclass(value):
-            if issubclass(value, cls):
-                return cls._from_class(value, value_name)
-            else:
-                return cls._from_type(value, value_name)
+            return cls._from_class(value, value_name)
         return cls._from_other(value, value_name)
 
     @classmethod
@@ -124,16 +120,7 @@ class ValueConstructible(Generic[T]):
         raise TypeError(cls._format_type_error(value, value_name))
 
     @classmethod
-    def _from_class(cls, value: Type[T], value_name: str) -> T:
-        """Create an instance of this class from a class value
-        that is a subclass of `cls`.
-        The default implementation raises a `TypeError`.
-        Override to implement a different behaviour.
-        """
-        raise TypeError(cls._format_type_error(value, value_name))
-
-    @classmethod
-    def _from_type(cls, value: Type, value_name: str) -> T:
+    def _from_class(cls, value: Type, value_name: str) -> T:
         """Create an instance of this class from a type value.
         The default implementation raises a `TypeError`.
         Override to implement a different behaviour.
@@ -166,7 +153,9 @@ class ValueConstructible(Generic[T]):
         raise TypeError(cls._format_type_error(value, value_name))
 
     @classmethod
-    def _convert_value(cls, value: Any, type_annotation: Any, value_name: str) -> Any:
+    def _convert_typed_value(
+        cls, value: Any, type_annotation: Any, value_name: str
+    ) -> Any:
         """To be used by subclasses that wish to convert a value with
         known type for the target value.
 
@@ -211,7 +200,7 @@ class ValueConstructible(Generic[T]):
             errors = []
             for type_arg in type_args:
                 try:
-                    return cls._convert_value(value, type_arg, value_name)
+                    return cls._convert_typed_value(value, type_arg, value_name)
                 except (TypeError, ValueError) as e:
                     errors.append((type_arg, e))
             # Note, the error message constructed here is suboptimal.
@@ -247,7 +236,7 @@ class ValueConstructible(Generic[T]):
                                     f"keys of {value_name}", k, key_type
                                 )
                             )
-                        mapping_value[k] = cls._convert_value(
+                        mapping_value[k] = cls._convert_typed_value(
                             v, item_type, f"{value_name}[{k!r}]"
                         )
                     return mapping_value
@@ -256,7 +245,7 @@ class ValueConstructible(Generic[T]):
                     item_type = type_args[0] if type_args else Any
                     # noinspection PyTypeChecker
                     return [
-                        cls._convert_value(v, item_type, f"{value_name}[{i}]")
+                        cls._convert_typed_value(v, item_type, f"{value_name}[{i}]")
                         for i, v in enumerate(value)
                     ]
                 return value
@@ -267,17 +256,16 @@ class ValueConstructible(Generic[T]):
 
     @classmethod
     @lru_cache(maxsize=1000)
-    def _get_class_parameters(cls) -> Mapping[str, Parameter]:
+    def class_parameters(cls) -> Mapping[str, Parameter]:
         """Get the type-resolved parameters of this class' constructor.
         The method returns a cached value for `cls`.
 
         Can be used by subclasses to process annotations.
         """
-        forward_refs = cls._get_forward_refs()
-        return get_class_parameters(cls, forward_refs=forward_refs)
+        return get_class_parameters(cls, forward_refs=cls.forward_refs())
 
     @classmethod
-    def _get_forward_refs(cls) -> Optional[Mapping[str, type]]:
+    def forward_refs(cls) -> Optional[Mapping[str, type]]:
         """Get an extra namespace to be used for resolving parameter type hints.
         Called from [ValueConstructible._get_class_parameters][].
 
@@ -288,7 +276,7 @@ class ValueConstructible(Generic[T]):
         return None
 
     @classmethod
-    def _get_value_name(cls) -> str:
+    def value_name(cls) -> str:
         """Get an identifier for values that can be used to create
         instances of this class.
 
@@ -298,7 +286,7 @@ class ValueConstructible(Generic[T]):
         return "value"
 
     @classmethod
-    def _get_value_type_name(cls) -> str:
+    def value_type_name(cls) -> str:
         """Get a descriptive name for the value types that can
         be used to create instances of this class, e.g., `"Rule | str"`.
 
@@ -319,7 +307,7 @@ class ValueConstructible(Generic[T]):
             type_origin = prop_annotation
             type_args = ()
         if _IS_PYTHON_3_10:  # pragma: no cover
-            forward_refs = cls._get_forward_refs()
+            forward_refs = cls.forward_refs()
             type_origin = cls._resolve_forward_ref(forward_refs, type_origin)
             type_args = tuple(
                 cls._resolve_forward_ref(forward_refs, type_arg)
@@ -336,7 +324,7 @@ class ValueConstructible(Generic[T]):
 
     @classmethod
     def _format_type_error(cls, value: Any, value_name: str) -> str:
-        return format_message_type_of(value_name, value, cls._get_value_type_name())
+        return format_message_type_of(value_name, value, cls.value_type_name())
 
 
 class MappingConstructible(Generic[T], ValueConstructible[T]):
@@ -362,7 +350,7 @@ class MappingConstructible(Generic[T], ValueConstructible[T]):
         """Create an instance of this class from a mapping value."""
 
         mapping_keys = set(mapping.keys())
-        properties = cls._get_class_parameters()
+        properties = cls.class_parameters()
 
         args = []
         kwargs = {}
@@ -375,9 +363,10 @@ class MappingConstructible(Generic[T], ValueConstructible[T]):
                 else:
                     prop_annotation = prop_param.annotation
 
-                prop_value = cls._convert_value(
+                prop_value = cls._convert_property_value(
                     mapping[prop_name],
                     prop_annotation,
+                    prop_name,
                     value_name=f"{value_name}.{prop_name}",
                 )
                 if prop_param.kind == Parameter.POSITIONAL_ONLY:
@@ -389,7 +378,7 @@ class MappingConstructible(Generic[T], ValueConstructible[T]):
             ) or prop_param.kind == Parameter.POSITIONAL_ONLY:
                 raise TypeError(
                     f"missing value for required property {value_name}.{prop_name}"
-                    f" of type {cls._get_value_type_name()}"
+                    f" of type {cls.value_type_name()}"
                 )
 
         if mapping_keys:
@@ -414,8 +403,35 @@ class MappingConstructible(Generic[T], ValueConstructible[T]):
         # noinspection PyArgumentList
         return cls(*args, **kwargs)
 
+    # noinspection PyUnusedLocal
     @classmethod
-    def _get_value_type_name(cls) -> str:
+    def _convert_property_value(
+        cls, value: Any, prop_annotation: Any, prop_name: str, value_name: str
+    ) -> Any:
+        """Convert a property value to the given type.
+
+        May be overridden by subclasses that wish to perform a special
+        conversion for a specific property.
+
+        Args:
+            value: The mapping's item value to convert to an instance of the
+                type specified by `prop_annotation`.
+            prop_annotation: The property annotation representing the
+                target type.
+            prop_name: The property name. May be used by overrides.
+            value_name: An identifier for `value`.
+
+        Returns:
+            The converted property value.
+        """
+        return cls._convert_typed_value(
+            value,
+            prop_annotation,
+            value_name=value_name,
+        )
+
+    @classmethod
+    def value_type_name(cls) -> str:
         """Get a descriptive name for the value types that can
         be used to create instances of this class, e.g., `"Rule | str"`.
         Defaults to `f"{cls.__name__} | dict[str, Any]"`.
@@ -453,86 +469,3 @@ def get_class_parameters(
             )
 
     return resolved_params
-
-
-class JsonSerializable:
-    """A mixin that makes your classes serializable to JSON values
-    and JSON-serializable dictionaries.
-
-    It adds two methods:
-
-    * [to_json][JsonSerializable.to_json] converts to JSON values
-    * [to_dict][JsonSerializable.to_dict] converts to JSON-serializable
-        dictionaries
-
-    """
-
-    def to_json(self, value_name: str | None = None) -> JsonValue:
-        """Convert this object into a JSON value.
-
-        The default implementation calls `self.to_dict()` and returns
-        its value as-is.
-        """
-        return self.to_dict(value_name=value_name)
-
-    def to_dict(self, value_name: str | None = None) -> dict[str, JsonValue]:
-        """Convert this object into a JSON-serializable dictionary.
-
-        The default implementation naively serializes the non-protected
-        attributes of this object's dictionary given by `vars(self)`.
-        """
-        return self._object_to_json(self, value_name or type(self).__name__)
-
-    @classmethod
-    def _value_to_json(cls, value: Any, value_name: str) -> JsonValue:
-        if value is None:
-            return None
-        if isinstance(value, JsonSerializable):
-            return value.to_json(value_name=value_name)
-        if isinstance(value, bool):
-            return bool(value)
-        if isinstance(value, int):
-            return int(value)
-        if isinstance(value, float):
-            return float(value)
-        if isinstance(value, str):
-            return str(value)
-        if isinstance(value, Mapping):
-            return cls._mapping_to_json(value, value_name)
-        if isinstance(value, Sequence):
-            return cls._sequence_to_json(value, value_name)
-        if isinstance(value, type):
-            return repr(value)
-        raise TypeError(format_message_type_of(value_name, value, JSON_VALUE_TYPE_NAME))
-
-    @classmethod
-    def _object_to_json(cls, value: Any, value_name: str) -> dict[str, JsonValue]:
-        return {
-            k: cls._value_to_json(v, f"{value_name}.{k}")
-            for k, v in vars(value).items()
-            if cls._is_non_protected_property_name(k)
-        }
-
-    @classmethod
-    def _mapping_to_json(
-        cls, mapping: Mapping, value_name: str
-    ) -> dict[str, JsonValue]:
-        return {
-            str(k): cls._value_to_json(v, f"{value_name}[{k!r}]")
-            for k, v in mapping.items()
-        }
-
-    @classmethod
-    def _sequence_to_json(cls, sequence: Sequence, value_name: str) -> list[JsonValue]:
-        return [
-            cls._value_to_json(v, f"{value_name}[{i}]") for i, v in enumerate(sequence)
-        ]
-
-    @classmethod
-    def _is_non_protected_property_name(cls, key: Any) -> bool:
-        return (
-            isinstance(key, str)
-            and key.isidentifier()
-            and not key[0].isupper()
-            and not key[0] == "_"
-        )

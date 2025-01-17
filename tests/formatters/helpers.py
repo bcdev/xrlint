@@ -1,7 +1,6 @@
 from xrlint.config import Config
 from xrlint.formatter import FormatterContext
-from xrlint.plugin import Plugin
-from xrlint.plugin import PluginMeta
+from xrlint.plugin import new_plugin
 from xrlint.result import Message, ResultStats
 from xrlint.result import Result
 from xrlint.rule import RuleOp
@@ -28,7 +27,7 @@ def get_context(max_warnings: int = -1) -> FormatterContext:
 
 def get_test_results():
 
-    plugin = Plugin(meta=PluginMeta(name="test"))
+    plugin = new_plugin(name="test")
 
     @plugin.define_rule(
         "rule-1", description="Haha", docs_url="https://rules.com/haha.html"
