@@ -88,7 +88,7 @@ class Operation(MappingConstructible["Operation"], JsonSerializable):
     @classmethod
     def _from_class(cls, value: Type, value_name: str) -> "Operation":
         # noinspection PyTypeChecker
-        if issubclass(value, cls.op_base_class):
+        if issubclass(value, cls.op_base_class()):
             op_class = value
             try:
                 # Note, the value.meta attribute is set by
@@ -98,7 +98,7 @@ class Operation(MappingConstructible["Operation"], JsonSerializable):
                 meta = op_class.meta
             except AttributeError:
                 raise ValueError(
-                    f"missing {cls.op_name} metadata, apply define_{cls.op_name}()"
+                    f"missing {cls.op_name()} metadata, apply define_{cls.op_name()}()"
                     f" to class {op_class.__name__}"
                 )
             # noinspection PyArgumentList
@@ -110,7 +110,7 @@ class Operation(MappingConstructible["Operation"], JsonSerializable):
         # noinspection PyTypeChecker
         operator, operator_ref = import_value(
             value,
-            cls.op_import_attr_name,
+            cls.op_import_attr_name(),
             factory=cls.from_value,
         )
         # noinspection PyUnresolvedReferences
@@ -118,15 +118,13 @@ class Operation(MappingConstructible["Operation"], JsonSerializable):
         return operator
 
     @classmethod
-    @property
     def op_import_attr_name(cls) -> str:
         """Get the default name for the attribute that is used to import
         instances of this class from modules.
         """
-        return f"export_{cls.op_name}"
+        return f"export_{cls.op_name()}"
 
     @classmethod
-    @property
     def meta_class(cls) -> Type:
         """Get the class of the instances of the `meta` field.
         Defaults to [OperationMeta][xrlint.operation.OperationMeta].
@@ -134,7 +132,6 @@ class Operation(MappingConstructible["Operation"], JsonSerializable):
         return OperationMeta
 
     @classmethod
-    @property
     @abstractmethod
     def op_base_class(cls) -> Type:
         """Get the base class from which all instances of the `op_class`
@@ -142,7 +139,6 @@ class Operation(MappingConstructible["Operation"], JsonSerializable):
         ."""
 
     @classmethod
-    @property
     @abstractmethod
     def op_name(cls) -> str:
         """Get a name that describes the operation, e.g.,
@@ -151,12 +147,12 @@ class Operation(MappingConstructible["Operation"], JsonSerializable):
         return "operation"
 
     @classmethod
-    def _get_value_name(cls) -> str:
-        return cls.op_name
+    def value_name(cls) -> str:
+        return cls.op_name()
 
     @classmethod
-    def _get_value_type_name(cls) -> str:
-        return f"{cls.__name__} | Type[{cls.op_base_class.__name__}] | dict | str"
+    def value_type_name(cls) -> str:
+        return f"{cls.__name__} | Type[{cls.op_base_class().__name__}] | dict | str"
 
     @classmethod
     def define_operation(
@@ -171,7 +167,7 @@ class Operation(MappingConstructible["Operation"], JsonSerializable):
         meta_kwargs = meta_kwargs or {}
 
         def _define_op(_op_class: Type, decorated=True) -> Type | "Operation":
-            cls._assert_op_class_ok(f"decorated {cls.op_name} component", _op_class)
+            cls._assert_op_class_ok(f"decorated {cls.op_name()} component", _op_class)
 
             name = meta_kwargs.pop("name", None)
             if not name:
@@ -186,7 +182,7 @@ class Operation(MappingConstructible["Operation"], JsonSerializable):
                 # schema = cls._derive_schema(_op_class)
                 pass
             # noinspection PyCallingNonCallable
-            meta = cls.meta_class(
+            meta = cls.meta_class()(
                 name=name, description=description, schema=schema, **meta_kwargs
             )
 
@@ -223,8 +219,8 @@ class Operation(MappingConstructible["Operation"], JsonSerializable):
                 f"{value_name} must be a class, but got {type(op_class).__name__}"
             )
         # noinspection PyTypeChecker
-        if not issubclass(op_class, cls.op_base_class):
+        if not issubclass(op_class, cls.op_base_class()):
             raise TypeError(
-                f"{value_name} must be a subclass of {cls.op_base_class.__name__},"
+                f"{value_name} must be a subclass of {cls.op_base_class().__name__},"
                 f" but got {op_class.__name__}"
             )

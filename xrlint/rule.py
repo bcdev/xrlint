@@ -182,7 +182,7 @@ class RuleMeta(OperationMeta):
     """
 
     @classmethod
-    def _get_value_type_name(cls) -> str:
+    def value_type_name(cls) -> str:
         return "RuleMeta | dict"
 
 
@@ -208,17 +208,14 @@ class Rule(Operation):
     """
 
     @classmethod
-    @property
     def meta_class(cls) -> Type:
         return RuleMeta
 
     @classmethod
-    @property
     def op_base_class(cls) -> Type:
         return RuleOp
 
     @classmethod
-    @property
     def op_name(cls) -> str:
         return "rule"
 
@@ -296,11 +293,11 @@ class RuleConfig(ValueConstructible, JsonSerializable):
         return RuleConfig(severity, tuple(args), dict(kwargs))
 
     @classmethod
-    def _get_value_name(cls) -> str:
+    def value_name(cls) -> str:
         return "rule configuration"
 
     @classmethod
-    def _get_value_type_name(cls) -> str:
+    def value_type_name(cls) -> str:
         return "int | str | list"
 
     # noinspection PyUnusedLocal

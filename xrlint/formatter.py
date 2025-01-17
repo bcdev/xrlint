@@ -73,17 +73,14 @@ class Formatter(Operation):
     """The class that implements the format operation."""
 
     @classmethod
-    @property
     def meta_class(cls) -> Type:
         return FormatterMeta
 
     @classmethod
-    @property
     def op_base_class(cls) -> Type:
         return FormatterOp
 
     @classmethod
-    @property
     def op_name(cls) -> str:
         return "formatter"
 

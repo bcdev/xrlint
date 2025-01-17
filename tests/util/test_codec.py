@@ -80,7 +80,7 @@ class UnresolvedTypesContainer(ComplexTypesContainer, SimpleTypesContainer):
     plugins: dict[str, "Plugin"] = field(default_factory=dict)
 
     @classmethod
-    def _get_forward_refs(cls) -> Optional[Mapping[str, type]]:
+    def forward_refs(cls) -> Optional[Mapping[str, type]]:
         from xrlint.rule import RuleConfig
         from xrlint.plugin import Plugin
 
@@ -480,10 +480,10 @@ class MappingConstructibleTest(TestCase):
             UnionTypesContainer.from_value({"m": "pippo"}, value_name="utc")
 
     def test_get_class_parameters_is_cached(self):
-        ctc_param = ComplexTypesContainer._get_class_parameters()
-        stc_param = SimpleTypesContainer._get_class_parameters()
-        self.assertIs(stc_param, SimpleTypesContainer._get_class_parameters())
-        self.assertIs(ctc_param, ComplexTypesContainer._get_class_parameters())
+        ctc_param = ComplexTypesContainer.class_parameters()
+        stc_param = SimpleTypesContainer.class_parameters()
+        self.assertIs(stc_param, SimpleTypesContainer.class_parameters())
+        self.assertIs(ctc_param, ComplexTypesContainer.class_parameters())
         self.assertIsNot(ctc_param, stc_param)
 
 
@@ -492,7 +492,7 @@ class GetClassParametersTest(TestCase):
     def test_resolves_types(self):
         ctc_params = get_class_parameters(
             UnresolvedTypesContainer,
-            forward_refs=UnresolvedTypesContainer._get_forward_refs(),
+            forward_refs=UnresolvedTypesContainer.forward_refs(),
         )
         # order is important!
         self.assertEqual(

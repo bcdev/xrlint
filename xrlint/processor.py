@@ -66,7 +66,7 @@ class ProcessorMeta(OperationMeta):
     """
 
     @classmethod
-    def _get_value_type_name(cls) -> str:
+    def value_type_name(cls) -> str:
         return "ProcessorMeta | dict"
 
 
@@ -87,17 +87,14 @@ class Processor(Operation):
     # """`True` if this processor supports auto-fixing of datasets."""
 
     @classmethod
-    @property
     def meta_class(cls) -> Type:
         return ProcessorMeta
 
     @classmethod
-    @property
     def op_base_class(cls) -> Type:
         return ProcessorOp
 
     @classmethod
-    @property
     def op_name(cls) -> str:
         return "processor"
 

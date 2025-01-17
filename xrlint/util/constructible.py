@@ -58,7 +58,7 @@ class ValueConstructible(Generic[T]):
         Raises:
             TypeError: If `value` cannot be converted.
         """
-        value_name = value_name or cls._get_value_name()
+        value_name = value_name or cls.value_name()
         if isinstance(value, cls):
             return value
         if value is None:
@@ -153,7 +153,7 @@ class ValueConstructible(Generic[T]):
         raise TypeError(cls._format_type_error(value, value_name))
 
     @classmethod
-    def _from_typed_value(
+    def _convert_typed_value(
         cls, value: Any, type_annotation: Any, value_name: str
     ) -> Any:
         """To be used by subclasses that wish to convert a value with
@@ -200,7 +200,7 @@ class ValueConstructible(Generic[T]):
             errors = []
             for type_arg in type_args:
                 try:
-                    return cls._from_typed_value(value, type_arg, value_name)
+                    return cls._convert_typed_value(value, type_arg, value_name)
                 except (TypeError, ValueError) as e:
                     errors.append((type_arg, e))
             # Note, the error message constructed here is suboptimal.
@@ -236,7 +236,7 @@ class ValueConstructible(Generic[T]):
                                     f"keys of {value_name}", k, key_type
                                 )
                             )
-                        mapping_value[k] = cls._from_typed_value(
+                        mapping_value[k] = cls._convert_typed_value(
                             v, item_type, f"{value_name}[{k!r}]"
                         )
                     return mapping_value
@@ -245,7 +245,7 @@ class ValueConstructible(Generic[T]):
                     item_type = type_args[0] if type_args else Any
                     # noinspection PyTypeChecker
                     return [
-                        cls._from_typed_value(v, item_type, f"{value_name}[{i}]")
+                        cls._convert_typed_value(v, item_type, f"{value_name}[{i}]")
                         for i, v in enumerate(value)
                     ]
                 return value
@@ -256,17 +256,16 @@ class ValueConstructible(Generic[T]):
 
     @classmethod
     @lru_cache(maxsize=1000)
-    def _get_class_parameters(cls) -> Mapping[str, Parameter]:
+    def class_parameters(cls) -> Mapping[str, Parameter]:
         """Get the type-resolved parameters of this class' constructor.
         The method returns a cached value for `cls`.
 
         Can be used by subclasses to process annotations.
         """
-        forward_refs = cls._get_forward_refs()
-        return get_class_parameters(cls, forward_refs=forward_refs)
+        return get_class_parameters(cls, forward_refs=cls.forward_refs())
 
     @classmethod
-    def _get_forward_refs(cls) -> Optional[Mapping[str, type]]:
+    def forward_refs(cls) -> Optional[Mapping[str, type]]:
         """Get an extra namespace to be used for resolving parameter type hints.
         Called from [ValueConstructible._get_class_parameters][].
 
@@ -276,9 +275,8 @@ class ValueConstructible(Generic[T]):
         """
         return None
 
-    # TODO: turn into class property
     @classmethod
-    def _get_value_name(cls) -> str:
+    def value_name(cls) -> str:
         """Get an identifier for values that can be used to create
         instances of this class.
 
@@ -287,9 +285,8 @@ class ValueConstructible(Generic[T]):
         """
         return "value"
 
-    # TODO: turn into class property
     @classmethod
-    def _get_value_type_name(cls) -> str:
+    def value_type_name(cls) -> str:
         """Get a descriptive name for the value types that can
         be used to create instances of this class, e.g., `"Rule | str"`.
 
@@ -310,7 +307,7 @@ class ValueConstructible(Generic[T]):
             type_origin = prop_annotation
             type_args = ()
         if _IS_PYTHON_3_10:  # pragma: no cover
-            forward_refs = cls._get_forward_refs()
+            forward_refs = cls.forward_refs()
             type_origin = cls._resolve_forward_ref(forward_refs, type_origin)
             type_args = tuple(
                 cls._resolve_forward_ref(forward_refs, type_arg)
@@ -327,10 +324,9 @@ class ValueConstructible(Generic[T]):
 
     @classmethod
     def _format_type_error(cls, value: Any, value_name: str) -> str:
-        return format_message_type_of(value_name, value, cls._get_value_type_name())
+        return format_message_type_of(value_name, value, cls.value_type_name())
 
 
-# TODO: Rename to ObjectConstructible
 class MappingConstructible(Generic[T], ValueConstructible[T]):
     """A mixin that makes your classes constructible from mappings,
     such as a `dict`.
@@ -354,7 +350,7 @@ class MappingConstructible(Generic[T], ValueConstructible[T]):
         """Create an instance of this class from a mapping value."""
 
         mapping_keys = set(mapping.keys())
-        properties = cls._get_class_parameters()
+        properties = cls.class_parameters()
 
         args = []
         kwargs = {}
@@ -367,11 +363,10 @@ class MappingConstructible(Generic[T], ValueConstructible[T]):
                 else:
                     prop_annotation = prop_param.annotation
 
-                # TODO: Use cls._from_property_value
-                #   which delegates to cls._convert_value
-                prop_value = cls._from_typed_value(
+                prop_value = cls._convert_property_value(
                     mapping[prop_name],
                     prop_annotation,
+                    prop_name,
                     value_name=f"{value_name}.{prop_name}",
                 )
                 if prop_param.kind == Parameter.POSITIONAL_ONLY:
@@ -383,7 +378,7 @@ class MappingConstructible(Generic[T], ValueConstructible[T]):
             ) or prop_param.kind == Parameter.POSITIONAL_ONLY:
                 raise TypeError(
                     f"missing value for required property {value_name}.{prop_name}"
-                    f" of type {cls._get_value_type_name()}"
+                    f" of type {cls.value_type_name()}"
                 )
 
         if mapping_keys:
@@ -408,8 +403,35 @@ class MappingConstructible(Generic[T], ValueConstructible[T]):
         # noinspection PyArgumentList
         return cls(*args, **kwargs)
 
+    # noinspection PyUnusedLocal
     @classmethod
-    def _get_value_type_name(cls) -> str:
+    def _convert_property_value(
+        cls, value: Any, prop_annotation: Any, prop_name: str, value_name: str
+    ) -> Any:
+        """Convert a property value to the given type.
+
+        May be overridden by subclasses that wish to perform a special
+        conversion for a specific property.
+
+        Args:
+            value: The mapping's item value to convert to an instance of the
+                type specified by `prop_annotation`.
+            prop_annotation: The property annotation representing the
+                target type.
+            prop_name: The property name. May be used by overrides.
+            value_name: An identifier for `value`.
+
+        Returns:
+            The converted property value.
+        """
+        return cls._convert_typed_value(
+            value,
+            prop_annotation,
+            value_name=value_name,
+        )
+
+    @classmethod
+    def value_type_name(cls) -> str:
         """Get a descriptive name for the value types that can
         be used to create instances of this class, e.g., `"Rule | str"`.
         Defaults to `f"{cls.__name__} | dict[str, Any]"`.

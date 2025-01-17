@@ -283,7 +283,7 @@ class Config(MappingConstructible, JsonSerializable):
         return Config()
 
     @classmethod
-    def _get_forward_refs(cls) -> dict[str, type]:
+    def forward_refs(cls) -> dict[str, type]:
         from xrlint.processor import ProcessorOp
         from xrlint.plugin import Plugin
         from xrlint.rule import Rule
@@ -297,11 +297,11 @@ class Config(MappingConstructible, JsonSerializable):
         }
 
     @classmethod
-    def _get_value_name(cls) -> str:
+    def value_name(cls) -> str:
         return "config"
 
     @classmethod
-    def _get_value_type_name(cls) -> str:
+    def value_type_name(cls) -> str:
         return "Config | dict | None"
 
     def to_dict(self, value_name: str | None = None) -> dict[str, JsonValue]:
@@ -395,11 +395,11 @@ class ConfigList(ValueConstructible, JsonSerializable):
         return ConfigList(configs)
 
     @classmethod
-    def _get_value_name(cls) -> str:
+    def value_name(cls) -> str:
         return "config_list"
 
     @classmethod
-    def _get_value_type_name(cls) -> str:
+    def value_type_name(cls) -> str:
         return "ConfigList | list[Config | dict]"
 
     @classmethod

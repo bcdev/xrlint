@@ -10,7 +10,6 @@ class ImportFormattersTest(TestCase):
             {
                 "html",
                 "json",
-                "markdown",
                 "simple",
             },
             set(registry.keys()),

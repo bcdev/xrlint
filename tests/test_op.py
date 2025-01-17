@@ -24,17 +24,14 @@ class Thing(Operation):
     op_class: Type[ThingOp]
 
     @classmethod
-    @property
     def meta_class(cls) -> Type:
         return ThingMeta
 
     @classmethod
-    @property
     def op_base_class(cls) -> Type[ThingOp]:
         return ThingOp
 
     @classmethod
-    @property
     def op_name(cls) -> str:
         return "thing"
 
