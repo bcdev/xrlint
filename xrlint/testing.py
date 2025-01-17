@@ -208,9 +208,10 @@ def _format_error_message(
 ) -> str:
     actual = format_problems(result.error_count, result.warning_count)
     expected = f"{'no problem' if test_mode == 'valid' else 'one or more problems'}"
+    messages = "\n".join(f"- {m.message}" for m in result.messages)
     return (
         f"Rule {rule_name!r}: {test_id}:"
-        f" expected {expected}, but got {actual}:\n{result}"
+        f" expected {expected}, but got {actual}{f':\n{messages}' if messages else '.'}"
     )
 
 
