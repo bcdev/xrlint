@@ -22,6 +22,7 @@ def export_plugin() -> Plugin:
                 "xcube/increasing-time": "error",
                 "xcube/lat-lon-naming": "error",
                 "xcube/single-grid-mapping": "error",
+                "xcube/time-naming": "error",
             },
         }
     )

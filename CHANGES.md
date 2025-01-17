@@ -2,8 +2,12 @@
 
 ## Version 0.3.0 (in development)
 
+- Added more rules
+  - core rule "time-coords"  (#15)
+  - xcube rule "time-naming"  (#15)
+
 - Fixed problem where referring to values in modules via 
-  the form `"<module>:<attr>"` raised. #21
+  the form `"<module>:<attr>"` raised. (#21)
 
 - Introduced factory method `new_plugin` which simplifies
   creating plugin objects.

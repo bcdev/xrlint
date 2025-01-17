@@ -23,9 +23,10 @@ class ExportPluginTest(TestCase):
                 "cube-dims-order",
                 "data-var-colors",
                 "grid-mapping-naming",
+                "increasing-time",
                 "lat-lon-naming",
                 "single-grid-mapping",
-                "increasing-time",
+                "time-naming",
             },
             set(_plugin.rules.keys()),
         )

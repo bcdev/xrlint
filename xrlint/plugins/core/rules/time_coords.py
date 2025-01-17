@@ -7,7 +7,7 @@ _EXPECTED_UNITY_FORMAT = "<unit> since <date> <time> <timezone>"
 
 
 @plugin.define_rule(
-    "time-vars",
+    "time-coords",
     version="1.0.0",
     type="problem",
     description=(
@@ -55,10 +55,7 @@ class TimeCoords(RuleOp):
             has_tz = last_part.lower() == "utc" or last_part[0] in ("+", "-")
             if not has_tz:
                 ctx.report(
-                    (
-                        f"Missing explicit timezone in value"
-                        f" of attribute 'units': {units}"
-                    ),
+                    f"Missing timezone in 'units' attribute: {units}",
                     suggestions=[
                         use_units_format_msg,
                         f"Append timezone specification, e.g., use"
@@ -69,6 +66,6 @@ class TimeCoords(RuleOp):
             return
 
         ctx.report(
-            f"Invalid value for attribute 'units': {units}",
+            f"Invalid 'units' attribute: {units}",
             suggestions=[use_units_format_msg],
         )
