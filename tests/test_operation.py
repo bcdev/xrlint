@@ -61,7 +61,17 @@ def export_thing() -> Thing:
     return Thing(meta=ThingMeta(name="my-thing-op-3"), op_class=MyThingOp3)
 
 
-class OpMixinTest(TestCase):
+class OperationTest(TestCase):
+    def test_defaults(self):
+        self.assertEqual(OperationMeta, Operation.meta_class())
+        self.assertEqual(type, Operation.op_base_class())
+        self.assertEqual("operation", Operation.op_name())
+        self.assertEqual("export_operation", Operation.op_import_attr_name())
+        self.assertEqual("operation", Operation.value_name())
+        self.assertEqual(
+            "Operation | Type[type] | dict | str", Operation.value_type_name()
+        )
+
     def test_from_value_ok_rule(self):
         thing1_ = Thing.from_value(thing1)
         self.assertIs(thing1_, thing1)
@@ -83,20 +93,20 @@ class OpMixinTest(TestCase):
 
     def test_from_value_ok_str(self):
 
-        thing1_ = Thing.from_value("tests.test_op:thing1")
+        thing1_ = Thing.from_value("tests.test_operation:thing1")
         self.assertIs(thing1, thing1_)
-        self.assertEqual("tests.test_op:thing1", thing1_.meta.ref)
+        self.assertEqual("tests.test_operation:thing1", thing1_.meta.ref)
 
-        thing2_ = Thing.from_value("tests.test_op:thing2")
+        thing2_ = Thing.from_value("tests.test_operation:thing2")
         self.assertIs(thing2, thing2_)
-        self.assertEqual("tests.test_op:thing2", thing2_.meta.ref)
+        self.assertEqual("tests.test_operation:thing2", thing2_.meta.ref)
 
         # default attribute is "export_thing"
-        thing3 = Thing.from_value("tests.test_op")
+        thing3 = Thing.from_value("tests.test_operation")
         self.assertIsInstance(thing3, Thing)
         self.assertIs("my-thing-op-3", thing3.meta.name)
         self.assertIsInstance(thing3.op_class, type)
-        self.assertEqual("tests.test_op:export_thing", thing3.meta.ref)
+        self.assertEqual("tests.test_operation:export_thing", thing3.meta.ref)
 
     # noinspection PyMethodMayBeStatic
     def test_from_value_fails(self):
@@ -143,7 +153,8 @@ class OpMixinTest(TestCase):
                     "description": "What a thing.",
                 },
                 "op_class": "<class"
-                " 'tests.test_op.OpMixinTest.test_to_json.<locals>.MyThingOp3'>",
+                " 'tests.test_operation.OperationTest"
+                ".test_to_json.<locals>.MyThingOp3'>",
             },
             rule.to_json(),
         )

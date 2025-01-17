@@ -132,14 +132,13 @@ class Operation(MappingConstructible["Operation"], JsonSerializable):
         return OperationMeta
 
     @classmethod
-    @abstractmethod
     def op_base_class(cls) -> Type:
         """Get the base class from which all instances of the `op_class`
         must derive from.
-        ."""
+        """
+        return type
 
     @classmethod
-    @abstractmethod
     def op_name(cls) -> str:
         """Get a name that describes the operation, e.g.,
         "rule", "processor", "formatter".
@@ -205,7 +204,7 @@ class Operation(MappingConstructible["Operation"], JsonSerializable):
             )
 
         if op_class is not None:
-            # passing op_class means, we should return operator instance
+            # passing the op_class means an operation instance is expected
             cls._assert_op_class_ok("op_class", op_class)
             return _define_op(op_class, decorated=False)
 
