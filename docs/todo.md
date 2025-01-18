@@ -4,9 +4,12 @@
 
 - populate `core` plugin by more rules, see CF site and `cf-check` tool
 - populate `xcube` plugin by more rules
-- add `docs`
+- enhance docs
+  - complete configuration page
+  - provide guide page
   - use mkdocstrings ref syntax in docstrings
   - provide configuration examples (use as tests?)
+  - add `docs_url` to all existing rules 
 
 ## Desired
  
