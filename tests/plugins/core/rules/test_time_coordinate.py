@@ -1,7 +1,7 @@
 import numpy as np
 import xarray as xr
 
-from xrlint.plugins.core.rules.time_coords import TimeCoords
+from xrlint.plugins.core.rules.time_coordinate import TimeCoordinate
 from xrlint.testing import RuleTest, RuleTester
 
 valid_dataset_0 = xr.Dataset()
@@ -58,9 +58,9 @@ invalid_dataset_4 = valid_dataset_1.copy(deep=True)
 invalid_dataset_4.time.encoding["units"] = "2000-01-01 00:00:00 UTC"
 
 
-TimeCoordsTest = RuleTester.define_test(
-    "time-coords",
-    TimeCoords,
+TimeCoordinateTest = RuleTester.define_test(
+    "time-coordinate",
+    TimeCoordinate,
     valid=[
         RuleTest(dataset=valid_dataset_0),
         RuleTest(dataset=valid_dataset_1),

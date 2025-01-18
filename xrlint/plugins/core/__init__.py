@@ -16,7 +16,7 @@ def export_plugin() -> Plugin:
                 "dataset-title-attr": "warn",
                 "grid-mappings": "error",
                 "no-empty-attrs": "warn",
-                "time-coords": "error",
+                "time-coordinate": "error",
                 "var-units-attr": "warn",
             },
         }

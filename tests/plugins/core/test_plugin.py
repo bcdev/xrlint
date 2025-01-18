@@ -23,7 +23,7 @@ class ExportPluginTest(TestCase):
                 "dataset-title-attr",
                 "grid-mappings",
                 "no-empty-attrs",
-                "time-coords",
+                "time-coordinate",
                 "var-units-attr",
             },
             set(_plugin.rules.keys()),
