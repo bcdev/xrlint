@@ -3,6 +3,8 @@
 ## Version 0.3.0 (in development)
 
 - Added more rules
+  - core rule "lon-coordinate"
+  - core rule "lat-coordinate"
   - core rule "time-coordinate"  (#15)
   - xcube rule "time-naming"  (#15)
 

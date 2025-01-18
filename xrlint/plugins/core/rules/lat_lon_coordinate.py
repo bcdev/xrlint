@@ -17,11 +17,11 @@ LAT_UNITS = "degrees_north"
 LON_UNITS = "degrees_east"
 
 LAT_UNITS_ALIASES = {"degree_north", "degree_N", "degrees_N", "degreeN", "degreesN"}
-LON_UNITS_ALIASES = {"degree_east", "degree_E2", "degrees_E", "degreeE", "degreesE"}
+LON_UNITS_ALIASES = {"degree_east", "degree_E", "degrees_E", "degreeE", "degreesE"}
 
 
 @plugin.define_rule(
-    "lat-coords",
+    "lat-coordinate",
     version="1.0.0",
     type="problem",
     description="Latitude coordinate should have standard units and standard names.",
@@ -30,7 +30,7 @@ LON_UNITS_ALIASES = {"degree_east", "degree_E2", "degrees_E", "degreeE", "degree
         "#latitude-coordinate"
     ),
 )
-class LatCoords(RuleOp):
+class LatCoordinate(RuleOp):
     def data_array(self, ctx: RuleContext, node: DataArrayNode):
         if node.name in ctx.dataset.coords and _is_lat_var(
             str(node.name), node.data_array
@@ -46,16 +46,16 @@ class LatCoords(RuleOp):
 
 
 @plugin.define_rule(
-    "lon-coords",
+    "lon-coordinate",
     version="1.0.0",
     type="problem",
-    description=("Longitude coordinate should have standard units and standard names."),
+    description="Longitude coordinate should have standard units and standard names.",
     docs_url=(
         "https://cfconventions.org/cf-conventions/cf-conventions.html"
         "#longitude-coordinate"
     ),
 )
-class LonCoords(RuleOp):
+class LonCoordinate(RuleOp):
     def data_array(self, ctx: RuleContext, node: DataArrayNode):
         if node.name in ctx.dataset.coords and _is_lon_var(
             str(node.name), node.data_array
