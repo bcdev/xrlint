@@ -22,6 +22,8 @@ class ExportPluginTest(TestCase):
                 "coords-for-dims",
                 "dataset-title-attr",
                 "grid-mappings",
+                "lat-coords",
+                "lon-coords",
                 "no-empty-attrs",
                 "time-coords",
                 "var-units-attr",

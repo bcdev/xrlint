@@ -15,6 +15,8 @@ def export_plugin() -> Plugin:
                 "coords-for-dims": "error",
                 "dataset-title-attr": "warn",
                 "grid-mappings": "error",
+                "lat-coord": "error",
+                "lon-coord": "error",
                 "no-empty-attrs": "warn",
                 "time-coords": "error",
                 "var-units-attr": "warn",
