@@ -3,7 +3,7 @@
 ## Version 0.3.0 (in development)
 
 - Added more rules
-  - core rule "time-coords"  (#15)
+  - core rule "time-coordinate"  (#15)
   - xcube rule "time-naming"  (#15)
 
 - Fixed problem where referring to values in modules via 
