@@ -211,7 +211,7 @@ def _format_error_message(
     messages = "\n".join(f"- {m.message}" for m in result.messages)
     return (
         f"Rule {rule_name!r}: {test_id}:"
-        f" expected {expected}, but got {actual}{f':\n{messages}' if messages else '.'}"
+        f" expected {expected}, but got {actual}{':\n' + messages if messages else '.'}"
     )
 
 
