@@ -137,19 +137,26 @@ def _maybe_report_attr(
     expected_alt_value: str | None,
 ):
     actual_value = attrs.get(attr_name)
-    actual_alt_value = attrs.get(alt_attr_name) if alt_attr_name else None
+    if alt_attr_name:
+        actual_alt_value = attrs.get(alt_attr_name)
+        has_alt_value = actual_alt_value is not None
+    else:
+        actual_alt_value = None
+        has_alt_value = False
 
-    if not actual_value and not actual_alt_value:
+    if not actual_value and not has_alt_value:
         ctx.report(f"Missing attribute {attr_name!r} with value {expected_value!r}.")
-    elif actual_value != expected_value and not (
-        expected_value_aliases and actual_value in expected_value_aliases
-    ):
-        if expected_alt_value is None:
+    else:
+        value_ok = actual_value == expected_value or (
+            expected_value_aliases and actual_value in expected_value_aliases
+        )
+        alt_value_ok = has_alt_value and actual_alt_value == expected_alt_value
+        if not value_ok and not alt_value_ok:
             ctx.report(
                 f"Attribute {attr_name!r} should be {expected_value!r},"
                 f" was {actual_value!r}."
             )
-        elif actual_alt_value != expected_alt_value:
+        if has_alt_value and not alt_value_ok:
             ctx.report(
                 f"Attribute {alt_attr_name!r} should be {expected_alt_value!r},"
                 f" was {actual_alt_value!r}."
