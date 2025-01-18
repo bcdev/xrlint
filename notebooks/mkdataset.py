@@ -19,12 +19,14 @@ def make_dataset() -> xr.Dataset:
                 np.linspace(-90, 90, ny), dims="y", attrs={"units": "degrees"}
             ),
             "time": xr.DataArray(
-                [365 * i for i in range(nt)], 
-                dims="time", 
-                attrs={"standard_name": "time", 
-                       "long_name": "time",
-                       "units": "days since 2020-01-01 utc", 
-                       "calendar": "gregorian"}
+                [365 * i for i in range(nt)],
+                dims="time",
+                attrs={
+                    "standard_name": "time",
+                    "long_name": "time",
+                    "units": "days since 2020-01-01 utc",
+                    "calendar": "gregorian",
+                },
             ),
             "spatial_ref": xr.DataArray(
                 0,

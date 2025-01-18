@@ -7,15 +7,19 @@ _EXPECTED_UNITY_FORMAT = "<unit> since <date> <time> <timezone>"
 
 
 @plugin.define_rule(
-    "time-coords",
+    "time-coordinate",
     version="1.0.0",
     type="problem",
     description=(
-        "Time coordinates (standard_name='time') should have"
-        " unambiguous time encoding."
+        "Time coordinate (standard_name='time') should have"
+        " unambiguous time units encoding."
+    ),
+    docs_url=(
+        "https://cfconventions.org/cf-conventions/cf-conventions.html"
+        "#time-coordinate"
     ),
 )
-class TimeCoords(RuleOp):
+class TimeCoordinate(RuleOp):
     def data_array(self, ctx: RuleContext, node: DataArrayNode):
 
         array = node.data_array

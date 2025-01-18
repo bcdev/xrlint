@@ -29,9 +29,10 @@ Every dataset element should have metadata that describes it.
 
 Contained in:  `all`-:material-lightning-bolt: `recommended`-:material-alert:
 
-### :material-bug: `time-coords`
+### :material-bug: `time-coordinate`
 
-Time coordinates (standard_name='time') should have unambiguous time encoding.
+Time coordinate (standard_name='time') should have unambiguous time units encoding.
+[More information.](https://cfconventions.org/cf-conventions/cf-conventions.html#time-coordinate)
 
 Contained in:  `all`-:material-lightning-bolt: `recommended`-:material-lightning-bolt:
 
