@@ -17,6 +17,13 @@ Datasets should be given a non-empty title.
 
 Contained in:  `all`-:material-lightning-bolt: `recommended`-:material-alert:
 
+### :material-lightbulb: `flags`
+
+Validate attributes 'flag_values', 'flag_masks' and 'flag_meanings' that make variables that contain flag values self describing. 
+[:material-information-variant:](https://cfconventions.org/cf-conventions/cf-conventions.html#flags)
+
+Contained in:  `all`-:material-lightning-bolt:
+
 ### :material-bug: `grid-mappings`
 
 Grid mappings, if any, shall have valid grid mapping coordinate variables.

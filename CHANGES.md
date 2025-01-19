@@ -2,6 +2,8 @@
 
 ## Version 0.3.0 (in development)
 
+- Added cure rule "flags"
+
 - Fixed problem where referring to values in modules via 
   the form `"<module>:<attr>"` raised. #21
 
