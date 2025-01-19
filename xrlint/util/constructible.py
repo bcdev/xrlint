@@ -1,22 +1,22 @@
 import sys
 from collections.abc import Mapping, Sequence
 from functools import lru_cache
-from inspect import formatannotation, isclass, signature, Parameter
+from inspect import Parameter, formatannotation, isclass, signature
 from types import NoneType, UnionType
 from typing import (
     Any,
     Generic,
-    TypeVar,
-    Type,
-    Union,
-    get_origin,
-    get_args,
-    get_type_hints,
-    Optional,
     Literal,
+    Optional,
+    Type,
+    TypeVar,
+    Union,
+    get_args,
+    get_origin,
+    get_type_hints,
 )
 
-from xrlint.util.formatting import format_message_type_of, format_message_one_of
+from xrlint.util.formatting import format_message_one_of, format_message_type_of
 
 T = TypeVar("T")
 

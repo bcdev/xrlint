@@ -5,11 +5,10 @@ from unittest import TestCase
 
 import pytest
 
-from xrlint.cli.config import ConfigError
-from xrlint.cli.config import read_config_list
-from xrlint.config import Config
-from xrlint.config import ConfigList
+from xrlint.cli.config import ConfigError, read_config_list
+from xrlint.config import Config, ConfigList
 from xrlint.rule import RuleConfig
+
 from .helpers import text_file
 
 yaml_text = """

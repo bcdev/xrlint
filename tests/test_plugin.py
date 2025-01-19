@@ -3,8 +3,8 @@ from unittest import TestCase
 
 import xarray as xr
 
-from xrlint.plugin import new_plugin, Plugin, PluginMeta
-from xrlint.processor import ProcessorOp, Processor
+from xrlint.plugin import Plugin, PluginMeta, new_plugin
+from xrlint.processor import Processor, ProcessorOp
 from xrlint.result import Message
 from xrlint.rule import Rule, RuleOp, define_rule
 

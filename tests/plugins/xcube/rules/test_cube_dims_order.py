@@ -1,10 +1,8 @@
 import numpy as np
-
-from xrlint.plugins.xcube.rules.cube_dims_order import CubeDimsOrder
-
 import xarray as xr
 
-from xrlint.testing import RuleTester, RuleTest
+from xrlint.plugins.xcube.rules.cube_dims_order import CubeDimsOrder
+from xrlint.testing import RuleTest, RuleTester
 
 
 def make_dataset(dims: tuple[str, str, str]):

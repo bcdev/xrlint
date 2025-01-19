@@ -1,10 +1,8 @@
 import numpy as np
-
-from xrlint.plugins.xcube.rules.increasing_time import IncreasingTime
-
 import xarray as xr
 
-from xrlint.testing import RuleTester, RuleTest
+from xrlint.plugins.xcube.rules.increasing_time import IncreasingTime
+from xrlint.testing import RuleTest, RuleTester
 
 
 def make_dataset():

@@ -1,7 +1,8 @@
 from unittest import TestCase
 
 from xrlint.formatters.json import Json
-from .helpers import get_test_results, get_context
+
+from .helpers import get_context, get_test_results
 
 
 class JsonTest(TestCase):

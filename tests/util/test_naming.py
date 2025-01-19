@@ -1,7 +1,6 @@
 from unittest import TestCase
 
-from xrlint.util.naming import to_kebab_case
-from xrlint.util.naming import to_snake_case
+from xrlint.util.naming import to_kebab_case, to_snake_case
 
 
 class NamingTest(TestCase):

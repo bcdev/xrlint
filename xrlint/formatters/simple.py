@@ -1,13 +1,12 @@
 from collections.abc import Iterable
 
+from tabulate import tabulate
+
 from xrlint.constants import SEVERITY_CODE_TO_NAME
-from xrlint.formatter import FormatterOp, FormatterContext
+from xrlint.formatter import FormatterContext, FormatterOp
 from xrlint.formatters import registry
 from xrlint.result import Result
 from xrlint.util.formatting import format_problems, format_styled
-
-from tabulate import tabulate
-
 from xrlint.util.schema import schema
 
 SEVERITY_CODE_TO_COLOR = {2: "red", 1: "blue", 0: "green", None: ""}

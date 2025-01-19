@@ -1,8 +1,7 @@
 from xrlint.config import Config
 from xrlint.formatter import FormatterContext
 from xrlint.plugin import new_plugin
-from xrlint.result import Message, ResultStats
-from xrlint.result import Result
+from xrlint.result import Message, Result, ResultStats
 from xrlint.rule import RuleOp
 
 

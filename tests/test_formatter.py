@@ -1,8 +1,6 @@
 from unittest import TestCase
 
-from xrlint.formatter import Formatter
-from xrlint.formatter import FormatterOp
-from xrlint.formatter import FormatterRegistry
+from xrlint.formatter import Formatter, FormatterOp, FormatterRegistry
 
 
 class FormatterRegistryTest(TestCase):

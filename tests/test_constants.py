@@ -1,8 +1,6 @@
 from unittest import TestCase
 
-from xrlint.constants import SEVERITY_CODE_TO_NAME
-from xrlint.constants import SEVERITY_ENUM
-from xrlint.constants import SEVERITY_ENUM_TEXT
+from xrlint.constants import SEVERITY_CODE_TO_NAME, SEVERITY_ENUM, SEVERITY_ENUM_TEXT
 
 
 class ConstantsTest(TestCase):

@@ -1,15 +1,16 @@
 import os
-import tempfile
 import shutil
+import tempfile
 from unittest import TestCase
 
 import click.testing
-from click.testing import CliRunner
 import xarray as xr
+from click.testing import CliRunner
 
-from xrlint.cli.main import main
 from xrlint.cli.constants import DEFAULT_CONFIG_FILE_YAML
+from xrlint.cli.main import main
 from xrlint.version import version
+
 from .helpers import text_file
 
 no_match_config_yaml = """

@@ -14,6 +14,8 @@
 
 - Improved overall test coverage.
 
+- Using [isort](https://pycqa.github.io/isort/) to format import statements.
+
 
 ## Version 0.2.0 (14.01.2025)
 

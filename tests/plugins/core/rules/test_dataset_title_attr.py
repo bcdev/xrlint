@@ -1,6 +1,6 @@
-from xrlint.plugins.core.rules.dataset_title_attr import DatasetTitleAttr
 import xarray as xr
 
+from xrlint.plugins.core.rules.dataset_title_attr import DatasetTitleAttr
 from xrlint.testing import RuleTest, RuleTester
 
 valid_dataset_1 = xr.Dataset(attrs=dict(title="OC-Climatology"))

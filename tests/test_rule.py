@@ -3,10 +3,7 @@ from unittest import TestCase
 
 import pytest
 
-from xrlint.rule import Rule, define_rule
-from xrlint.rule import RuleConfig
-from xrlint.rule import RuleMeta
-from xrlint.rule import RuleOp
+from xrlint.rule import Rule, RuleConfig, RuleMeta, RuleOp, define_rule
 
 
 class MyRule1(RuleOp):

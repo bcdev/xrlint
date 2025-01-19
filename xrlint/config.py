@@ -1,28 +1,18 @@
 from dataclasses import dataclass, field
 from functools import cached_property
-from typing import Any, TYPE_CHECKING, Union, Literal, Sequence
+from typing import TYPE_CHECKING, Any, Literal, Sequence, Union
 
 from xrlint.constants import CORE_PLUGIN_NAME
-from xrlint.util.constructible import (
-    MappingConstructible,
-    ValueConstructible,
-)
-from xrlint.util.serializable import JsonSerializable, JsonValue
+from xrlint.util.constructible import MappingConstructible, ValueConstructible
 from xrlint.util.filefilter import FileFilter
-from xrlint.util.merge import (
-    merge_arrays,
-    merge_set_lists,
-    merge_dicts,
-    merge_values,
-)
-
+from xrlint.util.merge import merge_arrays, merge_dicts, merge_set_lists, merge_values
+from xrlint.util.serializable import JsonSerializable, JsonValue
 
 if TYPE_CHECKING:  # pragma: no cover
     # make IDEs and flake8 happy
-    from xrlint.rule import Rule
-    from xrlint.rule import RuleConfig
     from xrlint.plugin import Plugin
     from xrlint.processor import ProcessorOp
+    from xrlint.rule import Rule, RuleConfig
 
 
 def get_core_plugin() -> "Plugin":
@@ -204,8 +194,7 @@ class Config(MappingConstructible, JsonSerializable):
         """Get the processor operation for the given
         processor identifier `processor_spec`.
         """
-        from xrlint.processor import Processor
-        from xrlint.processor import ProcessorOp
+        from xrlint.processor import Processor, ProcessorOp
 
         if isinstance(processor_spec, ProcessorOp):
             return processor_spec
@@ -284,10 +273,9 @@ class Config(MappingConstructible, JsonSerializable):
 
     @classmethod
     def forward_refs(cls) -> dict[str, type]:
-        from xrlint.processor import ProcessorOp
         from xrlint.plugin import Plugin
-        from xrlint.rule import Rule
-        from xrlint.rule import RuleConfig
+        from xrlint.processor import ProcessorOp
+        from xrlint.rule import Rule, RuleConfig
 
         return {
             "ProcessorOp": ProcessorOp,

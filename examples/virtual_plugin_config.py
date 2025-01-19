@@ -5,9 +5,7 @@ can be defined inside a configuration item.
 """
 
 from xrlint.node import DatasetNode
-from xrlint.rule import RuleContext
-from xrlint.rule import RuleOp
-from xrlint.rule import define_rule
+from xrlint.rule import RuleContext, RuleOp, define_rule
 
 
 @define_rule("good-title", description="Dataset title should be 'Hello World!'.")

@@ -1,23 +1,23 @@
 from dataclasses import dataclass, field
 from types import NoneType, UnionType
 from typing import (
+    TYPE_CHECKING,
     Any,
-    Union,
+    Literal,
+    Mapping,
     Optional,
     TypeAlias,
+    Union,
     get_args,
     get_origin,
-    Mapping,
-    TYPE_CHECKING,
-    Literal,
 )
 from unittest import TestCase
 
 import pytest
 
 from xrlint.util.constructible import (
-    ValueConstructible,
     MappingConstructible,
+    ValueConstructible,
     get_class_parameters,
 )
 from xrlint.util.serializable import JsonSerializable
@@ -70,8 +70,8 @@ class UnionTypesContainer(MappingConstructible, JsonSerializable):
 
 if TYPE_CHECKING:
     # make IDEs and flake8 happy
-    from xrlint.rule import RuleConfig
     from xrlint.plugin import Plugin
+    from xrlint.rule import RuleConfig
 
 
 @dataclass()
@@ -81,8 +81,8 @@ class UnresolvedTypesContainer(ComplexTypesContainer, SimpleTypesContainer):
 
     @classmethod
     def forward_refs(cls) -> Optional[Mapping[str, type]]:
-        from xrlint.rule import RuleConfig
         from xrlint.plugin import Plugin
+        from xrlint.rule import RuleConfig
 
         return {
             "RuleConfig": RuleConfig,

@@ -1,9 +1,8 @@
 from typing import Any, Literal
 
-from xrlint.config import Config
-from xrlint.config import get_core_config
-from xrlint.config import merge_configs
+from xrlint.config import Config, get_core_config, merge_configs
 from xrlint.result import Result
+
 from ._linter.verify import verify_dataset
 
 

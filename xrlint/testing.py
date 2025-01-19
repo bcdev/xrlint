@@ -7,13 +7,10 @@ import xarray as xr
 from xrlint.constants import SEVERITY_ERROR
 from xrlint.linter import Linter
 from xrlint.plugin import new_plugin
-from xrlint.result import Message
-from xrlint.result import Result
-from xrlint.rule import Rule
-from xrlint.rule import RuleMeta
-from xrlint.rule import RuleOp
-from xrlint.util.naming import to_snake_case
+from xrlint.result import Message, Result
+from xrlint.rule import Rule, RuleMeta, RuleOp
 from xrlint.util.formatting import format_problems
+from xrlint.util.naming import to_snake_case
 
 _PLUGIN_NAME: Final = "testing"
 

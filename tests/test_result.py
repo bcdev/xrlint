@@ -3,13 +3,13 @@ from unittest import TestCase
 from xrlint.config import Config
 from xrlint.plugin import new_plugin
 from xrlint.result import (
-    get_rules_meta_for_results,
-    Result,
     Message,
-    Suggestion,
+    Result,
     ResultStats,
+    Suggestion,
+    get_rules_meta_for_results,
 )
-from xrlint.rule import RuleOp, RuleMeta
+from xrlint.rule import RuleMeta, RuleOp
 
 
 class ResultTest(TestCase):

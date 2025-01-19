@@ -1,10 +1,8 @@
 import numpy as np
-
-from xrlint.plugins.xcube.rules.data_var_colors import DataVarColors
-
 import xarray as xr
 
-from xrlint.testing import RuleTester, RuleTest
+from xrlint.plugins.xcube.rules.data_var_colors import DataVarColors
+from xrlint.testing import RuleTest, RuleTester
 
 
 def make_dataset():

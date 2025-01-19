@@ -2,15 +2,14 @@ import sys
 
 import click
 
-
 # Warning: do not import heavy stuff here, it can
 # slow down commands like "xrlint --help" otherwise.
-from xrlint.version import version
 from xrlint.cli.constants import (
+    DEFAULT_CONFIG_BASENAME,
     DEFAULT_MAX_WARNINGS,
     DEFAULT_OUTPUT_FORMAT,
-    DEFAULT_CONFIG_BASENAME,
 )
+from xrlint.version import version
 
 
 @click.command(name="xrlint")

@@ -4,8 +4,6 @@ from unittest import TestCase
 class AllTest(TestCase):
     def test_api_is_complete(self):
         import xrlint.all as xrl
-
-        # noinspection PyProtectedMember
         from xrlint.all import __all__
 
         # noinspection PyUnresolvedReferences

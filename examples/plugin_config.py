@@ -6,9 +6,7 @@ using the `Plugin` class and its `define_rule()` decorator method.
 from xrlint.config import Config
 from xrlint.node import DatasetNode
 from xrlint.plugin import new_plugin
-from xrlint.rule import RuleContext
-from xrlint.rule import RuleOp
-
+from xrlint.rule import RuleContext, RuleOp
 
 plugin = new_plugin(
     name="hello-plugin",

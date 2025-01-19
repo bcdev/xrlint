@@ -1,7 +1,7 @@
 from xrlint.node import DatasetNode
 from xrlint.plugins.xcube.constants import LAT_NAME, LON_NAME
 from xrlint.plugins.xcube.rules import plugin
-from xrlint.rule import RuleOp, RuleContext
+from xrlint.rule import RuleContext, RuleOp
 
 INVALID_LAT_NAMES = {"ltd", "latitude"}
 INVALID_LON_NAMES = {"lng", "long", "longitude"}

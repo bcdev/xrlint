@@ -1,8 +1,7 @@
 from xrlint.node import DataArrayNode
 from xrlint.plugins.xcube.rules import plugin
 from xrlint.plugins.xcube.util import is_spatial_var
-from xrlint.rule import RuleContext
-from xrlint.rule import RuleOp
+from xrlint.rule import RuleContext, RuleOp
 
 
 @plugin.define_rule(
