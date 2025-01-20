@@ -15,13 +15,11 @@ _EXPECTED_UNITY_FORMAT = "<unit> since <date> <time> <timezone>"
         " unambiguous time units encoding."
     ),
     docs_url=(
-        "https://cfconventions.org/cf-conventions/cf-conventions.html"
-        "#time-coordinate"
+        "https://cfconventions.org/cf-conventions/cf-conventions.html#time-coordinate"
     ),
 )
 class TimeCoordinate(RuleOp):
     def data_array(self, ctx: RuleContext, node: DataArrayNode):
-
         array = node.data_array
         attrs = array.attrs
         encoding = array.encoding

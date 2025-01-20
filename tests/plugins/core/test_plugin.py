@@ -16,6 +16,7 @@ class ExportPluginTest(TestCase):
                 "lon-coordinate",
                 "no-empty-attrs",
                 "time-coordinate",
+                "no-empty-chunks",
                 "var-units-attr",
             },
             set(plugin.rules.keys()),

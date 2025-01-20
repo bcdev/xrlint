@@ -19,6 +19,7 @@ def export_plugin() -> Plugin:
                 "lat-coordinate": "error",
                 "lon-coordinate": "error",
                 "no-empty-attrs": "warn",
+                "no-empty-chunks": "warn",
                 "time-coordinate": "error",
                 "var-units-attr": "warn",
             },

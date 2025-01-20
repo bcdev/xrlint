@@ -3,10 +3,11 @@
 ## Version 0.3.0 (in development)
 
 - Added more rules
-  - core rule "flags"
-  - core rule "lon-coordinate"
-  - core rule "lat-coordinate"
-  - core rule "time-coordinate"  (#15)
+  - core/CF rule "flags"
+  - core/CF rule "lon-coordinate"
+  - core/CF rule "lat-coordinate"
+  - core/CF rule "time-coordinate"  (#15)
+  - core rule "no-empty-chunks"
   - xcube rule "time-naming"  (#15)
 
 - Fixed problem where referring to values in modules via 

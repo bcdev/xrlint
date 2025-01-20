@@ -13,18 +13,22 @@ def make_dataset() -> xr.Dataset:
         attrs=dict(title="SST-Climatology Subset"),
         coords={
             "x": xr.DataArray(
-                np.linspace(-180, 180, nx), dims="x", attrs={
+                np.linspace(-180, 180, nx),
+                dims="x",
+                attrs={
                     "standard_name": "longitude",
                     "long_name": "longitude",
-                    "units": "degrees_east"
-                }
+                    "units": "degrees_east",
+                },
             ),
             "y": xr.DataArray(
-                np.linspace(-90, 90, ny), dims="y", attrs={
+                np.linspace(-90, 90, ny),
+                dims="y",
+                attrs={
                     "standard_name": "latitude",
                     "long_name": "latitude",
-                    "units": "degrees_north"
-                }
+                    "units": "degrees_north",
+                },
             ),
             "time": xr.DataArray(
                 [365 * i for i in range(nt)],
