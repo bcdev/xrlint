@@ -3,6 +3,7 @@
 ## Version 0.3.0 (in development)
 
 - Added more rules
+  - core rule "flags"
   - core rule "time-coordinate"  (#15)
   - xcube rule "time-naming"  (#15)
 

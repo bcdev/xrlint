@@ -1,5 +1,8 @@
 from xrlint.plugin import Plugin
 
+# for icons, see
+# https://squidfunk.github.io/mkdocs-material/reference/icons-emojis/
+
 severity_icons = {
     2: "material-lightning-bolt",
     1: "material-alert",
@@ -11,6 +14,9 @@ rule_type_icons = {
     "suggestion": "material-lightbulb",
     "layout": "material-text",
 }
+
+# read_more_icon = "material-book-open-outline"
+read_more_icon = "material-information-variant"
 
 
 def write_rule_ref_page():
@@ -41,7 +47,7 @@ def write_plugin_rules(stream, plugin: Plugin):
         )
         stream.write(rule_meta.description or "_No description._")
         if rule_meta.docs_url:
-            stream.write(f"\n[More information.]({rule_meta.docs_url})")
+            stream.write("\n" + f"[:{read_more_icon}:]({rule_meta.docs_url})")
         stream.write("\n\n")
         # List the predefined configurations that contain the rule
         stream.write("Contained in: ")
