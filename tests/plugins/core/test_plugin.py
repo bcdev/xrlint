@@ -23,6 +23,7 @@ class ExportPluginTest(TestCase):
                 "grid-mappings",
                 "flags",
                 "no-empty-attrs",
+                "no-empty-chunks",
                 "var-units-attr",
             },
             set(_plugin.rules.keys()),
