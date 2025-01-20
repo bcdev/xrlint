@@ -16,13 +16,16 @@ class RuleContextImpl(RuleContext):
         config: Config,
         dataset: xr.Dataset,
         file_path: str,
+        file_index: int | None,
     ):
         assert config is not None
         assert dataset is not None
         assert file_path is not None
+        assert file_index is None or isinstance(file_index, int)
         self._config = config
         self._dataset = dataset
         self._file_path = file_path
+        self._file_index = file_index
         self.messages: list[Message] = []
         self.rule_id: str | None = None
         self.severity: Literal[1, 2] = SEVERITY_ERROR
@@ -34,7 +37,6 @@ class RuleContextImpl(RuleContext):
 
     @property
     def settings(self) -> dict[str, Any]:
-        assert self._config is not None
         return self._config.settings or {}
 
     @property
@@ -43,8 +45,11 @@ class RuleContextImpl(RuleContext):
 
     @property
     def file_path(self) -> str:
-        assert self._file_path is not None
         return self._file_path
+
+    @property
+    def file_index(self) -> int | None:
+        return self._file_index
 
     def report(
         self,

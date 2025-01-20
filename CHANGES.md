@@ -2,7 +2,11 @@
 
 ## Version 0.4.0 (in development)
 
-
+- Internal changes:
+  - Inbuilt plugin now get their `plugin` instance from
+    `xrlint.plugins.<plugin>.plugin` module.
+  - Node paths now contain the split index if dataset 
+    has been opened by a processor.  
 
 ## Version 0.3.0 (from 2025-01-20)
 
