@@ -1,5 +1,5 @@
 from xrlint.node import AttrsNode
-from xrlint.plugins.core.rules import plugin
+from xrlint.plugins.core.plugin import plugin
 from xrlint.result import Suggestion
 from xrlint.rule import RuleContext, RuleOp
 
