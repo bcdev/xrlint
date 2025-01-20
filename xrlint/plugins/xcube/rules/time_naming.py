@@ -5,7 +5,7 @@ import xarray as xr
 
 from xrlint.node import DatasetNode
 from xrlint.plugins.xcube.constants import TIME_NAME
-from xrlint.plugins.xcube.rules import plugin
+from xrlint.plugins.xcube.plugin import plugin
 from xrlint.rule import RuleOp, RuleContext
 
 

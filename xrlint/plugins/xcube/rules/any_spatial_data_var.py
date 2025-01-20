@@ -1,5 +1,5 @@
 from xrlint.node import DatasetNode
-from xrlint.plugins.xcube.rules import plugin
+from xrlint.plugins.xcube.plugin import plugin
 from xrlint.plugins.xcube.util import is_spatial_var
 from xrlint.rule import RuleContext, RuleOp
 

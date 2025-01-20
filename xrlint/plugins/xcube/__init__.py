@@ -4,9 +4,10 @@ from xrlint.util.importutil import import_submodules
 
 
 def export_plugin() -> Plugin:
-    from .rules import plugin
+    from .plugin import plugin
 
     import_submodules("xrlint.plugins.xcube.rules")
+    # import_submodules("xrlint.plugins.xcube.processors")
 
     plugin.configs["recommended"] = Config.from_value(
         {
