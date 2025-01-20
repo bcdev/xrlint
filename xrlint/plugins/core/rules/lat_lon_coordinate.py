@@ -3,7 +3,7 @@ from typing import Any
 import xarray as xr
 
 from xrlint.node import DataArrayNode
-from xrlint.plugins.core.rules import plugin
+from xrlint.plugins.core.plugin import plugin
 from xrlint.rule import RuleContext
 from xrlint.rule import RuleOp
 

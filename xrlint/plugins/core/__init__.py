@@ -4,7 +4,7 @@ from xrlint.util.importutil import import_submodules
 
 
 def export_plugin() -> Plugin:
-    from .rules import plugin
+    from .plugin import plugin
 
     import_submodules("xrlint.plugins.core.rules")
 

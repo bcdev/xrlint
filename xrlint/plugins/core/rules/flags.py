@@ -3,7 +3,7 @@ from typing import Any
 import numpy as np
 
 from xrlint.node import DataArrayNode
-from xrlint.plugins.core.rules import plugin
+from xrlint.plugins.core.plugin import plugin
 from xrlint.rule import RuleOp, RuleContext
 
 
