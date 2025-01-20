@@ -91,8 +91,7 @@ class CliConfigTest(TestCase):
     def test_read_config_invalid_arg(self):
         with pytest.raises(
             TypeError,
-            match="configuration file must be of type str|Path|PathLike,"
-            " but got None",
+            match="configuration file must be of type str|Path|PathLike, but got None",
         ):
             # noinspection PyTypeChecker
             read_config_list(None)

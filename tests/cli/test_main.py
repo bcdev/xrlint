@@ -240,7 +240,6 @@ class CliMainTest(TestCase):
 
 
 class CliMainMetaTest(TestCase):
-
     def test_help(self):
         runner = CliRunner()
         result = runner.invoke(main, ["--help"])

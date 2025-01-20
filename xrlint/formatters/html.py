@@ -17,7 +17,6 @@ from xrlint.util.schema import schema
     ),
 )
 class Html(FormatterOp):
-
     def __init__(self, with_meta: bool = False):
         self.with_meta = with_meta
 

@@ -5,7 +5,6 @@ from xrlint.formatter import Formatter, FormatterOp, FormatterRegistry
 
 class FormatterRegistryTest(TestCase):
     def test_decorator_sets_meta(self):
-
         registry = FormatterRegistry()
 
         @registry.define_formatter()
@@ -20,7 +19,6 @@ class FormatterRegistryTest(TestCase):
         self.assertEqual(None, my_rule.meta.schema)
 
     def test_decorator_registrations(self):
-
         registry = FormatterRegistry()
 
         @registry.define_formatter("my-fmt-a")

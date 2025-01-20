@@ -59,10 +59,8 @@ class PluginMetaTest(TestCase):
 
 
 class PluginDefineRuleDecoratorTest(TestCase):
-
     # noinspection PyUnusedLocal
     def test_decorator(self):
-
         plugin = Plugin(meta=PluginMeta(name="test"))
 
         @plugin.define_rule("my-rule-1")
@@ -97,10 +95,8 @@ class PluginDefineRuleDecoratorTest(TestCase):
 
 
 class PluginDefineProcessorDecoratorTest(TestCase):
-
     # noinspection PyUnusedLocal
     def test_decorator(self):
-
         plugin = Plugin(meta=PluginMeta(name="test"))
 
         @plugin.define_processor("my-processor-1")

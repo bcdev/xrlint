@@ -49,9 +49,7 @@ class LinterTest(TestCase):
 
 
 class LinterVerifyTest(TestCase):
-
     def setUp(self):
-
         plugin = new_plugin(name="test")
 
         @plugin.define_rule("no-space-in-attr-name")
@@ -265,7 +263,6 @@ class LinterVerifyTest(TestCase):
         )
 
     def test_processor(self):
-
         result = self.linter.verify_dataset(
             "test.levels",
             config=Config.from_value(

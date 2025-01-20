@@ -85,7 +85,6 @@ class Formatter(Operation):
 
 
 class FormatterRegistry(Mapping[str, Formatter]):
-
     def __init__(self):
         self._registrations = {}
 

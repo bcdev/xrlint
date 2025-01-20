@@ -23,7 +23,7 @@ def get_core_plugin() -> "Plugin":
 
 
 def get_core_config(
-    config_name: Literal["all", "recommended"] | None = None
+    config_name: Literal["all", "recommended"] | None = None,
 ) -> "Config":
     """Create a base configuration for the built-in plugins.
 

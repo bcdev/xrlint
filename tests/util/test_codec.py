@@ -323,7 +323,6 @@ class ValueConstructibleTest(TestCase):
 
 
 class MappingConstructibleTest(TestCase):
-
     def test_simple_ok(self):
         kwargs = dict(a="?", b=True, c=12, d=34.56, e="uvw", f=bytes, g="on")
         container = SimpleTypesContainer(**kwargs)
@@ -387,7 +386,6 @@ class MappingConstructibleTest(TestCase):
 
     # noinspection PyMethodMayBeStatic
     def test_simple_fail(self):
-
         with pytest.raises(
             TypeError,
             match=(
@@ -488,7 +486,6 @@ class MappingConstructibleTest(TestCase):
 
 
 class GetClassParametersTest(TestCase):
-
     def test_resolves_types(self):
         ctc_params = get_class_parameters(
             UnresolvedTypesContainer,

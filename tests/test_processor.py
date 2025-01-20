@@ -10,7 +10,6 @@ from xrlint.result import Message
 
 
 class ProcessorTest(TestCase):
-
     def test_define_processor(self):
         registry = {}
 
@@ -61,7 +60,6 @@ class ProcessorTest(TestCase):
 
     # noinspection PyMethodMayBeStatic,PyUnusedLocal
     def test_define_processor_as_decorator_fail(self):
-
         with pytest.raises(
             TypeError,
             match=(

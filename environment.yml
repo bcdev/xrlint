@@ -10,9 +10,6 @@ dependencies:
   - tabulate
   - xarray
   # Dev Dependencies
-  - black
-  - flake8
-  - isort
   - mkdocs
   - mkdocs-autorefs
   - mkdocs-material
@@ -21,6 +18,7 @@ dependencies:
   - pytest
   - pytest-cov
   - requests-mock
+  - ruff
   # Testing Datasets
   - pandas
   - netcdf4

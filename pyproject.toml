@@ -62,14 +62,12 @@ xrlint = "xrlint.cli.main:main"
 [project.optional-dependencies]
 dev = [
   # Development tools
-  "black",
-  "flake8",
-  "isort",
-  "pytest",
-  "pytest-cov",
-  "twine",
   "build",
   "hatch",
+  "pytest",
+  "pytest-cov",
+  "ruff",
+  "twine",
   # Dataset testing
   "netcdf4",
   "numpy",

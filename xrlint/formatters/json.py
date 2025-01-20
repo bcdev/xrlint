@@ -19,7 +19,6 @@ from xrlint.util.schema import schema
     ),
 )
 class Json(FormatterOp):
-
     def __init__(self, indent: int = 2, with_meta: bool = False):
         super().__init__()
         self.indent = indent

@@ -13,10 +13,8 @@ from xrlint.rule import RuleMeta, RuleOp
 
 
 class ResultTest(TestCase):
-
     # noinspection PyUnusedLocal
     def test_get_rules_meta_for_results(self):
-
         plugin = new_plugin(name="test")
 
         @plugin.define_rule("my-rule-1")
@@ -85,7 +83,6 @@ class ResultTest(TestCase):
 
 
 class SuggestionTest(TestCase):
-
     # noinspection PyUnusedLocal
     def test_from_value(self):
         self.assertEqual(

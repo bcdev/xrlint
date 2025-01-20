@@ -106,7 +106,6 @@ class RuleMetaTest(unittest.TestCase):
 
 
 class DefineRuleTest(unittest.TestCase):
-
     def test_decorator(self):
         deco = define_rule()
         self.assertTrue(callable(deco))
