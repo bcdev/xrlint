@@ -56,6 +56,10 @@ max-line-length = 88
 [tool.isort]
 profile = "black"
 
+[tool.ruff]
+# There is a problem with ruff when linting imports
+exclude = ["**/*.ipynb"]
+
 [project.scripts]
 xrlint = "xrlint.cli.main:main"
 
