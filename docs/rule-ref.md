@@ -22,7 +22,7 @@ Contained in:  `all`-:material-lightning-bolt: `recommended`-:material-alert:
 Validate attributes 'flag_values', 'flag_masks' and 'flag_meanings' that make variables that contain flag values self describing. 
 [:material-information-variant:](https://cfconventions.org/cf-conventions/cf-conventions.html#flags)
 
-Contained in:  `all`-:material-lightning-bolt:
+Contained in:  `all`-:material-lightning-bolt: `recommended`-:material-lightning-bolt:
 
 ### :material-bug: `grid-mappings`
 
@@ -33,16 +33,16 @@ Contained in:  `all`-:material-lightning-bolt: `recommended`-:material-lightning
 ### :material-bug: `lat-coordinate`
 
 Latitude coordinate should have standard units and standard names.
-[More information.](https://cfconventions.org/cf-conventions/cf-conventions.html#latitude-coordinate)
+[:material-information-variant:](https://cfconventions.org/cf-conventions/cf-conventions.html#latitude-coordinate)
 
-Contained in:  `all`-:material-lightning-bolt:
+Contained in:  `all`-:material-lightning-bolt: `recommended`-:material-lightning-bolt:
 
 ### :material-bug: `lon-coordinate`
 
 Longitude coordinate should have standard units and standard names.
-[More information.](https://cfconventions.org/cf-conventions/cf-conventions.html#longitude-coordinate)
+[:material-information-variant:](https://cfconventions.org/cf-conventions/cf-conventions.html#longitude-coordinate)
 
-Contained in:  `all`-:material-lightning-bolt:
+Contained in:  `all`-:material-lightning-bolt: `recommended`-:material-lightning-bolt:
 
 ### :material-lightbulb: `no-empty-attrs`
 
@@ -50,10 +50,17 @@ Every dataset element should have metadata that describes it.
 
 Contained in:  `all`-:material-lightning-bolt: `recommended`-:material-alert:
 
+### :material-lightbulb: `no-empty-chunks`
+
+Empty chunks should not be encoded and written. The rule currently applies to Zarr format only.
+[:material-information-variant:](https://docs.xarray.dev/en/stable/generated/xarray.Dataset.to_zarr.html#xarray-dataset-to-zarr)
+
+Contained in:  `all`-:material-lightning-bolt: `recommended`-:material-alert:
+
 ### :material-bug: `time-coordinate`
 
 Time coordinate (standard_name='time') should have unambiguous time units encoding.
-[More information.](https://cfconventions.org/cf-conventions/cf-conventions.html#time-coordinate)
+[:material-information-variant:](https://cfconventions.org/cf-conventions/cf-conventions.html#time-coordinate)
 
 Contained in:  `all`-:material-lightning-bolt: `recommended`-:material-lightning-bolt:
 
@@ -117,7 +124,7 @@ Contained in:  `all`-:material-lightning-bolt: `recommended`-:material-lightning
 ### :material-bug: `time-naming`
 
 Time coordinate and dimension should be called 'time'.
-[More information.](https://xcube.readthedocs.io/en/latest/cubespec.html#temporal-reference)
+[:material-information-variant:](https://xcube.readthedocs.io/en/latest/cubespec.html#temporal-reference)
 
 Contained in:  `all`-:material-lightning-bolt: `recommended`-:material-lightning-bolt:
 

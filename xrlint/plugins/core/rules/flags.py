@@ -70,8 +70,7 @@ def _validate_flag_values(
 ) -> int | None:
     if not has_meanings:
         ctx.report(
-            f"Missing attribute {FLAG_MEANINGS!r} to explain"
-            f" attribute {FLAG_VALUES!r}"
+            f"Missing attribute {FLAG_MEANINGS!r} to explain attribute {FLAG_VALUES!r}"
         )
     type_ok, flag_count = _check_values(flag_values)
     if not type_ok or flag_count is None:
@@ -87,8 +86,7 @@ def _validate_flag_masks(
 ) -> int | None:
     if not has_meanings:
         ctx.report(
-            f"Missing attribute {FLAG_MEANINGS!r} to explain"
-            f" attribute {FLAG_MASKS!r}"
+            f"Missing attribute {FLAG_MEANINGS!r} to explain attribute {FLAG_MASKS!r}"
         )
     type_ok, flag_masks_count = _check_values(flag_masks)
     if not type_ok or flag_masks_count is None:

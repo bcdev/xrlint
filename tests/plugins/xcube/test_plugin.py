@@ -4,7 +4,6 @@ from xrlint.plugins.xcube import export_plugin
 
 
 class ExportPluginTest(TestCase):
-
     def test_rules_complete(self):
         plugin = export_plugin()
         self.assertEqual(
