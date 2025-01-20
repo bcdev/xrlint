@@ -1,6 +1,6 @@
 # XRLint Change History
 
-## Version 0.3.0 (in development)
+## Version 0.3.0 (from 2025-01-20)
 
 - Added more rules
   - core/CF rule "flags"
@@ -26,7 +26,7 @@
   as default linter and formatter.
 
 
-## Version 0.2.0 (14.01.2025)
+## Version 0.2.0 (from 2025-01-14)
 
 - Rule description is now your `RuleOp`'s docstring
   if `description` is not explicitly provided.
@@ -41,7 +41,7 @@
   and their children from Python and JSON/YAML values.
 - Made all docstrings comply to google-style.
 
-## Version 0.1.0 (09.01.2025)
+## Version 0.1.0 (from 2025-01-09)
 
 - Added CLI option `--print-config PATH`, see same option in ESLint
 - XRLint CLI now outputs single results immediately to console,
