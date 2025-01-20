@@ -4,13 +4,13 @@ from xrlint.plugins.core import export_plugin
 
 
 class ExportPluginTest(TestCase):
-
     def test_rules_complete(self):
         plugin = export_plugin()
         self.assertEqual(
             {
                 "coords-for-dims",
                 "dataset-title-attr",
+                "flags",
                 "grid-mappings",
                 "lat-coordinate",
                 "lon-coordinate",
