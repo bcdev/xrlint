@@ -1,9 +1,6 @@
 from typing import Any, Literal
 
-from .formatting import (
-    format_message_type_of,
-    format_message_one_of,
-)
+from .formatting import format_message_one_of, format_message_type_of
 
 TYPE_NAMES = (
     "null",

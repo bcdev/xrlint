@@ -1,12 +1,12 @@
 from collections.abc import MutableMapping
 from dataclasses import dataclass
-from inspect import isclass, getdoc
-from typing import Any, Type, Callable
+from inspect import getdoc, isclass
+from typing import Any, Callable, Type
 
 from xrlint.util.constructible import MappingConstructible
-from xrlint.util.serializable import JsonSerializable, JsonValue
 from xrlint.util.importutil import import_value
 from xrlint.util.naming import to_kebab_case
+from xrlint.util.serializable import JsonSerializable, JsonValue
 
 
 @dataclass(kw_only=True)

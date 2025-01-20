@@ -1,8 +1,7 @@
-from xrlint.plugins.core.rules.grid_mappings import GridMappings
-
 import numpy as np
 import xarray as xr
 
+from xrlint.plugins.core.rules.grid_mappings import GridMappings
 from xrlint.testing import RuleTest, RuleTester
 
 

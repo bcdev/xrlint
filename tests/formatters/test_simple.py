@@ -3,8 +3,7 @@ from unittest import TestCase
 from tests.formatters.helpers import get_context
 from xrlint.config import Config
 from xrlint.formatters.simple import Simple
-from xrlint.result import Message
-from xrlint.result import Result
+from xrlint.result import Message, Result
 
 
 class SimpleTest(TestCase):

@@ -1,22 +1,17 @@
-from abc import abstractmethod, ABC
+from abc import ABC, abstractmethod
 from collections.abc import MutableMapping, Sequence
 from dataclasses import dataclass, field
-from typing import Type, Literal, Any, Callable
+from typing import Any, Callable, Literal, Type
 
 import xarray as xr
 
-from xrlint.constants import (
-    SEVERITY_ENUM,
-    SEVERITY_ENUM_TEXT,
-)
-from xrlint.node import DatasetNode, DataArrayNode, AttrsNode, AttrNode
-from xrlint.operation import OperationMeta, Operation
+from xrlint.constants import SEVERITY_ENUM, SEVERITY_ENUM_TEXT
+from xrlint.node import AttrNode, AttrsNode, DataArrayNode, DatasetNode
+from xrlint.operation import Operation, OperationMeta
 from xrlint.result import Suggestion
-from xrlint.util.constructible import (
-    ValueConstructible,
-)
-from xrlint.util.serializable import JsonSerializable
+from xrlint.util.constructible import ValueConstructible
 from xrlint.util.formatting import format_message_one_of
+from xrlint.util.serializable import JsonSerializable
 
 
 class RuleContext(ABC):

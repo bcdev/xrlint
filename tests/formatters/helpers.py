@@ -1,13 +1,11 @@
 from xrlint.config import Config
 from xrlint.formatter import FormatterContext
 from xrlint.plugin import new_plugin
-from xrlint.result import Message, ResultStats
-from xrlint.result import Result
+from xrlint.result import Message, Result, ResultStats
 from xrlint.rule import RuleOp
 
 
 class FormatterContextImpl(FormatterContext):
-
     def __init__(self, max_warnings: int = -1):
         self._max_warnings = max_warnings
         self._result_stats = ResultStats()
@@ -26,7 +24,6 @@ def get_context(max_warnings: int = -1) -> FormatterContext:
 
 
 def get_test_results():
-
     plugin = new_plugin(name="test")
 
     @plugin.define_rule(

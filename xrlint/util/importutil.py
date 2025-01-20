@@ -1,12 +1,11 @@
 import importlib
 import pathlib
-from typing import TypeVar, Callable, Any, Type
+from typing import Any, Callable, Type, TypeVar
 
 from xrlint.util.formatting import format_message_type_of
 
 
 def import_submodules(package_name: str, dry_run: bool = False) -> list[str]:
-
     package = importlib.import_module(package_name)
     if not hasattr(package, "__path__"):
         return []
@@ -95,7 +94,7 @@ def import_value(
                 attr_value = getattr(attr_value, attr_name)
             except AttributeError:
                 raise ValueImportError(
-                    f"attribute {'.'.join(attr_names[:i+1])!r}"
+                    f"attribute {'.'.join(attr_names[: i + 1])!r}"
                     f" not found in module {module_name!r}"
                 )
 

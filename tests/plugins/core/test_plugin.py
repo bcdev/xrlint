@@ -4,7 +4,6 @@ from xrlint.plugins.core import export_plugin
 
 
 class ExportPluginTest(TestCase):
-
     def test_configs_complete(self):
         _plugin = export_plugin()
         self.assertEqual(

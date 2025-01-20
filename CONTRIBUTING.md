@@ -20,8 +20,9 @@ checklist are addressed in your PR.
 
 **PR checklist**
 
-* Format code using [black](https://black.readthedocs.io/) with default settings.
-  Check also section [code style](#code-style) below.
+* Format and check code using [ruff](https://docs.astral.sh/ruff/) with 
+  default settings: `ruff format` and `ruff check`. See also section 
+  [code style](#code-style) below.
 * Your change shall not break existing unit tests.
   `pytest` must run without errors.
 * Add unit tests for any new code not yet covered by tests.
@@ -33,16 +34,18 @@ checklist are addressed in your PR.
 
 ## Code style
 
-The XRLint code complies to [PEP-8](https://pep8.org/) except for a line 
-length of 88 characters as recommended by [black](https://black.readthedocs.io/).
-Since black is un-opinionated regarding the order of imports, 
-we use the following three import blocks separated by an empty 
-line:
+The code style of XRLint equals the default settings 
+of [black](https://black.readthedocs.io/). Since black is 
+un-opinionated regarding the order of imports, we group and 
+sort imports statements according to the default settings of 
+[isort](https://pycqa.github.io/isort/) which boils down to
 
+0. Future imports
 1. Python standard library imports, e.g., `os`, `typing`, etc
 2. 3rd-party imports, e.g., `xarray`, `zarr`, etc
-3. XRLint module imports: 
-   Prefer absolute import paths: `from xrlint.a.b.c import d`. 
+3. 1st-party XRLint module imports using absolute paths, 
+   e.g., `from xrlint.a.b.c import d`. 
+4. 1st-party XRLint module imports from local modules: 
    Relative imports such as `from .c import d` are ok
    while `..c import d` are not ok.
 

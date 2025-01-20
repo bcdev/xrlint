@@ -6,8 +6,7 @@ import xarray as xr
 from xrlint.config import Config
 from xrlint.constants import SEVERITY_ERROR
 from xrlint.node import Node
-from xrlint.result import Message
-from xrlint.result import Suggestion
+from xrlint.result import Message, Suggestion
 from xrlint.rule import RuleContext
 
 

@@ -50,12 +50,12 @@ pytest --cov=xrlint --cov-report html
 
 ### Code Style
 
-XRLint source code is formatted using the [black](https://black.readthedocs.io/) tool and 
-quality-controlled using [flake8](https://flake8.pycqa.org/).
+XRLint source code is formatted and quality-controlled using
+using [ruff](https://docs.astral.sh/ruff/):
 
 ```bash
-black .
-flake8 --max-line-length=88 . 
+ruff format
+ruff check
 ```
 
 ### Documentation

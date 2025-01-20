@@ -1,7 +1,7 @@
+import platform
 import re
 from functools import cached_property
 from typing import Literal
-import platform
 
 _WIN_OS = platform.system() == "Windows"
 

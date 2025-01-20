@@ -1,7 +1,7 @@
-from xrlint.plugins.core.rules.var_units_attr import VarUnitsAttr
 import xarray as xr
 
-from xrlint.testing import RuleTester, RuleTest
+from xrlint.plugins.core.rules.var_units_attr import VarUnitsAttr
+from xrlint.testing import RuleTest, RuleTester
 
 valid_dataset_1 = xr.Dataset()
 valid_dataset_2 = xr.Dataset(

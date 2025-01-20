@@ -1,6 +1,6 @@
 from collections.abc import Iterable
 
-from xrlint.formatter import FormatterOp, FormatterContext
+from xrlint.formatter import FormatterContext, FormatterOp
 from xrlint.formatters import registry
 from xrlint.result import Result, get_rules_meta_for_results
 from xrlint.util.schema import schema
@@ -17,7 +17,6 @@ from xrlint.util.schema import schema
     ),
 )
 class Html(FormatterOp):
-
     def __init__(self, with_meta: bool = False):
         self.with_meta = with_meta
 

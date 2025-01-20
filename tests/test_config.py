@@ -152,7 +152,6 @@ class ConfigListTest(TestCase):
             ConfigList.from_value({})
 
     def test_compute_config(self):
-
         config_list = ConfigList([Config()])
         file_path = "s3://wq-services/datacubes/chl-2.zarr"
         self.assertEqual(

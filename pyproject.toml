@@ -53,19 +53,25 @@ exclude = [
 [tool.flake8]
 max-line-length = 88
 
+[tool.isort]
+profile = "black"
+
+[tool.ruff]
+# There is a problem with ruff when linting imports
+exclude = ["**/*.ipynb"]
+
 [project.scripts]
 xrlint = "xrlint.cli.main:main"
 
 [project.optional-dependencies]
 dev = [
   # Development tools
-  "black",
-  "flake8",
-  "pytest",
-  "pytest-cov",
-  "twine",
   "build",
   "hatch",
+  "pytest",
+  "pytest-cov",
+  "ruff",
+  "twine",
   # Dataset testing
   "netcdf4",
   "numpy",

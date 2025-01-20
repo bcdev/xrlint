@@ -19,6 +19,9 @@
 
 - Improved overall test coverage.
 
+- Switched to [ruff](https://docs.astral.sh/ruff/) 
+  as default linter and formatter.
+
 
 ## Version 0.2.0 (14.01.2025)
 

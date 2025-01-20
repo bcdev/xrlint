@@ -5,7 +5,7 @@ import xarray as xr
 # noinspection PyProtectedMember
 from xrlint._linter.rulectx import RuleContextImpl
 from xrlint.config import Config
-from xrlint.result import Suggestion, Message
+from xrlint.result import Message, Suggestion
 
 
 class RuleContextImplTest(TestCase):

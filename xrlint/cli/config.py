@@ -7,7 +7,7 @@ import fsspec
 
 from xrlint.config import ConfigList
 from xrlint.util.formatting import format_message_type_of
-from xrlint.util.importutil import import_value, ValueImportError
+from xrlint.util.importutil import ValueImportError, import_value
 
 
 def read_config_list(config_path: str | Path | PathLike[str]) -> ConfigList:

@@ -3,20 +3,18 @@ from unittest import TestCase
 from xrlint.config import Config
 from xrlint.plugin import new_plugin
 from xrlint.result import (
-    get_rules_meta_for_results,
-    Result,
     Message,
-    Suggestion,
+    Result,
     ResultStats,
+    Suggestion,
+    get_rules_meta_for_results,
 )
-from xrlint.rule import RuleOp, RuleMeta
+from xrlint.rule import RuleMeta, RuleOp
 
 
 class ResultTest(TestCase):
-
     # noinspection PyUnusedLocal
     def test_get_rules_meta_for_results(self):
-
         plugin = new_plugin(name="test")
 
         @plugin.define_rule("my-rule-1")
@@ -85,7 +83,6 @@ class ResultTest(TestCase):
 
 
 class SuggestionTest(TestCase):
-
     # noinspection PyUnusedLocal
     def test_from_value(self):
         self.assertEqual(
