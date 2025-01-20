@@ -656,10 +656,10 @@ and code coverage analysis.</p>
 <div class="highlight"><pre><span></span><code>pytest<span class="w"> </span>--cov<span class="o">=</span>xrlint<span class="w"> </span>--cov-report<span class="w"> </span>html
 </code></pre></div>
 <h3 id="code-style">Code Style</h3>
-<p>XRLint source code is formatted using the <a href="https://black.readthedocs.io/">black</a> tool and 
-quality-controlled using <a href="https://flake8.pycqa.org/">flake8</a>.</p>
-<div class="highlight"><pre><span></span><code>black<span class="w"> </span>.
-flake8<span class="w"> </span>--max-line-length<span class="o">=</span><span class="m">88</span><span class="w"> </span>.<span class="w"> </span>
+<p>XRLint source code is formatted and quality-controlled using
+using <a href="https://docs.astral.sh/ruff/">ruff</a>:</p>
+<div class="highlight"><pre><span></span><code>ruff<span class="w"> </span>format
+ruff<span class="w"> </span>check
 </code></pre></div>
 <h3 id="documentation">Documentation</h3>
 <p>XRLint documentation is built using the <a href="https://www.mkdocs.org/">mkdocs</a> tool.</p>
