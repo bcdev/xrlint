@@ -3,12 +3,9 @@ from unittest import TestCase
 import pytest
 import xarray as xr
 
-
-from xrlint.testing import RuleTest
-from xrlint.testing import RuleTester
 from xrlint.node import DatasetNode
-from xrlint.rule import RuleContext
-from xrlint.rule import RuleOp
+from xrlint.rule import RuleContext, RuleOp
+from xrlint.testing import RuleTest, RuleTester
 
 
 class ForceTitle(RuleOp):

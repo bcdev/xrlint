@@ -1,10 +1,10 @@
-from abc import abstractmethod, ABC
+from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Type, Any, Callable
+from typing import Any, Callable, Type
 
 import xarray as xr
 
-from xrlint.operation import OperationMeta, Operation
+from xrlint.operation import Operation, OperationMeta
 from xrlint.result import Message
 
 

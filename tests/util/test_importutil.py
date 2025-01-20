@@ -1,8 +1,7 @@
 from unittest import TestCase
 
 from xrlint.plugin import Plugin
-from xrlint.util.importutil import import_submodules
-from xrlint.util.importutil import import_value
+from xrlint.util.importutil import import_submodules, import_value
 
 
 class ImportSubmodulesTest(TestCase):

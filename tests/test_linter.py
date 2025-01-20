@@ -5,21 +5,12 @@ import xarray as xr
 
 from xrlint.config import Config
 from xrlint.constants import CORE_PLUGIN_NAME
-from xrlint.linter import Linter
-from xrlint.linter import new_linter
+from xrlint.linter import Linter, new_linter
+from xrlint.node import AttrNode, AttrsNode, DataArrayNode, DatasetNode
 from xrlint.plugin import new_plugin
-from xrlint.node import (
-    AttrsNode,
-    AttrNode,
-    DataArrayNode,
-    DatasetNode,
-)
 from xrlint.processor import ProcessorOp
-from xrlint.result import Message
-from xrlint.result import Result
-from xrlint.rule import RuleContext
-from xrlint.rule import RuleExit
-from xrlint.rule import RuleOp
+from xrlint.result import Message, Result
+from xrlint.rule import RuleContext, RuleExit, RuleOp
 
 
 class LinterTest(TestCase):
@@ -58,9 +49,7 @@ class LinterTest(TestCase):
 
 
 class LinterVerifyTest(TestCase):
-
     def setUp(self):
-
         plugin = new_plugin(name="test")
 
         @plugin.define_rule("no-space-in-attr-name")
@@ -274,7 +263,6 @@ class LinterVerifyTest(TestCase):
         )
 
     def test_processor(self):
-
         result = self.linter.verify_dataset(
             "test.levels",
             config=Config.from_value(

@@ -1,11 +1,10 @@
-from abc import abstractmethod, ABC
-from collections.abc import Mapping, Iterable
+from abc import ABC, abstractmethod
+from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
 from typing import Any, Callable, Type
 
 from xrlint.operation import Operation, OperationMeta
-from xrlint.result import Result
-from xrlint.result import ResultStats
+from xrlint.result import Result, ResultStats
 
 
 class FormatterContext(ABC):
@@ -86,7 +85,6 @@ class Formatter(Operation):
 
 
 class FormatterRegistry(Mapping[str, Formatter]):
-
     def __init__(self):
         self._registrations = {}
 

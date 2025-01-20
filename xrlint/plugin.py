@@ -1,12 +1,12 @@
 from dataclasses import dataclass, field
-from typing import Any, Type, Callable, Literal
+from typing import Any, Callable, Literal, Type
 
 from xrlint.config import Config
 from xrlint.processor import Processor, ProcessorOp, define_processor
 from xrlint.rule import Rule, RuleOp, define_rule
 from xrlint.util.constructible import MappingConstructible
-from xrlint.util.serializable import JsonSerializable, JsonValue
 from xrlint.util.importutil import import_value
+from xrlint.util.serializable import JsonSerializable, JsonValue
 
 
 @dataclass(kw_only=True)

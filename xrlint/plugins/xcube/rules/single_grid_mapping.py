@@ -1,8 +1,8 @@
 from xrlint.node import DatasetNode
-from xrlint.plugins.xcube.constants import LAT_NAME, LON_NAME, GM_NAMES_TEXT
+from xrlint.plugins.xcube.constants import GM_NAMES_TEXT, LAT_NAME, LON_NAME
 from xrlint.plugins.xcube.rules import plugin
 from xrlint.plugins.xcube.util import is_spatial_var
-from xrlint.rule import RuleOp, RuleContext
+from xrlint.rule import RuleContext, RuleOp
 
 
 @plugin.define_rule(

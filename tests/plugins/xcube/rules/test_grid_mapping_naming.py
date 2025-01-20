@@ -1,10 +1,8 @@
 import numpy as np
-
-from xrlint.plugins.xcube.rules.grid_mapping_naming import GridMappingNaming
-
 import xarray as xr
 
-from xrlint.testing import RuleTester, RuleTest
+from xrlint.plugins.xcube.rules.grid_mapping_naming import GridMappingNaming
+from xrlint.testing import RuleTest, RuleTester
 
 
 def make_dataset():

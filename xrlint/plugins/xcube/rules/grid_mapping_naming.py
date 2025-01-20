@@ -1,7 +1,7 @@
 from xrlint.node import DatasetNode
 from xrlint.plugins.xcube.constants import GM_NAMES, GM_NAMES_TEXT
 from xrlint.plugins.xcube.rules import plugin
-from xrlint.rule import RuleOp, RuleContext
+from xrlint.rule import RuleContext, RuleOp
 
 
 @plugin.define_rule(

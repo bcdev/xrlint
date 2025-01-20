@@ -1,9 +1,6 @@
 from unittest import TestCase
 
-from xrlint.util.merge import merge_arrays
-from xrlint.util.merge import merge_dicts
-from xrlint.util.merge import merge_set_lists
-from xrlint.util.merge import merge_values
+from xrlint.util.merge import merge_arrays, merge_dicts, merge_set_lists, merge_values
 
 
 class NamingTest(TestCase):

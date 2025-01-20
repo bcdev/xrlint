@@ -1,7 +1,8 @@
 from unittest import TestCase
 
 from xrlint.formatters.html import Html
-from .helpers import get_test_results, get_context
+
+from .helpers import get_context, get_test_results
 
 
 class HtmlTest(TestCase):

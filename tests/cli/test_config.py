@@ -5,11 +5,10 @@ from unittest import TestCase
 
 import pytest
 
-from xrlint.cli.config import ConfigError
-from xrlint.cli.config import read_config_list
-from xrlint.config import Config
-from xrlint.config import ConfigList
+from xrlint.cli.config import ConfigError, read_config_list
+from xrlint.config import Config, ConfigList
 from xrlint.rule import RuleConfig
+
 from .helpers import text_file
 
 yaml_text = """
@@ -92,8 +91,7 @@ class CliConfigTest(TestCase):
     def test_read_config_invalid_arg(self):
         with pytest.raises(
             TypeError,
-            match="configuration file must be of type str|Path|PathLike,"
-            " but got None",
+            match="configuration file must be of type str|Path|PathLike, but got None",
         ):
             # noinspection PyTypeChecker
             read_config_list(None)
