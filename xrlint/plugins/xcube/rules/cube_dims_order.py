@@ -1,5 +1,5 @@
 from xrlint.node import DataArrayNode
-from xrlint.plugins.xcube.constants import LAT_NAME, LON_NAME, T_NAME, X_NAME, Y_NAME
+from xrlint.plugins.xcube.constants import LAT_NAME, LON_NAME, X_NAME, Y_NAME, TIME_NAME
 from xrlint.plugins.xcube.rules import plugin
 from xrlint.rule import RuleContext, RuleOp
 
@@ -10,7 +10,7 @@ from xrlint.rule import RuleContext, RuleOp
     type="problem",
     description=(
         f"Order of dimensions in spatio-temporal datacube variables"
-        f" should be [{T_NAME}, ..., {Y_NAME}, {X_NAME}]."
+        f" should be [{TIME_NAME}, ..., {Y_NAME}, {X_NAME}]."
     ),
     docs_url=(
         "https://xcube.readthedocs.io/en/latest/cubespec.html#data-model-and-format"
@@ -36,8 +36,8 @@ class CubeDimsOrder(RuleOp):
                 return
 
             t_name = None
-            if T_NAME in indexes:
-                t_name = T_NAME
+            if TIME_NAME in indexes:
+                t_name = TIME_NAME
 
             n = len(dims)
             t_index = indexes[t_name] if t_name else None

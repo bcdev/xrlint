@@ -30,11 +30,32 @@ Grid mappings, if any, shall have valid grid mapping coordinate variables.
 
 Contained in:  `all`-:material-lightning-bolt: `recommended`-:material-lightning-bolt:
 
+### :material-bug: `lat-coordinate`
+
+Latitude coordinate should have standard units and standard names.
+[More information.](https://cfconventions.org/cf-conventions/cf-conventions.html#latitude-coordinate)
+
+Contained in:  `all`-:material-lightning-bolt:
+
+### :material-bug: `lon-coordinate`
+
+Longitude coordinate should have standard units and standard names.
+[More information.](https://cfconventions.org/cf-conventions/cf-conventions.html#longitude-coordinate)
+
+Contained in:  `all`-:material-lightning-bolt:
+
 ### :material-lightbulb: `no-empty-attrs`
 
 Every dataset element should have metadata that describes it.
 
 Contained in:  `all`-:material-lightning-bolt: `recommended`-:material-alert:
+
+### :material-bug: `time-coordinate`
+
+Time coordinate (standard_name='time') should have unambiguous time units encoding.
+[More information.](https://cfconventions.org/cf-conventions/cf-conventions.html#time-coordinate)
+
+Contained in:  `all`-:material-lightning-bolt: `recommended`-:material-lightning-bolt:
 
 ### :material-lightbulb: `var-units-attr`
 
@@ -90,6 +111,13 @@ Contained in:  `all`-:material-lightning-bolt: `recommended`-:material-lightning
 
 A single grid mapping shall be used for all spatial data variables of a datacube.
 [:material-information-variant:](https://xcube.readthedocs.io/en/latest/cubespec.html#spatial-reference)
+
+Contained in:  `all`-:material-lightning-bolt: `recommended`-:material-lightning-bolt:
+
+### :material-bug: `time-naming`
+
+Time coordinate and dimension should be called 'time'.
+[More information.](https://xcube.readthedocs.io/en/latest/cubespec.html#temporal-reference)
 
 Contained in:  `all`-:material-lightning-bolt: `recommended`-:material-lightning-bolt:
 
