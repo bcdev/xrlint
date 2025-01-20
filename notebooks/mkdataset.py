@@ -19,7 +19,14 @@ def make_dataset() -> xr.Dataset:
                 np.linspace(-90, 90, ny), dims="y", attrs={"units": "degrees"}
             ),
             "time": xr.DataArray(
-                [2010 + y for y in range(nt)], dims="time", attrs={"units": "years"}
+                [365 * i for i in range(nt)],
+                dims="time",
+                attrs={
+                    "standard_name": "time",
+                    "long_name": "time",
+                    "units": "days since 2020-01-01 utc",
+                    "calendar": "gregorian",
+                },
             ),
             "spatial_ref": xr.DataArray(
                 0,
@@ -48,6 +55,7 @@ def make_dataset() -> xr.Dataset:
 def make_dataset_with_issues() -> xr.Dataset:
     """Create a dataset that produces issues with xrlint core rules."""
     invalid_ds = make_dataset()
+    invalid_ds.time.attrs["units"] = "days since 2020-01-01 ß0:000:00"
     invalid_ds.attrs = {}
     invalid_ds.sst.attrs["units"] = 1
     invalid_ds["sst_avg"] = xr.DataArray(
