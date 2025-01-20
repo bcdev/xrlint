@@ -13,10 +13,18 @@ def make_dataset() -> xr.Dataset:
         attrs=dict(title="SST-Climatology Subset"),
         coords={
             "x": xr.DataArray(
-                np.linspace(-180, 180, nx), dims="x", attrs={"units": "degrees"}
+                np.linspace(-180, 180, nx), dims="x", attrs={
+                    "standard_name": "longitude",
+                    "long_name": "longitude",
+                    "units": "degrees_east"
+                }
             ),
             "y": xr.DataArray(
-                np.linspace(-90, 90, ny), dims="y", attrs={"units": "degrees"}
+                np.linspace(-90, 90, ny), dims="y", attrs={
+                    "standard_name": "latitude",
+                    "long_name": "latitude",
+                    "units": "degrees_north"
+                }
             ),
             "time": xr.DataArray(
                 [365 * i for i in range(nt)],
@@ -55,6 +63,10 @@ def make_dataset() -> xr.Dataset:
 def make_dataset_with_issues() -> xr.Dataset:
     """Create a dataset that produces issues with xrlint core rules."""
     invalid_ds = make_dataset()
+    invalid_ds.x.attrs["units"] = "degrees"
+    invalid_ds.x.attrs["axis"] = "x"
+    del invalid_ds.y.attrs["standard_name"]
+    invalid_ds.y.attrs["axis"] = "y"
     invalid_ds.time.attrs["units"] = "days since 2020-01-01 ß0:000:00"
     invalid_ds.attrs = {}
     invalid_ds.sst.attrs["units"] = 1

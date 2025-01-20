@@ -4,6 +4,8 @@
 
 - Added more rules
   - core rule "flags"
+  - core rule "lon-coordinate"
+  - core rule "lat-coordinate"
   - core rule "time-coordinate"  (#15)
   - xcube rule "time-naming"  (#15)
 

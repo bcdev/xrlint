@@ -30,6 +30,20 @@ Grid mappings, if any, shall have valid grid mapping coordinate variables.
 
 Contained in:  `all`-:material-lightning-bolt: `recommended`-:material-lightning-bolt:
 
+### :material-bug: `lat-coordinate`
+
+Latitude coordinate should have standard units and standard names.
+[More information.](https://cfconventions.org/cf-conventions/cf-conventions.html#latitude-coordinate)
+
+Contained in:  `all`-:material-lightning-bolt:
+
+### :material-bug: `lon-coordinate`
+
+Longitude coordinate should have standard units and standard names.
+[More information.](https://cfconventions.org/cf-conventions/cf-conventions.html#longitude-coordinate)
+
+Contained in:  `all`-:material-lightning-bolt:
+
 ### :material-lightbulb: `no-empty-attrs`
 
 Every dataset element should have metadata that describes it.
