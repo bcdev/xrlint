@@ -1,7 +1,7 @@
 from xrlint.node import DataArrayNode
 from xrlint.plugins.xcube.constants import LAT_NAME, LON_NAME, X_NAME, Y_NAME, TIME_NAME
 from xrlint.plugins.xcube.rules import plugin
-from xrlint.rule import RuleOp, RuleContext
+from xrlint.rule import RuleContext, RuleOp
 
 
 @plugin.define_rule(

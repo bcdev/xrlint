@@ -3,6 +3,7 @@
 ## Version 0.3.0 (in development)
 
 - Added more rules
+  - core rule "flags"
   - core rule "lon-coordinate"
   - core rule "lat-coordinate"
   - core rule "time-coordinate"  (#15)
@@ -19,6 +20,9 @@
   of operation classes `Rule`, `Processor`, `Formatter`.
 
 - Improved overall test coverage.
+
+- Switched to [ruff](https://docs.astral.sh/ruff/) 
+  as default linter and formatter.
 
 
 ## Version 0.2.0 (14.01.2025)

@@ -4,12 +4,12 @@ from typing import Any
 
 import xarray as xr
 
-from xrlint.constants import MISSING_DATASET_FILE_PATH
 from xrlint.config import Config
-from xrlint.result import Message
-from xrlint.result import Result
-from .rulectx import RuleContextImpl
+from xrlint.constants import MISSING_DATASET_FILE_PATH
+from xrlint.result import Message, Result
+
 from .apply import apply_rule
+from .rulectx import RuleContextImpl
 
 
 def verify_dataset(config: Config, dataset: Any, file_path: str | None):

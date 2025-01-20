@@ -92,7 +92,6 @@ class OperationTest(TestCase):
         self.assertIs(MyThingOp3, thing3.op_class)
 
     def test_from_value_ok_str(self):
-
         thing1_ = Thing.from_value("tests.test_operation:thing1")
         self.assertIs(thing1, thing1_)
         self.assertEqual("tests.test_operation:thing1", thing1_.meta.ref)
@@ -161,9 +160,7 @@ class OperationTest(TestCase):
 
 
 class OpMixinDefineTest(TestCase):
-
     def test_define_op(self):
-
         class MyThingOp3(ThingOp):
             """This is my 3rd thing."""
 
@@ -179,7 +176,6 @@ class OpMixinDefineTest(TestCase):
         self.assertIs(value.meta, MyThingOp3.meta)
 
     def test_define_op_fail(self):
-
         class MyThingOp3(ThingOp):
             """This is my 3rd thing."""
 
@@ -215,8 +211,7 @@ class OpMixinDefineTest(TestCase):
         with pytest.raises(
             TypeError,
             match=(
-                "decorated thing component must be a subclass of ThingOp,"
-                " but got Thing"
+                "decorated thing component must be a subclass of ThingOp, but got Thing"
             ),
         ):
             closure(Thing)

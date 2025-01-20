@@ -1,8 +1,7 @@
 from xrlint.node import DataArrayNode
 from xrlint.plugins.xcube.rules import plugin
 from xrlint.plugins.xcube.util import is_spatial_var
-from xrlint.rule import RuleContext
-from xrlint.rule import RuleOp
+from xrlint.rule import RuleContext, RuleOp
 
 
 @plugin.define_rule(
@@ -10,8 +9,7 @@ from xrlint.rule import RuleOp
     version="1.0.0",
     type="suggestion",
     description=(
-        "Spatial data variables should encode"
-        " xcube color mappings in their metadata."
+        "Spatial data variables should encode xcube color mappings in their metadata."
     ),
     docs_url=(
         "https://xcube.readthedocs.io/en/latest/cubespec.html#encoding-of-colors"

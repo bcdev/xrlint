@@ -5,11 +5,8 @@ This example demonstrates how to develop new rules.
 import xarray as xr
 
 from xrlint.node import DatasetNode
-from xrlint.rule import RuleContext
-from xrlint.rule import RuleOp
-from xrlint.rule import define_rule
-from xrlint.testing import RuleTest
-from xrlint.testing import RuleTester
+from xrlint.rule import RuleContext, RuleOp, define_rule
+from xrlint.testing import RuleTest, RuleTester
 
 
 @define_rule("good-title")

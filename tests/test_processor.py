@@ -5,15 +5,11 @@ import pytest
 import xarray as xr
 
 from xrlint.plugin import new_plugin
-from xrlint.processor import Processor
-from xrlint.processor import ProcessorMeta
-from xrlint.processor import ProcessorOp
-from xrlint.processor import define_processor
+from xrlint.processor import Processor, ProcessorMeta, ProcessorOp, define_processor
 from xrlint.result import Message
 
 
 class ProcessorTest(TestCase):
-
     def test_define_processor(self):
         registry = {}
 
@@ -64,7 +60,6 @@ class ProcessorTest(TestCase):
 
     # noinspection PyMethodMayBeStatic,PyUnusedLocal
     def test_define_processor_as_decorator_fail(self):
-
         with pytest.raises(
             TypeError,
             match=(

@@ -1,10 +1,6 @@
-from xrlint.node import AttrNode
-from xrlint.node import AttrsNode
-from xrlint.node import DataArrayNode
-from xrlint.node import DatasetNode
-from xrlint.rule import RuleConfig
-from xrlint.rule import RuleExit
-from xrlint.rule import RuleOp
+from xrlint.node import AttrNode, AttrsNode, DataArrayNode, DatasetNode
+from xrlint.rule import RuleConfig, RuleExit, RuleOp
+
 from .rulectx import RuleContextImpl
 
 

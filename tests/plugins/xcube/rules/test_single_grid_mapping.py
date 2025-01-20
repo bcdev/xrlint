@@ -1,9 +1,8 @@
-from xrlint.plugins.xcube.rules.single_grid_mapping import SingleGridMapping
-
 import numpy as np
 import xarray as xr
 
-from xrlint.testing import RuleTester, RuleTest
+from xrlint.plugins.xcube.rules.single_grid_mapping import SingleGridMapping
+from xrlint.testing import RuleTest, RuleTester
 
 
 def make_dataset():

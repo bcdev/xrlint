@@ -2,7 +2,6 @@ from typing import Any, Final, Mapping, Sequence, TypeAlias
 
 from xrlint.util.formatting import format_message_type_of
 
-
 JSON_VALUE_TYPE_NAME: Final = "None | bool | int | float | str | dict | list"
 
 JsonValue: TypeAlias = (

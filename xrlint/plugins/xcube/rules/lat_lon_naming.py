@@ -1,7 +1,7 @@
 from xrlint.node import DatasetNode
 from xrlint.plugins.xcube.constants import LAT_NAME, LON_NAME
 from xrlint.plugins.xcube.rules import plugin
-from xrlint.rule import RuleOp, RuleContext
+from xrlint.rule import RuleContext, RuleOp
 
 INVALID_LAT_NAMES = {"ltd", "latitude"}
 INVALID_LON_NAMES = {"lng", "long", "longitude"}
@@ -13,7 +13,7 @@ INVALID_LON_NAMES = {"lng", "long", "longitude"}
     type="problem",
     description=(
         f"Latitude and longitude coordinates and dimensions"
-        f" should be called {LAT_NAME !r} and {LON_NAME !r}."
+        f" should be called {LAT_NAME!r} and {LON_NAME!r}."
     ),
     docs_url="https://xcube.readthedocs.io/en/latest/cubespec.html#spatial-reference",
 )

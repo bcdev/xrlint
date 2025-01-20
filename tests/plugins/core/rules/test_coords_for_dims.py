@@ -1,7 +1,6 @@
-from xrlint.plugins.core.rules.coords_for_dims import CoordsForDims
-
 import xarray as xr
 
+from xrlint.plugins.core.rules.coords_for_dims import CoordsForDims
 from xrlint.testing import RuleTest, RuleTester
 
 valid_dataset_1 = xr.Dataset(attrs=dict(title="empty"))

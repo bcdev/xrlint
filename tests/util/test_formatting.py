@@ -1,10 +1,12 @@
 from unittest import TestCase
 
-from xrlint.util.formatting import format_case
-from xrlint.util.formatting import format_count
-from xrlint.util.formatting import format_problems
-from xrlint.util.formatting import format_seq
-from xrlint.util.formatting import format_styled
+from xrlint.util.formatting import (
+    format_case,
+    format_count,
+    format_problems,
+    format_seq,
+    format_styled,
+)
 
 
 class FormattingTest(TestCase):

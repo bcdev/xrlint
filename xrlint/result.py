@@ -1,16 +1,18 @@
+import html
 from collections.abc import Iterable
 from dataclasses import dataclass, field
-from typing import Literal, TYPE_CHECKING, Any, Union
-import html
+from typing import TYPE_CHECKING, Any, Literal, Union
 
 from tabulate import tabulate
 
-from xrlint.constants import SEVERITY_CODE_TO_NAME, MISSING_DATASET_FILE_PATH
-from xrlint.constants import SEVERITY_ERROR
-from xrlint.constants import SEVERITY_WARN
+from xrlint.constants import (
+    MISSING_DATASET_FILE_PATH,
+    SEVERITY_CODE_TO_NAME,
+    SEVERITY_ERROR,
+    SEVERITY_WARN,
+)
+from xrlint.util.formatting import format_message_type_of, format_problems
 from xrlint.util.serializable import JsonSerializable
-from xrlint.util.formatting import format_problems
-from xrlint.util.formatting import format_message_type_of
 
 if TYPE_CHECKING:  # pragma: no cover
     from xrlint.config import Config

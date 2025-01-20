@@ -2,11 +2,8 @@ import numpy as np
 
 from xrlint.node import DataArrayNode
 from xrlint.plugins.xcube.rules import plugin
-from xrlint.rule import RuleContext
-from xrlint.rule import RuleExit
-from xrlint.rule import RuleOp
-from xrlint.util.formatting import format_count
-from xrlint.util.formatting import format_seq
+from xrlint.rule import RuleContext, RuleExit, RuleOp
+from xrlint.util.formatting import format_count, format_seq
 
 
 @plugin.define_rule(

@@ -1,31 +1,28 @@
-from collections.abc import Iterable, Iterator
 import json
 import os
+from collections.abc import Iterable, Iterator
 
 import click
 import fsspec
 import yaml
 
-from xrlint.cli.config import read_config_list, ConfigError
-from xrlint.cli.constants import DEFAULT_CONFIG_FILES
-from xrlint.cli.constants import DEFAULT_CONFIG_FILE_YAML
-from xrlint.cli.constants import DEFAULT_GLOBAL_FILES
-from xrlint.cli.constants import DEFAULT_GLOBAL_IGNORES
-from xrlint.cli.constants import DEFAULT_OUTPUT_FORMAT
-from xrlint.cli.constants import DEFAULT_MAX_WARNINGS
-from xrlint.cli.constants import INIT_CONFIG_YAML
-from xrlint.config import Config
-from xrlint.config import ConfigList
-from xrlint.config import get_core_config
+from xrlint.cli.config import ConfigError, read_config_list
+from xrlint.cli.constants import (
+    DEFAULT_CONFIG_FILE_YAML,
+    DEFAULT_CONFIG_FILES,
+    DEFAULT_GLOBAL_FILES,
+    DEFAULT_GLOBAL_IGNORES,
+    DEFAULT_MAX_WARNINGS,
+    DEFAULT_OUTPUT_FORMAT,
+    INIT_CONFIG_YAML,
+)
+from xrlint.config import Config, ConfigList, get_core_config
 from xrlint.formatter import FormatterContext
 from xrlint.formatters import export_formatters
 from xrlint.linter import Linter
 from xrlint.plugin import Plugin
-from xrlint.result import Message
-from xrlint.result import Result
-from xrlint.result import ResultStats
+from xrlint.result import Message, Result, ResultStats
 from xrlint.util.filefilter import FileFilter
-
 
 DEFAULT_GLOBAL_FILTER = FileFilter.from_patterns(
     DEFAULT_GLOBAL_FILES, DEFAULT_GLOBAL_IGNORES
