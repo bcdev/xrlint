@@ -1,5 +1,9 @@
 # XRLint Change History
 
+## Version 0.4.0 (in development)
+
+
+
 ## Version 0.3.0 (from 2025-01-20)
 
 - Added more rules
