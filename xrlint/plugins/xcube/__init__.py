@@ -1,4 +1,4 @@
-from xrlint.config import Config
+from xrlint.config import Config, ConfigList
 from xrlint.plugin import Plugin
 from xrlint.util.importutil import import_submodules
 
@@ -9,42 +9,50 @@ def export_plugin() -> Plugin:
     import_submodules("xrlint.plugins.xcube.rules")
     import_submodules("xrlint.plugins.xcube.processors")
 
-    plugin.configs["recommended"] = Config.from_value(
+    common_configs = [
         {
-            "name": "xcube-recommended",
-            "ignores": ["**/*.levels"],
             "plugins": {
                 "xcube": plugin,
             },
-            "rules": {
-                "xcube/any-spatial-data-var": "error",
-                "xcube/cube-dims-order": "error",
-                "xcube/data-var-colors": "warn",
-                "xcube/grid-mapping-naming": "warn",
-                "xcube/increasing-time": "error",
-                "xcube/lat-lon-naming": "error",
-                "xcube/single-grid-mapping": "error",
-                "xcube/time-naming": "error",
-            },
-        }
-    )
-    plugin.configs["all"] = Config.from_value(
+        },
         {
-            "name": "xcube-all",
-            "ignores": ["**/*.levels"],
-            "plugins": {
-                "xcube": plugin,
-            },
-            "rules": {f"xcube/{rule_id}": "error" for rule_id in plugin.rules.keys()},
-        }
-    )
-    plugin.configs["multi-level-datasets"] = Config.from_value(
-        {
-            "name": "xcube-multi-level-datasets",
+            # Add *.levels to globally included list of file types
             "files": ["**/*.levels"],
-            "ignores": ["**/*.zarr", "**/*.nc"],
+        },
+        {
+            # Specify a processor for *.levels files
+            "files": ["**/*.levels"],
             "processor": "xcube/multi-level-dataset",
-        }
+        },
+    ]
+
+    plugin.configs["recommended"] = ConfigList.from_value(
+        [
+            *common_configs,
+            {
+                "rules": {
+                    "xcube/any-spatial-data-var": "error",
+                    "xcube/cube-dims-order": "error",
+                    "xcube/data-var-colors": "warn",
+                    "xcube/grid-mapping-naming": "warn",
+                    "xcube/increasing-time": "error",
+                    "xcube/lat-lon-naming": "error",
+                    "xcube/single-grid-mapping": "error",
+                    "xcube/time-naming": "error",
+                },
+            },
+        ]
+    )
+
+    plugin.configs["all"] = ConfigList.from_value(
+        [
+            *common_configs,
+            {
+                "rules": {
+                    f"xcube/{rule_id}": "error" for rule_id in plugin.rules.keys()
+                },
+            },
+        ]
     )
 
     return plugin

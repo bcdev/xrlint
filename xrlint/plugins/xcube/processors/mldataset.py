@@ -1,6 +1,8 @@
 import itertools
+import json
 from typing import Any
 
+import fsspec
 import xarray as xr
 
 from xrlint.plugins.xcube.plugin import plugin
@@ -17,6 +19,15 @@ class MultiLevelDatasetProcessor(ProcessorOp):
     ) -> list[tuple[xr.Dataset, str]]:
         engine = opener_options.pop("engine", "zarr")
 
+        levels_meta_path = f"{file_path}/.zlevels"
+        try:
+            with fsspec.open(levels_meta_path, mode="wt") as stream:
+                levels_meta_content = json.load(stream.read())
+        except FileNotFoundError:
+            levels_meta_path = None
+            levels_meta_content = None
+            pass
+
         level_datasets = []
         for level in itertools.count():
             level_path = f"{file_path}/{level}.zarr"
@@ -30,6 +41,8 @@ class MultiLevelDatasetProcessor(ProcessorOp):
 
         for level, (level_dataset, level_path) in enumerate(level_datasets):
             level_dataset.attrs["_LEVEL_INFO"] = {
+                "meta_path": levels_meta_path,
+                "meta_content": levels_meta_content,
                 "index": level,
                 "count": len(level_datasets),
                 "datasets": [ds for ds, _ in level_datasets],
