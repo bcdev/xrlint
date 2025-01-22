@@ -117,13 +117,13 @@ class CliConfigTest(TestCase):
                 read_config_list(config_path)
 
     def test_read_config_yaml_with_type_error(self):
-        with text_file("config.yaml", "prime: 97") as config_path:
+        with text_file("config.yaml", "97") as config_path:
             with pytest.raises(
                 ConfigError,
                 match=(
-                    "'config.yaml: configuration list must be of"
-                    " type ConfigList|list\\[Config|dict|str\\],"
-                    " but got dict'"
+                    r"config\.yaml\: config_list must be of"
+                    r" type ConfigList \| list\[Config \| dict \| str\],"
+                    r" but got int"
                 ),
             ):
                 read_config_list(config_path)
@@ -171,10 +171,10 @@ class CliConfigTest(TestCase):
             with pytest.raises(
                 ConfigError,
                 match=(
-                    ".py: return value of export_configs\\(\\):"
-                    " configuration list must be of type"
-                    " ConfigList|list\\[Config|dict|str\\],"
-                    " but got int"
+                    r"\.py: return value of export_configs\(\):"
+                    r" config_list must be of type"
+                    r" ConfigList \| list\[Config\ | dict \| str\],"
+                    r" but got int"
                 ),
             ):
                 read_config_list(config_path)
@@ -198,7 +198,7 @@ class CliConfigResolveTest(unittest.TestCase):
 
     def assert_ok(self, config_list: ConfigList):
         self.assertIsInstance(config_list, ConfigList)
-        self.assertEqual(4, len(config_list.configs))
+        self.assertEqual(7, len(config_list.configs))
         config = config_list.compute_config("test.zarr")
         self.assertIsInstance(config, Config)
         self.assertEqual("<computed>", config.name)

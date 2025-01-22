@@ -359,12 +359,14 @@ class ConfigList(ValueConstructible, JsonSerializable):
         Args:
             value: A `ConfigList` object or `list` of items which can be
                 converted into `Config` objects including configuration
-                names of tyype `str`. The latter are resolved against
+                names of type `str`. The latter are resolved against
                 the plugin configurations seen so far in the list.
             value_name: A value's name.
         Returns:
             A `ConfigList` object.
         """
+        if isinstance(value, (Config, dict)):
+            return ConfigList(configs=[Config.from_value(value)])
         return super().from_value(value, value_name=value_name)
 
     @classmethod
@@ -375,12 +377,13 @@ class ConfigList(ValueConstructible, JsonSerializable):
             if isinstance(item, str):
                 if CORE_PLUGIN_NAME not in plugins:
                     plugins.update({CORE_PLUGIN_NAME: get_core_plugin()})
-                config = cls._get_named_config(item, plugins)
+                new_configs = cls._get_named_config_list(item, plugins)
             else:
-                config = Config.from_value(item)
-            configs.append(config)
-            plugins.update(config.plugins if config.plugins else {})
-        return ConfigList(configs)
+                new_configs = [Config.from_value(item)]
+            for config in new_configs:
+                configs.append(config)
+                plugins.update(config.plugins if config.plugins else {})
+        return ConfigList(configs=configs)
 
     @classmethod
     def value_name(cls) -> str:
@@ -388,10 +391,12 @@ class ConfigList(ValueConstructible, JsonSerializable):
 
     @classmethod
     def value_type_name(cls) -> str:
-        return "ConfigList | list[Config | dict]"
+        return "ConfigList | list[Config | dict | str]"
 
     @classmethod
-    def _get_named_config(cls, config_spec: str, plugins: dict[str, "Plugin"]):
+    def _get_named_config_list(
+        cls, config_spec: str, plugins: dict[str, "Plugin"]
+    ) -> list[Config]:
         plugin_name, config_name = (
             config_spec.split("/", maxsplit=1)
             if "/" in config_spec
@@ -400,5 +405,4 @@ class ConfigList(ValueConstructible, JsonSerializable):
         plugin: Plugin | None = plugins.get(plugin_name)
         if plugin is None or not plugin.configs or config_name not in plugin.configs:
             raise ValueError(f"configuration {config_spec!r} not found")
-        config_value = plugin.configs[config_name]
-        return config_value
+        return ConfigList.from_value(plugin.configs[config_name]).configs

@@ -38,12 +38,14 @@ class PluginTest(TestCase):
                     "r2": MyRule2,
                 },
                 "configs": {
-                    "recommended": {
-                        "rules": {
-                            "hello/r1": "warn",
-                            "hello/r2": "error",
-                        },
-                    },
+                    "recommended": [
+                        {
+                            "rules": {
+                                "hello/r1": "warn",
+                                "hello/r2": "error",
+                            },
+                        }
+                    ],
                 },
             }
         )

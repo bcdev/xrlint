@@ -11,7 +11,7 @@ def export_configs():
             }
         },
         core.configs["recommended"],
-        xcube.configs["recommended"],
+        *xcube.configs["recommended"].configs,
         {
             "rules": {
                 "dataset-title-attr": "error",

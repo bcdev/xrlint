@@ -140,16 +140,25 @@ class ConfigListTest(TestCase):
         self.assertIsInstance(config_list, ConfigList)
         self.assertEqual([Config()], config_list.configs)
 
+        config_list = ConfigList.from_value({})
+        self.assertIsInstance(config_list, ConfigList)
+        self.assertEqual([Config()], config_list.configs)
+
+        config = Config.from_value({})
+        config_list = ConfigList.from_value(config)
+        self.assertIsInstance(config_list, ConfigList)
+        self.assertIs(config, config_list.configs[0])
+
     # noinspection PyMethodMayBeStatic
     def test_from_value_fail(self):
         with pytest.raises(
             TypeError,
             match=(
                 r"config_list must be of type"
-                r" ConfigList \| list\[Config \| dict\], but got dict"
+                r" ConfigList \| list\[Config \| dict \| str\], but got int"
             ),
         ):
-            ConfigList.from_value({})
+            ConfigList.from_value(264)
 
     def test_compute_config(self):
         config_list = ConfigList([Config()])
