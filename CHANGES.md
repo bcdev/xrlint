@@ -2,6 +2,23 @@
 
 ## Version 0.4.0 (in development)
 
+- Now supporting xcube multi-level datasets `*.levels`:
+  - Added xcube plugin processor `"xcube/multi-level-dataset"` that is used
+    inside the predefined xcube configurations "all" and "recommended".
+
+- Changed type of `Plugin.configs` from `dict[str, Config]` to 
+  `dict[str, list[Config]]`.
+- Introduced method `Plugin.define_config` which defines a named plugin
+  configuration. It takes a name and a configuration object or list of 
+  configuration objects.
+- Changed they way how configuration is defined and exported from
+  Python configuration files:
+  - Renamed function that exports configuration from `export_configs` 
+    into `export_config`.
+  - The returned value should be a list of values that can be 
+    converted into configuration objects: mixed `Config` instances,
+    dictionary, or a name that refers to a named configuration of a plugin.
+
 - Internal changes:
   - Inbuilt plugin now get their `plugin` instance from
     `xrlint.plugins.<plugin>.plugin` module.

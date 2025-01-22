@@ -102,11 +102,23 @@ class Plugin(MappingConstructible, JsonSerializable):
     def define_config(
         self,
         name: str,
-        config_value: list[Config | dict[str, Any]] | Config | dict[str, Any],
+        value: list[Config | dict[str, Any]] | Config | dict[str, Any],
     ) -> list[Config]:
-        config_list = ConfigList.from_value(config_value)
-        self.configs[name] = config_list.configs
-        return config_list.configs
+        """Define a named configuration.
+
+        Args:
+            name: The name of the configuration.
+            value: The configuration-like object or list.
+                A configuration-like object is either a
+                [Config][xrlint.config.Config] or a `dict` that
+                represents a configuration.
+
+        Returns:
+            A list of `Config` objects.
+        """
+        configs = ConfigList.from_value(value).configs
+        self.configs[name] = configs
+        return configs
 
     @classmethod
     def _from_str(cls, value: str, value_name: str) -> "Plugin":

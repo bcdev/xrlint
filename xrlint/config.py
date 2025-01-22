@@ -45,10 +45,11 @@ def get_core_config(
             CORE_PLUGIN_NAME: core_plugin,
         },
     )
-    if config_name:
-        return config.merge(core_plugin.configs[config_name])
-    else:
+    if config_name is None:
         return config
+    config_list = core_plugin.configs[config_name]
+    assert len(config_list) == 1
+    return config.merge(config_list[0])
 
 
 def split_config_spec(config_spec: str) -> tuple[str, str]:
@@ -341,7 +342,6 @@ class ConfigList(ValueConstructible, JsonSerializable):
 
         # Note, computed configurations do not have "files" and "ignores"
         return Config(
-            name="<computed>",
             linter_options=config.linter_options,
             opener_options=config.opener_options,
             processor=config.processor,

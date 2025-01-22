@@ -163,9 +163,7 @@ class ConfigListTest(TestCase):
     def test_compute_config(self):
         config_list = ConfigList([Config()])
         file_path = "s3://wq-services/datacubes/chl-2.zarr"
-        self.assertEqual(
-            Config(name="<computed>"), config_list.compute_config(file_path)
-        )
+        self.assertEqual(Config(), config_list.compute_config(file_path))
 
         config_list = ConfigList(
             [
@@ -176,14 +174,14 @@ class ConfigListTest(TestCase):
         )
         file_path = "s3://wq-services/datacubes/chl-2.zarr"
         self.assertEqual(
-            Config(name="<computed>", settings={"a": 1, "b": 2}),
+            Config(settings={"a": 1, "b": 2}),
             config_list.compute_config(file_path),
         )
 
         # global ignores
         file_path = "s3://wq-services/datacubes/chl-2.txt"
         self.assertEqual(
-            Config(name="<computed>", settings={"a": 2, "b": 1}),
+            Config(settings={"a": 2, "b": 1}),
             config_list.compute_config(file_path),
         )
 

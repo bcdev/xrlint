@@ -22,7 +22,7 @@ class GoodTitle(RuleOp):
 # Define more rules here...
 
 
-def export_configs():
+def export_config():
     return [
         # Define and use "hello" plugin
         {

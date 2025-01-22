@@ -3,27 +3,11 @@ This configuration example shows how to define and use a plugin
 using the `Plugin` class and its `define_rule()` decorator method.
 """
 
-from xrlint.config import Config
 from xrlint.node import DatasetNode
 from xrlint.plugin import new_plugin
 from xrlint.rule import RuleContext, RuleOp
 
-plugin = new_plugin(
-    name="hello-plugin",
-    version="1.0.0",
-    configs={
-        # "configs" entries must be `Config` objects!
-        "recommended": Config.from_value(
-            {
-                "rules": {
-                    "hello/good-title": "warn",
-                    # Configure more rules here...
-                },
-            }
-        ),
-        # Add more configurations here...
-    },
-)
+plugin = new_plugin(name="hello-plugin", version="1.0.0")
 
 
 @plugin.define_rule("good-title")
@@ -42,7 +26,22 @@ class GoodTitle(RuleOp):
 # Define more rules here...
 
 
-def export_configs():
+plugin.define_config(
+    "recommended",
+    [
+        {
+            "rules": {
+                "hello/good-title": "warn",
+                # Configure more rules here...
+            },
+        }
+    ],
+)
+
+# Add more configurations here...
+
+
+def export_config():
     return [
         # Use "hello" plugin
         {

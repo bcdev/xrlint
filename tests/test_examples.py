@@ -9,7 +9,7 @@ from xrlint.util.importutil import import_value
 class ExamplesTest(TestCase):
     def test_plugin_config(self):
         config_list, _ = import_value(
-            "examples.plugin_config", "export_configs", factory=ConfigList.from_value
+            "examples.plugin_config", "export_config", factory=ConfigList.from_value
         )
         self.assertIsInstance(config_list, ConfigList)
         self.assertEqual(3, len(config_list.configs))
@@ -17,7 +17,7 @@ class ExamplesTest(TestCase):
     def test_virtual_plugin_config(self):
         config_list, _ = import_value(
             "examples.virtual_plugin_config",
-            "export_configs",
+            "export_config",
             factory=ConfigList.from_value,
         )
         self.assertIsInstance(config_list, ConfigList)

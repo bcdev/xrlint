@@ -1,4 +1,3 @@
-from xrlint.config import Config, ConfigList
 from xrlint.plugin import Plugin
 from xrlint.util.importutil import import_submodules
 
@@ -26,7 +25,8 @@ def export_plugin() -> Plugin:
         },
     ]
 
-    plugin.configs["recommended"] = ConfigList.from_value(
+    plugin.define_config(
+        "recommended",
         [
             *common_configs,
             {
@@ -41,10 +41,11 @@ def export_plugin() -> Plugin:
                     "xcube/time-naming": "error",
                 },
             },
-        ]
+        ],
     )
 
-    plugin.configs["all"] = ConfigList.from_value(
+    plugin.define_config(
+        "all",
         [
             *common_configs,
             {
@@ -52,7 +53,7 @@ def export_plugin() -> Plugin:
                     f"xcube/{rule_id}": "error" for rule_id in plugin.rules.keys()
                 },
             },
-        ]
+        ],
     )
 
     return plugin

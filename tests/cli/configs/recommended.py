@@ -1,4 +1,4 @@
-def export_configs():
+def export_config():
     import xrlint.plugins.core
     import xrlint.plugins.xcube
 
@@ -10,8 +10,8 @@ def export_configs():
                 "xcube": xcube,
             }
         },
-        core.configs["recommended"],
-        *xcube.configs["recommended"].configs,
+        *core.configs["recommended"],
+        *xcube.configs["recommended"],
         {
             "rules": {
                 "dataset-title-attr": "error",

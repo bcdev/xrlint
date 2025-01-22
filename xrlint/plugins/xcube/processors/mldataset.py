@@ -21,12 +21,11 @@ class MultiLevelDatasetProcessor(ProcessorOp):
 
         levels_meta_path = f"{file_path}/.zlevels"
         try:
-            with fsspec.open(levels_meta_path, mode="wt") as stream:
-                levels_meta_content = json.load(stream.read())
+            with fsspec.open(levels_meta_path, mode="rt", encoding="utf-8") as stream:
+                levels_meta_content = json.load(stream)
         except FileNotFoundError:
             levels_meta_path = None
             levels_meta_content = None
-            pass
 
         level_datasets = []
         for level in itertools.count():
