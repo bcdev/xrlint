@@ -124,15 +124,7 @@ class TypingTest(TestCase):
 class JsonSerializableTest(TestCase):
     def test_simple_ok(self):
         self.assertEqual(
-            {
-                "a": None,
-                "b": False,
-                "c": 0,
-                "d": 0.0,
-                "e": "abc",
-                "f": "<class 'int'>",
-                "g": 0,
-            },
+            {},
             SimpleTypesContainer().to_json(),
         )
         self.assertEqual(
@@ -162,58 +154,18 @@ class JsonSerializableTest(TestCase):
         )
         self.assertEqual(
             {
-                "p": {
-                    "a": None,
-                    "b": False,
-                    "c": 0,
-                    "d": 0.0,
-                    "e": "abc",
-                    "f": "<class 'int'>",
-                    "g": 0,
-                },
+                "p": {},
                 "q": {"p": True, "q": False},
-                "r": {
-                    "u": {
-                        "a": None,
-                        "b": False,
-                        "c": 0,
-                        "d": 0.0,
-                        "e": "abc",
-                        "f": "<class 'int'>",
-                        "g": 0,
-                    },
-                    "v": {
-                        "a": None,
-                        "b": False,
-                        "c": 0,
-                        "d": 0.0,
-                        "e": "abc",
-                        "f": "<class 'int'>",
-                        "g": 0,
-                    },
-                },
+                "r": {"u": {}, "v": {}},
                 "s": [1, 2, 3],
                 "t": [
+                    {"c": 5, "d": 6.7},
                     {
-                        "a": None,
-                        "b": False,
-                        "c": 5,
-                        "d": 6.7,
-                        "e": "abc",
-                        "f": "<class 'int'>",
-                        "g": 0,
-                    },
-                    {
-                        "a": None,
-                        "b": False,
                         "c": 8,
                         "d": 9.1,
-                        "e": "abc",
                         "f": "<class 'tests.util.test_codec.SimpleTypesContainer'>",
-                        "g": 0,
                     },
                 ],
-                "u": None,
             },
             container.to_json(),
         )

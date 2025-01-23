@@ -5,25 +5,30 @@
 - Now supporting xcube multi-level datasets `*.levels`:
   - Added xcube plugin processor `"xcube/multi-level-dataset"` that is used
     inside the predefined xcube configurations "all" and "recommended".
-
-- Changed type of `Plugin.configs` from `dict[str, Config]` to 
-  `dict[str, list[Config]]`.
+- Directories that are recognized by file patterns associated with a non-empty 
+  configuration object are no longer recursively
+  traversed.
 - Introduced method `Plugin.define_config` which defines a named plugin
   configuration. It takes a name and a configuration object or list of 
   configuration objects.
-- Changed they way how configuration is defined and exported from
+- Changed the way how configuration is defined and exported from
   Python configuration files:
   - Renamed function that exports configuration from `export_configs` 
     into `export_config`.
   - The returned value should be a list of values that can be 
     converted into configuration objects: mixed `Config` instances,
     dictionary, or a name that refers to a named configuration of a plugin.
+- Node path names now contain the dataset index if a file path 
+  has been opened by a processor produced multiple 
+  datasets to validate.
 
-- Internal changes:
-  - Inbuilt plugin now get their `plugin` instance from
+- Other changes:
+  - Changed type of `Plugin.configs` from `dict[str, Config]` to 
+    `dict[str, list[Config]]`.
+  - Inbuilt plugin rules now import their `plugin` instance from
     `xrlint.plugins.<plugin>.plugin` module.
-  - Node paths now contain the split index if dataset 
-    has been opened by a processor.  
+  - `JsonSerializable` now recognizes `dataclass` instances and no longer
+    serializes property values that are also default values.
 
 ## Version 0.3.0 (from 2025-01-20)
 

@@ -6,7 +6,7 @@ from xrlint.constants import CORE_PLUGIN_NAME
 from xrlint.util.constructible import MappingConstructible, ValueConstructible
 from xrlint.util.filefilter import FileFilter
 from xrlint.util.merge import merge_arrays, merge_dicts, merge_set_lists, merge_values
-from xrlint.util.serializable import JsonSerializable, JsonValue
+from xrlint.util.serializable import JsonSerializable
 
 if TYPE_CHECKING:  # pragma: no cover
     # make IDEs and flake8 happy
@@ -155,6 +155,7 @@ class Config(MappingConstructible, JsonSerializable):
         return not (
             self.linter_options
             or self.opener_options
+            or self.processor
             or self.plugins
             or self.rules
             or self.settings
@@ -293,9 +294,6 @@ class Config(MappingConstructible, JsonSerializable):
     def value_type_name(cls) -> str:
         return "Config | dict | None"
 
-    def to_dict(self, value_name: str | None = None) -> dict[str, JsonValue]:
-        return {k: v for k, v in super().to_dict().items() if v is not None}
-
 
 @dataclass(frozen=True)
 class ConfigList(ValueConstructible, JsonSerializable):
@@ -309,16 +307,21 @@ class ConfigList(ValueConstructible, JsonSerializable):
     configs: list[Config] = field(default_factory=list)
     """The list of configuration objects."""
 
-    def get_global_filter(self, default: FileFilter | None = None) -> FileFilter:
+    def split_global_filter(
+        self, default: FileFilter | None = None
+    ) -> tuple["ConfigList", FileFilter]:
         """Get a global file filter for this configuration list."""
         global_filter = FileFilter(
             default.files if default else (),
             default.ignores if default else (),
         )
+        configs = []
         for c in self.configs:
             if c.empty and not c.file_filter.empty:
                 global_filter = global_filter.merge(c.file_filter)
-        return global_filter
+            else:
+                configs.append(c)
+        return ConfigList(configs=configs), global_filter
 
     def compute_config(self, file_path: str) -> Config | None:
         """Compute the configuration object for the given file path.

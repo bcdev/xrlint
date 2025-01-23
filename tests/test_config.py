@@ -185,7 +185,7 @@ class ConfigListTest(TestCase):
             config_list.compute_config(file_path),
         )
 
-    def test_get_global_filter(self):
+    def test_split_global_filter(self):
         config_list = ConfigList(
             [
                 Config(files=["**/*.hdf"]),  # global file
@@ -196,16 +196,18 @@ class ConfigListTest(TestCase):
             ]
         )
 
-        file_filter = config_list.get_global_filter()
+        new_config_list, file_filter = config_list.split_global_filter()
         self.assertEqual(
             FileFilter.from_patterns(["**/*.hdf"], ["**/chl-?.txt"]),
             file_filter,
         )
+        self.assertEqual(3, len(new_config_list.configs))
 
-        file_filter = config_list.get_global_filter(
+        new_config_list, file_filter = config_list.split_global_filter(
             default=FileFilter.from_patterns(["**/*.h5"], None)
         )
         self.assertEqual(
             FileFilter.from_patterns(["**/*.h5", "**/*.hdf"], ["**/chl-?.txt"]),
             file_filter,
         )
+        self.assertEqual(3, len(new_config_list.configs))

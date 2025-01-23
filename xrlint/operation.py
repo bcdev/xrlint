@@ -46,13 +46,6 @@ class OperationMeta(MappingConstructible["OpMetadata"], JsonSerializable):
     Must have the form "<module>:<attr>", if given.
     """
 
-    def to_dict(self, value_name: str | None = None) -> dict[str, JsonValue]:
-        return {
-            k: v
-            for k, v in super().to_dict(value_name=value_name).items()
-            if v is not None
-        }
-
 
 class Operation(MappingConstructible["Operation"], JsonSerializable):
     """A mixin class that is used by operation classes.
