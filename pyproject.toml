@@ -73,6 +73,7 @@ dev = [
   "ruff",
   "twine",
   # Dataset testing
+  "dask",
   "netcdf4",
   "numpy",
   "pandas",
