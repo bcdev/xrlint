@@ -1,4 +1,5 @@
 from xrlint.plugin import Plugin
+from xrlint.plugins.xcube.constants import ML_FILE_PATTERN
 from xrlint.util.importutil import import_submodules
 
 
@@ -16,11 +17,11 @@ def export_plugin() -> Plugin:
         },
         {
             # Add *.levels to globally included list of file types
-            "files": ["**/*.levels"],
+            "files": [ML_FILE_PATTERN],
         },
         {
             # Specify a processor for *.levels files
-            "files": ["**/*.levels"],
+            "files": [ML_FILE_PATTERN],
             "processor": "xcube/multi-level-dataset",
         },
     ]
@@ -37,6 +38,8 @@ def export_plugin() -> Plugin:
                     "xcube/grid-mapping-naming": "warn",
                     "xcube/increasing-time": "error",
                     "xcube/lat-lon-naming": "error",
+                    "xcube/ml-dataset-meta": "warn",
+                    "xcube/ml-dataset-resolution": "error",
                     "xcube/single-grid-mapping": "error",
                     "xcube/time-naming": "error",
                 },

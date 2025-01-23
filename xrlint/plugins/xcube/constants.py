@@ -1,8 +1,14 @@
-LON_NAME = "lon"
-LAT_NAME = "lat"
-X_NAME = "x"
-Y_NAME = "y"
-TIME_NAME = "time"
+from typing import Final
 
-GM_NAMES = "spatial_ref", "crs"
-GM_NAMES_TEXT = " or ".join(repr(gm_name) for gm_name in GM_NAMES)
+LON_NAME: Final = "lon"
+LAT_NAME: Final = "lat"
+X_NAME: Final = "x"
+Y_NAME: Final = "y"
+TIME_NAME: Final = "time"
+
+GM_NAMES: Final = "spatial_ref", "crs"
+GM_NAMES_TEXT: Final = " or ".join(repr(gm_name) for gm_name in GM_NAMES)
+
+ML_FILE_PATTERN: Final = "**/*.levels"
+ML_META_FILENAME: Final = ".zlevels"
+ML_INFO_ATTR: Final = "_LEVEL_INFO"

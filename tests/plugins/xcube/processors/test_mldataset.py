@@ -4,7 +4,12 @@ from unittest import TestCase
 import fsspec
 
 from tests.plugins.xcube.helpers import make_cube
-from xrlint.plugins.xcube.processors.mldataset import MultiLevelDatasetProcessor
+from xrlint.plugins.xcube.constants import ML_INFO_ATTR
+from xrlint.plugins.xcube.processors.mldataset import (
+    MultiLevelDatasetProcessor,
+    LevelInfo,
+    MultiLevelDatasetMeta,
+)
 from xrlint.result import Message
 
 
@@ -46,14 +51,13 @@ class MultiLevelDatasetProcessorTest(TestCase):
         self.assertEqual(self.nl, len(datasets))
         for i, (dataset, file_path) in enumerate(datasets):
             self.assertEqual(f"{self.levels_dir}/{i}.zarr", file_path)
-            self.assertIn("_LEVEL_INFO", dataset.attrs)
-            level_info = dataset.attrs.get("_LEVEL_INFO")
-            self.assertIsInstance(level_info, dict)
-            self.assertEqual(i, level_info.get("index"))
-            self.assertEqual(self.nl, level_info.get("count"))
-            self.assertEqual(self.meta_path, level_info.get("meta_path"))
-            self.assertEqual(self.meta_content, level_info.get("meta_content"))
-            self.assertIsInstance(level_info.get("datasets"), list)
+            level_info = dataset.attrs.get(ML_INFO_ATTR)
+            self.assertIsInstance(level_info, LevelInfo)
+            self.assertEqual(i, level_info.level)
+            self.assertEqual(self.nl, level_info.num_levels)
+            self.assertIsInstance(level_info.meta, MultiLevelDatasetMeta)
+            self.assertIsInstance(level_info.datasets, list)
+            self.assertEqual(self.nl, len(level_info.datasets))
 
         self.fs.delete(self.meta_path)
 
@@ -64,14 +68,13 @@ class MultiLevelDatasetProcessorTest(TestCase):
         self.assertEqual(self.nl, len(datasets))
         for i, (dataset, file_path) in enumerate(datasets):
             self.assertEqual(f"{self.levels_dir}/{i}.zarr", file_path)
-            self.assertIn("_LEVEL_INFO", dataset.attrs)
-            level_info = dataset.attrs.get("_LEVEL_INFO")
-            self.assertIsInstance(level_info, dict)
-            self.assertEqual(i, level_info.get("index"))
-            self.assertEqual(self.nl, level_info.get("count"))
-            self.assertEqual(None, level_info.get("meta_path"))
-            self.assertEqual(None, level_info.get("meta_content"))
-            self.assertIsInstance(level_info.get("datasets"), list)
+            level_info = dataset.attrs.get(ML_INFO_ATTR)
+            self.assertIsInstance(level_info, LevelInfo)
+            self.assertEqual(i, level_info.level)
+            self.assertEqual(self.nl, level_info.num_levels)
+            self.assertEqual(None, level_info.meta)
+            self.assertIsInstance(level_info.datasets, list)
+            self.assertEqual(self.nl, len(level_info.datasets))
 
     def test_postprocess(self):
         processor = MultiLevelDatasetProcessor()

@@ -14,6 +14,8 @@ class ExportPluginTest(TestCase):
                 "grid-mapping-naming",
                 "increasing-time",
                 "lat-lon-naming",
+                "ml-dataset-meta",
+                "ml-dataset-resolution",
                 "single-grid-mapping",
                 "time-naming",
             },

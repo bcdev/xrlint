@@ -2,6 +2,9 @@
 
 ## Version 0.4.0 (in development)
 
+- New xcube multi-level dataset rules:
+  - `ml-dataset-meta`: verifies that a meta info file exists and is consistent
+  - `ml-dataset-resolution`: verifies that the levels have expected resolutions
 - Now supporting xcube multi-level datasets `*.levels`:
   - Added xcube plugin processor `"xcube/multi-level-dataset"` that is used
     inside the predefined xcube configurations "all" and "recommended".
