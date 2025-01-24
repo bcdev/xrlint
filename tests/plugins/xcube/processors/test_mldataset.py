@@ -7,10 +7,10 @@ import pytest
 
 from tests.plugins.xcube.helpers import make_cube_levels
 from xrlint.plugins.xcube.constants import ML_INFO_ATTR
-from xrlint.plugins.xcube.processors.mldataset import (
-    MultiLevelDatasetProcessor,
+from xrlint.plugins.xcube.processors.mldataset import MultiLevelDatasetProcessor
+from xrlint.plugins.xcube.util import (
     LevelInfo,
-    MultiLevelDatasetMeta,
+    LevelsMeta,
 )
 from xrlint.result import Message
 
@@ -45,7 +45,7 @@ class MultiLevelDatasetProcessorTest(TestCase):
         self.fs.mkdir(self.levels_dir)
 
         level_datasets = make_cube_levels(
-            self.x_size, self.y_size, self.time_size, self.num_levels
+            self.num_levels, self.x_size, self.y_size, self.time_size
         )
         for level, dataset in enumerate(level_datasets):
             dataset.to_zarr(f"{self.levels_dir}/{level}.zarr", write_empty_chunks=False)
@@ -80,7 +80,7 @@ class MultiLevelDatasetProcessorTest(TestCase):
             self.assertEqual(self.num_levels, len(level_info.datasets))
             meta = level_info.meta
             if expect_meta:
-                self.assertIsInstance(meta, MultiLevelDatasetMeta)
+                self.assertIsInstance(meta, LevelsMeta)
                 self.assertEqual("1.0", meta.version)
                 self.assertEqual(self.num_levels, meta.num_levels)
                 self.assertEqual(False, meta.use_saved_levels)

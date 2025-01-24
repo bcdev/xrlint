@@ -12,10 +12,9 @@ from xrlint.plugins.xcube.constants import (
 )
 from xrlint.plugins.xcube.plugin import plugin
 from xrlint.plugins.xcube.util import (
-    set_dataset_level_info,
-    LevelInfo,
-    MultiLevelDatasetMeta,
+    LevelsMeta,
     norm_path,
+    attach_dataset_level_infos,
 )
 from xrlint.processor import ProcessorOp
 from xrlint.result import Message
@@ -42,7 +41,7 @@ class MultiLevelDatasetProcessor(ProcessorOp):
         meta = None
         if ML_META_FILENAME in file_names:
             with fs.open(f"{fs_path}/{ML_META_FILENAME}") as stream:
-                meta = MultiLevelDatasetMeta.from_value(json.load(stream))
+                meta = LevelsMeta.from_value(json.load(stream))
 
         # check for optional ".0.link" that locates level 0 somewhere else
         level_0_path = None
@@ -59,16 +58,7 @@ class MultiLevelDatasetProcessor(ProcessorOp):
             level_dataset = xr.open_dataset(level_path, engine=engine, **opener_options)
             level_datasets.append((level_dataset, level_path))
 
-        for level, (level_dataset, _) in enumerate(level_datasets):
-            set_dataset_level_info(
-                level_dataset,
-                LevelInfo(
-                    level=level,
-                    num_levels=num_levels,
-                    meta=meta,
-                    datasets=level_datasets,
-                ),
-            )
+        attach_dataset_level_infos(level_datasets, meta=meta)
 
         return level_datasets
 

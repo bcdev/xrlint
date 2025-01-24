@@ -1,4 +1,5 @@
 from xrlint.plugin import Plugin
+from xrlint.rule import RuleConfig
 
 # for icons, see
 # https://squidfunk.github.io/mkdocs-material/reference/icons-emojis/
@@ -39,7 +40,7 @@ def write_rule_ref_page():
 
 
 def write_plugin_rules(stream, plugin: Plugin):
-    configs = plugin.configs
+    config_rules = get_plugin_rule_configs(plugin)
     for rule_id in sorted(plugin.rules.keys()):
         rule_meta = plugin.rules[rule_id].meta
         stream.write(
@@ -51,15 +52,30 @@ def write_plugin_rules(stream, plugin: Plugin):
         stream.write("\n\n")
         # List the predefined configurations that contain the rule
         stream.write("Contained in: ")
-        for config_id in sorted(configs.keys()):
-            config = configs[config_id]
-            rule_configs = config.rules or {}
+        for config_id in sorted(config_rules.keys()):
+            rule_configs = config_rules[config_id]
             rule_config = rule_configs.get(rule_id) or rule_configs.get(
                 f"{plugin.meta.name}/{rule_id}"
             )
             if rule_config is not None:
                 stream.write(f" `{config_id}`-:{severity_icons[rule_config.severity]}:")
         stream.write("\n\n")
+
+
+def get_plugin_rule_configs(plugin):
+    configs = plugin.configs
+    config_rules: dict[str, dict[str, RuleConfig]] = {}
+    for config_name, config_list in configs.items():
+        # note, here we assume most plugins configure their rules
+        # in one dedicated config object only. However, this is not
+        # the general case as file patterns may be used to make the
+        # rules configurations specific.
+        rule_configs = {}
+        for config in config_list:
+            if config.rules:
+                rule_configs.update(config.rules)
+        config_rules[config_name] = rule_configs
+    return config_rules
 
 
 if __name__ == "__main__":

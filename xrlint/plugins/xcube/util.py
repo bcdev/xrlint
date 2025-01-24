@@ -8,7 +8,7 @@ from .constants import LAT_NAME, LON_NAME, X_NAME, Y_NAME, ML_INFO_ATTR
 
 
 @dataclass(frozen=True, kw_only=True)
-class MultiLevelDatasetMeta(MappingConstructible):
+class LevelsMeta(MappingConstructible):
     """The contents of a xcube `.zlevels` meta-info file."""
 
     version: str
@@ -38,7 +38,7 @@ class LevelInfo:
      level dataset and level file path.
      """
 
-    meta: MultiLevelDatasetMeta | None = None
+    meta: LevelsMeta | None = None
     """Content of a `.zlevels` file, if file was found."""
 
 
@@ -48,6 +48,22 @@ def get_dataset_level_info(dataset: xr.Dataset) -> LevelInfo | None:
 
 def set_dataset_level_info(dataset: xr.Dataset, level_info: LevelInfo):
     dataset.attrs[ML_INFO_ATTR] = level_info
+
+
+def attach_dataset_level_infos(
+    level_datasets: list[tuple[xr.Dataset, str]],
+    meta: LevelsMeta | None = None,
+):
+    for level, (level_dataset, _) in enumerate(level_datasets):
+        set_dataset_level_info(
+            level_dataset,
+            LevelInfo(
+                level=level,
+                num_levels=len(level_datasets),
+                meta=meta,
+                datasets=level_datasets,
+            ),
+        )
 
 
 def is_spatial_var(var: xr.DataArray) -> bool:

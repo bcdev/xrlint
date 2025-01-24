@@ -18,7 +18,7 @@ from xrlint.util.formatting import format_item
         "https://xcube.readthedocs.io/en/latest/mldatasets.html#the-xcube-levels-format"
     ),
 )
-class MultiLevelDatasetMeta(RuleOp):
+class MLDatasetMeta(RuleOp):
     def dataset(self, ctx: RuleContext, node: DatasetNode):
         level_info = get_dataset_level_info(node.dataset)
         if level_info is None:
@@ -42,7 +42,7 @@ class MultiLevelDatasetMeta(RuleOp):
         if not meta.version.startswith("1."):
             ctx.report(f"Unsupported {ML_META_FILENAME!r} meta-info version")
 
-        if meta.num_levels < 0:
+        if meta.num_levels <= 0:
             ctx.report(
                 f"Invalid 'num_levels' in {ML_META_FILENAME!r} meta-info:"
                 f" {meta.num_levels}"

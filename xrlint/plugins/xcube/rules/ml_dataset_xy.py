@@ -7,7 +7,7 @@ from xrlint.rule import RuleContext, RuleOp
 
 
 @plugin.define_rule(
-    "ml-dataset-resolution",
+    "ml-dataset-xy",
     version="1.0.0",
     type="problem",
     description=(
@@ -16,7 +16,7 @@ from xrlint.rule import RuleContext, RuleOp
     ),
     docs_url="https://xcube.readthedocs.io/en/latest/mldatasets.html#definition",
 )
-class MultiLevelDatasetMeta(RuleOp):
+class MLDatasetXY(RuleOp):
     def dataset(self, ctx: RuleContext, node: DatasetNode):
         level_info = get_dataset_level_info(node.dataset)
         if level_info is None:
@@ -33,7 +33,7 @@ class MultiLevelDatasetMeta(RuleOp):
         level_0_dataset, _ = datasets[0]
         l0_size = get_spatial_size(level_0_dataset)
         if l0_size is None:
-            # weird - maybe no data vars?
+            # ok, maybe no spatial data vars?
             return
 
         (x_name, level_0_width), (y_name, level_0_height) = l0_size
