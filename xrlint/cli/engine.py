@@ -21,7 +21,7 @@ from xrlint.formatter import FormatterContext
 from xrlint.formatters import export_formatters
 from xrlint.linter import Linter
 from xrlint.plugin import Plugin
-from xrlint.result import Message, Result, ResultStats
+from xrlint.result import Result, ResultStats
 from xrlint.util.filefilter import FileFilter
 
 DEFAULT_GLOBAL_FILTER = FileFilter.from_patterns(
@@ -147,25 +147,52 @@ class XRLint(FormatterContext):
         Returns:
             Iterator of reports.
         """
-        global_filter = self.config_list.get_global_filter(
+        linter = Linter()
+        for file_path, config in self.get_files(files):
+            yield linter.verify_dataset(file_path, config=config)
+
+    def get_files(self, file_paths: Iterable[str]) -> Iterator[tuple[str, Config]]:
+        """Provide an iterator for the list of files or directories.
+
+        Directories in `files` that are not filtered out will be
+        recursively traversed.
+
+        Args:
+            file_paths: Iterable of files or directory.
+
+        Returns:
+            An iterator of filtered files or directories.
+        """
+        config_list, global_filter = self.config_list.split_global_filter(
             default=DEFAULT_GLOBAL_FILTER
         )
-        linter = Linter()
-        for file_path, is_dir in get_files(files, global_filter):
-            config = self.get_config_for_file(file_path)
+
+        def compute_config(p: str):
+            return config_list.compute_config(p) if global_filter.accept(p) else None
+
+        for file_path in file_paths:
+            _fs, root = fsspec.url_to_fs(file_path)
+            fs: fsspec.AbstractFileSystem = _fs
+
+            config = compute_config(file_path)
             if config is not None:
-                yield linter.verify_dataset(file_path, config=config)
-            else:
-                yield Result.new(
-                    config=config,
-                    file_path=file_path,
-                    messages=[
-                        Message(
-                            message="No configuration matches this file.",
-                            severity=2,
-                        )
-                    ],
-                )
+                yield file_path, config
+                continue
+
+            if fs.isdir(root):
+                for path, dirs, files in fs.walk(root, topdown=True):
+                    for d in list(dirs):
+                        d_path = f"{path}/{d}"
+                        c = compute_config(d_path)
+                        if c is not None:
+                            dirs.remove(d)
+                            yield d_path, c
+
+                    for f in files:
+                        f_path = f"{path}/{f}"
+                        c = compute_config(f_path)
+                        if c is not None:
+                            yield f_path, c
 
     def format_results(self, results: Iterable[Result]) -> str:
         """Format the given results.
@@ -220,38 +247,3 @@ class XRLint(FormatterContext):
         with open(file_path, "w") as f:
             f.write(INIT_CONFIG_YAML)
         click.echo(f"Configuration template written to {file_path}")
-
-
-def get_files(
-    file_paths: Iterable[str], global_filter: FileFilter
-) -> Iterator[tuple[str, bool | None]]:
-    """Provide an iterator for the list of files or directories.
-
-    Directories in `files` that are not filtered out will be
-    recursively traversed.
-
-    Args:
-        file_paths: Iterable of files or directory.
-        global_filter: A file filter that includes files that
-            covered by global file patterns and not excluded
-            by global ignore patterns.
-
-    Returns:
-        An iterator of filtered files or directories.
-    """
-    for file_path in file_paths:
-        _fs, root = fsspec.url_to_fs(file_path)
-        fs: fsspec.AbstractFileSystem = _fs
-        _dir = fs.isdir(root)
-        if global_filter.accept(file_path):
-            yield file_path, _dir
-        elif _dir:
-            for path, dirs, files in fs.walk(root):
-                for d in dirs:
-                    d_path = f"{path}/{d}"
-                    if global_filter.accept(d_path):
-                        yield d_path, True
-                for f in files:
-                    f_path = f"{path}/{f}"
-                    if global_filter.accept(f_path):
-                        yield f_path, False

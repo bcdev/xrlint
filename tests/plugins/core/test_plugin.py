@@ -34,9 +34,9 @@ class ExportPluginTest(TestCase):
         all_rule_names = set(plugin.rules.keys())
         self.assertEqual(
             all_rule_names,
-            set(plugin.configs["all"].rules.keys()),
+            set(plugin.configs["all"][-1].rules.keys()),
         )
         self.assertEqual(
             all_rule_names,
-            set(plugin.configs["recommended"].rules.keys()),
+            set(plugin.configs["recommended"][-1].rules.keys()),
         )

@@ -14,10 +14,6 @@
 ## Desired
  
 - project logo
-- support validating xcube 'levels' format. Options:
-    - implement xarray backend so we can open them using `xr.open_dataset`
-      with `opener_options: {"engine": "xc-levels"}`.
-    - implement a `xrlint.processor.Processor` for that purpose.
 - add some more tests so we reach 99% coverage
 - support rule op args/kwargs schema validation
 - Support `RuleTest.expected`, it is currently unused

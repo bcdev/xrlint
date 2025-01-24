@@ -64,9 +64,8 @@ class RuleTest(TestCase):
         rule = Rule(meta=RuleMeta(name="r3"), op_class=MyRule3)
         self.assertEqual(
             {
-                "meta": {"name": "r3", "version": "0.0.0", "type": "problem"},
-                "op_class": "<class"
-                " 'tests.test_rule.RuleTest.test_to_json.<locals>.MyRule3'>",
+                "meta": {"name": "r3"},
+                "op_class": "<class 'tests.test_rule.RuleTest.test_to_json.<locals>.MyRule3'>",
             },
             rule.to_json(),
         )
@@ -95,12 +94,7 @@ class RuleMetaTest(unittest.TestCase):
     def test_to_json(self):
         rule_meta = RuleMeta(name="r1", version="0.1.2", description="Nice one.")
         self.assertEqual(
-            {
-                "name": "r1",
-                "version": "0.1.2",
-                "type": "problem",
-                "description": "Nice one.",
-            },
+            {"description": "Nice one.", "name": "r1", "version": "0.1.2"},
             rule_meta.to_json(),
         )
 

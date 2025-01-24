@@ -43,7 +43,7 @@ Same using JSON:
 And as Python script:
 
 ```python
-def export_configs():
+def export_config():
     return [
       {"files": ["**/*.zarr", "**/*.nc"]},
       {

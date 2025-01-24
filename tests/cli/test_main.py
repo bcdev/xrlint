@@ -191,7 +191,6 @@ class CliMainTest(TestCase):
             self.assertEqual(
                 (
                     "{\n"
-                    '  "name": "<computed>",\n'
                     '  "plugins": {\n'
                     '    "__core__": "xrlint.plugins.core:export_plugin"\n'
                     "  },\n"

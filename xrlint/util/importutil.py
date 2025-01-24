@@ -57,7 +57,7 @@ def import_value(
             If it is not given, the module itself will be the exported value.
         attr_ref: Attribute reference. Should be given in the case where
             `module_ref` does not contain an attribute reference.
-            Example values are "export_plugin", "export_configs".
+            Example values are "export_plugin", "export_config".
         constant: If `True` the value is expected to be a constant.
             If `False`, the default, the referenced attribute can
             be a no-arg callable that yields the actual exported value.

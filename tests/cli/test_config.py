@@ -34,7 +34,7 @@ json_text = """
 """
 
 py_text = """
-def export_configs():
+def export_config():
     return [
         {
             "name": "py-test",
@@ -117,13 +117,13 @@ class CliConfigTest(TestCase):
                 read_config_list(config_path)
 
     def test_read_config_yaml_with_type_error(self):
-        with text_file("config.yaml", "prime: 97") as config_path:
+        with text_file("config.yaml", "97") as config_path:
             with pytest.raises(
                 ConfigError,
                 match=(
-                    "'config.yaml: configuration list must be of"
-                    " type ConfigList|list\\[Config|dict|str\\],"
-                    " but got dict'"
+                    r"config\.yaml\: config_list must be of"
+                    r" type ConfigList \| list\[Config \| dict \| str\],"
+                    r" but got int"
                 ),
             ):
                 read_config_list(config_path)
@@ -141,14 +141,14 @@ class CliConfigTest(TestCase):
             with pytest.raises(
                 ConfigError,
                 match=(
-                    "config_1002.py: attribute 'export_configs'"
+                    "config_1002.py: attribute 'export_config'"
                     " not found in module 'config_1002'"
                 ),
             ):
                 read_config_list(config_path)
 
     def test_read_config_py_with_value_error(self):
-        py_code = "def export_configs():\n    raise ValueError('value is useless!')\n"
+        py_code = "def export_config():\n    raise ValueError('value is useless!')\n"
         with text_file(self.new_config_py(), py_code) as config_path:
             with pytest.raises(
                 ValueError,
@@ -157,7 +157,7 @@ class CliConfigTest(TestCase):
                 read_config_list(config_path)
 
     def test_read_config_py_with_os_error(self):
-        py_code = "def export_configs():\n    raise OSError('where is my hat?')\n"
+        py_code = "def export_config():\n    raise OSError('where is my hat?')\n"
         with text_file(self.new_config_py(), py_code) as config_path:
             with pytest.raises(
                 ConfigError,
@@ -166,15 +166,15 @@ class CliConfigTest(TestCase):
                 read_config_list(config_path)
 
     def test_read_config_py_with_invalid_config_list(self):
-        py_code = "def export_configs():\n    return 42\n"
+        py_code = "def export_config():\n    return 42\n"
         with text_file(self.new_config_py(), py_code) as config_path:
             with pytest.raises(
                 ConfigError,
                 match=(
-                    ".py: return value of export_configs\\(\\):"
-                    " configuration list must be of type"
-                    " ConfigList|list\\[Config|dict|str\\],"
-                    " but got int"
+                    r"\.py: return value of export_config\(\):"
+                    r" config_list must be of type"
+                    r" ConfigList \| list\[Config\ | dict \| str\],"
+                    r" but got int"
                 ),
             ):
                 read_config_list(config_path)
@@ -198,10 +198,10 @@ class CliConfigResolveTest(unittest.TestCase):
 
     def assert_ok(self, config_list: ConfigList):
         self.assertIsInstance(config_list, ConfigList)
-        self.assertEqual(4, len(config_list.configs))
+        self.assertEqual(7, len(config_list.configs))
         config = config_list.compute_config("test.zarr")
         self.assertIsInstance(config, Config)
-        self.assertEqual("<computed>", config.name)
+        self.assertEqual(None, config.name)
         self.assertIsInstance(config.plugins, dict)
         self.assertEqual({"xcube"}, set(config.plugins.keys()))
         self.assertIsInstance(config.rules, dict)

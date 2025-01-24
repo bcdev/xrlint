@@ -114,6 +114,27 @@ Latitude and longitude coordinates and dimensions should be called 'lat' and 'lo
 
 Contained in:  `all`-:material-lightning-bolt: `recommended`-:material-lightning-bolt:
 
+### :material-lightbulb: `ml-dataset-meta`
+
+Multi-level datasets should provide '.zlevels' meta information file and if so, it should be consistent.
+[:material-information-variant:](https://xcube.readthedocs.io/en/latest/mldatasets.html#the-xcube-levels-format)
+
+Contained in:  `all`-:material-lightning-bolt: `recommended`-:material-lightning-bolt:
+
+### :material-bug: `ml-dataset-time`
+
+The `time` dimension of multi-level datasets should use a chunk size of 1. This allows for faster image tile generation for visualisation.
+[:material-information-variant:](https://xcube.readthedocs.io/en/latest/mldatasets.html#definition)
+
+Contained in:  `all`-:material-lightning-bolt: `recommended`-:material-alert:
+
+### :material-bug: `ml-dataset-xy`
+
+Multi-level dataset levels should provide spatial resolutions decreasing by powers of two.
+[:material-information-variant:](https://xcube.readthedocs.io/en/latest/mldatasets.html#definition)
+
+Contained in:  `all`-:material-lightning-bolt: `recommended`-:material-lightning-bolt:
+
 ### :material-bug: `single-grid-mapping`
 
 A single grid mapping shall be used for all spatial data variables of a datacube.

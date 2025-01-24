@@ -87,7 +87,7 @@ def _read_config_python(config_path: str) -> Any:
     try:
         return import_value(
             module_name,
-            "export_configs",
+            "export_config",
             factory=ConfigList.from_value,
         )[0]
     except ValueImportError as e:

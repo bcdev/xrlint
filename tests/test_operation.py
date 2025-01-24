@@ -146,14 +146,9 @@ class OperationTest(TestCase):
         )
         self.assertEqual(
             {
-                "meta": {
-                    "name": "t3",
-                    "version": "0.0.0",
-                    "description": "What a thing.",
-                },
-                "op_class": "<class"
-                " 'tests.test_operation.OperationTest"
-                ".test_to_json.<locals>.MyThingOp3'>",
+                "meta": {"description": "What a thing.", "name": "t3"},
+                "op_class": "<class "
+                "'tests.test_operation.OperationTest.test_to_json.<locals>.MyThingOp3'>",
             },
             rule.to_json(),
         )

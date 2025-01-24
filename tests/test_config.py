@@ -140,23 +140,30 @@ class ConfigListTest(TestCase):
         self.assertIsInstance(config_list, ConfigList)
         self.assertEqual([Config()], config_list.configs)
 
+        config_list = ConfigList.from_value({})
+        self.assertIsInstance(config_list, ConfigList)
+        self.assertEqual([Config()], config_list.configs)
+
+        config = Config.from_value({})
+        config_list = ConfigList.from_value(config)
+        self.assertIsInstance(config_list, ConfigList)
+        self.assertIs(config, config_list.configs[0])
+
     # noinspection PyMethodMayBeStatic
     def test_from_value_fail(self):
         with pytest.raises(
             TypeError,
             match=(
                 r"config_list must be of type"
-                r" ConfigList \| list\[Config \| dict\], but got dict"
+                r" ConfigList \| list\[Config \| dict \| str\], but got int"
             ),
         ):
-            ConfigList.from_value({})
+            ConfigList.from_value(264)
 
     def test_compute_config(self):
         config_list = ConfigList([Config()])
         file_path = "s3://wq-services/datacubes/chl-2.zarr"
-        self.assertEqual(
-            Config(name="<computed>"), config_list.compute_config(file_path)
-        )
+        self.assertEqual(Config(), config_list.compute_config(file_path))
 
         config_list = ConfigList(
             [
@@ -167,18 +174,18 @@ class ConfigListTest(TestCase):
         )
         file_path = "s3://wq-services/datacubes/chl-2.zarr"
         self.assertEqual(
-            Config(name="<computed>", settings={"a": 1, "b": 2}),
+            Config(settings={"a": 1, "b": 2}),
             config_list.compute_config(file_path),
         )
 
         # global ignores
         file_path = "s3://wq-services/datacubes/chl-2.txt"
         self.assertEqual(
-            Config(name="<computed>", settings={"a": 2, "b": 1}),
+            Config(settings={"a": 2, "b": 1}),
             config_list.compute_config(file_path),
         )
 
-    def test_get_global_filter(self):
+    def test_split_global_filter(self):
         config_list = ConfigList(
             [
                 Config(files=["**/*.hdf"]),  # global file
@@ -189,16 +196,18 @@ class ConfigListTest(TestCase):
             ]
         )
 
-        file_filter = config_list.get_global_filter()
+        new_config_list, file_filter = config_list.split_global_filter()
         self.assertEqual(
             FileFilter.from_patterns(["**/*.hdf"], ["**/chl-?.txt"]),
             file_filter,
         )
+        self.assertEqual(3, len(new_config_list.configs))
 
-        file_filter = config_list.get_global_filter(
+        new_config_list, file_filter = config_list.split_global_filter(
             default=FileFilter.from_patterns(["**/*.h5"], None)
         )
         self.assertEqual(
             FileFilter.from_patterns(["**/*.h5", "**/*.hdf"], ["**/chl-?.txt"]),
             file_filter,
         )
+        self.assertEqual(3, len(new_config_list.configs))

@@ -1,14 +1,14 @@
-from xrlint.config import Config
 from xrlint.plugin import Plugin
 from xrlint.util.importutil import import_submodules
 
 
 def export_plugin() -> Plugin:
-    from .rules import plugin
+    from .plugin import plugin
 
     import_submodules("xrlint.plugins.core.rules")
 
-    plugin.configs["recommended"] = Config.from_value(
+    plugin.define_config(
+        "recommended",
         {
             "name": "recommended",
             "rules": {
@@ -23,13 +23,15 @@ def export_plugin() -> Plugin:
                 "time-coordinate": "error",
                 "var-units-attr": "warn",
             },
-        }
+        },
     )
-    plugin.configs["all"] = Config.from_value(
+
+    plugin.define_config(
+        "all",
         {
             "name": "all",
             "rules": {rule_id: "error" for rule_id in plugin.rules.keys()},
-        }
+        },
     )
 
     return plugin

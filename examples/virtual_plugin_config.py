@@ -22,7 +22,7 @@ class GoodTitle(RuleOp):
 # Define more rules here...
 
 
-def export_configs():
+def export_config():
     return [
         # Define and use "hello" plugin
         {
@@ -37,12 +37,14 @@ def export_configs():
                         # Add more rules here...
                     },
                     "configs": {
-                        "recommended": {
-                            "rules": {
-                                "hello/good-title": "warn",
-                                # Configure more rules here...
-                            },
-                        },
+                        "recommended": [
+                            {
+                                "rules": {
+                                    "hello/good-title": "warn",
+                                    # Configure more rules here...
+                                },
+                            }
+                        ],
                         # Add more configurations here...
                     },
                 },

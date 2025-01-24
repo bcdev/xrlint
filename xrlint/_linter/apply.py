@@ -30,7 +30,15 @@ def apply_rule(
             _visit_dataset_node(
                 rule_op,
                 context,
-                DatasetNode(parent=None, path="dataset", dataset=context.dataset),
+                DatasetNode(
+                    parent=None,
+                    path=(
+                        "dataset"
+                        if context.file_index is None
+                        else f"dataset[{context.file_index}]"
+                    ),
+                    dataset=context.dataset,
+                ),
             )
         except RuleExit:
             # This is ok, the rule requested it.

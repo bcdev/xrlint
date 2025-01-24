@@ -277,13 +277,13 @@ class LinterVerifyTest(TestCase):
             [
                 Message(
                     message="Dataset does not have data variables",
-                    node_path="dataset",
+                    node_path="dataset[0]",
                     rule_id="test/dataset-without-data-vars",
                     severity=1,
                 ),
                 Message(
                     message="Dataset does not have data variables",
-                    node_path="dataset",
+                    node_path="dataset[1]",
                     rule_id="test/dataset-without-data-vars",
                     severity=1,
                 ),

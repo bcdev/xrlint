@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from typing import Any, Callable, Literal, Type
 
-from xrlint.config import Config
+from xrlint.config import Config, ConfigList
 from xrlint.processor import Processor, ProcessorOp, define_processor
 from xrlint.rule import Rule, RuleOp, define_rule
 from xrlint.util.constructible import MappingConstructible
@@ -50,8 +50,8 @@ class Plugin(MappingConstructible, JsonSerializable):
     """A dictionary containing named processors.
     """
 
-    configs: dict[str, Config] = field(default_factory=dict)
-    """A dictionary containing named configurations."""
+    configs: dict[str, list[Config]] = field(default_factory=dict)
+    """A dictionary containing named configuration lists."""
 
     def define_rule(
         self,
@@ -98,6 +98,27 @@ class Plugin(MappingConstructible, JsonSerializable):
             op_class=op_class,
             registry=self.processors,
         )
+
+    def define_config(
+        self,
+        name: str,
+        value: list[Config | dict[str, Any]] | Config | dict[str, Any],
+    ) -> list[Config]:
+        """Define a named configuration.
+
+        Args:
+            name: The name of the configuration.
+            value: The configuration-like object or list.
+                A configuration-like object is either a
+                [Config][xrlint.config.Config] or a `dict` that
+                represents a configuration.
+
+        Returns:
+            A list of `Config` objects.
+        """
+        configs = ConfigList.from_value(value).configs
+        self.configs[name] = configs
+        return configs
 
     @classmethod
     def _from_str(cls, value: str, value_name: str) -> "Plugin":

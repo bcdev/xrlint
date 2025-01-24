@@ -1,3 +1,4 @@
+from dataclasses import is_dataclass, fields
 from typing import Any, Final, Mapping, Sequence, TypeAlias
 
 from xrlint.util.formatting import format_message_type_of
@@ -61,11 +62,16 @@ class JsonSerializable:
 
     @classmethod
     def _object_to_json(cls, value: Any, value_name: str) -> dict[str, JsonValue]:
-        return {
-            k: cls._value_to_json(v, f"{value_name}.{k}")
-            for k, v in vars(value).items()
-            if cls._is_non_protected_property_name(k)
-        }
+        if is_dataclass(value):
+            _d = {f.name: (f, getattr(value, f.name)) for f in fields(value)}
+            d = {k: v for k, (f, v) in _d.items() if v != f.default}
+        else:
+            d = {
+                k: v
+                for k, v in vars(value).items()
+                if cls._is_non_protected_property_name(k)
+            }
+        return {k: cls._value_to_json(v, f"{value_name}.{k}") for k, v in d.items()}
 
     @classmethod
     def _mapping_to_json(

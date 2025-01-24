@@ -6,7 +6,7 @@ from xrlint.constants import CORE_PLUGIN_NAME
 from xrlint.util.constructible import MappingConstructible, ValueConstructible
 from xrlint.util.filefilter import FileFilter
 from xrlint.util.merge import merge_arrays, merge_dicts, merge_set_lists, merge_values
-from xrlint.util.serializable import JsonSerializable, JsonValue
+from xrlint.util.serializable import JsonSerializable
 
 if TYPE_CHECKING:  # pragma: no cover
     # make IDEs and flake8 happy
@@ -45,10 +45,11 @@ def get_core_config(
             CORE_PLUGIN_NAME: core_plugin,
         },
     )
-    if config_name:
-        return config.merge(core_plugin.configs[config_name])
-    else:
+    if config_name is None:
         return config
+    config_list = core_plugin.configs[config_name]
+    assert len(config_list) == 1
+    return config.merge(config_list[0])
 
 
 def split_config_spec(config_spec: str) -> tuple[str, str]:
@@ -154,6 +155,7 @@ class Config(MappingConstructible, JsonSerializable):
         return not (
             self.linter_options
             or self.opener_options
+            or self.processor
             or self.plugins
             or self.rules
             or self.settings
@@ -292,9 +294,6 @@ class Config(MappingConstructible, JsonSerializable):
     def value_type_name(cls) -> str:
         return "Config | dict | None"
 
-    def to_dict(self, value_name: str | None = None) -> dict[str, JsonValue]:
-        return {k: v for k, v in super().to_dict().items() if v is not None}
-
 
 @dataclass(frozen=True)
 class ConfigList(ValueConstructible, JsonSerializable):
@@ -308,16 +307,21 @@ class ConfigList(ValueConstructible, JsonSerializable):
     configs: list[Config] = field(default_factory=list)
     """The list of configuration objects."""
 
-    def get_global_filter(self, default: FileFilter | None = None) -> FileFilter:
+    def split_global_filter(
+        self, default: FileFilter | None = None
+    ) -> tuple["ConfigList", FileFilter]:
         """Get a global file filter for this configuration list."""
         global_filter = FileFilter(
             default.files if default else (),
             default.ignores if default else (),
         )
+        configs = []
         for c in self.configs:
             if c.empty and not c.file_filter.empty:
                 global_filter = global_filter.merge(c.file_filter)
-        return global_filter
+            else:
+                configs.append(c)
+        return ConfigList(configs=configs), global_filter
 
     def compute_config(self, file_path: str) -> Config | None:
         """Compute the configuration object for the given file path.
@@ -341,7 +345,6 @@ class ConfigList(ValueConstructible, JsonSerializable):
 
         # Note, computed configurations do not have "files" and "ignores"
         return Config(
-            name="<computed>",
             linter_options=config.linter_options,
             opener_options=config.opener_options,
             processor=config.processor,
@@ -359,12 +362,14 @@ class ConfigList(ValueConstructible, JsonSerializable):
         Args:
             value: A `ConfigList` object or `list` of items which can be
                 converted into `Config` objects including configuration
-                names of tyype `str`. The latter are resolved against
+                names of type `str`. The latter are resolved against
                 the plugin configurations seen so far in the list.
             value_name: A value's name.
         Returns:
             A `ConfigList` object.
         """
+        if isinstance(value, (Config, dict)):
+            return ConfigList(configs=[Config.from_value(value)])
         return super().from_value(value, value_name=value_name)
 
     @classmethod
@@ -375,12 +380,13 @@ class ConfigList(ValueConstructible, JsonSerializable):
             if isinstance(item, str):
                 if CORE_PLUGIN_NAME not in plugins:
                     plugins.update({CORE_PLUGIN_NAME: get_core_plugin()})
-                config = cls._get_named_config(item, plugins)
+                new_configs = cls._get_named_config_list(item, plugins)
             else:
-                config = Config.from_value(item)
-            configs.append(config)
-            plugins.update(config.plugins if config.plugins else {})
-        return ConfigList(configs)
+                new_configs = [Config.from_value(item)]
+            for config in new_configs:
+                configs.append(config)
+                plugins.update(config.plugins if config.plugins else {})
+        return ConfigList(configs=configs)
 
     @classmethod
     def value_name(cls) -> str:
@@ -388,10 +394,12 @@ class ConfigList(ValueConstructible, JsonSerializable):
 
     @classmethod
     def value_type_name(cls) -> str:
-        return "ConfigList | list[Config | dict]"
+        return "ConfigList | list[Config | dict | str]"
 
     @classmethod
-    def _get_named_config(cls, config_spec: str, plugins: dict[str, "Plugin"]):
+    def _get_named_config_list(
+        cls, config_spec: str, plugins: dict[str, "Plugin"]
+    ) -> list[Config]:
         plugin_name, config_name = (
             config_spec.split("/", maxsplit=1)
             if "/" in config_spec
@@ -400,5 +408,4 @@ class ConfigList(ValueConstructible, JsonSerializable):
         plugin: Plugin | None = plugins.get(plugin_name)
         if plugin is None or not plugin.configs or config_name not in plugin.configs:
             raise ValueError(f"configuration {config_spec!r} not found")
-        config_value = plugin.configs[config_name]
-        return config_value
+        return ConfigList.from_value(plugin.configs[config_name]).configs

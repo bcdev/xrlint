@@ -1,5 +1,5 @@
 from xrlint.node import DatasetNode
-from xrlint.plugins.core.rules import plugin
+from xrlint.plugins.core.plugin import plugin
 from xrlint.rule import RuleContext, RuleOp
 
 

@@ -18,7 +18,7 @@ def verify_dataset(config: Config, dataset: Any, file_path: str | None):
     assert isinstance(file_path, (str, type(None)))
     if isinstance(dataset, xr.Dataset):
         file_path = file_path or _get_file_path_for_dataset(dataset)
-        messages = _verify_dataset(config, dataset, file_path)
+        messages = _verify_dataset(config, dataset, file_path, None)
     else:
         file_path = file_path or _get_file_path_for_source(dataset)
         messages = _open_and_verify_dataset(config, dataset, file_path)
@@ -29,12 +29,13 @@ def _verify_dataset(
     config: Config,
     dataset: xr.Dataset,
     file_path: str,
+    file_index: int | None,
 ) -> list[Message]:
     assert isinstance(config, Config)
     assert isinstance(dataset, xr.Dataset)
     assert isinstance(file_path, str)
 
-    context = RuleContextImpl(config, dataset, file_path)
+    context = RuleContextImpl(config, dataset, file_path, file_index)
 
     if not config.rules:
         context.report("No rules configured or applicable.", fatal=True)
@@ -61,7 +62,10 @@ def _open_and_verify_dataset(
         except (OSError, ValueError, TypeError) as e:
             return [Message(message=str(e), fatal=True, severity=2)]
         return processor_op.postprocess(
-            [_verify_dataset(config, ds, path) for ds, path in ds_path_list],
+            [
+                _verify_dataset(config, ds, path, i)
+                for i, (ds, path) in enumerate(ds_path_list)
+            ],
             file_path,
         )
     else:
@@ -70,7 +74,7 @@ def _open_and_verify_dataset(
         except (OSError, ValueError, TypeError) as e:
             return [Message(message=str(e), fatal=True, severity=2)]
         with dataset:
-            return _verify_dataset(config, dataset, file_path)
+            return _verify_dataset(config, dataset, file_path, None)
 
 
 def _open_dataset(
