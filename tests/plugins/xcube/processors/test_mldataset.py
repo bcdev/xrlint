@@ -1,9 +1,11 @@
 import json
+from typing import Any
 from unittest import TestCase
 
 import fsspec
+import pytest
 
-from tests.plugins.xcube.helpers import make_cube
+from tests.plugins.xcube.helpers import make_cube_levels
 from xrlint.plugins.xcube.constants import ML_INFO_ATTR
 from xrlint.plugins.xcube.processors.mldataset import (
     MultiLevelDatasetProcessor,
@@ -14,67 +16,116 @@ from xrlint.result import Message
 
 
 class MultiLevelDatasetProcessorTest(TestCase):
+    levels_name = "xrlint-test"
+    levels_dir = f"memory://{levels_name}.levels"
+
+    x_size = nx = 720
+    y_size = ny = 360
+    time_size = 3
+    num_levels = 4
+
+    meta_path = f"{levels_dir}/.zlevels"
+    meta_content = {
+        "version": "1.0",
+        "num_levels": num_levels,
+        "use_saved_levels": False,
+        # tile_size is optional
+        "agg_methods": {
+            "chl": "mean",
+        },
+    }
+
     @classmethod
     def setUpClass(cls):
-        cls.levels_dir = "memory://xrlint-test.levels"
-        cls.fs, _ = fsspec.core.url_to_fs(cls.levels_dir)
-        cls.fs.mkdir(cls.levels_dir)
+        fs, _ = fsspec.core.url_to_fs(cls.levels_dir)
+        cls.fs: fsspec.AbstractFileSystem = fs
 
-        cls.nx = nx = 720
-        cls.ny = ny = nx // 2
-        cls.nt = 3
-        cls.nl = 4
+    def setUp(self):
+        self._delete_files()
+        self.fs.mkdir(self.levels_dir)
 
-        for level in range(cls.nl):
-            dataset = make_cube(nx, ny, cls.nt)
-            dataset.to_zarr(f"{cls.levels_dir}/{level}.zarr", write_empty_chunks=False)
-            nx //= 2
-            ny //= 2
+        level_datasets = make_cube_levels(
+            self.x_size, self.y_size, self.time_size, self.num_levels
+        )
+        for level, dataset in enumerate(level_datasets):
+            dataset.to_zarr(f"{self.levels_dir}/{level}.zarr", write_empty_chunks=False)
 
-        cls.meta_path = f"{cls.levels_dir}/.zlevels"
-        cls.meta_content = {
-            "version": "1.0",
-            "num_levels": cls.nl,
-            "use_saved_levels": False,
-            "agg_methods": {
-                "chl": "mean",
-            },
-        }
-
-    def test_preprocess(self):
         with self.fs.open(self.meta_path, mode="wt") as stream:
             json.dump(self.meta_content, stream, indent=2)
 
-        processor = MultiLevelDatasetProcessor()
-        datasets = processor.preprocess(self.levels_dir, {})
+    def tearDown(self):
+        self._delete_files()
+
+    def _delete_files(self):
+        if self.fs.exists(self.levels_dir):
+            self.fs.delete(self.levels_dir, recursive=True)
+
+    def assert_levels_ok(
+        self, datasets: Any, expect_meta: bool = False, expect_link: bool = False
+    ):
         self.assertIsInstance(datasets, list)
-        self.assertEqual(self.nl, len(datasets))
+        self.assertEqual(self.num_levels, len(datasets))
         for i, (dataset, file_path) in enumerate(datasets):
-            self.assertEqual(f"{self.levels_dir}/{i}.zarr", file_path)
+            if expect_link and i == 0:
+                self.assertEqual(f"memory://{self.levels_name}.zarr", file_path)
+            else:
+                self.assertEqual(
+                    f"memory://{self.levels_name}.levels/{i}.zarr", file_path
+                )
             level_info = dataset.attrs.get(ML_INFO_ATTR)
             self.assertIsInstance(level_info, LevelInfo)
             self.assertEqual(i, level_info.level)
-            self.assertEqual(self.nl, level_info.num_levels)
-            self.assertIsInstance(level_info.meta, MultiLevelDatasetMeta)
+            self.assertEqual(self.num_levels, level_info.num_levels)
             self.assertIsInstance(level_info.datasets, list)
-            self.assertEqual(self.nl, len(level_info.datasets))
+            self.assertEqual(self.num_levels, len(level_info.datasets))
+            meta = level_info.meta
+            if expect_meta:
+                self.assertIsInstance(meta, MultiLevelDatasetMeta)
+                self.assertEqual("1.0", meta.version)
+                self.assertEqual(self.num_levels, meta.num_levels)
+                self.assertEqual(False, meta.use_saved_levels)
+                self.assertEqual(None, meta.tile_size)
+                self.assertEqual({"chl": "mean"}, meta.agg_methods)
+            else:
+                self.assertIsNone(meta)
 
-        self.fs.delete(self.meta_path)
+    def test_preprocess(self):
+        processor = MultiLevelDatasetProcessor()
+        datasets = processor.preprocess(self.levels_dir, {})
+        self.assert_levels_ok(datasets, expect_meta=True)
 
     def test_preprocess_no_meta(self):
+        self.fs.delete(self.meta_path)
         processor = MultiLevelDatasetProcessor()
         datasets = processor.preprocess(self.levels_dir, {})
-        self.assertIsInstance(datasets, list)
-        self.assertEqual(self.nl, len(datasets))
-        for i, (dataset, file_path) in enumerate(datasets):
-            self.assertEqual(f"{self.levels_dir}/{i}.zarr", file_path)
-            level_info = dataset.attrs.get(ML_INFO_ATTR)
-            self.assertIsInstance(level_info, LevelInfo)
-            self.assertEqual(i, level_info.level)
-            self.assertEqual(self.nl, level_info.num_levels)
-            self.assertEqual(None, level_info.meta)
-            self.assertIsInstance(level_info.datasets, list)
-            self.assertEqual(self.nl, len(level_info.datasets))
+        self.assert_levels_ok(datasets, expect_meta=False)
+
+    def test_preprocess_with_link(self):
+        self.fs.copy(
+            f"{self.levels_dir}/0.zarr",
+            f"memory://{self.levels_name}.zarr",
+            recursive=True,
+        )
+        self.fs.delete(f"{self.levels_dir}/0.zarr", recursive=True)
+        self.fs.write_text(f"{self.levels_dir}/0.link", f"../{self.levels_name}.zarr")
+        processor = MultiLevelDatasetProcessor()
+        datasets = processor.preprocess(self.levels_dir, {})
+        self.assert_levels_ok(datasets, expect_meta=True, expect_link=True)
+
+    def test_preprocess_fail_empty(self):
+        for i in range(self.num_levels):
+            self.fs.delete(f"{self.levels_dir}/{i}.zarr", recursive=True)
+        processor = MultiLevelDatasetProcessor()
+        with pytest.raises(ValueError, match="empty multi-level dataset"):
+            processor.preprocess(self.levels_dir, {})
+
+    def test_preprocess_fail_missing(self):
+        self.fs.delete(f"{self.levels_dir}/1.zarr", recursive=True)
+        processor = MultiLevelDatasetProcessor()
+        with pytest.raises(
+            ValueError, match="missing dataset for level 1 in multi-level dataset"
+        ):
+            processor.preprocess(self.levels_dir, {})
 
     def test_postprocess(self):
         processor = MultiLevelDatasetProcessor()

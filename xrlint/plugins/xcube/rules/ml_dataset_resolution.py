@@ -14,9 +14,7 @@ from xrlint.rule import RuleContext, RuleOp
         "Multi-level dataset levels should provide spatial resolutions"
         " decreasing by powers of two."
     ),
-    docs_url=(
-        "https://xcube.readthedocs.io/en/latest/cubespec.html#encoding-of-colors"
-    ),
+    docs_url="https://xcube.readthedocs.io/en/latest/mldatasets.html#definition",
 )
 class MultiLevelDatasetMeta(RuleOp):
     def dataset(self, ctx: RuleContext, node: DatasetNode):
@@ -55,3 +53,5 @@ class MultiLevelDatasetMeta(RuleOp):
                 f"Expected size of dimension {y_name!r} in level {level}"
                 f" to be {expected_level_height}, but was {level_height}"
             )
+
+        # Here: check spatial coordinates...

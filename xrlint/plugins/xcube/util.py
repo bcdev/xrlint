@@ -3,23 +3,43 @@ from dataclasses import dataclass
 
 import xarray as xr
 
+from xrlint.util.constructible import MappingConstructible
 from .constants import LAT_NAME, LON_NAME, X_NAME, Y_NAME, ML_INFO_ATTR
 
 
 @dataclass(frozen=True, kw_only=True)
-class MultiLevelDatasetMeta:
+class MultiLevelDatasetMeta(MappingConstructible):
+    """The contents of a xcube `.zlevels` meta-info file."""
+
     version: str
     num_levels: int
+    tile_size: tuple[int, int] | None = None
     use_saved_levels: bool | None = None
     agg_methods: dict[str, str] | None = None
 
 
 @dataclass(frozen=True, kw_only=True)
 class LevelInfo:
+    """Level info added to each level dataset to allow for validation
+    of multi-level datasets.
+
+    Note, this need to be aligned with
+    <https://xcube.readthedocs.io/en/latest/mldatasets.html#the-xcube-levels-format>
+    """
+
     level: int
+    """Current level index."""
+
     num_levels: int
+    """Actual number of levels found."""
+
     datasets: list[tuple[xr.Dataset, str]]
+    """A list of num_levels pairs comprising
+     level dataset and level file path.
+     """
+
     meta: MultiLevelDatasetMeta | None = None
+    """Content of a `.zlevels` file, if file was found."""
 
 
 def get_dataset_level_info(dataset: xr.Dataset) -> LevelInfo | None:
@@ -66,3 +86,13 @@ def get_spatial_size_for_dims(
         elif k == y_name:
             y_size = v
     return x_size, y_size
+
+
+def norm_path(level_path: str) -> str:
+    parts = level_path.replace("\\", "/").split("/")
+    level_path = "/".join(
+        p
+        for i, p in enumerate(parts)
+        if p not in (".", "..") and (i == len(parts) - 1 or parts[i + 1] != "..")
+    )
+    return level_path

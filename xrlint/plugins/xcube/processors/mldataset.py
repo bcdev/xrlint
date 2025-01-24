@@ -15,6 +15,7 @@ from xrlint.plugins.xcube.util import (
     set_dataset_level_info,
     LevelInfo,
     MultiLevelDatasetMeta,
+    norm_path,
 )
 from xrlint.processor import ProcessorOp
 from xrlint.result import Message
@@ -37,21 +38,16 @@ class MultiLevelDatasetProcessor(ProcessorOp):
             for f in fs.listdir(fs_path, detail=False)
         ]
 
+        # check for optional ".zlevels" that provides meta-info
         meta = None
         if ML_META_FILENAME in file_names:
-            try:
-                with fs.open(f"{fs_path}/{ML_META_FILENAME}") as stream:
-                    meta = parse_multi_level_dataset_meta(stream)
-            except FileNotFoundError:
-                pass
+            with fs.open(f"{fs_path}/{ML_META_FILENAME}") as stream:
+                meta = MultiLevelDatasetMeta.from_value(json.load(stream))
 
+        # check for optional ".0.link" that locates level 0 somewhere else
         level_0_path = None
         if "0.link" in file_names:
-            try:
-                with fs.open(f"{fs_path}/0.link") as stream:
-                    level_0_path = stream.read()
-            except FileNotFoundError:
-                pass
+            level_0_path = fs.read_text(f"{fs_path}/0.link")
 
         level_names, num_levels = parse_levels(file_names, level_0_path)
 
@@ -59,7 +55,7 @@ class MultiLevelDatasetProcessor(ProcessorOp):
 
         level_datasets: list[xr.Dataset | None] = []
         for level, level_name in level_names.items():
-            level_path = f"{file_path}/{level_name}"
+            level_path = norm_path(f"{file_path}/{level_name}")
             level_dataset = xr.open_dataset(level_path, engine=engine, **opener_options)
             level_datasets.append((level_dataset, level_path))
 
@@ -116,22 +112,3 @@ def parse_levels(
                 f"missing dataset for level {level} in multi-level dataset"
             )
     return level_names, num_levels
-
-
-def parse_multi_level_dataset_meta(stream: Any) -> MultiLevelDatasetMeta:
-    meta_content = json.load(stream)
-
-    msg_prefix = f"illegal xcube {ML_META_FILENAME!r} file"
-
-    if not isinstance(meta_content, dict):
-        raise ValueError(f"{msg_prefix}, JSON object expected")
-
-    version = meta_content.get("version")
-    if not isinstance(version, str) or not version.startswith("1."):
-        raise ValueError(f"{msg_prefix}, missing or invalid 'version'")
-
-    num_levels = meta_content.get("num_levels")
-    if not isinstance(num_levels, int) or num_levels < 1:
-        raise ValueError(f"{msg_prefix}, missing or invalid 'num_levels'")
-
-    return MultiLevelDatasetMeta(**meta_content)

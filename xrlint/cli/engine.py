@@ -181,7 +181,6 @@ class XRLint(FormatterContext):
 
             if fs.isdir(root):
                 for path, dirs, files in fs.walk(root, topdown=True):
-
                     for d in list(dirs):
                         d_path = f"{path}/{d}"
                         c = compute_config(d_path)

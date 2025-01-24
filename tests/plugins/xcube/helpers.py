@@ -1,5 +1,14 @@
+import math
+
 import numpy as np
 import xarray as xr
+
+
+def make_cube_levels(nx: int, ny: int, nt: int, nl: int) -> list[xr.Dataset]:
+    return [
+        make_cube(math.ceil(nx >> level), math.ceil(ny >> level), nt)
+        for level in range(nl)
+    ]
 
 
 def make_cube(nx: int, ny: int, nt: int) -> xr.Dataset:
