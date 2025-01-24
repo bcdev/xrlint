@@ -90,20 +90,6 @@ def get_spatial_size(
     return None
 
 
-def get_spatial_size_for_dims(
-    dataset: xr.Dataset, x_name: str, y_name: str
-) -> tuple[int, int]:
-    """Return (x_size, y_size) for given dataset and dim names."""
-    x_size: int = 0
-    y_size: int = 0
-    for k, v in dataset.sizes.items():
-        if k == x_name:
-            x_size = v
-        elif k == y_name:
-            y_size = v
-    return x_size, y_size
-
-
 def norm_path(level_path: str) -> str:
     parts = level_path.replace("\\", "/").split("/")
     level_path = "/".join(
