@@ -17,6 +17,7 @@ class ExportPluginTest(TestCase):
                 "ml-dataset-meta",
                 "ml-dataset-time",
                 "ml-dataset-xy",
+                "no-chunked-coords",
                 "single-grid-mapping",
                 "time-naming",
             },
