@@ -15,6 +15,10 @@ from xrlint.plugins.xcube.util import (
 )
 from xrlint.result import Message
 
+# TODO: This tests requires zarr >=2, <3, because the test used fsspec's
+#   memory filesystem, which is not async but zarr wants all filesystems
+#   to be async now.
+
 
 class MultiLevelDatasetProcessorTest(TestCase):
     levels_name = "xrlint-test"
@@ -92,10 +96,7 @@ class MultiLevelDatasetProcessorTest(TestCase):
 
     def preprocess(self) -> list[tuple[xr.Dataset, str]]:
         processor = MultiLevelDatasetProcessor()
-        return processor.preprocess(
-            self.levels_dir,
-            {"backend_kwargs": {"storage_options": {"asynchronous": True}}},
-        )
+        return processor.preprocess(self.levels_dir, {})
 
     def test_preprocess(self):
         datasets = self.preprocess()

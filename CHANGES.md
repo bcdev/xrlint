@@ -33,6 +33,9 @@
     `xrlint.plugins.<plugin>.plugin` module.
   - `JsonSerializable` now recognizes `dataclass` instances and no longer
     serializes property values that are also default values.
+  - Pinned zarr dependency to be >=2.18, <3 until test
+    `tests.plugins.xcube.processors.test_mldataset.MultiLevelDatasetProcessorTest`
+    is adjusted or fsspec's memory filesystem is updated.
 
 ## Version 0.3.0 (from 2025-01-20)
 

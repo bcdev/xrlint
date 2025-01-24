@@ -24,4 +24,4 @@ dependencies:
   - pandas
   - netcdf4
   - numpy
-  - zarr
+  - zarr >=2.18,<3  # tests fail with zarr 3+
