@@ -4,6 +4,7 @@ from unittest import TestCase
 
 import fsspec
 import pytest
+import xarray as xr
 
 from tests.plugins.xcube.helpers import make_cube_levels
 from xrlint.plugins.xcube.constants import ML_INFO_ATTR
@@ -89,15 +90,20 @@ class MultiLevelDatasetProcessorTest(TestCase):
             else:
                 self.assertIsNone(meta)
 
-    def test_preprocess(self):
+    def preprocess(self) -> list[tuple[xr.Dataset, str]]:
         processor = MultiLevelDatasetProcessor()
-        datasets = processor.preprocess(self.levels_dir, {})
+        return processor.preprocess(
+            self.levels_dir,
+            {"backend_kwargs": {"storage_options": {"asynchronous": True}}},
+        )
+
+    def test_preprocess(self):
+        datasets = self.preprocess()
         self.assert_levels_ok(datasets, expect_meta=True)
 
     def test_preprocess_no_meta(self):
         self.fs.delete(self.meta_path)
-        processor = MultiLevelDatasetProcessor()
-        datasets = processor.preprocess(self.levels_dir, {})
+        datasets = self.preprocess()
         self.assert_levels_ok(datasets, expect_meta=False)
 
     def test_preprocess_with_link(self):
@@ -108,24 +114,21 @@ class MultiLevelDatasetProcessorTest(TestCase):
         )
         self.fs.delete(f"{self.levels_dir}/0.zarr", recursive=True)
         self.fs.write_text(f"{self.levels_dir}/0.link", f"../{self.levels_name}.zarr")
-        processor = MultiLevelDatasetProcessor()
-        datasets = processor.preprocess(self.levels_dir, {})
+        datasets = self.preprocess()
         self.assert_levels_ok(datasets, expect_meta=True, expect_link=True)
 
     def test_preprocess_fail_empty(self):
         for i in range(self.num_levels):
             self.fs.delete(f"{self.levels_dir}/{i}.zarr", recursive=True)
-        processor = MultiLevelDatasetProcessor()
         with pytest.raises(ValueError, match="empty multi-level dataset"):
-            processor.preprocess(self.levels_dir, {})
+            self.preprocess()
 
     def test_preprocess_fail_missing(self):
         self.fs.delete(f"{self.levels_dir}/1.zarr", recursive=True)
-        processor = MultiLevelDatasetProcessor()
         with pytest.raises(
             ValueError, match="missing dataset for level 1 in multi-level dataset"
         ):
-            processor.preprocess(self.levels_dir, {})
+            self.preprocess()
 
     def test_postprocess(self):
         processor = MultiLevelDatasetProcessor()
