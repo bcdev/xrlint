@@ -41,6 +41,7 @@ def export_plugin() -> Plugin:
                     "xcube/ml-dataset-meta": "error",
                     "xcube/ml-dataset-time": "warn",
                     "xcube/ml-dataset-xy": "error",
+                    "xcube/no-chunked-coords": "warn",
                     "xcube/single-grid-mapping": "error",
                     "xcube/time-naming": "error",
                 },

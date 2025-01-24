@@ -135,6 +135,12 @@ Multi-level dataset levels should provide spatial resolutions decreasing by powe
 
 Contained in:  `all`-:material-lightning-bolt: `recommended`-:material-lightning-bolt:
 
+### :material-bug: `no-chunked-coords`
+
+Coordinate variables should not be chunked. Can be used to identify performance issues, where chunked coordinates can cause slow opening if datasets due to the many chunk-fetching requests made to (remote) filesystems with low bandwidth. You can use the `limit` parameter to specify an acceptable number  of chunks. Its default is 5.
+
+Contained in:  `all`-:material-lightning-bolt: `recommended`-:material-alert:
+
 ### :material-bug: `single-grid-mapping`
 
 A single grid mapping shall be used for all spatial data variables of a datacube.

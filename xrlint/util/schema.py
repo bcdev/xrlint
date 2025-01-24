@@ -33,6 +33,8 @@ def schema(
     default: Any | None = None,
     const: Any | None = None,
     enum: list[Any] | None = None,
+    title: str | None = None,
+    description: str | None = None,
     # "integer", "number"
     minimum: int | float | None = None,
     maximum: int | float | None = None,
@@ -43,6 +45,7 @@ def schema(
     additionalProperties: bool | None = None,
     required: list[str] | None = None,
 ) -> JsonSchema:
+    """Helper function so you have keyword-arguments for creating schemas."""
     return {
         k: v
         for k, v in dict(
@@ -56,6 +59,8 @@ def schema(
             properties=properties,
             additionalProperties=False if additionalProperties is False else None,
             required=required,
+            title=title,
+            description=description,
         ).items()
         if v is not None
     }
