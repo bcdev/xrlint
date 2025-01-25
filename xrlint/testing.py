@@ -217,6 +217,6 @@ def _format_test_id(
     test: RuleTest, test_index: int, test_mode: Literal["valid", "invalid"]
 ) -> str:
     if test.name:
-        return f"test_{test_mode}_{to_snake_case(test.name)!r}"
+        return f"test_{test_mode}_{to_snake_case(test.name)}"
     else:
         return f"test_{test_mode}_{test_index}"
