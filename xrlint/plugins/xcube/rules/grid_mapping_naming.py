@@ -21,5 +21,5 @@ class GridMappingNaming(RuleOp):
                 ctx.report(
                     f"Grid mapping variables should be named"
                     f" {GM_NAMES_TEXT},"
-                    f" but name is {var_name!r}"
+                    f" but name is {var_name!r}."
                 )

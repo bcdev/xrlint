@@ -40,17 +40,17 @@ class MLDatasetMeta(RuleOp):
             return
 
         if not meta.version.startswith("1."):
-            ctx.report(f"Unsupported {ML_META_FILENAME!r} meta-info version")
+            ctx.report(f"Unsupported {ML_META_FILENAME!r} meta-info version.")
 
         if meta.num_levels <= 0:
             ctx.report(
                 f"Invalid 'num_levels' in {ML_META_FILENAME!r} meta-info:"
-                f" {meta.num_levels}"
+                f" {meta.num_levels}."
             )
         elif meta.num_levels != level_info.num_levels:
             ctx.report(
                 f"Expected {format_item(meta.num_levels, 'level')},"
-                f" but found {level_info.num_levels}"
+                f" but found {level_info.num_levels}."
             )
 
         if meta.use_saved_levels is None:

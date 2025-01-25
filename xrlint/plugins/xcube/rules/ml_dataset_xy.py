@@ -45,13 +45,13 @@ class MLDatasetXY(RuleOp):
         if level_width != expected_level_width:
             ctx.report(
                 f"Expected size of dimension {x_name!r} in level {level}"
-                f" to be {expected_level_width}, but was {level_width}"
+                f" to be {expected_level_width}, but was {level_width}."
             )
 
         if level_height != expected_level_height:
             ctx.report(
                 f"Expected size of dimension {y_name!r} in level {level}"
-                f" to be {expected_level_height}, but was {level_height}"
+                f" to be {expected_level_height}, but was {level_height}."
             )
 
         # Here: check spatial coordinates...

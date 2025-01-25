@@ -35,5 +35,5 @@ class MLDatasetTime(RuleOp):
                 if not all(c == 1 for c in time_chunks):
                     ctx.report(
                         f"Variable {var_name!r} uses chunking for {TIME_NAME!r}"
-                        f" that differs from from one: {format_seq(time_chunks)}"
+                        f" that differs from from one: {format_seq(time_chunks)}."
                     )

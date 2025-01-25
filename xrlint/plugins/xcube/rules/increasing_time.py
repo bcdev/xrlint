@@ -32,5 +32,5 @@ def check_indexes(ctx, cond: np.ndarray, issue_name: str):
         index_text = format_count(indexes.size, singular="index", plural="indexes")
         ctx.report(
             f"{issue_name} 'time' coordinate label at {index_text}"
-            f" {format_seq(indexes)}"
+            f" {format_seq(indexes)}."
         )

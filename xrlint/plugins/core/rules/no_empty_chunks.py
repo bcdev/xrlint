@@ -30,4 +30,4 @@ class NoEmptyChunks(RuleOp):
             and "chunks" in node.data_array.encoding
             and "_FillValue" in node.data_array.encoding
         ):
-            ctx.report("Consider writing the dataset using 'write_empty_chunks=True`.")
+            ctx.report("Consider writing the dataset using 'write_empty_chunks=True'.")

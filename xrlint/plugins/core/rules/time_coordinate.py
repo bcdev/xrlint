@@ -57,7 +57,7 @@ class TimeCoordinate(RuleOp):
             has_tz = last_part.lower() == "utc" or last_part[0] in ("+", "-")
             if not has_tz:
                 ctx.report(
-                    f"Missing timezone in 'units' attribute: {units}",
+                    f"Missing timezone in 'units' attribute: {units!r}.",
                     suggestions=[
                         use_units_format_msg,
                         f"Append timezone specification, e.g., use"
@@ -68,6 +68,6 @@ class TimeCoordinate(RuleOp):
             return
 
         ctx.report(
-            f"Invalid 'units' attribute: {units}",
+            f"Invalid 'units' attribute: {units!r}.",
             suggestions=[use_units_format_msg],
         )

@@ -31,7 +31,7 @@ class CoordsForDims(RuleOp):
             n = len(no_coord_dims)
             ctx.report(
                 f"{format_item(n, 'Data variable dimension')} without"
-                f" coordinates: {', '.join(no_coord_dims)}",
+                f" coordinates: {', '.join(no_coord_dims)}.",
                 suggestions=[
                     f"Add corresponding {format_item(n, 'coordinate variable')}"
                     f" to dataset:"
