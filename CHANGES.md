@@ -2,6 +2,7 @@
 
 ## Version 0.4.0 (in development)
 
+- Fixed and enhanced core rule `time-coordinate`. `(#33)
 - New xcube rule `no-chunked-coords`. (#29)
 - New xcube multi-level dataset rules:
   - `ml-dataset-meta`: verifies that a meta info file exists and is consistent;

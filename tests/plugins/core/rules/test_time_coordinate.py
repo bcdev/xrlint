@@ -12,7 +12,6 @@ valid_dataset_1 = xr.Dataset(
             dims="time",
             attrs={
                 "standard_name": "time",
-                "long_name": "time",
             },
         ),
     },
@@ -27,36 +26,70 @@ valid_dataset_1.time.encoding["calendar"] = "gregorian"
 valid_dataset_2 = valid_dataset_1.copy()
 del valid_dataset_2.time.encoding["units"]
 del valid_dataset_2.time.encoding["calendar"]
-valid_dataset_2.time.attrs["units"] = "seconds since 2000-01-01 UTC"
+valid_dataset_2.time.attrs["units"] = "seconds since 2000-1-1 +2:00"
 valid_dataset_2.time.attrs["calendar"] = "gregorian"
 
 # OK, because not identified as time
 valid_dataset_3 = valid_dataset_1.copy()
+del valid_dataset_3.time.encoding["units"]
 del valid_dataset_3.time.attrs["standard_name"]
 
-# OK, because we only look for standard_name
+# OK, because we only look for time units
 valid_dataset_4 = valid_dataset_1.rename_vars({"time": "tm"})
+del valid_dataset_4.tm.attrs["standard_name"]
 
-# Invalid, because long_name is missing
+# OK, because not recognized as time coord
+valid_dataset_5 = valid_dataset_1.copy()
+valid_dataset_5.time.encoding["units"] = 1
+del valid_dataset_5.time.attrs["standard_name"]
+
+# Invalid, because units is invalid but standard_name given
 invalid_dataset_0 = valid_dataset_1.copy()
-del invalid_dataset_0.time.attrs["long_name"]
+invalid_dataset_0.time.encoding["units"] = 1
 
-# Invalid, because we require units
+# Invalid, because we require units but standard_name given
 invalid_dataset_1 = valid_dataset_1.copy(deep=True)
 del invalid_dataset_1.time.encoding["units"]
 
-# Invalid, because we require calendar
+# Invalid, because we no time units although standard_name given
 invalid_dataset_2 = valid_dataset_1.copy(deep=True)
-del invalid_dataset_2.time.encoding["calendar"]
+invalid_dataset_2.time.encoding["units"] = "years from 2000-1-1 +0:0"
 
-# Invalid, because we require TZ units part
+# Invalid, because we require calendar
 invalid_dataset_3 = valid_dataset_1.copy(deep=True)
-invalid_dataset_3.time.encoding["units"] = "seconds since 2000-01-01 00:00:00"
+del invalid_dataset_3.time.encoding["calendar"]
 
-# Invalid, because we require units format wrong
+# Invalid, because we use invalid UOT
 invalid_dataset_4 = valid_dataset_1.copy(deep=True)
-invalid_dataset_4.time.encoding["units"] = "2000-01-01 00:00:00 UTC"
+invalid_dataset_4.time.encoding["units"] = "millis since 2000-1-1 +0:0"
 
+# Invalid, because we use ambiguous UOT
+invalid_dataset_5 = valid_dataset_1.copy(deep=True)
+invalid_dataset_5.time.encoding["units"] = "years since 2000-1-1 +0:0"
+
+# Invalid, because we require timezone
+invalid_dataset_6 = valid_dataset_1.copy(deep=True)
+invalid_dataset_6.time.encoding["units"] = "seconds since 2000-01-01 00:00:00"
+
+# Invalid, because we require timezone
+invalid_dataset_7 = valid_dataset_1.copy(deep=True)
+invalid_dataset_7.time.encoding["units"] = "seconds since 2000-01-01"
+
+# Invalid, because we have 6 units parts
+invalid_dataset_8 = valid_dataset_1.copy(deep=True)
+invalid_dataset_8.time.encoding["units"] = "days since 2000-01-01 12:00:00 +0:00 utc"
+
+# Invalid, because we date part is invalid
+invalid_dataset_9 = valid_dataset_1.copy(deep=True)
+invalid_dataset_9.time.encoding["units"] = "days since 00-01-01 12:00:00 +0:00"
+
+# Invalid, because we time part is invalid
+invalid_dataset_10 = valid_dataset_1.copy(deep=True)
+invalid_dataset_10.time.encoding["units"] = "days since 2000-01-01 12:00 +0:00"
+
+# Invalid, because we tz part is invalid
+invalid_dataset_11 = valid_dataset_1.copy(deep=True)
+invalid_dataset_11.time.encoding["units"] = "days since 2000-01-01 12:00:00 utc"
 
 TimeCoordinateTest = RuleTester.define_test(
     "time-coordinate",
@@ -67,6 +100,7 @@ TimeCoordinateTest = RuleTester.define_test(
         RuleTest(dataset=valid_dataset_2),
         RuleTest(dataset=valid_dataset_3),
         RuleTest(dataset=valid_dataset_4),
+        RuleTest(dataset=valid_dataset_5),
     ],
     invalid=[
         RuleTest(dataset=invalid_dataset_0),
@@ -74,5 +108,12 @@ TimeCoordinateTest = RuleTester.define_test(
         RuleTest(dataset=invalid_dataset_2),
         RuleTest(dataset=invalid_dataset_3),
         RuleTest(dataset=invalid_dataset_4),
+        RuleTest(dataset=invalid_dataset_5),
+        RuleTest(dataset=invalid_dataset_6),
+        RuleTest(dataset=invalid_dataset_7),
+        RuleTest(dataset=invalid_dataset_8),
+        RuleTest(dataset=invalid_dataset_9),
+        RuleTest(dataset=invalid_dataset_10),
+        RuleTest(dataset=invalid_dataset_11),
     ],
 )
