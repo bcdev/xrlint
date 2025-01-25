@@ -59,7 +59,7 @@ Contained in:  `all`-:material-lightning-bolt: `recommended`-:material-alert:
 
 ### :material-bug: `time-coordinate`
 
-Time coordinate (standard_name='time') should have unambiguous time units encoding.
+Time coordinates should have valid and unambiguous time units encoding.
 [:material-information-variant:](https://cfconventions.org/cf-conventions/cf-conventions.html#time-coordinate)
 
 Contained in:  `all`-:material-lightning-bolt: `recommended`-:material-lightning-bolt:
