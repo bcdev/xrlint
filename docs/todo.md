@@ -15,14 +15,18 @@
  
 - project logo
 - add some more tests so we reach 99% coverage
-- support rule op args/kwargs schema validation
-- Support `RuleTest.expected`, it is currently unused
+- apply rule op args/kwargs validation schema 
+- support `RuleTest.expected`, it is currently unused
+- provide core rule that checks for configurable list of std attributes
+- measure time it takes to open a dataset and pass time into rule context 
+  so we can write a configurable rule that checks the opening time
+- allow outputting suggestions that me be included in rule results
 
 ## Nice to have
 
 - support `autofix` feature
 - support `md` (markdown) output format
-- support formatter op args/kwargs schema validation
+- support formatter op args/kwargs and apply validation schema
 
 # Ideas
 
