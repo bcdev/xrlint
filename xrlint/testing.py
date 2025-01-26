@@ -222,6 +222,7 @@ class RuleTester:
                     lines.append(f"  Actual: {result_text}")
             if all_ok:
                 return None
+
         else:
             if expected_messages:
                 lines.append(
@@ -234,14 +235,18 @@ class RuleTester:
                 for i, text in enumerate(map(_get_message_text, result.messages)):
                     lines.append(f"  {i}: {text}")
 
-        actual = format_problems(result.error_count, result.warning_count)
-        expected = format_count(expected_message_count, "problem")
-        messages = "\n".join(lines)
-        messages = (":\n" + messages) if messages else "."
-        return (
-            f"Rule {rule_name!r}: {test_id}:"
-            f" expected {expected}, but got {actual}{messages}"
-        )
+        result_text = format_problems(result.error_count, result.warning_count)
+        if expected_message_count == result_message_count:
+            problem_text = (
+                f"got {result_text} as expected, but encountered message mismatch"
+            )
+        else:
+            expected_text = format_count(expected_message_count, "problem")
+            problem_text = f"expected {expected_text}, but got {result_text}"
+
+        messages_text = "\n".join(lines)
+        messages_text = (":\n" + messages_text) if messages_text else "."
+        return f"Rule {rule_name!r}: {test_id}: {problem_text}{messages_text}"
 
 
 def _format_test_id(
