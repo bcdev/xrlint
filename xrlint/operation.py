@@ -90,7 +90,7 @@ class Operation(MappingConstructible["Operation"], JsonSerializable):
                 meta = op_class.meta
             except AttributeError:
                 raise ValueError(
-                    f"missing {cls.op_name()} metadata, apply define_{cls.op_name()}()"
+                    f"missing {cls.value_name()} metadata, apply define_{cls.value_name()}()"
                     f" to class {op_class.__name__}"
                 )
             # noinspection PyArgumentList
@@ -114,7 +114,7 @@ class Operation(MappingConstructible["Operation"], JsonSerializable):
         """Get the default name for the attribute that is used to import
         instances of this class from modules.
         """
-        return f"export_{cls.op_name()}"
+        return f"export_{cls.value_name()}"
 
     @classmethod
     def meta_class(cls) -> Type:
@@ -131,15 +131,11 @@ class Operation(MappingConstructible["Operation"], JsonSerializable):
         return type
 
     @classmethod
-    def op_name(cls) -> str:
+    def value_name(cls) -> str:
         """Get a name that describes the operation, e.g.,
         "rule", "processor", "formatter".
         """
         return "operation"
-
-    @classmethod
-    def value_name(cls) -> str:
-        return cls.op_name()
 
     @classmethod
     def value_type_name(cls) -> str:
@@ -158,7 +154,9 @@ class Operation(MappingConstructible["Operation"], JsonSerializable):
         meta_kwargs = meta_kwargs or {}
 
         def _define_op(_op_class: Type, decorated=True) -> Type | "Operation":
-            cls._assert_op_class_ok(f"decorated {cls.op_name()} component", _op_class)
+            cls._assert_op_class_ok(
+                f"decorated {cls.value_name()} component", _op_class
+            )
 
             name = meta_kwargs.pop("name", None)
             if not name:

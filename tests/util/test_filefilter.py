@@ -62,9 +62,26 @@ class FileFilterTest(unittest.TestCase):
         self.assertEqual(True, file_filter.accept("test-1.zarr"))
         self.assertEqual(True, file_filter.accept("test-2.zarr"))
 
+        # negated ignores:
         file_filter = FileFilter.from_patterns(
             ["**/*.zarr"], ["**/temp/*", "!**/temp/x.zarr"]
         )
         self.assertEqual(True, file_filter.accept("./test.zarr"))
         self.assertEqual(True, file_filter.accept("./temp/x.zarr"))
         self.assertEqual(False, file_filter.accept("./temp/y.zarr"))
+
+        # negated ignores:
+        file_filter = FileFilter.from_patterns([], ["**/temp/*", "!**/temp/*.zarr"])
+        self.assertEqual(True, file_filter.accept("./ds.nc"))
+        self.assertEqual(True, file_filter.accept("./temp/ds.zarr"))
+        self.assertEqual(True, file_filter.accept("./temp/test/ds.zarr"))
+        self.assertEqual(False, file_filter.accept("./temp/ds.nc"))
+        self.assertEqual(False, file_filter.accept("./temp/README.md"))
+
+        # just ignores:
+        file_filter = FileFilter.from_patterns([], ["**/*.json", "**/*.yaml"])
+        self.assertEqual(True, file_filter.accept("./test.nc"))
+        self.assertEqual(True, file_filter.accept("./temp/x.zarr"))
+        self.assertEqual(False, file_filter.accept("c.yaml"))
+        self.assertEqual(False, file_filter.accept("test/config.json"))
+        self.assertEqual(False, file_filter.accept("test/config.yaml"))

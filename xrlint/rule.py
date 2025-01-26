@@ -177,6 +177,10 @@ class RuleMeta(OperationMeta):
     """
 
     @classmethod
+    def value_name(cls) -> str:
+        return "rule_meta"
+
+    @classmethod
     def value_type_name(cls) -> str:
         return "RuleMeta | dict"
 
@@ -211,7 +215,7 @@ class Rule(Operation):
         return RuleOp
 
     @classmethod
-    def op_name(cls) -> str:
+    def value_name(cls) -> str:
         return "rule"
 
 
@@ -289,7 +293,7 @@ class RuleConfig(ValueConstructible, JsonSerializable):
 
     @classmethod
     def value_name(cls) -> str:
-        return "rule configuration"
+        return "rule_config"
 
     @classmethod
     def value_type_name(cls) -> str:

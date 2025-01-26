@@ -66,6 +66,10 @@ class ProcessorMeta(OperationMeta):
     """
 
     @classmethod
+    def value_name(cls) -> str:
+        return "processor_meta"
+
+    @classmethod
     def value_type_name(cls) -> str:
         return "ProcessorMeta | dict"
 
@@ -95,7 +99,7 @@ class Processor(Operation):
         return ProcessorOp
 
     @classmethod
-    def op_name(cls) -> str:
+    def value_name(cls) -> str:
         return "processor"
 
 

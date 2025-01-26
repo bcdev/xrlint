@@ -19,6 +19,12 @@ def export_rule():
 
 
 class RuleTest(TestCase):
+    def test_class_props(self):
+        self.assertIs(RuleMeta, Rule.meta_class())
+        self.assertIs(RuleOp, Rule.op_base_class())
+        self.assertEqual("rule", Rule.value_name())
+        self.assertEqual("Rule | Type[RuleOp] | dict | str", Rule.value_type_name())
+
     def test_from_value_ok_rule(self):
         rule = export_rule()
         rule2 = Rule.from_value(rule)
@@ -72,6 +78,10 @@ class RuleTest(TestCase):
 
 
 class RuleMetaTest(unittest.TestCase):
+    def test_class_props(self):
+        self.assertEqual("rule_meta", RuleMeta.value_name())
+        self.assertEqual("RuleMeta | dict", RuleMeta.value_type_name())
+
     def test_from_value(self):
         rule_meta = RuleMeta.from_value(
             {
@@ -133,6 +143,10 @@ class DefineRuleTest(unittest.TestCase):
 
 
 class RuleConfigTest(TestCase):
+    def test_class_props(self):
+        self.assertEqual("rule_config", RuleConfig.value_name())
+        self.assertEqual("int | str | list", RuleConfig.value_type_name())
+
     def test_defaults(self):
         rule_config = RuleConfig(1)
         self.assertEqual(1, rule_config.severity)
@@ -147,6 +161,10 @@ class RuleConfigTest(TestCase):
         self.assertEqual(RuleConfig(1), RuleConfig.from_value("warn"))
         self.assertEqual(RuleConfig(2), RuleConfig.from_value("error"))
         self.assertEqual(RuleConfig(2), RuleConfig.from_value(["error"]))
+        # YAML "on"/"off" literals
+        self.assertEqual(RuleConfig(0), RuleConfig.from_value(False))
+        self.assertEqual(RuleConfig(1), RuleConfig.from_value(True))
+
         self.assertEqual(
             RuleConfig(1, ("never",)), RuleConfig.from_value(["warn", "never"])
         )
@@ -175,17 +193,19 @@ class RuleConfigTest(TestCase):
         )
 
     # noinspection PyMethodMayBeStatic
-    def test_from_value_fails(self):
+    def test_from_value_fail(self):
         with pytest.raises(
             TypeError,
-            match="rule configuration must be of type int|str|tuple|list, but got None",
+            match=r"rule_config must be of type int \| str \| list, but got None",
         ):
             RuleConfig.from_value(None)
+
         with pytest.raises(
             ValueError,
             match="severity must be one of 'error', 'warn', 'off', 2, 1, 0, but got 4",
         ):
             RuleConfig.from_value(4)
+
         with pytest.raises(
             ValueError,
             match=(
@@ -194,3 +214,9 @@ class RuleConfigTest(TestCase):
             ),
         ):
             RuleConfig.from_value("debug")
+
+        with pytest.raises(
+            ValueError,
+            match="rule_config must not be empty",
+        ):
+            RuleConfig.from_value([])

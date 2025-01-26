@@ -32,7 +32,7 @@ class Thing(Operation):
         return ThingOp
 
     @classmethod
-    def op_name(cls) -> str:
+    def value_name(cls) -> str:
         return "thing"
 
     @classmethod
@@ -62,10 +62,9 @@ def export_thing() -> Thing:
 
 
 class OperationTest(TestCase):
-    def test_defaults(self):
+    def test_class_props(self):
         self.assertEqual(OperationMeta, Operation.meta_class())
         self.assertEqual(type, Operation.op_base_class())
-        self.assertEqual("operation", Operation.op_name())
         self.assertEqual("export_operation", Operation.op_import_attr_name())
         self.assertEqual("operation", Operation.value_name())
         self.assertEqual(

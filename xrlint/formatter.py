@@ -80,7 +80,7 @@ class Formatter(Operation):
         return FormatterOp
 
     @classmethod
-    def op_name(cls) -> str:
+    def value_name(cls) -> str:
         return "formatter"
 
 

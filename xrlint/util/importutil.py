@@ -7,8 +7,7 @@ from xrlint.util.formatting import format_message_type_of
 
 def import_submodules(package_name: str, dry_run: bool = False) -> list[str]:
     package = importlib.import_module(package_name)
-    if not hasattr(package, "__path__"):
-        return []
+    assert hasattr(package, "__path__")
 
     package_path = pathlib.Path(package.__path__[0])
 
@@ -98,7 +97,8 @@ def import_value(
                     f" not found in module {module_name!r}"
                 )
 
-    if not constant and callable(attr_value):
+    should_invoke = not constant and callable(attr_value)
+    if should_invoke:
         # We don't catch exceptions here,
         # because they occur in user land.
         # noinspection PyCallingNonCallable
@@ -116,7 +116,11 @@ def import_value(
 
     if expected_type is not None and not isinstance(exported_value, expected_type):
         raise ValueImportError(
-            format_message_type_of(module_ref, exported_value, expected_type)
+            format_message_type_of(
+                f"value of {module_ref}{('()' if should_invoke else '')}",
+                exported_value,
+                expected_type,
+            )
         )
 
     return exported_value, module_ref

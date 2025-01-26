@@ -14,15 +14,17 @@
 ## Desired
  
 - project logo
-- add some more tests so we reach 99% coverage
 - apply rule op args/kwargs validation schema 
 - provide core rule that checks for configurable list of std attributes
 - measure time it takes to open a dataset and pass time into rule context 
   so we can write a configurable rule that checks the opening time
-- allow outputting suggestions, if any, that emitted by some rules
+- allow outputting suggestions, if any, that are emitted by some rules
+- enhance styling of `Result` representation in Jupyter notebooks
+  (check if we can expand/collapse messages with suggestions)
 
 ## Nice to have
 
+- add some more tests so we reach 100% coverage
 - support `autofix` feature
 - support `md` (markdown) output format
 - support formatter op args/kwargs and apply validation schema
