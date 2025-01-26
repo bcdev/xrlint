@@ -42,23 +42,24 @@ class FileFilter:
         )
 
     def accept(self, file_path) -> bool:
-        included = False
-        for m in self.files:
-            if m.match(file_path):
-                included = True
-                break
-        if not included:
-            return False
+        if self.files:
+            included = False
+            for p in self.files:
+                if p.match(file_path):
+                    included = True
+                    break
+            if not included:
+                return False
 
         excluded = False
-        for m in self.ignores:
-            if not m.negate:
+        for p in self.ignores:
+            if not p.negate:
                 if excluded:
                     # Already excluded, no need to check further
                     return False
-                excluded = m.match(file_path)
+                excluded = p.match(file_path)
             else:
-                if excluded and m.match(file_path):
+                if excluded and p.match(file_path):
                     # Negate the old excluded status on match
                     excluded = False
 

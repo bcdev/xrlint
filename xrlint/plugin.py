@@ -27,6 +27,10 @@ class PluginMeta(MappingConstructible, JsonSerializable):
     """
 
     @classmethod
+    def value_name(cls) -> str:
+        return "plugin_meta"
+
+    @classmethod
     def value_type_name(cls) -> str:
         return "PluginMeta | dict"
 
@@ -127,6 +131,10 @@ class Plugin(MappingConstructible, JsonSerializable):
         )
         plugin.meta.ref = plugin_ref
         return plugin
+
+    @classmethod
+    def value_name(cls) -> str:
+        return "plugin"
 
     @classmethod
     def value_type_name(cls) -> str:

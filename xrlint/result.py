@@ -1,7 +1,7 @@
 import html
 from collections.abc import Iterable
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any, Literal, Union
+from typing import TYPE_CHECKING, Literal, Union
 
 from tabulate import tabulate
 
@@ -11,7 +11,8 @@ from xrlint.constants import (
     SEVERITY_ERROR,
     SEVERITY_WARN,
 )
-from xrlint.util.formatting import format_message_type_of, format_problems
+from xrlint.util.constructible import ValueConstructible
+from xrlint.util.formatting import format_problems
 from xrlint.util.serializable import JsonSerializable
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -25,7 +26,7 @@ class EditInfo(JsonSerializable):
 
 
 @dataclass(frozen=True)
-class Suggestion(JsonSerializable):
+class Suggestion(ValueConstructible, JsonSerializable):
     desc: str
     """Description of the suggestion."""
 
@@ -36,23 +37,8 @@ class Suggestion(JsonSerializable):
     """Not used yet."""
 
     @classmethod
-    def from_value(cls, value: Any, name: str | None = None) -> "Suggestion":
-        """Convert given `value` into a `Suggestion` object.
-
-        If `value` is already a `Suggestion` then it is returned as-is.
-
-        Args:
-            value: A `Suggestion` object or a `str` containing the
-                suggestion text.
-
-        Returns:
-            A `Suggestion` object.
-        """
-        if isinstance(value, Suggestion):
-            return value
-        if isinstance(value, str):
-            return Suggestion(value)
-        raise TypeError(format_message_type_of("value", value, "Suggestion|str"))
+    def _from_str(cls, value: str, value_name: str | None = None) -> "Suggestion":
+        return Suggestion(value)
 
 
 @dataclass()

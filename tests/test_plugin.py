@@ -10,6 +10,10 @@ from xrlint.rule import Rule, RuleOp, define_rule
 
 
 class PluginTest(TestCase):
+    def test_class_props(self):
+        self.assertEqual("plugin", Plugin.value_name())
+        self.assertEqual("Plugin | dict | str", Plugin.value_type_name())
+
     def test_new_plugin(self):
         plugin = new_plugin(name="hello", version="2.4.5")
         self.assertEqual(Plugin(meta=PluginMeta(name="hello", version="2.4.5")), plugin)
@@ -53,6 +57,10 @@ class PluginTest(TestCase):
 
 
 class PluginMetaTest(TestCase):
+    def test_class_props(self):
+        self.assertEqual("plugin_meta", PluginMeta.value_name())
+        self.assertEqual("PluginMeta | dict", PluginMeta.value_type_name())
+
     def test_from_value(self):
         self.assertEqual(
             PluginMeta(name="p", ref="a.b.c:p"),

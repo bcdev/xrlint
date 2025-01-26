@@ -1,14 +1,24 @@
+from typing import Any
 from unittest import TestCase
 
 import pytest
+import xarray as xr
 
-from xrlint.config import Config, ConfigList
-from xrlint.rule import RuleConfig
+from xrlint.config import Config, ConfigList, get_core_config
+from xrlint.constants import CORE_PLUGIN_NAME
+from xrlint.plugin import Plugin, new_plugin
+from xrlint.processor import define_processor, ProcessorOp
+from xrlint.result import Message
+from xrlint.rule import RuleConfig, Rule
 from xrlint.util.filefilter import FileFilter
 
 
 # noinspection PyMethodMayBeStatic
 class ConfigTest(TestCase):
+    def test_class_props(self):
+        self.assertEqual("config", Config.value_name())
+        self.assertEqual("Config | dict | None", Config.value_type_name())
+
     def test_defaults(self):
         config = Config()
         self.assertEqual(None, config.name)
@@ -19,6 +29,50 @@ class ConfigTest(TestCase):
         self.assertEqual(None, config.processor)
         self.assertEqual(None, config.plugins)
         self.assertEqual(None, config.rules)
+
+    def test_get_plugin(self):
+        config = get_core_config()
+        plugin = config.get_plugin(CORE_PLUGIN_NAME)
+        self.assertIsInstance(plugin, Plugin)
+
+        with pytest.raises(ValueError, match="unknown plugin 'xcube'"):
+            config.get_plugin("xcube")
+
+    def test_get_rule(self):
+        config = get_core_config()
+        rule = config.get_rule("flags")
+        self.assertIsInstance(rule, Rule)
+
+        with pytest.raises(ValueError, match="unknown rule 'foo'"):
+            config.get_rule("foo")
+
+    def test_get_processor_op(self):
+        class MyProc(ProcessorOp):
+            def preprocess(
+                self, file_path: str, opener_options: dict[str, Any]
+            ) -> list[tuple[xr.Dataset, str]]:
+                pass
+
+            def postprocess(
+                self, messages: list[list[Message]], file_path: str
+            ) -> list[Message]:
+                pass
+
+        processor = define_processor("myproc", op_class=MyProc)
+        config = Config(
+            plugins=dict(
+                myplugin=new_plugin("myplugin", processors=dict(myproc=processor))
+            )
+        )
+
+        processor_op = config.get_processor_op(MyProc())
+        self.assertIsInstance(processor_op, MyProc)
+
+        processor_op = config.get_processor_op("myplugin/myproc")
+        self.assertIsInstance(processor_op, MyProc)
+
+        with pytest.raises(ValueError, match="unknown processor 'myplugin/myproc2'"):
+            config.get_processor_op("myplugin/myproc2")
 
     def test_from_value_ok(self):
         self.assertEqual(Config(), Config.from_value(None))
@@ -167,7 +221,7 @@ class ConfigListTest(TestCase):
 
         config_list = ConfigList(
             [
-                Config(settings={"a": 1, "b": 1}),
+                Config(ignores=["**/*.yaml"], settings={"a": 1, "b": 1}),
                 Config(files=["**/datacubes/*.zarr"], settings={"b": 2}),
                 Config(files=["**/*.txt"], settings={"a": 2}),
             ]
@@ -182,6 +236,12 @@ class ConfigListTest(TestCase):
         file_path = "s3://wq-services/datacubes/chl-2.txt"
         self.assertEqual(
             Config(settings={"a": 2, "b": 1}),
+            config_list.compute_config(file_path),
+        )
+
+        file_path = "s3://wq-services/datacubes/config.yaml"
+        self.assertEqual(
+            None,
             config_list.compute_config(file_path),
         )
 

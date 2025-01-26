@@ -276,10 +276,11 @@ class Config(MappingConstructible, JsonSerializable):
     @classmethod
     def forward_refs(cls) -> dict[str, type]:
         from xrlint.plugin import Plugin
-        from xrlint.processor import ProcessorOp
+        from xrlint.processor import Processor, ProcessorOp
         from xrlint.rule import Rule, RuleConfig
 
         return {
+            "Processor": Processor,
             "ProcessorOp": ProcessorOp,
             "Plugin": Plugin,
             "Rule": Rule,

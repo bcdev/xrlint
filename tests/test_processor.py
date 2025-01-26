@@ -9,7 +9,19 @@ from xrlint.processor import Processor, ProcessorMeta, ProcessorOp, define_proce
 from xrlint.result import Message
 
 
+class ProcessorMetaTest(TestCase):
+    def test_class_props(self):
+        self.assertEqual("processor_meta", ProcessorMeta.value_name())
+        self.assertEqual("ProcessorMeta | dict", ProcessorMeta.value_type_name())
+
+
 class ProcessorTest(TestCase):
+    def test_class_props(self):
+        self.assertEqual("processor", Processor.value_name())
+        self.assertEqual(
+            "Processor | Type[ProcessorOp] | dict | str", Processor.value_type_name()
+        )
+
     def test_define_processor(self):
         registry = {}
 
