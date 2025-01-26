@@ -14,6 +14,6 @@ AnySpatialDataVarTest = RuleTester.define_test(
         RuleTest(dataset=valid_dataset),
     ],
     invalid=[
-        RuleTest(dataset=invalid_dataset),
+        RuleTest(dataset=invalid_dataset, expected=1),
     ],
 )

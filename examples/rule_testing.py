@@ -36,7 +36,7 @@ tester.run(
     "good-title",
     GoodTitle,
     valid=[RuleTest(dataset=valid_dataset)],
-    invalid=[RuleTest(dataset=invalid_dataset)],
+    invalid=[RuleTest(dataset=invalid_dataset, expected=1)],
 )
 
 # or define a test class derived from unitest.TestCase

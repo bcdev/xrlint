@@ -7,9 +7,9 @@ import xarray as xr
 from xrlint.constants import SEVERITY_ERROR
 from xrlint.linter import Linter
 from xrlint.plugin import new_plugin
-from xrlint.result import Message, Result
+from xrlint.result import Message
 from xrlint.rule import Rule, RuleMeta, RuleOp
-from xrlint.util.formatting import format_problems
+from xrlint.util.formatting import format_problems, format_item, format_count
 from xrlint.util.naming import to_snake_case
 
 _PLUGIN_NAME: Final = "testing"
@@ -31,10 +31,10 @@ class RuleTest:
     kwargs: dict[str, Any] | None = None
     """Optional keyword arguments passed to the rule operation's constructor."""
 
-    expected: list[Message] | int | None = 0
+    expected: list[Message | str] | int | None = None
     """Expected messages.
     Either a list of expected message objects or
-    the number of expected message.
+    the number of expected messages.
     Must not be provided for valid checks
     and must be provided for invalid checks.
     """
@@ -182,35 +182,71 @@ class RuleTester:
             },
         )
 
-        assert_ok = _assert_valid if test_mode == "valid" else _assert_invalid
-        if assert_ok(result):
-            return None
+        result_message_count = len(result.messages)
+
+        expected = test.expected
+        expected_message_count = 0
+        expected_messages = None
+
+        if test_mode == "valid":
+            assert expected is None, (
+                f"{test_id}: you cannot provide the keyword argument"
+                f" `expected` for a RuleTest in 'valid' mode."
+            )
         else:
-            return _format_error_message(rule_name, test_id, test_mode, result)
+            if isinstance(expected, int):
+                expected_message_count = max(1, expected)
+                expected_messages = None
+            elif isinstance(expected, list):
+                expected_message_count = len(expected)
+                expected_messages = expected
+            assert expected_message_count > 0, (
+                f"{test_id}: you must provide a valid keyword argument"
+                f" `expected` for a RuleTest in 'invalid' mode. Pass a list"
+                f" of expected message or str objects or an int specifying"
+                f" the expected number of messages."
+            )
 
+        lines: list[str] = []
+        if result_message_count == expected_message_count:
+            if expected_messages is None:
+                return None
+            all_ok = True
+            texts = map(_get_message_text, expected_messages)
+            result_texts = map(_get_message_text, result.messages)
+            for i, (expected_text, result_text) in enumerate(zip(texts, result_texts)):
+                if expected_text != result_text:
+                    all_ok = False
+                    lines.append(f"Message {i}:")
+                    lines.append(f"  Expected: {expected_text}")
+                    lines.append(f"  Actual: {result_text}")
+            if all_ok:
+                return None
 
-def _assert_valid(r: Result):
-    return r.error_count == 0 and r.warning_count == 0
+        else:
+            if expected_messages:
+                lines.append(
+                    f"Expected {format_item(expected_message_count, 'message')}:"
+                )
+                for i, text in enumerate(map(_get_message_text, expected_messages)):
+                    lines.append(f"  {i}: {text}")
+            if result.messages:
+                lines.append(f"Actual {format_item(result_message_count, 'message')}:")
+                for i, text in enumerate(map(_get_message_text, result.messages)):
+                    lines.append(f"  {i}: {text}")
 
+        result_text = format_problems(result.error_count, result.warning_count)
+        if expected_message_count == result_message_count:
+            problem_text = (
+                f"got {result_text} as expected, but encountered message mismatch"
+            )
+        else:
+            expected_text = format_count(expected_message_count, "problem")
+            problem_text = f"expected {expected_text}, but got {result_text}"
 
-def _assert_invalid(r: Result):
-    return r.error_count != 0 or r.warning_count != 0
-
-
-def _format_error_message(
-    rule_name: str,
-    test_id: str,
-    test_mode: Literal["valid", "invalid"],
-    result: Result,
-) -> str:
-    actual = format_problems(result.error_count, result.warning_count)
-    expected = f"{'no problem' if test_mode == 'valid' else 'one or more problems'}"
-    messages = "\n".join(f"- {m.message}" for m in result.messages)
-    messages = (":\n" + messages) if messages else "."
-    return (
-        f"Rule {rule_name!r}: {test_id}:"
-        f" expected {expected}, but got {actual}{messages}"
-    )
+        messages_text = "\n".join(lines)
+        messages_text = (":\n" + messages_text) if messages_text else "."
+        return f"Rule {rule_name!r}: {test_id}: {problem_text}{messages_text}"
 
 
 def _format_test_id(
@@ -220,3 +256,7 @@ def _format_test_id(
         return f"test_{test_mode}_{to_snake_case(test.name)}"
     else:
         return f"test_{test_mode}_{test_index}"
+
+
+def _get_message_text(m: Message | str) -> str:
+    return m if isinstance(m, str) else m.message

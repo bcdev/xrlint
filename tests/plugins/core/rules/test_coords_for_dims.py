@@ -20,6 +20,6 @@ CoordsForDimsTest = RuleTester.define_test(
         RuleTest(dataset=valid_dataset_2),
     ],
     invalid=[
-        RuleTest(dataset=invalid_dataset_2),
+        RuleTest(dataset=invalid_dataset_2, expected=1),
     ],
 )

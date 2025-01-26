@@ -30,30 +30,30 @@ def make_dataset(dims: tuple[str, str, str]):
     )
 
 
-valid_dataset_1 = make_dataset(("time", "y", "x"))
-valid_dataset_2 = make_dataset(("time", "lat", "lon"))
-valid_dataset_3 = make_dataset(("level", "y", "x"))
+valid_dataset_0 = make_dataset(("time", "y", "x"))
+valid_dataset_1 = make_dataset(("time", "lat", "lon"))
+valid_dataset_2 = make_dataset(("level", "y", "x"))
 
-invalid_dataset_1 = make_dataset(("time", "x", "y"))
-invalid_dataset_2 = make_dataset(("x", "y", "time"))
-invalid_dataset_3 = make_dataset(("time", "lon", "lat"))
-invalid_dataset_4 = make_dataset(("lon", "lat", "level"))
-invalid_dataset_5 = make_dataset(("x", "y", "level"))
+invalid_dataset_0 = make_dataset(("time", "x", "y"))
+invalid_dataset_1 = make_dataset(("x", "y", "time"))
+invalid_dataset_2 = make_dataset(("time", "lon", "lat"))
+invalid_dataset_3 = make_dataset(("lon", "lat", "level"))
+invalid_dataset_4 = make_dataset(("x", "y", "level"))
 
 
 CubeDimsOrderTest = RuleTester.define_test(
     "cube-dims-order",
     CubeDimsOrder,
     valid=[
+        RuleTest(dataset=valid_dataset_0),
         RuleTest(dataset=valid_dataset_1),
         RuleTest(dataset=valid_dataset_2),
-        RuleTest(dataset=valid_dataset_3),
     ],
     invalid=[
-        RuleTest(dataset=invalid_dataset_1),
-        RuleTest(dataset=invalid_dataset_2),
-        RuleTest(dataset=invalid_dataset_3),
-        RuleTest(dataset=invalid_dataset_4),
-        RuleTest(dataset=invalid_dataset_5),
+        RuleTest(dataset=invalid_dataset_0, expected=2),
+        RuleTest(dataset=invalid_dataset_1, expected=2),
+        RuleTest(dataset=invalid_dataset_2, expected=2),
+        RuleTest(dataset=invalid_dataset_3, expected=2),
+        RuleTest(dataset=invalid_dataset_4, expected=2),
     ],
 )

@@ -52,6 +52,6 @@ GridMappingNamingTest = RuleTester.define_test(
         RuleTest(dataset=valid_dataset_3),
     ],
     invalid=[
-        RuleTest(dataset=invalid_dataset_1),
+        RuleTest(dataset=invalid_dataset_1, expected=1),
     ],
 )
