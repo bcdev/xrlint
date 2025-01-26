@@ -66,7 +66,7 @@ SingleGridMappingTest = RuleTester.define_test(
         RuleTest(dataset=valid_dataset_5),
     ],
     invalid=[
-        RuleTest(dataset=invalid_dataset_1),
-        RuleTest(dataset=invalid_dataset_2),
+        RuleTest(dataset=invalid_dataset_1, expected=1),
+        RuleTest(dataset=invalid_dataset_2, expected=1),
     ],
 )

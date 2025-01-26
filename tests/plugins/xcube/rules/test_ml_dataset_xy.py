@@ -52,6 +52,6 @@ MLDatasetXYTest = RuleTester.define_test(
         RuleTest(dataset=valid_dataset_5),
     ],
     invalid=[
-        RuleTest(dataset=invalid_dataset_0),
+        RuleTest(dataset=invalid_dataset_0, expected=2),
     ],
 )

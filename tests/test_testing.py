@@ -33,8 +33,10 @@ class RuleTesterTest(TestCase):
                 RuleTest(dataset=VALID_DATASET_2),
             ],
             invalid=[
-                RuleTest(dataset=INVALID_DATASET_1),
-                RuleTest(dataset=INVALID_DATASET_2),
+                RuleTest(dataset=INVALID_DATASET_1, expected=1),
+                RuleTest(
+                    dataset=INVALID_DATASET_2, expected=["Datasets must have a title"]
+                ),
             ],
         )
 
@@ -44,7 +46,8 @@ class RuleTesterTest(TestCase):
             AssertionError,
             match=(
                 "Rule 'force-title': test_valid_2:"
-                " expected no problem, but got one error"
+                " expected no problems, but got one error:\nActual message:\n"
+                "  0: Datasets must have a title"
             ),
         ):
             tester.run(
@@ -57,20 +60,45 @@ class RuleTesterTest(TestCase):
                 ],
             )
 
-    def test_raises_invalid(self):
+    def test_raises_invalid_with_count(self):
         tester = RuleTester(rules={"testing/force-title": "error"})
         with pytest.raises(
             AssertionError,
             match=(
                 "Rule 'force-title': test_invalid_1:"
-                " expected one or more problems, but got no problems"
+                " expected one problem, but got no problems."
             ),
         ):
             tester.run(
                 "force-title",
                 ForceTitle,
                 invalid=[
-                    RuleTest(dataset=INVALID_DATASET_1),
-                    RuleTest(dataset=VALID_DATASET_1),
+                    RuleTest(dataset=INVALID_DATASET_1, expected=1),
+                    RuleTest(dataset=VALID_DATASET_1, expected=1),
+                ],
+            )
+
+    def test_raises_invalid_with_message(self):
+        tester = RuleTester(rules={"testing/force-title": "error"})
+        with pytest.raises(
+            AssertionError,
+            match=(
+                "Rule 'force-title': test_invalid_1:"
+                " expected one problem, but got no problems:\n"
+                "Expected message:\n"
+                "  0: Datasets must have a title"
+            ),
+        ):
+            tester.run(
+                "force-title",
+                ForceTitle,
+                invalid=[
+                    RuleTest(
+                        dataset=INVALID_DATASET_1,
+                        expected=["Datasets must have a title"],
+                    ),
+                    RuleTest(
+                        dataset=VALID_DATASET_1, expected=["Datasets must have a title"]
+                    ),
                 ],
             )

@@ -34,6 +34,6 @@ MLDatasetTimeTest = RuleTester.define_test(
         RuleTest(dataset=valid_dataset_3),
     ],
     invalid=[
-        RuleTest(dataset=invalid_dataset_0),
+        RuleTest(dataset=invalid_dataset_0, expected=1),
     ],
 )

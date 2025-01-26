@@ -11,9 +11,6 @@
 - Now supporting xcube multi-level datasets `*.levels`:
   - Added xcube plugin processor `"xcube/multi-level-dataset"` that is used
     inside the predefined xcube configurations "all" and "recommended".
-- Directories that are recognized by file patterns associated with a non-empty 
-  configuration object are no longer recursively
-  traversed.
 - Introduced method `Plugin.define_config` which defines a named plugin
   configuration. It takes a name and a configuration object or list of 
   configuration objects.
@@ -24,11 +21,13 @@
   - The returned value should be a list of values that can be 
     converted into configuration objects: mixed `Config` instances,
     dictionary, or a name that refers to a named configuration of a plugin.
-- Node path names now contain the dataset index if a file path 
-  has been opened by a processor produced multiple 
-  datasets to validate.
 
 - Other changes:
+  - Directories that are recognized by file patterns associated with a non-empty 
+    configuration object are no longer recursively traversed.
+  - Node path names now contain the dataset index if a file path 
+    has been opened by a processor produced multiple 
+    datasets to validate.
   - Changed type of `Plugin.configs` from `dict[str, Config]` to 
     `dict[str, list[Config]]`.
   - Inbuilt plugin rules now import their `plugin` instance from
@@ -37,7 +36,8 @@
     serializes property values that are also default values.
   - Pinned zarr dependency to be >=2.18, <3 until test
     `tests.plugins.xcube.processors.test_mldataset.MultiLevelDatasetProcessorTest`
-    is adjusted or fsspec's memory filesystem is updated.
+    is adjusted or `fsspec`'s memory filesystem is updated.
+  - Now making use of the `expected` property of `RuleTest`.
 
 ## Version 0.3.0 (from 2025-01-20)
 

@@ -84,9 +84,9 @@ LatCoordsTest = RuleTester.define_test(
         RuleTest(dataset=invalid_lon_dataset_2),
     ],
     invalid=[
-        RuleTest(dataset=invalid_lat_dataset_0),
-        RuleTest(dataset=invalid_lat_dataset_1),
-        RuleTest(dataset=invalid_lat_dataset_2),
+        RuleTest(dataset=invalid_lat_dataset_0, expected=1),
+        RuleTest(dataset=invalid_lat_dataset_1, expected=1),
+        RuleTest(dataset=invalid_lat_dataset_2, expected=2),
     ],
 )
 
@@ -104,8 +104,8 @@ LonCoordsTest = RuleTester.define_test(
         RuleTest(dataset=invalid_lat_dataset_2),
     ],
     invalid=[
-        RuleTest(dataset=invalid_lon_dataset_0),
-        RuleTest(dataset=invalid_lon_dataset_1),
-        RuleTest(dataset=invalid_lon_dataset_2),
+        RuleTest(dataset=invalid_lon_dataset_0, expected=1),
+        RuleTest(dataset=invalid_lon_dataset_1, expected=1),
+        RuleTest(dataset=invalid_lon_dataset_2, expected=2),
     ],
 )
