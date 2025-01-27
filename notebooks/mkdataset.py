@@ -71,7 +71,7 @@ def make_dataset_with_issues() -> xr.Dataset:
     invalid_ds.x.attrs["axis"] = "x"
     del invalid_ds.y.attrs["standard_name"]
     invalid_ds.y.attrs["axis"] = "y"
-    invalid_ds.time.attrs["units"] = "days since 2020-01-01 ß0:000:00"
+    invalid_ds.time.attrs["units"] = "days since 2020-01-01 UTC"
     invalid_ds.attrs = {}
     invalid_ds.sst.attrs["units"] = 1
     invalid_ds["sst_avg"] = xr.DataArray(
