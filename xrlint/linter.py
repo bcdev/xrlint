@@ -1,38 +1,34 @@
-from typing import Any, Literal
+from os import PathLike
+from pathlib import Path
+from typing import Any
 
-from xrlint.config import Config, get_core_config, merge_configs
+import xarray as xr
+
+from xrlint.config import Config, ConfigList, get_core_config
 from xrlint.result import Result
 
-from ._linter.verify import verify_dataset
+from ._linter.verify import verify_dataset, new_fatal_message
+from .constants import MISSING_DATASET_FILE_PATH
 
 
 def new_linter(
-    config_name: Literal["all", "recommended"] | None = None,
-    *,
-    config: Config | dict | None = None,
-    **config_kwargs: dict[str, Any],
+    *configs: Config | dict[str, Any] | str | None,
+    **config_kwargs: Any,
 ) -> "Linter":
     """Create a new `Linter` with the given configuration.
 
     Args:
-        config_name: `"recommended"` if the recommended configuration
+        configs: Configuration objects or named configurations.
+            Use `"recommended"` if the recommended configuration
             of the builtin rules should be used, or `"all"` if all rules
-            shall be used. Pass `None` (the default) if you don't want this.
-            In the latter case, you should configure the `rules`
-            option either in `config` or `config_kwargs`. Otherwise, calling
-            `verify_dataset()` without any rule configuration will never
-            succeed for any given dataset.
-        config: The `config` keyword argument passed to the `Linter` class
-        config_kwargs: The `config_kwargs` keyword arguments passed to
-            the `Linter` class
+            shall be used.
+        config_kwargs: Individual [Config][xrlint.config.Config] properties
+            of an additional configuration object.
 
     Returns:
         A new linter instance
     """
-    return Linter(
-        config=merge_configs(get_core_config(config_name=config_name), config),
-        **config_kwargs,
-    )
+    return Linter(get_core_config(), *configs, **config_kwargs)
 
 
 class Linter:
@@ -44,33 +40,38 @@ class Linter:
     use the `new_linter()` function.
 
     Args:
-        config: The linter's configuration.
-        config_kwargs: Individual linter configuration options.
-            All options of the `Config` object are possible.
-            If `config` is given too, provided
-            given individual linter configuration options
-            merged the ones given in `config`.
+        configs: Configuration objects or named configurations.
+            Use `"recommended"` if the recommended configuration
+            of the builtin rules should be used, or `"all"` if all rules
+            shall be used.
+        config_kwargs: Individual [Config][xrlint.config.Config] properties
+            of an additional configuration object.
     """
 
     def __init__(
         self,
-        config: Config | dict[str, Any] | None = None,
-        **config_kwargs: dict[str, Any],
+        *configs: Config | dict[str, Any] | None,
+        **config_kwargs: Any,
     ):
-        self._config = merge_configs(config, config_kwargs)
+        _configs = []
+        if configs:
+            _configs.extend(configs)
+        if config_kwargs:
+            _configs.append(config_kwargs)
+        self._config_list = ConfigList.from_value(_configs)
 
     @property
-    def config(self) -> Config:
+    def config(self) -> ConfigList:
         """Get this linter's configuration."""
-        return self._config
+        return self._config_list
 
     def verify_dataset(
         self,
         dataset: Any,
         *,
         file_path: str | None = None,
-        config: Config | dict[str, Any] | None = None,
-        **config_kwargs: dict[str, Any],
+        config: ConfigList | list | Config | dict[str, Any] | str | None = None,
+        **config_kwargs: Any,
     ) -> Result:
         """Verify a dataset.
 
@@ -80,15 +81,50 @@ class Linter:
                 using `xarray.open_dataset()`.
             file_path: Optional file path used for formatting
                 messages. Useful if `dataset` is not a file path.
-            config: Configuration tbe merged with the linter's
-                configuration.
-            config_kwargs: Individual linter configuration options
-                to be merged with `config` if any. The merged result
-                will be merged with the linter's configuration.
+            config: Optional configuration object or a list of configuration
+                objects that will be added to the current linter configuration.
+            config_kwargs: Individual [Config][xrlint.config.Config] properties
+                of an additional configuration object.
 
         Returns:
             Result of the verification.
         """
-        config = merge_configs(self._config, config)
-        config = merge_configs(config, config_kwargs)
+        if not file_path:
+            if isinstance(dataset, xr.Dataset):
+                file_path = file_path or _get_file_path_for_dataset(dataset)
+            else:
+                file_path = file_path or _get_file_path_for_source(dataset)
+
+        config_list = self._config_list
+        if isinstance(config, ConfigList):
+            config_list = ConfigList.from_value([*config_list.configs, *config.configs])
+        elif isinstance(config, list):
+            config_list = ConfigList.from_value([*config_list.configs, *config])
+        elif config:
+            config_list = ConfigList.from_value([*config_list.configs, config])
+        if config_kwargs:
+            config_list = ConfigList.from_value([*config_list.configs, config_kwargs])
+
+        config = config_list.compute_config(file_path)
+        if config is None:
+            return Result.new(
+                config=config,
+                file_path=file_path,
+                messages=[
+                    new_fatal_message(
+                        f"No configuration given or matches {file_path!r}.",
+                    )
+                ],
+            )
+
         return verify_dataset(config, dataset, file_path)
+
+
+def _get_file_path_for_dataset(dataset: xr.Dataset) -> str:
+    ds_source = dataset.encoding.get("source")
+    return _get_file_path_for_source(ds_source)
+
+
+def _get_file_path_for_source(ds_source: Any) -> str:
+    file_path = str(ds_source) if isinstance(ds_source, (str, Path, PathLike)) else ""
+    return file_path or MISSING_DATASET_FILE_PATH

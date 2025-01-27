@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from functools import cached_property
-from typing import TYPE_CHECKING, Any, Literal, Sequence, Union
+from typing import TYPE_CHECKING, Any, Sequence, Union
 
 from xrlint.constants import CORE_PLUGIN_NAME
 from xrlint.util.constructible import MappingConstructible, ValueConstructible
@@ -22,34 +22,13 @@ def get_core_plugin() -> "Plugin":
     return export_plugin()
 
 
-def get_core_config(
-    config_name: Literal["all", "recommended"] | None = None,
-) -> "Config":
-    """Create a base configuration for the built-in plugins.
-
-    Args:
-        config_name: `"recommended"` if the recommended configuration
-            of the builtin rules should be used, or `"all"` if all rules
-            shall be used. Pass `None` (the default) if you don't want this.
-            In the latter case, you should configure the `rules`
-            option either in `config` or `config_kwargs`. Otherwise, calling
-            `verify_dataset()` without any rule configuration will never
-            succeed for any given dataset.
+def get_core_config() -> "Config":
+    """Create a configuration object that includes the core plugin.
 
     Returns:
         A new `Config` object
     """
-    core_plugin = get_core_plugin()
-    config = Config(
-        plugins={
-            CORE_PLUGIN_NAME: core_plugin,
-        },
-    )
-    if config_name is None:
-        return config
-    config_list = core_plugin.configs[config_name]
-    assert len(config_list) == 1
-    return config.merge(config_list[0])
+    return Config(plugins={CORE_PLUGIN_NAME: get_core_plugin()})
 
 
 def split_config_spec(config_spec: str) -> tuple[str, str]:

@@ -2,6 +2,7 @@ from xrlint.node import AttrNode, AttrsNode, DataArrayNode, DatasetNode
 from xrlint.rule import RuleConfig, RuleExit, RuleOp
 
 from .rulectx import RuleContextImpl
+from ..constants import NODE_ROOT_NAME
 
 
 def apply_rule(
@@ -33,9 +34,9 @@ def apply_rule(
                 DatasetNode(
                     parent=None,
                     path=(
-                        "dataset"
+                        NODE_ROOT_NAME
                         if context.file_index is None
-                        else f"dataset[{context.file_index}]"
+                        else f"{NODE_ROOT_NAME}[{context.file_index}]"
                     ),
                     dataset=context.dataset,
                 ),
