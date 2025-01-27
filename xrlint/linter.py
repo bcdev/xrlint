@@ -5,9 +5,9 @@ from typing import Any
 import xarray as xr
 
 from xrlint.config import Config, ConfigList, get_core_config
-from xrlint.result import Result, Message
+from xrlint.result import Result
 
-from ._linter.verify import verify_dataset
+from ._linter.verify import verify_dataset, new_fatal_message
 from .constants import MISSING_DATASET_FILE_PATH
 
 
@@ -108,14 +108,11 @@ class Linter:
         config = config_list.compute_config(file_path)
         if config is None:
             return Result.new(
-                config,
-                file_path,
-                [
-                    Message(
+                config=config,
+                file_path=file_path,
+                messages=[
+                    new_fatal_message(
                         f"No configuration given or matches {file_path!r}.",
-                        fatal=True,
-                        severity=2,
-                        node_path="dataset",
                     )
                 ],
             )

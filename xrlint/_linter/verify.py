@@ -7,6 +7,7 @@ from xrlint.result import Message, Result
 
 from .apply import apply_rule
 from .rulectx import RuleContextImpl
+from ..constants import NODE_ROOT_NAME
 
 
 def verify_dataset(config: Config, dataset: Any, file_path: str):
@@ -30,15 +31,13 @@ def _verify_dataset(
     assert isinstance(dataset, xr.Dataset)
     assert isinstance(file_path, str)
 
-    context = RuleContextImpl(config, dataset, file_path, file_index)
-
     if not config.rules:
-        context.report("No rules configured or applicable.", fatal=True)
-    else:
-        for rule_id, rule_config in config.rules.items():
-            with context.use_state(rule_id=rule_id):
-                apply_rule(context, rule_id, rule_config)
+        return [new_fatal_message("No rules configured or applicable.")]
 
+    context = RuleContextImpl(config, dataset, file_path, file_index)
+    for rule_id, rule_config in config.rules.items():
+        with context.use_state(rule_id=rule_id):
+            apply_rule(context, rule_id, rule_config)
     return context.messages
 
 
@@ -55,7 +54,7 @@ def _open_and_verify_dataset(
         try:
             ds_path_list = processor_op.preprocess(file_path, opener_options)
         except (OSError, ValueError, TypeError) as e:
-            return [Message(message=str(e), fatal=True, severity=2)]
+            return [new_fatal_message(str(e))]
         return processor_op.postprocess(
             [
                 _verify_dataset(config, ds, path, i)
@@ -67,7 +66,7 @@ def _open_and_verify_dataset(
         try:
             dataset = _open_dataset(ds_source, opener_options, file_path)
         except (OSError, ValueError, TypeError) as e:
-            return [Message(message=str(e), fatal=True, severity=2)]
+            return [new_fatal_message(str(e))]
         with dataset:
             return _verify_dataset(config, dataset, file_path, None)
 
@@ -80,3 +79,12 @@ def _open_dataset(
     if engine is None and (file_path.endswith(".zarr") or file_path.endswith(".zarr/")):
         engine = "zarr"
     return xr.open_dataset(ds_source, engine=engine, **(opener_options or {}))
+
+
+def new_fatal_message(message: str) -> Message:
+    return Message(
+        message=message,
+        fatal=True,
+        severity=2,
+        node_path=NODE_ROOT_NAME,
+    )

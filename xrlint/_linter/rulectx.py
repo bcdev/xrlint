@@ -4,7 +4,7 @@ from typing import Any, Literal
 import xarray as xr
 
 from xrlint.config import Config
-from xrlint.constants import SEVERITY_ERROR
+from xrlint.constants import SEVERITY_ERROR, NODE_ROOT_NAME
 from xrlint.node import Node
 from xrlint.result import Message, Suggestion
 from xrlint.rule import RuleContext
@@ -66,7 +66,7 @@ class RuleContextImpl(RuleContext):
             fatal=fatal,
             suggestions=suggestions,
             rule_id=self.rule_id,
-            node_path=self.node.path if self.node is not None else None,
+            node_path=self.node.path if self.node is not None else NODE_ROOT_NAME,
             severity=self.severity,
         )
         self.messages.append(m)

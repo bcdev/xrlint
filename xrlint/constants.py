@@ -18,5 +18,5 @@ SEVERITY_ENUM: Final[dict[int | str, int]] = (
 SEVERITY_ENUM_TEXT: Final = ", ".join(f"{k!r}" for k in SEVERITY_ENUM.keys())
 
 MISSING_DATASET_FILE_PATH: Final = "<dataset>"
-
+NODE_ROOT_NAME: Final = "dataset"
 CORE_PLUGIN_NAME: Final = "__core__"
