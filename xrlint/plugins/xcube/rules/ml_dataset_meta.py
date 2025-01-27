@@ -11,8 +11,11 @@ from xrlint.util.formatting import format_item
     version="1.0.0",
     type="suggestion",
     description=(
-        f"Multi-level datasets should provide {ML_META_FILENAME!r}"
-        f" meta information file and if so, it should be consistent."
+        f"Multi-level datasets should provide a {ML_META_FILENAME!r}"
+        f" meta-info file, and if so, it should be consistent."
+        f" Without the meta-info file the multi-level dataset cannot be"
+        f" reliably extended by new time slices as the aggregation method"
+        f" used for each variable must be specified."
     ),
     docs_url=(
         "https://xcube.readthedocs.io/en/latest/mldatasets.html#the-xcube-levels-format"
@@ -34,8 +37,13 @@ class MLDatasetMeta(RuleOp):
         meta = level_info.meta
         if meta is None:
             ctx.report(
-                f"Missing {ML_META_FILENAME!r} meta-info file,"
-                f" therefore dataset cannot be extended."
+                f"Missing {ML_META_FILENAME!r} meta-info file.",
+                suggestions=[
+                    f"Add {ML_META_FILENAME!r} meta-info file."
+                    f" Without the meta-info the dataset cannot be reliably extended"
+                    f" as the aggregation method used for each variable must be"
+                    f" specified."
+                ],
             )
             return
 
