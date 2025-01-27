@@ -468,21 +468,20 @@
 <h2 id="desired">Desired</h2>
 <ul>
 <li>project logo</li>
-<li>support validating xcube 'levels' format. Options:<ul>
-<li>implement xarray backend so we can open them using <code>xr.open_dataset</code>
-  with <code>opener_options: {"engine": "xc-levels"}</code>.</li>
-<li>implement a <code>xrlint.processor.Processor</code> for that purpose.</li>
-</ul>
-</li>
-<li>add some more tests so we reach 99% coverage</li>
-<li>support rule op args/kwargs schema validation</li>
-<li>Support <code>RuleTest.expected</code>, it is currently unused</li>
+<li>apply rule op args/kwargs validation schema </li>
+<li>provide core rule that checks for configurable list of std attributes</li>
+<li>measure time it takes to open a dataset and pass time into rule context 
+  so we can write a configurable rule that checks the opening time</li>
+<li>allow outputting suggestions, if any, that are emitted by some rules</li>
+<li>enhance styling of <code>Result</code> representation in Jupyter notebooks
+  (check if we can expand/collapse messages with suggestions)</li>
 </ul>
 <h2 id="nice-to-have">Nice to have</h2>
 <ul>
+<li>add some more tests so we reach 100% coverage</li>
 <li>support <code>autofix</code> feature</li>
 <li>support <code>md</code> (markdown) output format</li>
-<li>support formatter op args/kwargs schema validation</li>
+<li>support formatter op args/kwargs and apply validation schema</li>
 </ul>
 <h1 id="ideas">Ideas</h1>
 <h2 id="allow-for-different-dataset-openers">Allow for different dataset openers</h2>
