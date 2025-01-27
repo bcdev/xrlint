@@ -1,6 +1,6 @@
 # XRLint Change History
 
-## Version 0.4.0 (in development)
+## Version 0.4.0 (from 2025-01-27)
 
 - Fixed and enhanced core rule `time-coordinate`. `(#33)
 - New xcube rule `no-chunked-coords`. (#29)
