@@ -116,7 +116,7 @@ Contained in:  `all`-:material-lightning-bolt: `recommended`-:material-lightning
 
 ### :material-lightbulb: `ml-dataset-meta`
 
-Multi-level datasets should provide '.zlevels' meta information file and if so, it should be consistent.
+Multi-level datasets should provide a '.zlevels' meta-info file, and if so, it should be consistent. Without the meta-info file the multi-level dataset cannot be reliably extended by new time slices as the aggregation method used for each variable must be specified.
 [:material-information-variant:](https://xcube.readthedocs.io/en/latest/mldatasets.html#the-xcube-levels-format)
 
 Contained in:  `all`-:material-lightning-bolt: `recommended`-:material-lightning-bolt:

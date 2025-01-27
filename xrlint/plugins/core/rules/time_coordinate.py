@@ -140,7 +140,7 @@ class TimeCoordinate(RuleOp):
 
             if not tz_part:
                 ctx.report(
-                    f"Missing timezone '+H:MM' or '-H:MM' in 'units' attribute: {units!r}.",
+                    f"Missing timezone in 'units' attribute: {units!r}.",
                     suggestions=[
                         _units_format_suggestion(),
                         f"Append timezone specification, e.g., use"
