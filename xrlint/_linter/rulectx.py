@@ -4,7 +4,7 @@ from typing import Any, Literal
 import xarray as xr
 
 from xrlint.config import Config
-from xrlint.constants import SEVERITY_ERROR, NODE_ROOT_NAME
+from xrlint.constants import NODE_ROOT_NAME, SEVERITY_ERROR
 from xrlint.node import Node
 from xrlint.result import Message, Suggestion
 from xrlint.rule import RuleContext

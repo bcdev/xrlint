@@ -3,7 +3,7 @@ from unittest import TestCase
 import pytest
 
 from xrlint.plugin import Plugin
-from xrlint.util.importutil import import_submodules, import_value, ValueImportError
+from xrlint.util.importutil import ValueImportError, import_submodules, import_value
 
 
 def get_foo():

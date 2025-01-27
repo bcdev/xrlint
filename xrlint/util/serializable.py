@@ -1,4 +1,4 @@
-from dataclasses import is_dataclass, fields
+from dataclasses import fields, is_dataclass
 from typing import Any, Final, Mapping, Sequence, TypeAlias
 
 from xrlint.util.formatting import format_message_type_of

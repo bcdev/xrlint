@@ -2,7 +2,7 @@ import numpy as np
 import xarray as xr
 
 from xrlint.plugins.core.rules.flags import Flags
-from xrlint.testing import RuleTester, RuleTest
+from xrlint.testing import RuleTest, RuleTester
 
 valid_dataset_0 = xr.Dataset()
 valid_dataset_1 = xr.Dataset(

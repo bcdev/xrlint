@@ -7,7 +7,7 @@ import xarray as xr
 from xrlint.config import Config, ConfigList, get_core_config
 from xrlint.result import Result
 
-from ._linter.verify import verify_dataset, new_fatal_message
+from ._linter.verify import new_fatal_message, verify_dataset
 from .constants import MISSING_DATASET_FILE_PATH
 
 

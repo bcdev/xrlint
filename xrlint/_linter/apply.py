@@ -1,8 +1,8 @@
 from xrlint.node import AttrNode, AttrsNode, DataArrayNode, DatasetNode
 from xrlint.rule import RuleConfig, RuleExit, RuleOp
 
-from .rulectx import RuleContextImpl
 from ..constants import NODE_ROOT_NAME
+from .rulectx import RuleContextImpl
 
 
 def apply_rule(

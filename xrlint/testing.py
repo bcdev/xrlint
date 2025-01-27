@@ -9,7 +9,7 @@ from xrlint.linter import Linter
 from xrlint.plugin import new_plugin
 from xrlint.result import Message
 from xrlint.rule import Rule, RuleMeta, RuleOp
-from xrlint.util.formatting import format_problems, format_item, format_count
+from xrlint.util.formatting import format_count, format_item, format_problems
 from xrlint.util.naming import to_snake_case
 
 _PLUGIN_NAME: Final = "testing"

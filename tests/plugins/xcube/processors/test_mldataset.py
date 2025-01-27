@@ -9,10 +9,7 @@ import xarray as xr
 from tests.plugins.xcube.helpers import make_cube_levels
 from xrlint.plugins.xcube.constants import ML_INFO_ATTR
 from xrlint.plugins.xcube.processors.mldataset import MultiLevelDatasetProcessor
-from xrlint.plugins.xcube.util import (
-    LevelInfo,
-    LevelsMeta,
-)
+from xrlint.plugins.xcube.util import LevelInfo, LevelsMeta
 from xrlint.result import Message
 
 # TODO: This tests requires zarr >=2, <3, because the test used fsspec's

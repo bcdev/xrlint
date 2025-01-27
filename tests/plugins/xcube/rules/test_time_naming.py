@@ -1,10 +1,8 @@
 import numpy as np
-
-from xrlint.plugins.xcube.rules.time_naming import TimeNaming
-
 import xarray as xr
 
-from xrlint.testing import RuleTester, RuleTest
+from xrlint.plugins.xcube.rules.time_naming import TimeNaming
+from xrlint.testing import RuleTest, RuleTester
 
 
 def make_dataset(time_var: str, time_dim: str | None = None):

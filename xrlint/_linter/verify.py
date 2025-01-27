@@ -5,9 +5,9 @@ import xarray as xr
 from xrlint.config import Config
 from xrlint.result import Message, Result
 
+from ..constants import NODE_ROOT_NAME
 from .apply import apply_rule
 from .rulectx import RuleContextImpl
-from ..constants import NODE_ROOT_NAME
 
 
 def verify_dataset(config: Config, dataset: Any, file_path: str):

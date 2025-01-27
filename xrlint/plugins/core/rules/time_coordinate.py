@@ -1,10 +1,8 @@
 import re
 
-
 from xrlint.node import DataArrayNode
 from xrlint.plugins.core.plugin import plugin
 from xrlint.rule import RuleContext, RuleOp
-
 
 _EXAMPLE_UNIT_1 = "seconds since 2010-10-8 15:15:42.5 -6:00"
 _EXAMPLE_UNIT_2 = "days since 2000-01-01 +0:00"

@@ -7,9 +7,9 @@ import xarray as xr
 from xrlint.config import Config, ConfigList, get_core_config
 from xrlint.constants import CORE_PLUGIN_NAME
 from xrlint.plugin import Plugin, new_plugin
-from xrlint.processor import define_processor, ProcessorOp
+from xrlint.processor import ProcessorOp, define_processor
 from xrlint.result import Message
-from xrlint.rule import RuleConfig, Rule
+from xrlint.rule import Rule, RuleConfig
 from xrlint.util.filefilter import FileFilter
 
 

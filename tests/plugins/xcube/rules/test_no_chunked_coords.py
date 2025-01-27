@@ -1,8 +1,8 @@
 import xarray as xr
 
+from tests.plugins.xcube.helpers import make_cube
 from xrlint.plugins.xcube.rules.no_chunked_coords import NoChunkedCoords
 from xrlint.testing import RuleTest, RuleTester
-from tests.plugins.xcube.helpers import make_cube
 
 valid_dataset_0 = xr.Dataset(attrs=dict(title="Empty"))
 valid_dataset_1 = make_cube(360, 180, 3)

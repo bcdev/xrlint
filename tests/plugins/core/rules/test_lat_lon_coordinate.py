@@ -1,10 +1,8 @@
 import numpy as np
 import xarray as xr
 
-from xrlint.plugins.core.rules.lat_lon_coordinate import LatCoordinate
-from xrlint.plugins.core.rules.lat_lon_coordinate import LonCoordinate
-from xrlint.testing import RuleTest
-from xrlint.testing import RuleTester
+from xrlint.plugins.core.rules.lat_lon_coordinate import LatCoordinate, LonCoordinate
+from xrlint.testing import RuleTest, RuleTester
 
 valid_dataset_0 = xr.Dataset()
 valid_dataset_1 = xr.Dataset(

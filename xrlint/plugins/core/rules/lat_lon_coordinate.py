@@ -4,8 +4,7 @@ import xarray as xr
 
 from xrlint.node import DataArrayNode
 from xrlint.plugins.core.plugin import plugin
-from xrlint.rule import RuleContext
-from xrlint.rule import RuleOp
+from xrlint.rule import RuleContext, RuleOp
 
 LAT_NAME = "latitude"
 LON_NAME = "longitude"

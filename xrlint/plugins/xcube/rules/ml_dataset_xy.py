@@ -2,7 +2,7 @@ import math
 
 from xrlint.node import DatasetNode
 from xrlint.plugins.xcube.plugin import plugin
-from xrlint.plugins.xcube.util import get_spatial_size, get_dataset_level_info
+from xrlint.plugins.xcube.util import get_dataset_level_info, get_spatial_size
 from xrlint.rule import RuleContext, RuleOp
 
 

@@ -6,16 +6,9 @@ from typing import Any
 import fsspec
 import xarray as xr
 
-from xrlint.plugins.xcube.constants import (
-    ML_FILE_PATTERN,
-    ML_META_FILENAME,
-)
+from xrlint.plugins.xcube.constants import ML_FILE_PATTERN, ML_META_FILENAME
 from xrlint.plugins.xcube.plugin import plugin
-from xrlint.plugins.xcube.util import (
-    LevelsMeta,
-    norm_path,
-    attach_dataset_level_infos,
-)
+from xrlint.plugins.xcube.util import LevelsMeta, attach_dataset_level_infos, norm_path
 from xrlint.processor import ProcessorOp
 from xrlint.result import Message
 

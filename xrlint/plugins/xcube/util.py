@@ -4,7 +4,8 @@ from dataclasses import dataclass
 import xarray as xr
 
 from xrlint.util.constructible import MappingConstructible
-from .constants import LAT_NAME, LON_NAME, X_NAME, Y_NAME, ML_INFO_ATTR
+
+from .constants import LAT_NAME, LON_NAME, ML_INFO_ATTR, X_NAME, Y_NAME
 
 
 @dataclass(frozen=True, kw_only=True)

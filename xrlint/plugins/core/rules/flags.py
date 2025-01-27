@@ -4,8 +4,7 @@ import numpy as np
 
 from xrlint.node import DataArrayNode
 from xrlint.plugins.core.plugin import plugin
-from xrlint.rule import RuleOp, RuleContext
-
+from xrlint.rule import RuleContext, RuleOp
 
 FLAG_MEANINGS = "flag_meanings"
 FLAG_VALUES = "flag_values"

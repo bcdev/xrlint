@@ -1,12 +1,9 @@
 import xarray as xr
+
 from tests.plugins.xcube.helpers import make_cube_levels
 from xrlint.plugins.xcube.rules.ml_dataset_xy import MLDatasetXY
-from xrlint.plugins.xcube.util import (
-    LevelsMeta,
-    get_dataset_level_info,
-)
+from xrlint.plugins.xcube.util import LevelsMeta, get_dataset_level_info
 from xrlint.testing import RuleTest, RuleTester
-
 
 meta = LevelsMeta(
     version="1.0",
