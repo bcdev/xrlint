@@ -23,6 +23,8 @@
     dictionary, or a name that refers to a named configuration of a plugin.
 
 - Other changes:
+  - Property `config` of `Linter` now returns a `ConfigList` instead 
+    of a `Config` object.  
   - Directories that are recognized by file patterns associated with a non-empty 
     configuration object are no longer recursively traversed.
   - Node path names now contain the dataset index if a file path 

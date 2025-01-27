@@ -3,7 +3,7 @@ from unittest import TestCase
 
 import xarray as xr
 
-from xrlint.config import Config
+from xrlint.config import Config, ConfigList
 from xrlint.constants import CORE_PLUGIN_NAME
 from xrlint.linter import Linter, new_linter
 from xrlint.node import AttrNode, AttrsNode, DataArrayNode, DatasetNode
@@ -16,36 +16,38 @@ from xrlint.rule import RuleContext, RuleExit, RuleOp
 class LinterTest(TestCase):
     def test_default_config_is_empty(self):
         linter = Linter()
-        self.assertEqual(Config(), linter.config)
+        self.assertEqual(ConfigList(), linter.config)
 
     def test_new_linter(self):
-        import xrlint.all as xrl
-
         linter = new_linter()
-        self.assertIsInstance(linter, xrl.Linter)
-        self.assertIsInstance(linter.config.plugins, dict)
-        self.assertEqual({CORE_PLUGIN_NAME}, set(linter.config.plugins.keys()))
-        self.assertEqual(None, linter.config.rules)
+        self.assertIsInstance(linter, Linter)
+        self.assertEqual(1, len(linter.config.configs))
+        config = linter.config.configs[0]
+        self.assertIsInstance(config.plugins, dict)
+        self.assertEqual({CORE_PLUGIN_NAME}, set(config.plugins.keys()))
+        self.assertEqual(None, config.rules)
 
-        linter = new_linter(config_name=None)
-        self.assertIsInstance(linter, xrl.Linter)
-        self.assertIsInstance(linter.config.plugins, dict)
-        self.assertEqual({CORE_PLUGIN_NAME}, set(linter.config.plugins.keys()))
-        self.assertEqual(None, linter.config.rules)
-
+    def test_new_linter_recommended(self):
         linter = new_linter("recommended")
-        self.assertIsInstance(linter, xrl.Linter)
-        self.assertIsInstance(linter.config.plugins, dict)
-        self.assertEqual({CORE_PLUGIN_NAME}, set(linter.config.plugins.keys()))
-        self.assertIsInstance(linter.config.rules, dict)
-        self.assertIn("coords-for-dims", linter.config.rules)
+        self.assertIsInstance(linter, Linter)
+        self.assertEqual(2, len(linter.config.configs))
+        config0 = linter.config.configs[0]
+        config1 = linter.config.configs[1]
+        self.assertIsInstance(config0.plugins, dict)
+        self.assertEqual({CORE_PLUGIN_NAME}, set(config0.plugins.keys()))
+        self.assertIsInstance(config1.rules, dict)
+        self.assertIn("coords-for-dims", config1.rules)
 
+    def test_new_linter_all(self):
         linter = new_linter("all")
-        self.assertIsInstance(linter, xrl.Linter)
-        self.assertIsInstance(linter.config.plugins, dict)
-        self.assertEqual({CORE_PLUGIN_NAME}, set(linter.config.plugins.keys()))
-        self.assertIsInstance(linter.config.rules, dict)
-        self.assertIn("coords-for-dims", linter.config.rules)
+        self.assertIsInstance(linter, Linter)
+        self.assertEqual(2, len(linter.config.configs))
+        config0 = linter.config.configs[0]
+        config1 = linter.config.configs[1]
+        self.assertIsInstance(config0.plugins, dict)
+        self.assertEqual({CORE_PLUGIN_NAME}, set(config0.plugins.keys()))
+        self.assertIsInstance(config1.rules, dict)
+        self.assertIn("coords-for-dims", config1.rules)
 
 
 class LinterVerifyTest(TestCase):
@@ -99,7 +101,7 @@ class LinterVerifyTest(TestCase):
                 return messages[0] + messages[1]
 
         config = Config(plugins={"test": plugin})
-        self.linter = Linter(config=config)
+        self.linter = Linter(config)
         super().setUp()
 
     def test_rules_are_ok(self):
@@ -110,7 +112,7 @@ class LinterVerifyTest(TestCase):
                 "data-var-dim-must-have-coord",
                 "dataset-without-data-vars",
             ],
-            list(self.linter._config.plugins["test"].rules.keys()),
+            list(self.linter.config.configs[0].plugins["test"].rules.keys()),
         )
 
     def test_linter_respects_rule_severity_error(self):
@@ -208,11 +210,13 @@ class LinterVerifyTest(TestCase):
 
         result = self.linter.verify_dataset(
             dataset,
-            rules={
-                "test/no-space-in-attr-name": "error",
-                "test/no-empty-attrs": "warn",
-                "test/data-var-dim-must-have-coord": "error",
-                "test/dataset-without-data-vars": "warn",
+            config={
+                "rules": {
+                    "test/no-space-in-attr-name": "error",
+                    "test/no-empty-attrs": "warn",
+                    "test/data-var-dim-must-have-coord": "error",
+                    "test/dataset-without-data-vars": "warn",
+                },
             },
         )
         self.assertEqual(

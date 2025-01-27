@@ -1,26 +1,21 @@
-from os import PathLike
-from pathlib import Path
 from typing import Any
 
 import xarray as xr
 
 from xrlint.config import Config
-from xrlint.constants import MISSING_DATASET_FILE_PATH
 from xrlint.result import Message, Result
 
 from .apply import apply_rule
 from .rulectx import RuleContextImpl
 
 
-def verify_dataset(config: Config, dataset: Any, file_path: str | None):
+def verify_dataset(config: Config, dataset: Any, file_path: str):
     assert isinstance(config, Config)
     assert dataset is not None
-    assert isinstance(file_path, (str, type(None)))
+    assert isinstance(file_path, str)
     if isinstance(dataset, xr.Dataset):
-        file_path = file_path or _get_file_path_for_dataset(dataset)
         messages = _verify_dataset(config, dataset, file_path, None)
     else:
-        file_path = file_path or _get_file_path_for_source(dataset)
         messages = _open_and_verify_dataset(config, dataset, file_path)
     return Result.new(config=config, messages=messages, file_path=file_path)
 
@@ -85,13 +80,3 @@ def _open_dataset(
     if engine is None and (file_path.endswith(".zarr") or file_path.endswith(".zarr/")):
         engine = "zarr"
     return xr.open_dataset(ds_source, engine=engine, **(opener_options or {}))
-
-
-def _get_file_path_for_dataset(dataset: xr.Dataset) -> str:
-    ds_source = dataset.encoding.get("source")
-    return _get_file_path_for_source(ds_source)
-
-
-def _get_file_path_for_source(ds_source: Any) -> str:
-    file_path = str(ds_source) if isinstance(ds_source, (str, Path, PathLike)) else ""
-    return file_path or MISSING_DATASET_FILE_PATH

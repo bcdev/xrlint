@@ -72,7 +72,7 @@ class XRLint(FormatterContext):
         """Load configuration list.
         The function will load the configuration list from a specified
         configuration file, if any.
-        Otherwise it will search for the default configuration files
+        Otherwise, it will search for the default configuration files
         in the current working directory.
         """
         plugins = {}
@@ -152,16 +152,18 @@ class XRLint(FormatterContext):
             yield linter.verify_dataset(file_path, config=config)
 
     def get_files(self, file_paths: Iterable[str]) -> Iterator[tuple[str, Config]]:
-        """Provide an iterator for the list of files or directories.
+        """Provide an iterator for the list of files or directories and their
+        computed configurations.
 
-        Directories in `files` that are not filtered out will be
-        recursively traversed.
+        Directories in `files` that are not ignored and not recognized by any
+        file pattern will be recursively traversed.
 
         Args:
-            file_paths: Iterable of files or directory.
+            file_paths: Iterable of files or directories.
 
         Returns:
-            An iterator of filtered files or directories.
+            An iterator of pairs comprising a file or directory path
+              and its computed configuration.
         """
         config_list, global_filter = self.config_list.split_global_filter(
             default=DEFAULT_GLOBAL_FILTER

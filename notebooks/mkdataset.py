@@ -36,7 +36,7 @@ def make_dataset() -> xr.Dataset:
                 attrs={
                     "standard_name": "time",
                     "long_name": "time",
-                    "units": "days since 2020-01-01 utc",
+                    "units": "days since 2020-01-01 +0:00",
                     "calendar": "gregorian",
                 },
             ),

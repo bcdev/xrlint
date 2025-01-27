@@ -167,7 +167,8 @@ class RuleTester:
                         name=_PLUGIN_NAME,
                         rules={
                             rule_name: Rule(
-                                meta=RuleMeta(name=rule_name), op_class=rule_op_class
+                                meta=RuleMeta(name=rule_name),
+                                op_class=rule_op_class,
                             )
                         },
                     )
