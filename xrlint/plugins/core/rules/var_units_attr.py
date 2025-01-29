@@ -8,6 +8,7 @@ from xrlint.rule import RuleContext, RuleOp
     version="1.0.0",
     type="suggestion",
     description="Every variable should have a valid 'units' attribute.",
+    docs_url="https://cfconventions.org/cf-conventions/cf-conventions.html#units",
 )
 class VarUnitsAttr(RuleOp):
     def data_array(self, ctx: RuleContext, node: DataArrayNode):

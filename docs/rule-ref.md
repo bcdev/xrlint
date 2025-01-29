@@ -5,11 +5,31 @@ New rules will be added by upcoming XRLint releases.
 
 ## Core Rules
 
+### :material-lightbulb: `conventions`
+
+Datasets should identify the applicable conventions using the `Conventions` attribute.
+ The rule has an optional configuration parameter `match` which is a regex pattern that the value of the `Conventions` attribute must match, if any.
+[:material-information-variant:](https://cfconventions.org/cf-conventions/cf-conventions.html#identification-of-conventions)
+
+Contained in:  `all`-:material-lightning-bolt:
+
 ### :material-bug: `coords-for-dims`
 
 Dimensions of data variables should have corresponding coordinates.
 
 Contained in:  `all`-:material-lightning-bolt: `recommended`-:material-lightning-bolt:
+
+### :material-lightbulb: `dataset-description`
+
+A dataset should provide information about where the data came from and what has been done to it. This information is mainly for the benefit of human readers. The rule accepts the following configuration parameters:
+
+- `global_attrs`: list of global attribute names. Defaults to `['title', 'history']`.
+- `var_attrs`: list of variable attribute names. Defaults to `['institution', 'source', 'references', 'comment']`.
+- `ignored_vars`: list of ignored variables (regex patterns). Defaults to `['crs', 'spatial_ref']`.
+
+[:material-information-variant:](https://cfconventions.org/cf-conventions/cf-conventions.html#description-of-file-contents)
+
+Contained in:  `all`-:material-lightning-bolt:
 
 ### :material-lightbulb: `dataset-title-attr`
 
@@ -67,6 +87,7 @@ Contained in:  `all`-:material-lightning-bolt: `recommended`-:material-lightning
 ### :material-lightbulb: `var-units-attr`
 
 Every variable should have a valid 'units' attribute.
+[:material-information-variant:](https://cfconventions.org/cf-conventions/cf-conventions.html#units)
 
 Contained in:  `all`-:material-lightning-bolt: `recommended`-:material-alert:
 
