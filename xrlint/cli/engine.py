@@ -175,6 +175,7 @@ class XRLint(FormatterContext):
         for file_path in file_paths:
             _fs, root = fsspec.url_to_fs(file_path)
             fs: fsspec.AbstractFileSystem = _fs
+            is_local = isinstance(fs, fsspec.implementations.local.LocalFileSystem)
 
             config = compute_config(file_path)
             if config is not None:
@@ -185,6 +186,7 @@ class XRLint(FormatterContext):
                 for path, dirs, files in fs.walk(root, topdown=True):
                     for d in list(dirs):
                         d_path = f"{path}/{d}"
+                        d_path = d_path if is_local else fs.unstrip_protocol(d_path)
                         c = compute_config(d_path)
                         if c is not None:
                             dirs.remove(d)
@@ -192,6 +194,7 @@ class XRLint(FormatterContext):
 
                     for f in files:
                         f_path = f"{path}/{f}"
+                        f_path = f_path if is_local else fs.unstrip_protocol(f_path)
                         c = compute_config(f_path)
                         if c is not None:
                             yield f_path, c
