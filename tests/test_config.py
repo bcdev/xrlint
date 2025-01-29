@@ -16,8 +16,8 @@ from xrlint.util.filefilter import FileFilter
 # noinspection PyMethodMayBeStatic
 class ConfigObjectTest(TestCase):
     def test_class_props(self):
-        self.assertEqual("config", ConfigObject.value_name())
-        self.assertEqual("Config | dict | None", ConfigObject.value_type_name())
+        self.assertEqual("config_obj", ConfigObject.value_name())
+        self.assertEqual("ConfigObject | dict | None", ConfigObject.value_type_name())
 
     def test_defaults(self):
         config_obj = ConfigObject()
@@ -154,31 +154,31 @@ class ConfigObjectTest(TestCase):
     def test_from_value_fails(self):
         with pytest.raises(
             TypeError,
-            match=r"config must be of type Config \| dict \| None, but got int",
+            match=r"config_obj must be of type ConfigObject \| dict \| None, but got int",
         ):
             ConfigObject.from_value(4)
 
         with pytest.raises(
             TypeError,
-            match=r"config must be of type Config \| dict \| None, but got str",
+            match=r"config_obj must be of type ConfigObject \| dict \| None, but got str",
         ):
             ConfigObject.from_value("abc")
 
         with pytest.raises(
             TypeError,
-            match=r"config must be of type Config \| dict \| None, but got tuple",
+            match=r"config_obj must be of type ConfigObject \| dict \| None, but got tuple",
         ):
             ConfigObject.from_value(())
 
         with pytest.raises(
             TypeError,
-            match=r" config.linter_options must be of type dict.*, but got list",
+            match=r" config_obj.linter_options must be of type dict.*, but got list",
         ):
             ConfigObject.from_value({"linter_options": [1, 2, 3]})
 
         with pytest.raises(
             TypeError,
-            match=r" keys of config.settings must be of type str, but got int",
+            match=r" keys of config_obj.settings must be of type str, but got int",
         ):
             ConfigObject.from_value({"settings": {8: 9}})
 
@@ -233,7 +233,8 @@ class ConfigTest(TestCase):
             TypeError,
             match=(
                 r"config must be of type"
-                r" Config \| list\[ConfigObject \| dict \| str\], but got int"
+                r" Config \| ConfigObjectLike \| str \| Sequence\[ConfigObjectLike \| str\],"
+                r" but got int"
             ),
         ):
             Config.from_value(264)

@@ -1,7 +1,7 @@
 from collections.abc import Sequence
 from dataclasses import dataclass, field
 from functools import cached_property
-from typing import TYPE_CHECKING, Any, Union
+from typing import TYPE_CHECKING, Any, Union, TypeAlias
 
 from xrlint.constants import CORE_PLUGIN_NAME
 from xrlint.util.constructible import MappingConstructible, ValueConstructible
@@ -14,6 +14,22 @@ if TYPE_CHECKING:  # pragma: no cover
     from xrlint.plugin import Plugin
     from xrlint.processor import ProcessorOp
     from xrlint.rule import Rule, RuleConfig
+
+
+# TODO: Introduce type aliases ConfigLike and ConfigObjectLike
+
+ConfigObjectLike: TypeAlias = Union[
+    "ConfigObject",
+    dict[str, Any],
+    None,
+]
+
+ConfigLike: TypeAlias = Union[
+    "Config",
+    Sequence[ConfigObjectLike | str],
+    ConfigObjectLike,
+    str,
+]
 
 
 def get_core_plugin() -> "Plugin":
@@ -260,11 +276,11 @@ class ConfigObject(MappingConstructible, JsonSerializable):
 
     @classmethod
     def value_name(cls) -> str:
-        return "config"
+        return "config_obj"
 
     @classmethod
     def value_type_name(cls) -> str:
-        return "Config | dict | None"
+        return "ConfigObject | dict | None"
 
 
 @dataclass(frozen=True)
@@ -329,9 +345,7 @@ class Config(ValueConstructible, JsonSerializable):
     @classmethod
     def from_config(
         cls,
-        *config_args: Union[
-            "Config", list | tuple | ConfigObject | dict[str, Any] | str | None
-        ],
+        *config_args: ConfigLike,
         value_name: str | None = None,
     ) -> "Config":
         """Convert variable arguments of configuration-like objects
@@ -375,7 +389,7 @@ class Config(ValueConstructible, JsonSerializable):
         return cls(objects=objects)
 
     @classmethod
-    def from_value(cls, value: Any, value_name: str | None = None) -> "Config":
+    def from_value(cls, value: ConfigLike, value_name: str | None = None) -> "Config":
         """Convert given `value` into a `Config` object.
 
         If `value` is already a `Config` then it is returned as-is.
@@ -403,7 +417,7 @@ class Config(ValueConstructible, JsonSerializable):
 
     @classmethod
     def value_type_name(cls) -> str:
-        return "Config | list[ConfigObject | dict | str]"
+        return "Config | ConfigObjectLike | str | Sequence[ConfigObjectLike | str]"
 
     @classmethod
     def _get_named_config(

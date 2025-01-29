@@ -4,17 +4,14 @@ from typing import Any
 
 import xarray as xr
 
-from xrlint.config import ConfigObject, Config, get_core_config_object
+from xrlint.config import Config, get_core_config_object, ConfigLike
 from xrlint.result import Result
 
 from ._linter.verify import new_fatal_message, verify_dataset
 from .constants import MISSING_DATASET_FILE_PATH
 
 
-def new_linter(
-    *configs: Config | ConfigObject | dict[str, Any] | str | None,
-    **config_kwargs: Any,
-) -> "Linter":
+def new_linter(*configs: ConfigLike, **config_kwargs: Any) -> "Linter":
     """Create a new `Linter` with the given configuration.
 
     Args:
@@ -52,11 +49,7 @@ class Linter:
             of an additional configuration object.
     """
 
-    def __init__(
-        self,
-        *configs: Config | ConfigObject | dict[str, Any] | None,
-        **config_kwargs: Any,
-    ):
+    def __init__(self, *configs: ConfigLike, **config_kwargs: Any):
         self._config = Config.from_config(*configs, config_kwargs)
 
     @property
@@ -69,9 +62,7 @@ class Linter:
         dataset: Any,
         *,
         file_path: str | None = None,
-        config: (
-            Config | list | tuple | ConfigObject | dict[str, Any] | str | None
-        ) = None,
+        config: ConfigLike = None,
         **config_kwargs: Any,
     ) -> Result:
         """Verify a dataset.

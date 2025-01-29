@@ -121,8 +121,8 @@ class CliConfigTest(TestCase):
             with pytest.raises(
                 ConfigError,
                 match=(
-                    r"config\.yaml\: config must be of"
-                    r" type Config \| list\[ConfigObject \| dict \| str\],"
+                    r"config\.yaml\: config must be of type"
+                    r" Config \| ConfigObjectLike \| str \| Sequence\[ConfigObjectLike \| str\],"
                     r" but got int"
                 ),
             ):
@@ -171,9 +171,9 @@ class CliConfigTest(TestCase):
             with pytest.raises(
                 ConfigError,
                 match=(
-                    r"\.py: return value of export_config\(\):"
+                    r"\.py: failed converting value of 'config_1003:export_config':"
                     r" config must be of type"
-                    r" Config \| list\[Config\ | dict \| str\],"
+                    r" Config \| ConfigObjectLike \| str \| Sequence\[ConfigObjectLike \| str\],"
                     r" but got int"
                 ),
             ):
