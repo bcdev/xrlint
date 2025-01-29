@@ -18,7 +18,7 @@ from xrlint.cli.constants import (
     DEFAULT_OUTPUT_FORMAT,
     INIT_CONFIG_YAML,
 )
-from xrlint.config import ConfigObject, Config, get_core_config_object
+from xrlint.config import ConfigObject, Config, get_core_config_object, ConfigLike
 from xrlint.formatter import FormatterContext
 from xrlint.formatters import export_formatters
 from xrlint.linter import Linter
@@ -70,7 +70,7 @@ class XRLint(FormatterContext):
         """Get current result statistics."""
         return self._result_stats
 
-    def init_config(self, *extra_configs) -> None:
+    def init_config(self, *extra_configs: ConfigLike) -> None:
         """Initialize configuration.
         The function will load the configuration list from a specified
         configuration file, if any.
@@ -109,9 +109,9 @@ class XRLint(FormatterContext):
             if config is None:
                 click.echo("Warning: no configuration file found.")
 
-        core_config = get_core_config_object()
-        core_config.plugins.update(plugins)
-        configs = [core_config]
+        core_config_obj = get_core_config_object()
+        core_config_obj.plugins.update(plugins)
+        configs = [core_config_obj]
         if config is not None:
             configs += config.objects
         if rules:
