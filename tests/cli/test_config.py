@@ -5,7 +5,7 @@ from unittest import TestCase
 
 import pytest
 
-from xrlint.cli.config import ConfigError, read_config_list
+from xrlint.cli.config import ConfigError, read_config
 from xrlint.config import Config, ConfigList
 from xrlint.rule import RuleConfig
 
@@ -58,17 +58,17 @@ class CliConfigTest(TestCase):
 
     def test_read_config_yaml(self):
         with text_file("config.yaml", yaml_text) as config_path:
-            config = read_config_list(config_path)
+            config = read_config(config_path)
             self.assert_config_ok(config, "yaml-test")
 
     def test_read_config_json(self):
         with text_file("config.json", json_text) as config_path:
-            config = read_config_list(config_path)
+            config = read_config(config_path)
             self.assert_config_ok(config, "json-test")
 
     def test_read_config_py(self):
         with text_file(self.new_config_py(), py_text) as config_path:
-            config = read_config_list(config_path)
+            config = read_config(config_path)
             self.assert_config_ok(config, "py-test")
 
     def assert_config_ok(self, config: Any, name: str):
@@ -94,7 +94,7 @@ class CliConfigTest(TestCase):
             match="configuration file must be of type str|Path|PathLike, but got None",
         ):
             # noinspection PyTypeChecker
-            read_config_list(None)
+            read_config(None)
 
     def test_read_config_json_with_format_error(self):
         with text_file("config.json", "{") as config_path:
@@ -106,7 +106,7 @@ class CliConfigTest(TestCase):
                     " line 1 column 2 \\(char 1\\)"
                 ),
             ):
-                read_config_list(config_path)
+                read_config(config_path)
 
     def test_read_config_yaml_with_format_error(self):
         with text_file("config.yaml", "}") as config_path:
@@ -114,7 +114,7 @@ class CliConfigTest(TestCase):
                 ConfigError,
                 match="config.yaml: while parsing a block node",
             ):
-                read_config_list(config_path)
+                read_config(config_path)
 
     def test_read_config_yaml_with_type_error(self):
         with text_file("config.yaml", "97") as config_path:
@@ -126,14 +126,14 @@ class CliConfigTest(TestCase):
                     r" but got int"
                 ),
             ):
-                read_config_list(config_path)
+                read_config(config_path)
 
     def test_read_config_with_unknown_format(self):
         with pytest.raises(
             ConfigError,
             match="config.toml: unsupported configuration file format",
         ):
-            read_config_list("config.toml")
+            read_config("config.toml")
 
     def test_read_config_py_no_export(self):
         py_code = "x = 42\n"
@@ -145,7 +145,7 @@ class CliConfigTest(TestCase):
                     " not found in module 'config_1002'"
                 ),
             ):
-                read_config_list(config_path)
+                read_config(config_path)
 
     def test_read_config_py_with_value_error(self):
         py_code = "def export_config():\n    raise ValueError('value is useless!')\n"
@@ -154,7 +154,7 @@ class CliConfigTest(TestCase):
                 ValueError,
                 match="value is useless!",
             ):
-                read_config_list(config_path)
+                read_config(config_path)
 
     def test_read_config_py_with_os_error(self):
         py_code = "def export_config():\n    raise OSError('where is my hat?')\n"
@@ -163,7 +163,7 @@ class CliConfigTest(TestCase):
                 ConfigError,
                 match="where is my hat?",
             ):
-                read_config_list(config_path)
+                read_config(config_path)
 
     def test_read_config_py_with_invalid_config_list(self):
         py_code = "def export_config():\n    return 42\n"
@@ -177,23 +177,23 @@ class CliConfigTest(TestCase):
                     r" but got int"
                 ),
             ):
-                read_config_list(config_path)
+                read_config(config_path)
 
 
 class CliConfigResolveTest(unittest.TestCase):
     def test_read_config_py(self):
         self.assert_ok(
-            read_config_list(Path(__file__).parent / "configs" / "recommended.py")
+            read_config(Path(__file__).parent / "configs" / "recommended.py")
         )
 
     def test_read_config_json(self):
         self.assert_ok(
-            read_config_list(Path(__file__).parent / "configs" / "recommended.json")
+            read_config(Path(__file__).parent / "configs" / "recommended.json")
         )
 
     def test_read_config_yaml(self):
         self.assert_ok(
-            read_config_list(Path(__file__).parent / "configs" / "recommended.yaml")
+            read_config(Path(__file__).parent / "configs" / "recommended.yaml")
         )
 
     def assert_ok(self, config_list: ConfigList):

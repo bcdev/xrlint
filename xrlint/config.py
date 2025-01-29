@@ -42,16 +42,6 @@ def split_config_spec(config_spec: str) -> tuple[str, str]:
     )
 
 
-def merge_configs(
-    config1: Union["Config", dict[str, Any], None],
-    config2: Union["Config", dict[str, Any], None],
-) -> "Config":
-    """Merge two configuration objects and return the result."""
-    config1 = Config.from_value(config1)
-    config2 = Config.from_value(config2)
-    return config1.merge(config2)
-
-
 @dataclass(frozen=True, kw_only=True)
 class Config(MappingConstructible, JsonSerializable):
     """Configuration object.
@@ -334,6 +324,51 @@ class ConfigList(ValueConstructible, JsonSerializable):
         )
 
     @classmethod
+    def from_config(
+        cls,
+        *config_args: Union[
+            "ConfigList", list | tuple | Config | dict[str, Any] | str | None
+        ],
+        value_name: str | None = None,
+    ) -> "ConfigList":
+        """Convert variable arguments of configuration-like objects
+        into a new `ConfigList` instance.
+
+        Args:
+            *config_args: Variable arguments that may comprise `ConfigList` objects,
+                or sequences of configuration objects, or configuration objects
+                such `Config` instances, dictionaries, or configuration names.
+            value_name: The value's name used for reporting errors.
+
+        Returns:
+            A new `ConfigList` instance.
+        """
+        value_name = value_name or cls.value_name()
+        configs: list[Config] = []
+        plugins: dict[str, Plugin] = {}
+        for i, config in enumerate(config_args):
+            new_configs = None
+            if isinstance(config, str):
+                if CORE_PLUGIN_NAME not in plugins:
+                    plugins.update({CORE_PLUGIN_NAME: get_core_plugin()})
+                new_configs = cls._get_named_config_list(config, plugins)
+            elif isinstance(config, ConfigList):
+                new_configs = config.configs
+            elif isinstance(config, (list, tuple)):
+                new_configs = cls.from_config(
+                    *config, value_name=f"{value_name}[{i}]"
+                ).configs
+            elif config:
+                new_configs = [
+                    Config.from_value(config, value_name=f"{value_name}[{i}]")
+                ]
+            if new_configs:
+                for c in new_configs:
+                    configs.append(c)
+                    plugins.update(c.plugins if c.plugins else {})
+        return cls(configs=configs)
+
+    @classmethod
     def from_value(cls, value: Any, value_name: str | None = None) -> "ConfigList":
         """Convert given `value` into a `ConfigList` object.
 
@@ -344,7 +379,7 @@ class ConfigList(ValueConstructible, JsonSerializable):
                 converted into `Config` objects including configuration
                 names of type `str`. The latter are resolved against
                 the plugin configurations seen so far in the list.
-            value_name: A value's name.
+            value_name: The value's name used for reporting errors.
         Returns:
             A `ConfigList` object.
         """
@@ -354,19 +389,7 @@ class ConfigList(ValueConstructible, JsonSerializable):
 
     @classmethod
     def _from_sequence(cls, value: Sequence, value_name: str) -> "ConfigList":
-        configs: list[Config] = []
-        plugins: dict[str, Plugin] = {}
-        for item in value:
-            if isinstance(item, str):
-                if CORE_PLUGIN_NAME not in plugins:
-                    plugins.update({CORE_PLUGIN_NAME: get_core_plugin()})
-                new_configs = cls._get_named_config_list(item, plugins)
-            else:
-                new_configs = [Config.from_value(item)]
-            for config in new_configs:
-                configs.append(config)
-                plugins.update(config.plugins if config.plugins else {})
-        return ConfigList(configs=configs)
+        return cls.from_config(*value, value_name=value_name)
 
     @classmethod
     def value_name(cls) -> str:

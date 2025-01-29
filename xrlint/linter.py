@@ -53,24 +53,19 @@ class Linter:
         *configs: Config | dict[str, Any] | None,
         **config_kwargs: Any,
     ):
-        _configs = []
-        if configs:
-            _configs.extend(configs)
-        if config_kwargs:
-            _configs.append(config_kwargs)
-        self._config_list = ConfigList.from_value(_configs)
+        self._config = ConfigList.from_config(configs, config_kwargs)
 
     @property
     def config(self) -> ConfigList:
         """Get this linter's configuration."""
-        return self._config_list
+        return self._config
 
     def verify_dataset(
         self,
         dataset: Any,
         *,
         file_path: str | None = None,
-        config: ConfigList | list | Config | dict[str, Any] | str | None = None,
+        config: ConfigList | list | tuple | Config | dict[str, Any] | str | None = None,
         **config_kwargs: Any,
     ) -> Result:
         """Verify a dataset.
@@ -95,16 +90,7 @@ class Linter:
             else:
                 file_path = file_path or _get_file_path_for_source(dataset)
 
-        config_list = self._config_list
-        if isinstance(config, ConfigList):
-            config_list = ConfigList.from_value([*config_list.configs, *config.configs])
-        elif isinstance(config, list):
-            config_list = ConfigList.from_value([*config_list.configs, *config])
-        elif config:
-            config_list = ConfigList.from_value([*config_list.configs, config])
-        if config_kwargs:
-            config_list = ConfigList.from_value([*config_list.configs, config_kwargs])
-
+        config_list = ConfigList.from_config(self._config, config, config_kwargs)
         config = config_list.compute_config(file_path)
         if config is None:
             return Result.new(

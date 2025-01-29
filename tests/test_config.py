@@ -182,6 +182,32 @@ class ConfigTest(TestCase):
 
 
 class ConfigListTest(TestCase):
+    def test_from_config_ok(self):
+        config_list = ConfigList.from_config()
+        self.assertIsInstance(config_list, ConfigList)
+        self.assertEqual([], config_list.configs)
+
+        config_list = ConfigList.from_config(
+            {"ignores": ["**/*.levels"]},
+            get_core_config(),
+            "recommended",
+            {"rules": {"no-empty-chunks": 2}},
+        )
+        self.assertIsInstance(config_list, ConfigList)
+        self.assertEqual(4, len(config_list.configs))
+
+        config_list = ConfigList.from_config(config_list)
+        self.assertIsInstance(config_list, ConfigList)
+        self.assertEqual(4, len(config_list.configs))
+
+        config_list = ConfigList.from_config(config_list.configs)
+        self.assertIsInstance(config_list, ConfigList)
+        self.assertEqual(4, len(config_list.configs))
+
+        config_list = ConfigList.from_config(*config_list.configs)
+        self.assertIsInstance(config_list, ConfigList)
+        self.assertEqual(4, len(config_list.configs))
+
     def test_from_value_ok(self):
         config_list = ConfigList.from_value([])
         self.assertIsInstance(config_list, ConfigList)
@@ -192,7 +218,7 @@ class ConfigListTest(TestCase):
 
         config_list = ConfigList.from_value([{}])
         self.assertIsInstance(config_list, ConfigList)
-        self.assertEqual([Config()], config_list.configs)
+        self.assertEqual([], config_list.configs)
 
         config_list = ConfigList.from_value({})
         self.assertIsInstance(config_list, ConfigList)

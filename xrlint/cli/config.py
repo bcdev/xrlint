@@ -10,14 +10,14 @@ from xrlint.util.formatting import format_message_type_of
 from xrlint.util.importutil import ValueImportError, import_value
 
 
-def read_config_list(config_path: str | Path | PathLike[str]) -> ConfigList:
-    """Read configuration list from configuration file.
+def read_config(config_path: str | Path | PathLike[str]) -> ConfigList:
+    """Read configuration from configuration file.
 
     Args:
         config_path: configuration file path.
 
     Returns:
-        A configuration list instance.
+        A `ConfigList` instance.
 
     Raises:
         TypeError: if `config_path` is not a path-like object
@@ -31,19 +31,19 @@ def read_config_list(config_path: str | Path | PathLike[str]) -> ConfigList:
         )
 
     try:
-        config_list_like = _read_config_list_like(str(config_path))
+        config_like = _read_config_like(str(config_path))
     except FileNotFoundError:
         raise
     except OSError as e:
         raise ConfigError(config_path, e) from e
 
     try:
-        return ConfigList.from_value(config_list_like)
+        return ConfigList.from_value(config_like)
     except (ValueError, TypeError) as e:
         raise ConfigError(config_path, e) from e
 
 
-def _read_config_list_like(config_path: str) -> Any:
+def _read_config_like(config_path: str) -> Any:
     if config_path.endswith(".yml") or config_path.endswith(".yaml"):
         return _read_config_yaml(config_path)
     if config_path.endswith(".json"):

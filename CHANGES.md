@@ -1,5 +1,13 @@
 # XRLint Change History
 
+## Version 0.5.0 (in development)
+
+- Added class method `from_config()` to `ConfigList`.
+- Renamed various `XRLint` methods for consistency:
+  - `load_config_list()` --> `init_config()`
+  - `verify_datasets()` --> `verify_files()`
+- Removed function `xrlint.config.merge_configs` as it was no longer used.
+
 ## Version 0.4.0 (from 2025-01-27)
 
 - Fixed and enhanced core rule `time-coordinate`. `(#33)

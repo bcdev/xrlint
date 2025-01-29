@@ -112,7 +112,7 @@ def main(
     """Validate the given dataset FILES.
 
     Reads configuration from './xrlint_config.*' if such file
-    exists and unless '--no_config_lookup' is set or '--config' is
+    exists and unless '--no-config-lookup' is set or '--config' is
     provided.
     It then validates each dataset in FILES against the configuration.
     The default dataset patters are '**/*.zarr' and '**/.nc'.
@@ -146,13 +146,13 @@ def main(
     )
 
     if inspect_path:
-        cli_engine.load_config_list()
+        cli_engine.init_config()
         cli_engine.print_config_for_file(inspect_path)
         return
 
     if files:
-        cli_engine.load_config_list()
-        results = cli_engine.verify_datasets(files)
+        cli_engine.init_config()
+        results = cli_engine.verify_files(files)
         report = cli_engine.format_results(results)
         cli_engine.write_report(report)
 
