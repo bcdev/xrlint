@@ -4,7 +4,7 @@ from typing import Any
 
 import xarray as xr
 
-from xrlint.config import Config, get_core_config_object, ConfigLike
+from xrlint.config import Config, ConfigLike, get_core_config_object
 from xrlint.result import Result
 
 from ._linter.verify import new_fatal_message, verify_dataset

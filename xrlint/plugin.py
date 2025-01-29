@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from typing import Any, Callable, Literal, Type
 
-from xrlint.config import ConfigObject, Config, ConfigLike
+from xrlint.config import Config, ConfigLike, ConfigObject
 from xrlint.processor import Processor, ProcessorOp, define_processor
 from xrlint.rule import Rule, RuleOp, define_rule
 from xrlint.util.constructible import MappingConstructible

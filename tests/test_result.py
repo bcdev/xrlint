@@ -1,6 +1,5 @@
 from unittest import TestCase
 
-
 from xrlint.config import ConfigObject
 from xrlint.plugin import new_plugin
 from xrlint.result import (

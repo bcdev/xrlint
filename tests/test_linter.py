@@ -3,7 +3,7 @@ from unittest import TestCase
 
 import xarray as xr
 
-from xrlint.config import ConfigObject, Config
+from xrlint.config import Config, ConfigObject
 from xrlint.constants import CORE_PLUGIN_NAME, NODE_ROOT_NAME
 from xrlint.linter import Linter, new_linter
 from xrlint.node import AttrNode, AttrsNode, DataArrayNode, DatasetNode

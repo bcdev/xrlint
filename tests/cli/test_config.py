@@ -6,7 +6,7 @@ from unittest import TestCase
 import pytest
 
 from xrlint.cli.config import ConfigError, read_config
-from xrlint.config import ConfigObject, Config
+from xrlint.config import Config, ConfigObject
 from xrlint.rule import RuleConfig
 
 from .helpers import text_file

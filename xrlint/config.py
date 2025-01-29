@@ -1,7 +1,7 @@
-from collections.abc import Sequence, Mapping
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
 from functools import cached_property
-from typing import TYPE_CHECKING, Any, Union, TypeAlias
+from typing import TYPE_CHECKING, Any, TypeAlias, Union
 
 from xrlint.constants import CORE_PLUGIN_NAME
 from xrlint.util.constructible import MappingConstructible, ValueConstructible

@@ -4,7 +4,7 @@ from unittest import TestCase
 import pytest
 import xarray as xr
 
-from xrlint.config import ConfigObject, Config, get_core_config_object
+from xrlint.config import Config, ConfigObject, get_core_config_object
 from xrlint.constants import CORE_PLUGIN_NAME
 from xrlint.plugin import Plugin, new_plugin
 from xrlint.processor import ProcessorOp, define_processor
