@@ -1,5 +1,5 @@
 from xrlint.cli.engine import XRLint
-from xrlint.config import Config, ConfigList
+from xrlint.config import ConfigObject, Config
 from xrlint.formatter import (
     Formatter,
     FormatterContext,
@@ -32,8 +32,8 @@ from xrlint.version import version
 
 __all__ = [
     "XRLint",
+    "ConfigObject",
     "Config",
-    "ConfigList",
     "Linter",
     "new_linter",
     "EditInfo",

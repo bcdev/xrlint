@@ -4,7 +4,7 @@ from typing import Any
 
 import xarray as xr
 
-from xrlint.config import Config, ConfigList, get_core_config
+from xrlint.config import ConfigObject, Config, get_core_config_object
 from xrlint.result import Result
 
 from ._linter.verify import new_fatal_message, verify_dataset
@@ -12,13 +12,15 @@ from .constants import MISSING_DATASET_FILE_PATH
 
 
 def new_linter(
-    *configs: Config | dict[str, Any] | str | None,
+    *configs: Config | ConfigObject | dict[str, Any] | str | None,
     **config_kwargs: Any,
 ) -> "Linter":
     """Create a new `Linter` with the given configuration.
 
     Args:
-        configs: Configuration objects or named configurations.
+        configs: Variable arguments comprising configuration,
+            or configuration objects, or lists of configuration objects
+            or named configurations.
             Use `"recommended"` if the recommended configuration
             of the builtin rules should be used, or `"all"` if all rules
             shall be used.
@@ -28,7 +30,7 @@ def new_linter(
     Returns:
         A new linter instance
     """
-    return Linter(get_core_config(), *configs, **config_kwargs)
+    return Linter(get_core_config_object(), *configs, **config_kwargs)
 
 
 class Linter:
@@ -40,7 +42,9 @@ class Linter:
     use the `new_linter()` function.
 
     Args:
-        configs: Configuration objects or named configurations.
+        configs: Variable arguments comprising configuration,
+            or configuration objects, or lists of configuration objects
+            or named configurations.
             Use `"recommended"` if the recommended configuration
             of the builtin rules should be used, or `"all"` if all rules
             shall be used.
@@ -50,13 +54,13 @@ class Linter:
 
     def __init__(
         self,
-        *configs: Config | dict[str, Any] | None,
+        *configs: Config | ConfigObject | dict[str, Any] | None,
         **config_kwargs: Any,
     ):
-        self._config = ConfigList.from_config(configs, config_kwargs)
+        self._config = Config.from_config(*configs, config_kwargs)
 
     @property
-    def config(self) -> ConfigList:
+    def config(self) -> Config:
         """Get this linter's configuration."""
         return self._config
 
@@ -65,7 +69,9 @@ class Linter:
         dataset: Any,
         *,
         file_path: str | None = None,
-        config: ConfigList | list | tuple | Config | dict[str, Any] | str | None = None,
+        config: (
+            Config | list | tuple | ConfigObject | dict[str, Any] | str | None
+        ) = None,
         **config_kwargs: Any,
     ) -> Result:
         """Verify a dataset.
@@ -76,8 +82,9 @@ class Linter:
                 using `xarray.open_dataset()`.
             file_path: Optional file path used for formatting
                 messages. Useful if `dataset` is not a file path.
-            config: Optional configuration object or a list of configuration
-                objects that will be added to the current linter configuration.
+            config: Optional configuration, or configuration object,
+                or a list of configuration objects that will be added to
+                the current linter configuration.
             config_kwargs: Individual [Config][xrlint.config.Config] properties
                 of an additional configuration object.
 
@@ -90,11 +97,11 @@ class Linter:
             else:
                 file_path = file_path or _get_file_path_for_source(dataset)
 
-        config_list = ConfigList.from_config(self._config, config, config_kwargs)
-        config = config_list.compute_config(file_path)
-        if config is None:
+        config = Config.from_config(self._config, config, config_kwargs)
+        config_obj = config.compute_config_object(file_path)
+        if config_obj is None:
             return Result.new(
-                config=config,
+                config_object=None,
                 file_path=file_path,
                 messages=[
                     new_fatal_message(
@@ -103,7 +110,7 @@ class Linter:
                 ],
             )
 
-        return verify_dataset(config, dataset, file_path)
+        return verify_dataset(config_obj, dataset, file_path)
 
 
 def _get_file_path_for_dataset(dataset: xr.Dataset) -> str:

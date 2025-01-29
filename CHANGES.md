@@ -2,10 +2,15 @@
 
 ## Version 0.5.0 (in development)
 
+- Renamed multiple components for improved clarity and consistency:
+  - Renamed `Config` into `ConfigObject` 
+  - Renamed `ConfigList.configs` into `config_objects` 
+  - Renamed `ConfigList` into `Config` 
+  - Renamed `ConfigList.compute_config()` into `compute_config_object()` 
+  - Renamed `Result.config` into `config_object` 
+  - Renamed `XRLint.load_config_list()` into `init_config()`
+  - Renamed `XRLint.verify_datasets()` into `verify_files()`
 - Added class method `from_config()` to `ConfigList`.
-- Renamed various `XRLint` methods for consistency:
-  - `load_config_list()` --> `init_config()`
-  - `verify_datasets()` --> `verify_files()`
 - Removed function `xrlint.config.merge_configs` as it was no longer used.
 
 ## Version 0.4.1 (in development)

@@ -4,24 +4,24 @@ import xarray as xr
 
 # noinspection PyProtectedMember
 from xrlint._linter.rulectx import RuleContextImpl
-from xrlint.config import Config
+from xrlint.config import ConfigObject
 from xrlint.constants import NODE_ROOT_NAME
 from xrlint.result import Message, Suggestion
 
 
 class RuleContextImplTest(TestCase):
     def test_defaults(self):
-        config = Config()
+        config_obj = ConfigObject()
         dataset = xr.Dataset()
-        context = RuleContextImpl(config, dataset, "./ds.zarr", None)
-        self.assertIs(config, context.config)
+        context = RuleContextImpl(config_obj, dataset, "./ds.zarr", None)
+        self.assertIs(config_obj, context.config)
         self.assertIs(dataset, context.dataset)
         self.assertEqual({}, context.settings)
         self.assertEqual("./ds.zarr", context.file_path)
         self.assertEqual(None, context.file_index)
 
     def test_report(self):
-        context = RuleContextImpl(Config(), xr.Dataset(), "./ds.zarr", None)
+        context = RuleContextImpl(ConfigObject(), xr.Dataset(), "./ds.zarr", None)
         with context.use_state(rule_id="no-xxx"):
             context.report(
                 "What the heck do you mean?",

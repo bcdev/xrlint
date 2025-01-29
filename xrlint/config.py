@@ -1,6 +1,7 @@
+from collections.abc import Sequence
 from dataclasses import dataclass, field
 from functools import cached_property
-from typing import TYPE_CHECKING, Any, Sequence, Union
+from typing import TYPE_CHECKING, Any, Union
 
 from xrlint.constants import CORE_PLUGIN_NAME
 from xrlint.util.constructible import MappingConstructible, ValueConstructible
@@ -22,13 +23,13 @@ def get_core_plugin() -> "Plugin":
     return export_plugin()
 
 
-def get_core_config() -> "Config":
+def get_core_config_object() -> "ConfigObject":
     """Create a configuration object that includes the core plugin.
 
     Returns:
         A new `Config` object
     """
-    return Config(plugins={CORE_PLUGIN_NAME: get_core_plugin()})
+    return ConfigObject(plugins={CORE_PLUGIN_NAME: get_core_plugin()})
 
 
 def split_config_spec(config_spec: str) -> tuple[str, str]:
@@ -43,13 +44,14 @@ def split_config_spec(config_spec: str) -> tuple[str, str]:
 
 
 @dataclass(frozen=True, kw_only=True)
-class Config(MappingConstructible, JsonSerializable):
+class ConfigObject(MappingConstructible, JsonSerializable):
     """Configuration object.
-    A configuration object contains all the information XRLint
-    needs to execute on a set of dataset files.
+
+    Configuration objects are the items managed by a
+    [configuration][xrlint.config.Config].
 
     You should not use the class constructor directly.
-    Instead, use the `Config.from_value()` function.
+    Instead, use the `ConfigObject.from_value()` function.
     """
 
     name: str | None = None
@@ -177,8 +179,8 @@ class Config(MappingConstructible, JsonSerializable):
             raise ValueError(f"unknown processor {processor_spec!r}")
         return processor.op_class()
 
-    def merge(self, config: "Config", name: str = None) -> "Config":
-        return Config(
+    def merge(self, config: "ConfigObject", name: str = None) -> "ConfigObject":
+        return ConfigObject(
             name=name,
             files=self._merge_pattern_lists(self.files, config.files),
             ignores=self._merge_pattern_lists(self.ignores, config.ignores),
@@ -239,8 +241,8 @@ class Config(MappingConstructible, JsonSerializable):
         return merge_dicts(plugins1, plugins2, merge_items=merge_items)
 
     @classmethod
-    def _from_none(cls, value_name: str) -> "Config":
-        return Config()
+    def _from_none(cls, value_name: str) -> "ConfigObject":
+        return ConfigObject()
 
     @classmethod
     def forward_refs(cls) -> dict[str, type]:
@@ -266,34 +268,35 @@ class Config(MappingConstructible, JsonSerializable):
 
 
 @dataclass(frozen=True)
-class ConfigList(ValueConstructible, JsonSerializable):
-    """A holder for a list of configuration objects of
-    type [Config][xrlint.config.Config].
+class Config(ValueConstructible, JsonSerializable):
+    """Represents a XRLint configuration.
+    A `Config` instance basically manages a sequence of
+    [configuration objects][xrlint.config.ConfigObject].
 
     You should not use the class constructor directly.
-    Instead, use the `ConfigList.from_value()` function.
+    Instead, use the `Config.from_value()` function.
     """
 
-    configs: list[Config] = field(default_factory=list)
-    """The list of configuration objects."""
+    objects: list[ConfigObject] = field(default_factory=list)
+    """The configuration objects."""
 
     def split_global_filter(
         self, default: FileFilter | None = None
-    ) -> tuple["ConfigList", FileFilter]:
+    ) -> tuple["Config", FileFilter]:
         """Get a global file filter for this configuration list."""
         global_filter = FileFilter(
             default.files if default else (),
             default.ignores if default else (),
         )
         configs = []
-        for c in self.configs:
+        for c in self.objects:
             if c.empty and not c.file_filter.empty:
                 global_filter = global_filter.merge(c.file_filter)
             else:
                 configs.append(c)
-        return ConfigList(configs=configs), global_filter
+        return Config(objects=configs), global_filter
 
-    def compute_config(self, file_path: str) -> Config | None:
+    def compute_config_object(self, file_path: str) -> ConfigObject | None:
         """Compute the configuration object for the given file path.
 
         Args:
@@ -305,104 +308,107 @@ class ConfigList(ValueConstructible, JsonSerializable):
                 or intentionally ignored by global `ignores`.
         """
 
-        config = None
-        for c in self.configs:
-            if c.file_filter.empty or c.file_filter.accept(file_path):
-                config = config.merge(c) if config is not None else c
+        config_obj = None
+        for co in self.objects:
+            if co.file_filter.empty or co.file_filter.accept(file_path):
+                config_obj = config_obj.merge(co) if config_obj is not None else co
 
-        if config is None:
+        if config_obj is None:
             return None
 
         # Note, computed configurations do not have "files" and "ignores"
-        return Config(
-            linter_options=config.linter_options,
-            opener_options=config.opener_options,
-            processor=config.processor,
-            plugins=config.plugins,
-            rules=config.rules,
-            settings=config.settings,
+        return ConfigObject(
+            linter_options=config_obj.linter_options,
+            opener_options=config_obj.opener_options,
+            processor=config_obj.processor,
+            plugins=config_obj.plugins,
+            rules=config_obj.rules,
+            settings=config_obj.settings,
         )
 
     @classmethod
     def from_config(
         cls,
         *config_args: Union[
-            "ConfigList", list | tuple | Config | dict[str, Any] | str | None
+            "Config", list | tuple | ConfigObject | dict[str, Any] | str | None
         ],
         value_name: str | None = None,
-    ) -> "ConfigList":
+    ) -> "Config":
         """Convert variable arguments of configuration-like objects
-        into a new `ConfigList` instance.
+        into a new `Config` instance.
 
         Args:
-            *config_args: Variable arguments that may comprise `ConfigList` objects,
-                or sequences of configuration objects, or configuration objects
-                such `Config` instances, dictionaries, or configuration names.
+            *config_args: Variable arguments that may comprise other `Config` objects,
+                `ConfigObject` instances, or sequences of configuration objects,
+                or configuration objects such `Config` instances, dictionaries,
+                or configuration names.
             value_name: The value's name used for reporting errors.
 
         Returns:
-            A new `ConfigList` instance.
+            A new `Config` instance.
         """
         value_name = value_name or cls.value_name()
-        configs: list[Config] = []
+        objects: list[ConfigObject] = []
         plugins: dict[str, Plugin] = {}
-        for i, config in enumerate(config_args):
-            new_configs = None
-            if isinstance(config, str):
+        for i, config_like in enumerate(config_args):
+            new_objects = None
+            if isinstance(config_like, str):
                 if CORE_PLUGIN_NAME not in plugins:
                     plugins.update({CORE_PLUGIN_NAME: get_core_plugin()})
-                new_configs = cls._get_named_config_list(config, plugins)
-            elif isinstance(config, ConfigList):
-                new_configs = config.configs
-            elif isinstance(config, (list, tuple)):
-                new_configs = cls.from_config(
-                    *config, value_name=f"{value_name}[{i}]"
-                ).configs
-            elif config:
-                new_configs = [
-                    Config.from_value(config, value_name=f"{value_name}[{i}]")
+                new_objects = cls._get_named_config(config_like, plugins).objects
+            elif isinstance(config_like, Config):
+                new_objects = config_like.objects
+            elif isinstance(config_like, (list, tuple)):
+                new_objects = cls.from_config(
+                    *config_like, value_name=f"{value_name}[{i}]"
+                ).objects
+            elif config_like:
+                new_objects = [
+                    ConfigObject.from_value(
+                        config_like, value_name=f"{value_name}[{i}]"
+                    )
                 ]
-            if new_configs:
-                for c in new_configs:
-                    configs.append(c)
-                    plugins.update(c.plugins if c.plugins else {})
-        return cls(configs=configs)
+            if new_objects:
+                for co in new_objects:
+                    objects.append(co)
+                    plugins.update(co.plugins if co.plugins else {})
+        return cls(objects=objects)
 
     @classmethod
-    def from_value(cls, value: Any, value_name: str | None = None) -> "ConfigList":
-        """Convert given `value` into a `ConfigList` object.
+    def from_value(cls, value: Any, value_name: str | None = None) -> "Config":
+        """Convert given `value` into a `Config` object.
 
-        If `value` is already a `ConfigList` then it is returned as-is.
+        If `value` is already a `Config` then it is returned as-is.
 
         Args:
-            value: A `ConfigList` object or `list` of items which can be
+            value: A `Config` object or `list` of items which can be
                 converted into `Config` objects including configuration
                 names of type `str`. The latter are resolved against
                 the plugin configurations seen so far in the list.
             value_name: The value's name used for reporting errors.
         Returns:
-            A `ConfigList` object.
+            A `Config` object.
         """
-        if isinstance(value, (Config, dict)):
-            return ConfigList(configs=[Config.from_value(value)])
+        if isinstance(value, (ConfigObject, dict)):
+            return Config(objects=[ConfigObject.from_value(value)])
         return super().from_value(value, value_name=value_name)
 
     @classmethod
-    def _from_sequence(cls, value: Sequence, value_name: str) -> "ConfigList":
+    def _from_sequence(cls, value: Sequence, value_name: str) -> "Config":
         return cls.from_config(*value, value_name=value_name)
 
     @classmethod
     def value_name(cls) -> str:
-        return "config_list"
+        return "config"
 
     @classmethod
     def value_type_name(cls) -> str:
-        return "ConfigList | list[Config | dict | str]"
+        return "Config | list[ConfigObject | dict | str]"
 
     @classmethod
-    def _get_named_config_list(
+    def _get_named_config(
         cls, config_spec: str, plugins: dict[str, "Plugin"]
-    ) -> list[Config]:
+    ) -> "Config":
         plugin_name, config_name = (
             config_spec.split("/", maxsplit=1)
             if "/" in config_spec
@@ -411,4 +417,4 @@ class ConfigList(ValueConstructible, JsonSerializable):
         plugin: Plugin | None = plugins.get(plugin_name)
         if plugin is None or not plugin.configs or config_name not in plugin.configs:
             raise ValueError(f"configuration {config_spec!r} not found")
-        return ConfigList.from_value(plugin.configs[config_name]).configs
+        return Config.from_value(plugin.configs[config_name])

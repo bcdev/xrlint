@@ -6,7 +6,7 @@ from unittest import TestCase
 import pytest
 
 from xrlint.cli.config import ConfigError, read_config
-from xrlint.config import Config, ConfigList
+from xrlint.config import ConfigObject, Config
 from xrlint.rule import RuleConfig
 
 from .helpers import text_file
@@ -73,9 +73,9 @@ class CliConfigTest(TestCase):
 
     def assert_config_ok(self, config: Any, name: str):
         self.assertEqual(
-            ConfigList(
+            Config(
                 [
-                    Config(
+                    ConfigObject(
                         name=name,
                         rules={
                             "rule-1": RuleConfig(2),
@@ -121,8 +121,8 @@ class CliConfigTest(TestCase):
             with pytest.raises(
                 ConfigError,
                 match=(
-                    r"config\.yaml\: config_list must be of"
-                    r" type ConfigList \| list\[Config \| dict \| str\],"
+                    r"config\.yaml\: config must be of"
+                    r" type Config \| list\[ConfigObject \| dict \| str\],"
                     r" but got int"
                 ),
             ):
@@ -172,8 +172,8 @@ class CliConfigTest(TestCase):
                 ConfigError,
                 match=(
                     r"\.py: return value of export_config\(\):"
-                    r" config_list must be of type"
-                    r" ConfigList \| list\[Config\ | dict \| str\],"
+                    r" config must be of type"
+                    r" Config \| list\[Config\ | dict \| str\],"
                     r" but got int"
                 ),
             ):
@@ -196,14 +196,14 @@ class CliConfigResolveTest(unittest.TestCase):
             read_config(Path(__file__).parent / "configs" / "recommended.yaml")
         )
 
-    def assert_ok(self, config_list: ConfigList):
-        self.assertIsInstance(config_list, ConfigList)
-        self.assertEqual(7, len(config_list.configs))
-        config = config_list.compute_config("test.zarr")
+    def assert_ok(self, config: Config):
         self.assertIsInstance(config, Config)
-        self.assertEqual(None, config.name)
-        self.assertIsInstance(config.plugins, dict)
-        self.assertEqual({"xcube"}, set(config.plugins.keys()))
-        self.assertIsInstance(config.rules, dict)
-        self.assertIn("coords-for-dims", config.rules)
-        self.assertIn("xcube/cube-dims-order", config.rules)
+        self.assertEqual(7, len(config.objects))
+        config_obj = config.compute_config_object("test.zarr")
+        self.assertIsInstance(config_obj, ConfigObject)
+        self.assertEqual(None, config_obj.name)
+        self.assertIsInstance(config_obj.plugins, dict)
+        self.assertEqual({"xcube"}, set(config_obj.plugins.keys()))
+        self.assertIsInstance(config_obj.rules, dict)
+        self.assertIn("coords-for-dims", config_obj.rules)
+        self.assertIn("xcube/cube-dims-order", config_obj.rules)

@@ -3,7 +3,7 @@ from typing import Any, Literal
 
 import xarray as xr
 
-from xrlint.config import Config
+from xrlint.config import ConfigObject
 from xrlint.constants import NODE_ROOT_NAME, SEVERITY_ERROR
 from xrlint.node import Node
 from xrlint.result import Message, Suggestion
@@ -13,7 +13,7 @@ from xrlint.rule import RuleContext
 class RuleContextImpl(RuleContext):
     def __init__(
         self,
-        config: Config,
+        config: ConfigObject,
         dataset: xr.Dataset,
         file_path: str,
         file_index: int | None,
@@ -32,7 +32,7 @@ class RuleContextImpl(RuleContext):
         self.node: Node | None = None
 
     @property
-    def config(self) -> Config:
+    def config(self) -> ConfigObject:
         return self._config
 
     @property

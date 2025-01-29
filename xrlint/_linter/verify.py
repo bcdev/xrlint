@@ -2,7 +2,7 @@ from typing import Any
 
 import xarray as xr
 
-from xrlint.config import Config
+from xrlint.config import ConfigObject
 from xrlint.result import Message, Result
 
 from ..constants import NODE_ROOT_NAME
@@ -10,54 +10,54 @@ from .apply import apply_rule
 from .rulectx import RuleContextImpl
 
 
-def verify_dataset(config: Config, dataset: Any, file_path: str):
-    assert isinstance(config, Config)
+def verify_dataset(config_obj: ConfigObject, dataset: Any, file_path: str):
+    assert isinstance(config_obj, ConfigObject)
     assert dataset is not None
     assert isinstance(file_path, str)
     if isinstance(dataset, xr.Dataset):
-        messages = _verify_dataset(config, dataset, file_path, None)
+        messages = _verify_dataset(config_obj, dataset, file_path, None)
     else:
-        messages = _open_and_verify_dataset(config, dataset, file_path)
-    return Result.new(config=config, messages=messages, file_path=file_path)
+        messages = _open_and_verify_dataset(config_obj, dataset, file_path)
+    return Result.new(config_object=config_obj, messages=messages, file_path=file_path)
 
 
 def _verify_dataset(
-    config: Config,
+    config_obj: ConfigObject,
     dataset: xr.Dataset,
     file_path: str,
     file_index: int | None,
 ) -> list[Message]:
-    assert isinstance(config, Config)
+    assert isinstance(config_obj, ConfigObject)
     assert isinstance(dataset, xr.Dataset)
     assert isinstance(file_path, str)
 
-    if not config.rules:
+    if not config_obj.rules:
         return [new_fatal_message("No rules configured or applicable.")]
 
-    context = RuleContextImpl(config, dataset, file_path, file_index)
-    for rule_id, rule_config in config.rules.items():
+    context = RuleContextImpl(config_obj, dataset, file_path, file_index)
+    for rule_id, rule_config in config_obj.rules.items():
         with context.use_state(rule_id=rule_id):
             apply_rule(context, rule_id, rule_config)
     return context.messages
 
 
 def _open_and_verify_dataset(
-    config: Config, ds_source: Any, file_path: str
+    config_obj: ConfigObject, ds_source: Any, file_path: str
 ) -> list[Message]:
-    assert isinstance(config, Config)
+    assert isinstance(config_obj, ConfigObject)
     assert ds_source is not None
     assert isinstance(file_path, str)
 
-    opener_options = config.opener_options or {}
-    if config.processor is not None:
-        processor_op = config.get_processor_op(config.processor)
+    opener_options = config_obj.opener_options or {}
+    if config_obj.processor is not None:
+        processor_op = config_obj.get_processor_op(config_obj.processor)
         try:
             ds_path_list = processor_op.preprocess(file_path, opener_options)
         except (OSError, ValueError, TypeError) as e:
             return [new_fatal_message(str(e))]
         return processor_op.postprocess(
             [
-                _verify_dataset(config, ds, path, i)
+                _verify_dataset(config_obj, ds, path, i)
                 for i, (ds, path) in enumerate(ds_path_list)
             ],
             file_path,
@@ -68,7 +68,7 @@ def _open_and_verify_dataset(
         except (OSError, ValueError, TypeError) as e:
             return [new_fatal_message(str(e))]
         with dataset:
-            return _verify_dataset(config, dataset, file_path, None)
+            return _verify_dataset(config_obj, dataset, file_path, None)
 
 
 def _open_dataset(

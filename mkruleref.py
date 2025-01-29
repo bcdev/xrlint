@@ -62,7 +62,7 @@ def write_plugin_rules(stream, plugin: Plugin):
         stream.write("\n\n")
 
 
-def get_plugin_rule_configs(plugin):
+def get_plugin_rule_configs(plugin: Plugin) -> dict[str, dict[str, RuleConfig]]:
     configs = plugin.configs
     config_rules: dict[str, dict[str, RuleConfig]] = {}
     for config_name, config_list in configs.items():

@@ -5,19 +5,19 @@ from typing import Any
 
 import fsspec
 
-from xrlint.config import ConfigList
+from xrlint.config import Config
 from xrlint.util.formatting import format_message_type_of
 from xrlint.util.importutil import ValueImportError, import_value
 
 
-def read_config(config_path: str | Path | PathLike[str]) -> ConfigList:
+def read_config(config_path: str | Path | PathLike[str]) -> Config:
     """Read configuration from configuration file.
 
     Args:
         config_path: configuration file path.
 
     Returns:
-        A `ConfigList` instance.
+        A `Config` instance.
 
     Raises:
         TypeError: if `config_path` is not a path-like object
@@ -38,7 +38,7 @@ def read_config(config_path: str | Path | PathLike[str]) -> ConfigList:
         raise ConfigError(config_path, e) from e
 
     try:
-        return ConfigList.from_value(config_like)
+        return Config.from_value(config_like)
     except (ValueError, TypeError) as e:
         raise ConfigError(config_path, e) from e
 
@@ -88,7 +88,7 @@ def _read_config_python(config_path: str) -> Any:
         return import_value(
             module_name,
             "export_config",
-            factory=ConfigList.from_value,
+            factory=Config.from_value,
         )[0]
     except ValueImportError as e:
         raise ConfigError(config_path, e) from e

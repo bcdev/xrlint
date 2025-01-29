@@ -1,6 +1,7 @@
 from unittest import TestCase
 
-from xrlint.config import Config
+
+from xrlint.config import ConfigObject
 from xrlint.plugin import new_plugin
 from xrlint.result import (
     Message,
@@ -25,28 +26,28 @@ class ResultTest(TestCase):
         class MyRule2(RuleOp):
             pass
 
-        config = Config(plugins={"test": plugin})
+        config_obj = ConfigObject(plugins={"test": plugin})
         rules_meta = get_rules_meta_for_results(
             results=[
                 Result.new(
-                    config,
-                    "test.zarr",
-                    [Message(message="m 1", rule_id="test/my-rule-1")],
+                    config_object=config_obj,
+                    file_path="test.zarr",
+                    messages=[Message(message="m 1", rule_id="test/my-rule-1")],
                 ),
                 Result.new(
-                    config,
-                    "test.zarr",
-                    [Message(message="m 2", rule_id="test/my-rule-2")],
+                    config_object=config_obj,
+                    file_path="test.zarr",
+                    messages=[Message(message="m 2", rule_id="test/my-rule-2")],
                 ),
                 Result.new(
-                    config,
-                    "test.zarr",
-                    [Message(message="m 3", rule_id="test/my-rule-1")],
+                    config_object=config_obj,
+                    file_path="test.zarr",
+                    messages=[Message(message="m 3", rule_id="test/my-rule-1")],
                 ),
                 Result.new(
-                    config,
-                    "test.zarr",
-                    [Message(message="m 4", rule_id="test/my-rule-2")],
+                    config_object=config_obj,
+                    file_path="test.zarr",
+                    messages=[Message(message="m 4", rule_id="test/my-rule-2")],
                 ),
             ]
         )
@@ -63,18 +64,18 @@ class ResultTest(TestCase):
 
     def test_repr_html(self):
         result = Result.new(
-            Config(),
-            "test.zarr",
-            [],
+            config_object=ConfigObject(),
+            file_path="test.zarr",
+            messages=[],
         )
         html = result._repr_html_()
         self.assertIsInstance(html, str)
         self.assertEqual('<p role="file">test.zarr - ok</p>\n', html)
 
         result = Result.new(
-            Config(),
-            "test.zarr",
-            [Message(message="m 1", rule_id="test/my-rule-1")],
+            config_object=ConfigObject(),
+            file_path="test.zarr",
+            messages=[Message(message="m 1", rule_id="test/my-rule-1")],
         )
         html = result._repr_html_()
         self.assertIsInstance(html, str)
