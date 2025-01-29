@@ -62,6 +62,10 @@ Note:
 
 ::: xrlint.config.ConfigObject
 
+::: xrlint.config.ConfigLike
+
+::: xrlint.config.ConfigObjectLike
+
 ::: xrlint.rule.define_rule
 
 ::: xrlint.rule.Rule

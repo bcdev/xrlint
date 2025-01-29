@@ -2,6 +2,7 @@
 
 ## Version 0.5.0 (in development)
 
+- Introduced type aliases `ConfigLike` and `ConfigObjectLike`.
 - Renamed multiple components for improved clarity and consistency:
   - Renamed `Config` into `ConfigObject` 
   - Renamed `ConfigList.configs` into `config_objects` 

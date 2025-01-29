@@ -1,4 +1,4 @@
-from collections.abc import Sequence
+from collections.abc import Sequence, Mapping
 from dataclasses import dataclass, field
 from functools import cached_property
 from typing import TYPE_CHECKING, Any, Union, TypeAlias
@@ -16,20 +16,28 @@ if TYPE_CHECKING:  # pragma: no cover
     from xrlint.rule import Rule, RuleConfig
 
 
-# TODO: Introduce type aliases ConfigLike and ConfigObjectLike
-
 ConfigObjectLike: TypeAlias = Union[
     "ConfigObject",
-    dict[str, Any],
+    Mapping[str, Any],
     None,
 ]
+"""Type alias for values that can represent configuration objects.
+Can be either a [ConfigObject][xrlint.config.ConfigObject] instance,
+or a mapping (e.g. `dict`) with properties defined by `ConfigObject`,
+or `None` (empty configuration object).
+"""
 
 ConfigLike: TypeAlias = Union[
     "Config",
-    Sequence[ConfigObjectLike | str],
     ConfigObjectLike,
     str,
+    Sequence[ConfigObjectLike | str],
 ]
+"""Type alias for values that can represent configurations.
+Can be either a [Config][xrlint.config.Config] instance,
+or a [configuration object like][xrlint.config.ConfigObjectLike] value,
+or a named plugin configuration, or a sequence of the latter two.
+"""
 
 
 def get_core_plugin() -> "Plugin":
