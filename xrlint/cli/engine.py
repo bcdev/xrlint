@@ -173,7 +173,7 @@ class XRLint(FormatterContext):
 
         Returns:
             An iterator of pairs comprising a file or directory path
-              and its computed configuration.
+                and its computed configuration.
         """
         config, global_filter = self.config.split_global_filter(
             default=DEFAULT_GLOBAL_FILTER

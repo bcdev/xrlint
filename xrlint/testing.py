@@ -96,7 +96,7 @@ class RuleTester:
         valid: list[RuleTest] | None = None,
         invalid: list[RuleTest] | None = None,
         config: ConfigLike = None,
-        **config_props,
+        **config_props: Any,
     ) -> Type[unittest.TestCase]:
         """Create a `unittest.TestCase` class for the given rule and tests.
 
