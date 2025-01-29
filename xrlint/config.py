@@ -312,13 +312,13 @@ class Config(ValueConstructible, JsonSerializable):
             default.files if default else (),
             default.ignores if default else (),
         )
-        configs = []
-        for c in self.objects:
-            if c.empty and not c.file_filter.empty:
-                global_filter = global_filter.merge(c.file_filter)
+        objects = []
+        for co in self.objects:
+            if co.empty and not co.file_filter.empty:
+                global_filter = global_filter.merge(co.file_filter)
             else:
-                configs.append(c)
-        return Config(objects=configs), global_filter
+                objects.append(co)
+        return Config(objects=objects), global_filter
 
     def compute_config_object(self, file_path: str) -> ConfigObject | None:
         """Compute the configuration object for the given file path.
@@ -353,17 +353,16 @@ class Config(ValueConstructible, JsonSerializable):
     @classmethod
     def from_config(
         cls,
-        *config_args: ConfigLike,
+        *configs: ConfigLike,
         value_name: str | None = None,
     ) -> "Config":
         """Convert variable arguments of configuration-like objects
         into a new `Config` instance.
 
         Args:
-            *config_args: Variable arguments that may comprise other `Config` objects,
-                `ConfigObject` instances, or sequences of configuration objects,
-                or configuration objects such `Config` instances, dictionaries,
-                or configuration names.
+            *configs: Variable number of configuration-like arguments.
+                For more information see the
+                [ConfigLike][xrlint.config.ConfigLike] type alias.
             value_name: The value's name used for reporting errors.
 
         Returns:
@@ -372,7 +371,7 @@ class Config(ValueConstructible, JsonSerializable):
         value_name = value_name or cls.value_name()
         objects: list[ConfigObject] = []
         plugins: dict[str, Plugin] = {}
-        for i, config_like in enumerate(config_args):
+        for i, config_like in enumerate(configs):
             new_objects = None
             if isinstance(config_like, str):
                 if CORE_PLUGIN_NAME not in plugins:
@@ -403,10 +402,8 @@ class Config(ValueConstructible, JsonSerializable):
         If `value` is already a `Config` then it is returned as-is.
 
         Args:
-            value: A `Config` object or `list` of items which can be
-                converted into `Config` objects including configuration
-                names of type `str`. The latter are resolved against
-                the plugin configurations seen so far in the list.
+            value: A configuration-like value. For more information
+                see the [ConfigLike][xrlint.config.ConfigLike] type alias.
             value_name: The value's name used for reporting errors.
         Returns:
             A `Config` object.

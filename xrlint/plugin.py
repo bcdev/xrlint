@@ -108,13 +108,12 @@ class Plugin(MappingConstructible, JsonSerializable):
 
         Args:
             name: The name of the configuration.
-            config: The configuration-like object or list.
-                A configuration-like object is either a
-                [Config][xrlint.config.Config] or a `dict` that
-                represents a configuration.
+            config: A configuration-like value.
+                For more information see the
+                [ConfigLike][xrlint.config.ConfigLike] type alias.
 
         Returns:
-            the configuration.
+            The configuration.
         """
         config = Config.from_value(config)
         self.configs[name] = list(config.objects)

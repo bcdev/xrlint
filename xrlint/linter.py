@@ -11,46 +11,44 @@ from ._linter.verify import new_fatal_message, verify_dataset
 from .constants import MISSING_DATASET_FILE_PATH
 
 
-def new_linter(*configs: ConfigLike, **config_kwargs: Any) -> "Linter":
-    """Create a new `Linter` with the given configuration.
+def new_linter(*configs: ConfigLike, **config_props: Any) -> "Linter":
+    """Create a new `Linter` with the core plugin included and the
+     given additional configuration.
 
     Args:
-        configs: Variable arguments comprising configuration,
-            or configuration objects, or lists of configuration objects
-            or named configurations.
-            Use `"recommended"` if the recommended configuration
-            of the builtin rules should be used, or `"all"` if all rules
-            shall be used.
-        config_kwargs: Individual [Config][xrlint.config.Config] properties
-            of an additional configuration object.
+        *configs: Variable number of configuration-like arguments.
+            For more information see the
+            [ConfigLike][xrlint.config.ConfigLike] type alias.
+        **config_props: Individual configuration object properties.
+            For more information refer to the properties of a
+            [ConfigObject][xrlint.config.ConfigObject].
 
     Returns:
         A new linter instance
     """
-    return Linter(get_core_config_object(), *configs, **config_kwargs)
+    return Linter(get_core_config_object(), *configs, **config_props)
 
 
 class Linter:
     """The linter.
 
     Using the constructor directly creates an empty linter
-    with no configuration - even without default rules loaded.
-    If you want a linter with core rules loaded
-    use the `new_linter()` function.
+    with no configuration - even without the core plugin and
+    its predefined rule configurations.
+    If you want a linter with core plugin included use the
+    `new_linter()` function.
 
     Args:
-        configs: Variable arguments comprising configuration,
-            or configuration objects, or lists of configuration objects
-            or named configurations.
-            Use `"recommended"` if the recommended configuration
-            of the builtin rules should be used, or `"all"` if all rules
-            shall be used.
-        config_kwargs: Individual [Config][xrlint.config.Config] properties
-            of an additional configuration object.
+        *configs: Variable number of configuration-like arguments.
+            For more information see the
+            [ConfigLike][xrlint.config.ConfigLike] type alias.
+        **config_props: Individual configuration object properties.
+            For more information refer to the properties of a
+            [ConfigObject][xrlint.config.ConfigObject].
     """
 
-    def __init__(self, *configs: ConfigLike, **config_kwargs: Any):
-        self._config = Config.from_config(*configs, config_kwargs)
+    def __init__(self, *configs: ConfigLike, **config_props: Any):
+        self._config = Config.from_config(*configs, config_props)
 
     @property
     def config(self) -> Config:
@@ -63,7 +61,7 @@ class Linter:
         *,
         file_path: str | None = None,
         config: ConfigLike = None,
-        **config_kwargs: Any,
+        **config_props: Any,
     ) -> Result:
         """Verify a dataset.
 
@@ -73,11 +71,12 @@ class Linter:
                 using `xarray.open_dataset()`.
             file_path: Optional file path used for formatting
                 messages. Useful if `dataset` is not a file path.
-            config: Optional configuration, or configuration object,
-                or a list of configuration objects that will be added to
-                the current linter configuration.
-            config_kwargs: Individual [Config][xrlint.config.Config] properties
-                of an additional configuration object.
+            config: Optional configuration-like value.
+                For more information see the
+                [ConfigLike][xrlint.config.ConfigLike] type alias.
+            **config_props: Individual configuration object properties.
+                For more information refer to the properties of a
+                [ConfigObject][xrlint.config.ConfigObject].
 
         Returns:
             Result of the verification.
@@ -88,7 +87,7 @@ class Linter:
             else:
                 file_path = file_path or _get_file_path_for_source(dataset)
 
-        config = Config.from_config(self._config, config, config_kwargs)
+        config = Config.from_config(self._config, config, config_props)
         config_obj = config.compute_config_object(file_path)
         if config_obj is None:
             return Result.new(

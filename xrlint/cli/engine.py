@@ -70,7 +70,7 @@ class XRLint(FormatterContext):
         """Get current result statistics."""
         return self._result_stats
 
-    def init_config(self, *extra_configs: ConfigLike) -> None:
+    def init_config(self, *configs: ConfigLike) -> None:
         """Initialize configuration.
         The function will load the configuration list from a specified
         configuration file, if any.
@@ -78,7 +78,9 @@ class XRLint(FormatterContext):
         in the current working directory.
 
         Args:
-            extra_configs: optional extra configuration or configuration objects
+            *configs: Variable number of configuration-like arguments.
+                For more information see the
+                [ConfigLike][xrlint.config.ConfigLike] type alias.
         """
         plugins = {}
         for plugin_spec in self.plugin_specs:
@@ -111,18 +113,18 @@ class XRLint(FormatterContext):
 
         core_config_obj = get_core_config_object()
         core_config_obj.plugins.update(plugins)
-        configs = [core_config_obj]
+        base_configs = [core_config_obj]
         if config is not None:
-            configs += config.objects
+            base_configs += config.objects
         if rules:
-            configs += [{"rules": rules}]
+            base_configs += [{"rules": rules}]
 
-        self.config = Config.from_config(*configs, *extra_configs)
+        self.config = Config.from_config(*base_configs, *configs)
         if not self.config.objects:
             raise click.ClickException("no configuration provided")
 
     def compute_config_for_file(self, file_path: str) -> ConfigObject | None:
-        """Compute configuration for the given file.
+        """Compute the configuration object for the given file.
 
         Args:
             file_path: A file path or URL.
@@ -134,7 +136,7 @@ class XRLint(FormatterContext):
         return self.config.compute_config_object(file_path)
 
     def print_config_for_file(self, file_path: str) -> None:
-        """Print computed configuration for the given file.
+        """Print computed configuration object for the given file.
 
         Args:
             file_path: A file path or URL.
