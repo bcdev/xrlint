@@ -8,6 +8,12 @@
   - `verify_datasets()` --> `verify_files()`
 - Removed function `xrlint.config.merge_configs` as it was no longer used.
 
+## Version 0.4.1 (in development)
+
+- Fixed an issue that prevented recursively traversing folders referred 
+  to by URLs (such as `s3://<bucket>/<path>/`) rather than local directory 
+  paths. (#39)
+
 ## Version 0.4.0 (from 2025-01-27)
 
 - Fixed and enhanced core rule `time-coordinate`. `(#33)
