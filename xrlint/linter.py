@@ -7,7 +7,7 @@ import xarray as xr
 from xrlint.config import Config, ConfigLike, get_core_config_object
 from xrlint.result import Result
 
-from ._linter.verify import new_fatal_message, verify_dataset
+from ._linter.validate import new_fatal_message, validate_dataset
 from .constants import MISSING_DATASET_FILE_PATH
 
 
@@ -55,7 +55,7 @@ class Linter:
         """Get this linter's configuration."""
         return self._config
 
-    def verify_dataset(
+    def validate(
         self,
         dataset: Any,
         *,
@@ -63,7 +63,7 @@ class Linter:
         config: ConfigLike = None,
         **config_props: Any,
     ) -> Result:
-        """Verify a dataset.
+        """Validate a dataset against applicable rules.
 
         Args:
             dataset: The dataset. Can be a `xr.Dataset` instance
@@ -79,7 +79,7 @@ class Linter:
                 [ConfigObject][xrlint.config.ConfigObject].
 
         Returns:
-            Result of the verification.
+            Result of the validation.
         """
         if not file_path:
             if isinstance(dataset, xr.Dataset):
@@ -100,7 +100,7 @@ class Linter:
                 ],
             )
 
-        return verify_dataset(config_obj, dataset, file_path)
+        return validate_dataset(config_obj, dataset, file_path)
 
 
 def _get_file_path_for_dataset(dataset: xr.Dataset) -> str:

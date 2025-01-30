@@ -106,5 +106,5 @@ import xrlint.all as xrl
 test_ds = xr.Dataset(attrs={"title": "Test Dataset"})
 
 linter = xrl.new_linter("recommended")
-linter.verify_dataset(test_ds)
+linter.validate(test_ds)
 ```

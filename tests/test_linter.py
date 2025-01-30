@@ -50,10 +50,10 @@ class LinterTest(TestCase):
         self.assertIn("coords-for-dims", config_obj_1.rules)
 
 
-class LinterVerifyConfigTest(TestCase):
+class LinterValidateWithConfigTest(TestCase):
     def test_config_with_config_list(self):
         linter = new_linter()
-        result = linter.verify_dataset(
+        result = linter.validate(
             xr.Dataset(),
             config=Config.from_value([{"rules": {"no-empty-attrs": 2}}]),
         )
@@ -61,7 +61,7 @@ class LinterVerifyConfigTest(TestCase):
 
     def test_config_with_list_of_config(self):
         linter = new_linter()
-        result = linter.verify_dataset(
+        result = linter.validate(
             xr.Dataset(),
             config=[{"rules": {"no-empty-attrs": 2}}],
         )
@@ -69,7 +69,7 @@ class LinterVerifyConfigTest(TestCase):
 
     def test_config_with_config_obj(self):
         linter = new_linter()
-        result = linter.verify_dataset(
+        result = linter.validate(
             xr.Dataset(),
             config={"rules": {"no-empty-attrs": 2}},
         )
@@ -77,7 +77,7 @@ class LinterVerifyConfigTest(TestCase):
 
     def test_no_config(self):
         linter = Linter()
-        result = linter.verify_dataset(
+        result = linter.validate(
             xr.Dataset(),
         )
         self.assert_result_ok(result, "No configuration given or matches '<dataset>'.")
@@ -89,7 +89,7 @@ class LinterVerifyConfigTest(TestCase):
         self.assertEqual(expected_message, result.messages[0].message)
 
 
-class LinterVerifyTest(TestCase):
+class LinterValidateTest(TestCase):
     def setUp(self):
         plugin = new_plugin(name="test")
 
@@ -157,7 +157,7 @@ class LinterVerifyTest(TestCase):
         )
 
     def test_linter_respects_rule_severity_error(self):
-        result = self.linter.verify_dataset(
+        result = self.linter.validate(
             xr.Dataset(), rules={"test/dataset-without-data-vars": 2}
         )
         self.assertEqual(
@@ -182,7 +182,7 @@ class LinterVerifyTest(TestCase):
         )
 
     def test_linter_respects_rule_severity_warn(self):
-        result = self.linter.verify_dataset(
+        result = self.linter.validate(
             xr.Dataset(), rules={"test/dataset-without-data-vars": 1}
         )
         self.assertEqual(
@@ -207,7 +207,7 @@ class LinterVerifyTest(TestCase):
         )
 
     def test_linter_respects_rule_severity_off(self):
-        result = self.linter.verify_dataset(
+        result = self.linter.validate(
             xr.Dataset(), rules={"test/dataset-without-data-vars": 0}
         )
         self.assertEqual(
@@ -225,9 +225,7 @@ class LinterVerifyTest(TestCase):
         )
 
     def test_linter_recognized_unknown_rule(self):
-        result = self.linter.verify_dataset(
-            xr.Dataset(), rules={"test/dataset-is-fast": 2}
-        )
+        result = self.linter.validate(xr.Dataset(), rules={"test/dataset-is-fast": 2})
         self.assertEqual(
             [
                 Message(
@@ -266,7 +264,7 @@ class LinterVerifyTest(TestCase):
         )
         dataset.encoding["source"] = "chl-tsm.zarr"
 
-        result = self.linter.verify_dataset(
+        result = self.linter.validate(
             dataset,
             config={
                 "rules": {
@@ -325,7 +323,7 @@ class LinterVerifyTest(TestCase):
         )
 
     def test_processor_ok(self):
-        result = self.linter.verify_dataset(
+        result = self.linter.validate(
             "test.levels",
             config={
                 "processor": "test/multi-level-dataset",
@@ -352,7 +350,7 @@ class LinterVerifyTest(TestCase):
         )
 
     def test_processor_fail(self):
-        result = self.linter.verify_dataset(
+        result = self.linter.validate(
             "bad.levels",
             config={
                 "processor": "test/multi-level-dataset",

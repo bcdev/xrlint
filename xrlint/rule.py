@@ -73,10 +73,10 @@ class RuleExit(Exception):
 
 
 class RuleOp(ABC):
-    """Define the specific rule verification operation."""
+    """Define the specific rule validation operations."""
 
     def dataset(self, context: RuleContext, node: DatasetNode) -> None:
-        """Verify the given dataset node.
+        """Validate the given dataset node.
 
         Args:
             context: The current rule context.
@@ -87,7 +87,7 @@ class RuleOp(ABC):
         """
 
     def data_array(self, context: RuleContext, node: DataArrayNode) -> None:
-        """Verify the given data array (variable) node.
+        """Validate the given data array (variable) node.
 
         Args:
             context: The current rule context.
@@ -98,7 +98,7 @@ class RuleOp(ABC):
         """
 
     def attrs(self, context: RuleContext, node: AttrsNode) -> None:
-        """Verify the given attributes node.
+        """Validate the given attributes node.
 
         Args:
             context: The current rule context.
@@ -109,7 +109,7 @@ class RuleOp(ABC):
         """
 
     def attr(self, context: RuleContext, node: AttrNode) -> None:
-        """Verify the given attribute node.
+        """Validate the given attribute node.
 
         Args:
             context: The current rule context.
@@ -202,7 +202,7 @@ class Rule(Operation):
     """Rule metadata of type `RuleMeta`."""
 
     op_class: Type[RuleOp]
-    """The class the implements the rule's verification operation.
+    """The class the implements the rule's validation operation.
     The class must implement the `RuleOp` interface.
     """
 

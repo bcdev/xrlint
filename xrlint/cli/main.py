@@ -152,7 +152,7 @@ def main(
 
     if files:
         cli_engine.init_config()
-        results = cli_engine.verify_files(files)
+        results = cli_engine.validate_files(files)
         report = cli_engine.format_results(results)
         cli_engine.write_report(report)
 
