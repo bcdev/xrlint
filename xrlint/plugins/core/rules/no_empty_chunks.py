@@ -25,9 +25,15 @@ class NoEmptyChunks(RuleOp):
             raise RuleExit
 
     def data_array(self, ctx: RuleContext, node: DataArrayNode):
+        if node.name in ctx.dataset.coords:
+            return
+
+        array = node.data_array
+        encoding = array.encoding
         if (
-            "write_empty_chunks" not in node.data_array.encoding
-            and "chunks" in node.data_array.encoding
-            and "_FillValue" in node.data_array.encoding
+            "write_empty_chunks" not in encoding
+            and "_FillValue" in encoding
+            and "chunks" in encoding
+            and tuple(encoding.get("chunks")) != tuple(array.shape)
         ):
-            ctx.report("Consider writing the dataset using 'write_empty_chunks=True'.")
+            ctx.report("Consider writing with 'write_empty_chunks=False'.")
