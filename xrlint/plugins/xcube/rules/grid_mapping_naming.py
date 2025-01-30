@@ -15,7 +15,7 @@ from xrlint.rule import RuleContext, RuleOp
     docs_url="https://xcube.readthedocs.io/en/latest/cubespec.html#spatial-reference",
 )
 class GridMappingNaming(RuleOp):
-    def dataset(self, ctx: RuleContext, node: DatasetNode):
+    def validate_dataset(self, ctx: RuleContext, node: DatasetNode):
         for var_name, var in node.dataset.variables.items():
             if "grid_mapping_name" in var.attrs and var_name not in GM_NAMES:
                 ctx.report(

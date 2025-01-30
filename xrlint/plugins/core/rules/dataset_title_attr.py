@@ -10,7 +10,7 @@ from xrlint.rule import RuleContext, RuleOp
     description="Datasets should be given a non-empty title.",
 )
 class DatasetTitleAttr(RuleOp):
-    def dataset(self, ctx: RuleContext, node: DatasetNode):
+    def validate_dataset(self, ctx: RuleContext, node: DatasetNode):
         title = node.dataset.attrs.get("title")
         if not title:
             ctx.report("Missing 'title' attribute in dataset.")

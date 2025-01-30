@@ -17,7 +17,7 @@ from xrlint.rule import RuleContext, RuleOp
     docs_url="https://xcube.readthedocs.io/en/latest/cubespec.html#temporal-reference",
 )
 class TimeNaming(RuleOp):
-    def dataset(self, ctx: RuleContext, node: DatasetNode):
+    def validate_dataset(self, ctx: RuleContext, node: DatasetNode):
         time_vars = {
             var_name: var
             for var_name, var in node.dataset.coords.items()

@@ -6,7 +6,7 @@ from typing import Any, Callable, Literal, Type
 import xarray as xr
 
 from xrlint.constants import SEVERITY_ENUM, SEVERITY_ENUM_TEXT
-from xrlint.node import AttrNode, AttrsNode, DataArrayNode, DatasetNode
+from xrlint.node import AttrNode, AttrsNode, VariableNode, DatasetNode
 from xrlint.operation import Operation, OperationMeta
 from xrlint.result import Suggestion
 from xrlint.util.constructible import ValueConstructible
@@ -73,10 +73,10 @@ class RuleExit(Exception):
 
 
 class RuleOp(ABC):
-    """Define the specific rule verification operation."""
+    """Define the specific rule validation operations."""
 
-    def dataset(self, context: RuleContext, node: DatasetNode) -> None:
-        """Verify the given dataset node.
+    def validate_dataset(self, context: RuleContext, node: DatasetNode) -> None:
+        """Validate the given dataset node.
 
         Args:
             context: The current rule context.
@@ -86,8 +86,8 @@ class RuleOp(ABC):
             RuleExit: to exit rule logic and further node traversal
         """
 
-    def data_array(self, context: RuleContext, node: DataArrayNode) -> None:
-        """Verify the given data array (variable) node.
+    def validate_variable(self, context: RuleContext, node: VariableNode) -> None:
+        """Validate the given data array (variable) node.
 
         Args:
             context: The current rule context.
@@ -97,8 +97,8 @@ class RuleOp(ABC):
             RuleExit: to exit rule logic and further node traversal
         """
 
-    def attrs(self, context: RuleContext, node: AttrsNode) -> None:
-        """Verify the given attributes node.
+    def validate_attrs(self, context: RuleContext, node: AttrsNode) -> None:
+        """Validate the given attributes node.
 
         Args:
             context: The current rule context.
@@ -108,8 +108,8 @@ class RuleOp(ABC):
             RuleExit: to exit rule logic and further node traversal
         """
 
-    def attr(self, context: RuleContext, node: AttrNode) -> None:
-        """Verify the given attribute node.
+    def validate_attr(self, context: RuleContext, node: AttrNode) -> None:
+        """Validate the given attribute node.
 
         Args:
             context: The current rule context.
@@ -202,7 +202,7 @@ class Rule(Operation):
     """Rule metadata of type `RuleMeta`."""
 
     op_class: Type[RuleOp]
-    """The class the implements the rule's verification operation.
+    """The class the implements the rule's validation operation.
     The class must implement the `RuleOp` interface.
     """
 

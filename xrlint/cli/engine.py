@@ -145,8 +145,8 @@ class XRLint(FormatterContext):
         config_json_obj = config.to_json() if config is not None else None
         click.echo(json.dumps(config_json_obj, indent=2))
 
-    def verify_files(self, files: Iterable[str]) -> Iterator[Result]:
-        """Verify given files or directories which may also be given as URLs.
+    def validate_files(self, files: Iterable[str]) -> Iterator[Result]:
+        """Validate given files or directories which may also be given as URLs.
         The function produces a validation result for each file.
 
         Args:
@@ -157,7 +157,7 @@ class XRLint(FormatterContext):
         """
         linter = Linter()
         for file_path, config in self.get_files(files):
-            yield linter.verify_dataset(file_path, config=config)
+            yield linter.validate(file_path, config=config)
 
     def get_files(
         self, file_paths: Iterable[str]

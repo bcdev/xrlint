@@ -10,18 +10,18 @@ from .apply import apply_rule
 from .rulectx import RuleContextImpl
 
 
-def verify_dataset(config_obj: ConfigObject, dataset: Any, file_path: str):
+def validate_dataset(config_obj: ConfigObject, dataset: Any, file_path: str):
     assert isinstance(config_obj, ConfigObject)
     assert dataset is not None
     assert isinstance(file_path, str)
     if isinstance(dataset, xr.Dataset):
-        messages = _verify_dataset(config_obj, dataset, file_path, None)
+        messages = _validate_dataset(config_obj, dataset, file_path, None)
     else:
-        messages = _open_and_verify_dataset(config_obj, dataset, file_path)
+        messages = _open_and_validate_dataset(config_obj, dataset, file_path)
     return Result.new(config_object=config_obj, messages=messages, file_path=file_path)
 
 
-def _verify_dataset(
+def _validate_dataset(
     config_obj: ConfigObject,
     dataset: xr.Dataset,
     file_path: str,
@@ -41,7 +41,7 @@ def _verify_dataset(
     return context.messages
 
 
-def _open_and_verify_dataset(
+def _open_and_validate_dataset(
     config_obj: ConfigObject, ds_source: Any, file_path: str
 ) -> list[Message]:
     assert isinstance(config_obj, ConfigObject)
@@ -57,7 +57,7 @@ def _open_and_verify_dataset(
             return [new_fatal_message(str(e))]
         return processor_op.postprocess(
             [
-                _verify_dataset(config_obj, ds, path, i)
+                _validate_dataset(config_obj, ds, path, i)
                 for i, (ds, path) in enumerate(ds_path_list)
             ],
             file_path,
@@ -68,7 +68,7 @@ def _open_and_verify_dataset(
         except (OSError, ValueError, TypeError) as e:
             return [new_fatal_message(str(e))]
         with dataset:
-            return _verify_dataset(config_obj, dataset, file_path, None)
+            return _validate_dataset(config_obj, dataset, file_path, None)
 
 
 def _open_dataset(

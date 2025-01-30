@@ -1,4 +1,4 @@
-from xrlint.node import DataArrayNode
+from xrlint.node import VariableNode
 from xrlint.plugins.core.plugin import plugin
 from xrlint.rule import RuleContext, RuleOp
 from xrlint.util.schema import schema
@@ -37,12 +37,12 @@ class VarDesc(RuleOp):
     def __init__(self, attrs: list[str] | None = None):
         self._attrs = attrs if attrs is not None else DEFAULT_ATTRS
 
-    def data_array(self, ctx: RuleContext, node: DataArrayNode):
+    def validate_variable(self, ctx: RuleContext, node: VariableNode):
         if node.name not in ctx.dataset.data_vars:
             # This rule applies to data variables only
             return
 
-        var_attrs = node.data_array.attrs
+        var_attrs = node.array.attrs
         for attr_name in self._attrs:
             if attr_name not in var_attrs:
                 ctx.report(f"Missing attribute {attr_name!r}.")

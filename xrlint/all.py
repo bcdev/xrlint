@@ -8,7 +8,7 @@ from xrlint.formatter import (
     FormatterRegistry,
 )
 from xrlint.linter import Linter, new_linter
-from xrlint.node import AttrNode, AttrsNode, DataArrayNode, DatasetNode, Node
+from xrlint.node import AttrNode, AttrsNode, VariableNode, DatasetNode, Node
 from xrlint.plugin import Plugin, PluginMeta, new_plugin
 from xrlint.processor import Processor, ProcessorMeta, ProcessorOp, define_processor
 from xrlint.result import (
@@ -50,7 +50,7 @@ __all__ = [
     "FormatterRegistry",
     "AttrNode",
     "AttrsNode",
-    "DataArrayNode",
+    "VariableNode",
     "DatasetNode",
     "Node",
     "Plugin",

@@ -43,13 +43,17 @@ class DatasetNode(XarrayNode):
 
 
 @dataclass(frozen=True, kw_only=True)
-class DataArrayNode(XarrayNode):
-    """Data array node."""
+class VariableNode(XarrayNode):
+    """Variable node.
+    Could be a coordinate or data variable.
+    If you need to distinguish, you can use expression
+    `node.name in ctx.dataset.coords`.
+    """
 
     name: Hashable
-    """The name of the data array."""
+    """The name of the variable."""
 
-    data_array: xr.DataArray
+    array: xr.DataArray
     """The `xarray.DataArray` instance."""
 
 

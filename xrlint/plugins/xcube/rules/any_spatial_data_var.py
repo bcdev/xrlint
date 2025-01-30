@@ -14,6 +14,6 @@ from xrlint.rule import RuleContext, RuleOp
     ),
 )
 class AnySpatialDataVar(RuleOp):
-    def dataset(self, ctx: RuleContext, node: DatasetNode):
+    def validate_dataset(self, ctx: RuleContext, node: DatasetNode):
         if not any(map(is_spatial_var, node.dataset.data_vars.values())):
             ctx.report("No spatial data variables found.")

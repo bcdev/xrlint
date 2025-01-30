@@ -13,7 +13,7 @@ from xrlint.testing import RuleTest, RuleTester
 class GoodTitle(RuleOp):
     """Dataset title should be 'Hello World!'."""
 
-    def dataset(self, ctx: RuleContext, node: DatasetNode):
+    def validate_dataset(self, ctx: RuleContext, node: DatasetNode):
         good_title = "Hello World!"
         if node.dataset.attrs.get("title") != good_title:
             ctx.report(

@@ -1,4 +1,4 @@
-from xrlint.node import DataArrayNode
+from xrlint.node import VariableNode
 from xrlint.plugins.core.plugin import plugin
 from xrlint.rule import RuleContext, RuleExit, RuleOp
 
@@ -17,17 +17,17 @@ from xrlint.rule import RuleContext, RuleExit, RuleOp
     ),
 )
 class NoEmptyChunks(RuleOp):
-    def dataset(self, ctx: RuleContext, node: DataArrayNode):
+    def validate_dataset(self, ctx: RuleContext, node: VariableNode):
         source = ctx.dataset.encoding.get("source")
         is_zarr = isinstance(source, str) and source.endswith(".zarr")
         if not is_zarr:
             # if not a Zarr, no need to check further
             raise RuleExit
 
-    def data_array(self, ctx: RuleContext, node: DataArrayNode):
+    def validate_variable(self, ctx: RuleContext, node: VariableNode):
         if (
-            "write_empty_chunks" not in node.data_array.encoding
-            and "chunks" in node.data_array.encoding
-            and "_FillValue" in node.data_array.encoding
+            "write_empty_chunks" not in node.array.encoding
+            and "chunks" in node.array.encoding
+            and "_FillValue" in node.array.encoding
         ):
             ctx.report("Consider writing the dataset using 'write_empty_chunks=True'.")

@@ -10,13 +10,6 @@
   - use mkdocstrings ref syntax in docstrings
   - provide configuration examples (use as tests?)
   - add `docs_url` to all existing rules 
-- API changes for v0.5:
-  - clarify when users can pass configuration objects like values 
-    and when configuration like values
-  - config class naming is confusing, 
-    change `Config` -> `ConfigObject`, `ConfigList` -> `Config`
-  - Change `verify` -> `validate`, 
-    prefix `RuleOp` methods by `validate_` for clarity.
 
 ## Desired
  
@@ -51,20 +44,20 @@
 
 ## Generalize data linting
 
-Do not limit verification to `xr.Dataset`.
+Do not limit validations to `xr.Dataset`.
 However, this requires new rule sets.
 
 To allow for other data models, we need to allow 
-for a specific verifier type for a given data type.
+for a specific validator type for a given data type.
 
-The verifier verifies specific node types
+The validator validates specific node types
 that are characteristic for a data type.
 
 To do so a traverser must traverse the elements of the data
-and pass each node to the verifier.
+and pass each node to the validator.
 
 Note, this is the [_Visitor Pattern_](https://en.wikipedia.org/wiki/Visitor_pattern), 
-where the verifier is the _Visitor_ and a node refers to _Element_.
+where the validator is the _Visitor_ and a node refers to _Element_.
 
 To support the CLI mode, we need different data opener 
 types that can read the data from a file path.
@@ -72,9 +65,9 @@ types that can read the data from a file path.
 1. open data, if given data is a file path: 
    - find opener for file path
    - open data 
-2. verify data
+2. validate data
    - find root element type and visitor type for data 
-   - call the root element `accept(verifier)` that verifies the 
-     root element `verify.root()` and starts traversal of 
+   - call the root element `accept(validator)` that validates the 
+     root element `validate.root()` and starts traversal of 
      child elements.
 

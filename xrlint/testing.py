@@ -197,7 +197,7 @@ class RuleTester:
         # There is also no way for a rule to obtain the severity.
         severity = SEVERITY_ERROR
         linter = Linter(self._config, self._config_props)
-        result = linter.verify_dataset(
+        result = linter.validate(
             test.dataset,
             plugins={
                 _PLUGIN_NAME: (

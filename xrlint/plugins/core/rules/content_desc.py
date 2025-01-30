@@ -1,6 +1,6 @@
 import re
 
-from xrlint.node import DataArrayNode, DatasetNode
+from xrlint.node import VariableNode, DatasetNode
 from xrlint.plugins.core.plugin import plugin
 from xrlint.rule import RuleContext, RuleExit, RuleOp
 from xrlint.util.schema import schema
@@ -74,7 +74,7 @@ class ContentDesc(RuleOp):
             re.compile(p) for p in params.get("ignored_vars", DEFAULT_IGNORED_VARS)
         ]
 
-    def dataset(self, ctx: RuleContext, node: DatasetNode):
+    def validate_dataset(self, ctx: RuleContext, node: DatasetNode):
         dataset_attrs = node.dataset.attrs
         attr_names = (
             self.global_attrs + self.common_attrs
@@ -85,7 +85,7 @@ class ContentDesc(RuleOp):
             if attr_name not in dataset_attrs:
                 ctx.report(f"Missing attribute {attr_name!r}.")
 
-    def data_array(self, ctx: RuleContext, node: DataArrayNode):
+    def validate_variable(self, ctx: RuleContext, node: VariableNode):
         if self.skip_vars:
             # Since dataset() has already been processed,
             # no need to check other nodes.
@@ -100,7 +100,7 @@ class ContentDesc(RuleOp):
                 # Ignored variable
                 return
 
-        var_attrs = node.data_array.attrs
+        var_attrs = node.array.attrs
         dataset_attrs = ctx.dataset.attrs
         for attr_name in self.common_attrs:
             if attr_name not in var_attrs and attr_name not in dataset_attrs:

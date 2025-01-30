@@ -9,7 +9,7 @@ from xrlint.testing import RuleTest, RuleTester
 
 
 class ForceTitle(RuleOp):
-    def dataset(self, ctx: RuleContext, node: DatasetNode):
+    def validate_dataset(self, ctx: RuleContext, node: DatasetNode):
         title = node.dataset.attrs.get("title")
         if not title:
             ctx.report("Datasets must have a title")
