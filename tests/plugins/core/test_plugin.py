@@ -8,16 +8,19 @@ class ExportPluginTest(TestCase):
         plugin = export_plugin()
         self.assertEqual(
             {
+                "content-desc",
+                "conventions",
                 "coords-for-dims",
                 "dataset-title-attr",
-                "flags",
                 "grid-mappings",
                 "lat-coordinate",
                 "lon-coordinate",
                 "no-empty-attrs",
                 "time-coordinate",
                 "no-empty-chunks",
-                "var-units-attr",
+                "var-desc",
+                "var-flags",
+                "var-units",
             },
             set(plugin.rules.keys()),
         )
