@@ -2,6 +2,17 @@
 
 ## Version 0.4.1 (in development)
 
+### Changes
+
+- Added core rule `conventions` that checks for the `Conventions`attribute.
+- Added core rule `context-descr` that checks content description
+- Added core rule `var-descr` that checks data variable description
+- Renamed rules for consistency:
+  -  `var-units-attrs` and `var-units`  
+  -  `flags` into `var-flags`  
+
+### Fixes
+
 - Fixed an issue that prevented recursively traversing folders referred 
   to by URLs (such as `s3://<bucket>/<path>/`) rather than local directory 
   paths. (#39)

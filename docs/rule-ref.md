@@ -5,6 +5,27 @@ New rules will be added by upcoming XRLint releases.
 
 ## Core Rules
 
+### :material-lightbulb: `content-desc`
+
+A dataset should provide information about where the data came from and what has been done to it. This information is mainly for the benefit of human readers. The rule accepts the following configuration parameters:
+
+- `globals`: list of names of required global attributes. Defaults to `['title', 'history']`.
+- `commons`: list of names of required variable attributes that can also be defined globally. Defaults to `['institution', 'source', 'references', 'comment']`.
+- `no_vars`: do not check variables at all. Defaults to `False`.
+- `ignored_vars`: list of ignored variables (regex patterns). Defaults to `['crs', 'spatial_ref']`.
+
+[:material-information-variant:](https://cfconventions.org/cf-conventions/cf-conventions.html#description-of-file-contents)
+
+Contained in:  `all`-:material-lightning-bolt: `recommended`-:material-alert:
+
+### :material-lightbulb: `conventions`
+
+Datasets should identify the applicable conventions using the `Conventions` attribute.
+ The rule has an optional configuration parameter `match` which is a regex pattern that the value of the `Conventions` attribute must match, if any. If not provided, the rule just verifies that the attribute exists and whether it is a character string.
+[:material-information-variant:](https://cfconventions.org/cf-conventions/cf-conventions.html#identification-of-conventions)
+
+Contained in:  `all`-:material-lightning-bolt: `recommended`-:material-alert:
+
 ### :material-bug: `coords-for-dims`
 
 Dimensions of data variables should have corresponding coordinates.
@@ -16,13 +37,6 @@ Contained in:  `all`-:material-lightning-bolt: `recommended`-:material-lightning
 Datasets should be given a non-empty title.
 
 Contained in:  `all`-:material-lightning-bolt: `recommended`-:material-alert:
-
-### :material-lightbulb: `flags`
-
-Validate attributes 'flag_values', 'flag_masks' and 'flag_meanings' that make variables that contain flag values self describing. 
-[:material-information-variant:](https://cfconventions.org/cf-conventions/cf-conventions.html#flags)
-
-Contained in:  `all`-:material-lightning-bolt: `recommended`-:material-lightning-bolt:
 
 ### :material-bug: `grid-mappings`
 
@@ -64,9 +78,24 @@ Time coordinates should have valid and unambiguous time units encoding.
 
 Contained in:  `all`-:material-lightning-bolt: `recommended`-:material-lightning-bolt:
 
-### :material-lightbulb: `var-units-attr`
+### :material-lightbulb: `var-desc`
 
-Every variable should have a valid 'units' attribute.
+Check that each data variable provides an identification and description of the content. The rule can be configured by parameter `attrs` which is a list of names of attributes that provides descriptive information. It defaults to `['standard_name', 'long_name']`.
+[:material-information-variant:](https://cfconventions.org/cf-conventions/cf-conventions.html#standard-name)
+
+Contained in:  `all`-:material-lightning-bolt: `recommended`-:material-alert:
+
+### :material-lightbulb: `var-flags`
+
+Validate attributes 'flag_values', 'flag_masks' and 'flag_meanings' that make variables that contain flag values self describing. 
+[:material-information-variant:](https://cfconventions.org/cf-conventions/cf-conventions.html#flags)
+
+Contained in:  `all`-:material-lightning-bolt: `recommended`-:material-lightning-bolt:
+
+### :material-lightbulb: `var-units`
+
+Every variable should provide a description of its units.
+[:material-information-variant:](https://cfconventions.org/cf-conventions/cf-conventions.html#units)
 
 Contained in:  `all`-:material-lightning-bolt: `recommended`-:material-alert:
 

@@ -1,7 +1,7 @@
 import numpy as np
 import xarray as xr
 
-from xrlint.plugins.core.rules.flags import Flags
+from xrlint.plugins.core.rules.var_flags import VarFlags
 from xrlint.testing import RuleTest, RuleTester
 
 valid_dataset_0 = xr.Dataset()
@@ -73,9 +73,9 @@ invalid_dataset_7["sensor_status_qc"] = valid_dataset_1.sensor_status_qc.astype(
     np.float64
 )
 
-FlagsTest = RuleTester.define_test(
-    "flags",
-    Flags,
+VarFlagsTest = RuleTester.define_test(
+    "var-flags",
+    VarFlags,
     valid=[
         RuleTest(dataset=valid_dataset_0),
         RuleTest(dataset=valid_dataset_1),

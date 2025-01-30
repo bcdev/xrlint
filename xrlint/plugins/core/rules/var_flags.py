@@ -12,7 +12,7 @@ FLAG_MASKS = "flag_masks"
 
 
 @plugin.define_rule(
-    "flags",
+    "var-flags",
     version="1.0.0",
     type="suggestion",
     description=(
@@ -21,7 +21,7 @@ FLAG_MASKS = "flag_masks"
     ),
     docs_url="https://cfconventions.org/cf-conventions/cf-conventions.html#flags",
 )
-class Flags(RuleOp):
+class VarFlags(RuleOp):
     def data_array(self, ctx: RuleContext, node: DataArrayNode):
         flag_values = node.data_array.attrs.get(FLAG_VALUES)
         flag_masks = node.data_array.attrs.get(FLAG_MASKS)
