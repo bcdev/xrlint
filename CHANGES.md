@@ -1,6 +1,6 @@
 # XRLint Change History
 
-## Version 0.4.1 (in development)
+## Version 0.4.1 (from 2025-01-31)
 
 ### Changes
 
