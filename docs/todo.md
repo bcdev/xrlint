@@ -10,6 +10,13 @@
   - use mkdocstrings ref syntax in docstrings
   - provide configuration examples (use as tests?)
   - add `docs_url` to all existing rules 
+- API changes for v0.5:
+  - clarify when users can pass configuration objects like values 
+    and when configuration like values
+  - config class naming is confusing, 
+    change `Config` -> `ConfigObject`, `ConfigList` -> `Config`
+  - Change `verify` -> `validate`, 
+    prefix `RuleOp` methods by `validate_` for clarity.
 
 ## Desired
  

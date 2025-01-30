@@ -4,12 +4,13 @@ from xrlint.rule import RuleContext, RuleOp
 
 
 @plugin.define_rule(
-    "var-units-attr",
+    "var-units",
     version="1.0.0",
     type="suggestion",
-    description="Every variable should have a valid 'units' attribute.",
+    description="Every variable should provide a description of its units.",
+    docs_url="https://cfconventions.org/cf-conventions/cf-conventions.html#units",
 )
-class VarUnitsAttr(RuleOp):
+class VarUnits(RuleOp):
     def data_array(self, ctx: RuleContext, node: DataArrayNode):
         data_array = node.data_array
         units = data_array.attrs.get("units")

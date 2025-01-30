@@ -12,16 +12,19 @@ def export_plugin() -> Plugin:
         {
             "name": "recommended",
             "rules": {
+                "content-desc": "warn",
+                "conventions": "warn",
                 "coords-for-dims": "error",
                 "dataset-title-attr": "warn",
-                "flags": "error",
                 "grid-mappings": "error",
                 "lat-coordinate": "error",
                 "lon-coordinate": "error",
                 "no-empty-attrs": "warn",
                 "no-empty-chunks": "warn",
                 "time-coordinate": "error",
-                "var-units-attr": "warn",
+                "var-desc": "warn",
+                "var-flags": "error",
+                "var-units": "warn",
             },
         },
     )

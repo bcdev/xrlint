@@ -133,13 +133,36 @@ class RuleTester:
         valid: list[RuleTest] | None,
         invalid: list[RuleTest] | None,
     ) -> dict[str, Callable[[unittest.TestCase | None], None]]:
-        def make_args(tests: list[RuleTest] | None, mode: Literal["valid", "invalid"]):
-            return [(test, index, mode) for index, test in enumerate(tests or [])]
+        if hasattr(rule_op_class, "meta"):
+            tests = dict([self._create_name_test(rule_name, rule_op_class)])
+        else:
+            tests = {}
 
-        return dict(
+        def make_args(checks: list[RuleTest] | None, mode: Literal["valid", "invalid"]):
+            return [(check, index, mode) for index, check in enumerate(checks or [])]
+
+        tests |= dict(
             self._create_test(rule_name, rule_op_class, *args)
             for args in make_args(valid, "valid") + make_args(invalid, "invalid")
         )
+        return tests
+
+    # noinspection PyMethodMayBeStatic
+    def _create_name_test(
+        self,
+        rule_name: str,
+        rule_op_class: Type[RuleOp],
+    ) -> tuple[str, Callable]:
+        test_id = "test_rule_meta"
+
+        def test_fn(_self: unittest.TestCase):
+            rule_meta: RuleMeta = getattr(rule_op_class, "meta")
+            assert rule_meta.name == rule_name, (
+                f"rule name expected to be {rule_name!r}, but was {rule_meta.name!r}"
+            )
+
+        test_fn.__name__ = test_id
+        return test_id, test_fn
 
     def _create_test(
         self,

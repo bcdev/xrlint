@@ -40,7 +40,7 @@ class ConfigObjectTest(TestCase):
 
     def test_get_rule(self):
         config_obj = get_core_config_object()
-        rule = config_obj.get_rule("flags")
+        rule = config_obj.get_rule("var-flags")
         self.assertIsInstance(rule, Rule)
 
         with pytest.raises(ValueError, match="unknown rule 'foo'"):
