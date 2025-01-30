@@ -6,7 +6,7 @@ from typing import Any, Callable, Literal, Type
 import xarray as xr
 
 from xrlint.constants import SEVERITY_ENUM, SEVERITY_ENUM_TEXT
-from xrlint.node import AttrNode, AttrsNode, DataArrayNode, DatasetNode
+from xrlint.node import AttrNode, AttrsNode, VariableNode, DatasetNode
 from xrlint.operation import Operation, OperationMeta
 from xrlint.result import Suggestion
 from xrlint.util.constructible import ValueConstructible
@@ -86,7 +86,7 @@ class RuleOp(ABC):
             RuleExit: to exit rule logic and further node traversal
         """
 
-    def validate_data_array(self, context: RuleContext, node: DataArrayNode) -> None:
+    def validate_variable(self, context: RuleContext, node: VariableNode) -> None:
         """Validate the given data array (variable) node.
 
         Args:
@@ -97,7 +97,7 @@ class RuleOp(ABC):
             RuleExit: to exit rule logic and further node traversal
         """
 
-    def attrs(self, context: RuleContext, node: AttrsNode) -> None:
+    def validate_attrs(self, context: RuleContext, node: AttrsNode) -> None:
         """Validate the given attributes node.
 
         Args:

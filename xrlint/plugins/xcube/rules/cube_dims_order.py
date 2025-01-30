@@ -1,4 +1,4 @@
-from xrlint.node import DataArrayNode
+from xrlint.node import VariableNode
 from xrlint.plugins.xcube.constants import LAT_NAME, LON_NAME, TIME_NAME, X_NAME, Y_NAME
 from xrlint.plugins.xcube.plugin import plugin
 from xrlint.rule import RuleContext, RuleOp
@@ -17,10 +17,10 @@ from xrlint.rule import RuleContext, RuleOp
     ),
 )
 class CubeDimsOrder(RuleOp):
-    def validate_data_array(self, ctx: RuleContext, node: DataArrayNode):
+    def validate_variable(self, ctx: RuleContext, node: VariableNode):
         if node.in_data_vars():
-            dims = list(node.data_array.dims)
-            indexes = {d: i for i, d in enumerate(node.data_array.dims)}
+            dims = list(node.array.dims)
+            indexes = {d: i for i, d in enumerate(node.array.dims)}
 
             yx_names = None
             if X_NAME in indexes and Y_NAME in indexes:

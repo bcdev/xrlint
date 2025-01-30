@@ -4,6 +4,10 @@
 
 ### Incompatible API changes:
 
+- Renamed nodes and node properties for consistency and clarity:
+  - renamed `DataArrayNode` into `VariableNode`
+  - renamed `DataArrayNode.data_array` into `VariableNode.array`
+
 - Changed general use of term _verify_ into _validate_: 
   - prefixed `RuleOp` methods by `validate_` for clarity.
   - renamed `XRLint.verify_datasets()` into `validate_files()`

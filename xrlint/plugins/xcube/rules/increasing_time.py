@@ -1,6 +1,6 @@
 import numpy as np
 
-from xrlint.node import DataArrayNode
+from xrlint.node import VariableNode
 from xrlint.plugins.xcube.plugin import plugin
 from xrlint.rule import RuleContext, RuleExit, RuleOp
 from xrlint.util.formatting import format_count, format_seq
@@ -16,8 +16,8 @@ from xrlint.util.formatting import format_count, format_seq
     ),
 )
 class IncreasingTime(RuleOp):
-    def validate_data_array(self, ctx: RuleContext, node: DataArrayNode):
-        array = node.data_array
+    def validate_variable(self, ctx: RuleContext, node: VariableNode):
+        array = node.array
         if node.in_coords() and node.name == "time" and array.dims == ("time",):
             diff_array: np.ndarray = array.diff("time").values
             if not np.count_nonzero(diff_array > 0) == diff_array.size:

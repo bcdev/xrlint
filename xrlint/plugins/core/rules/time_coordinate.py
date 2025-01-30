@@ -1,6 +1,6 @@
 import re
 
-from xrlint.node import DataArrayNode
+from xrlint.node import VariableNode
 from xrlint.plugins.core.plugin import plugin
 from xrlint.rule import RuleContext, RuleOp
 
@@ -52,8 +52,8 @@ _RE_TZ = re.compile(r"^[+-]\d{1,2}:\d{1,2}$")
     ),
 )
 class TimeCoordinate(RuleOp):
-    def validate_data_array(self, ctx: RuleContext, node: DataArrayNode):
-        array = node.data_array
+    def validate_variable(self, ctx: RuleContext, node: VariableNode):
+        array = node.array
         attrs = array.attrs
         encoding = array.encoding
 

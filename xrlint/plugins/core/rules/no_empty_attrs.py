@@ -11,7 +11,7 @@ from xrlint.rule import RuleContext, RuleOp
     description="Every dataset element should have metadata that describes it.",
 )
 class NoEmptyAttrs(RuleOp):
-    def attrs(self, ctx: RuleContext, node: AttrsNode):
+    def validate_attrs(self, ctx: RuleContext, node: AttrsNode):
         if not node.attrs:
             ctx.report(
                 "Missing metadata, attributes are empty.",

@@ -6,7 +6,7 @@ import xarray as xr
 from xrlint.config import Config, ConfigObject
 from xrlint.constants import CORE_PLUGIN_NAME, NODE_ROOT_NAME
 from xrlint.linter import Linter, new_linter
-from xrlint.node import AttrNode, AttrsNode, DataArrayNode, DatasetNode
+from xrlint.node import AttrNode, AttrsNode, VariableNode, DatasetNode
 from xrlint.plugin import new_plugin
 from xrlint.processor import ProcessorOp
 from xrlint.result import Message, Result
@@ -101,15 +101,15 @@ class LinterValidateTest(TestCase):
 
         @plugin.define_rule("no-empty-attrs")
         class AttrsVer(RuleOp):
-            def attrs(self, ctx: RuleContext, node: AttrsNode):
+            def validate_attrs(self, ctx: RuleContext, node: AttrsNode):
                 if not node.attrs:
                     ctx.report("Empty attributes")
 
         @plugin.define_rule("data-var-dim-must-have-coord")
         class DataArrayVer(RuleOp):
-            def validate_data_array(self, ctx: RuleContext, node: DataArrayNode):
+            def validate_variable(self, ctx: RuleContext, node: VariableNode):
                 if node.in_data_vars():
-                    for dim_name in node.data_array.dims:
+                    for dim_name in node.array.dims:
                         if dim_name not in ctx.dataset.coords:
                             ctx.report(
                                 f"Dimension {dim_name!r}"

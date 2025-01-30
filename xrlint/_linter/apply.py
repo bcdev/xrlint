@@ -1,4 +1,4 @@
-from xrlint.node import AttrNode, AttrsNode, DataArrayNode, DatasetNode
+from xrlint.node import AttrNode, AttrsNode, VariableNode, DatasetNode
 from xrlint.rule import RuleConfig, RuleExit, RuleOp
 
 from ..constants import NODE_ROOT_NAME
@@ -58,49 +58,47 @@ def _visit_dataset_node(rule_op: RuleOp, context: RuleContextImpl, node: Dataset
                 attrs=node.dataset.attrs,
             ),
         )
-        for name, data_array in node.dataset.coords.items():
-            _visit_data_array_node(
+        for name, variable in node.dataset.coords.items():
+            _visit_variable_node(
                 rule_op,
                 context,
-                DataArrayNode(
+                VariableNode(
                     parent=node,
                     path=f"{node.path}.coords[{name!r}]",
                     name=name,
-                    data_array=data_array,
+                    array=variable,
                 ),
             )
-        for name, data_array in node.dataset.data_vars.items():
-            _visit_data_array_node(
+        for name, variable in node.dataset.data_vars.items():
+            _visit_variable_node(
                 rule_op,
                 context,
-                DataArrayNode(
+                VariableNode(
                     parent=node,
                     path=f"{node.path}.data_vars[{name!r}]",
                     name=name,
-                    data_array=data_array,
+                    array=variable,
                 ),
             )
 
 
-def _visit_data_array_node(
-    rule_op: RuleOp, context: RuleContextImpl, node: DataArrayNode
-):
+def _visit_variable_node(rule_op: RuleOp, context: RuleContextImpl, node: VariableNode):
     with context.use_state(node=node):
-        rule_op.validate_data_array(context, node)
+        rule_op.validate_variable(context, node)
         _visit_attrs_node(
             rule_op,
             context,
             AttrsNode(
                 parent=node,
                 path=f"{node.path}.attrs",
-                attrs=node.data_array.attrs,
+                attrs=node.array.attrs,
             ),
         )
 
 
 def _visit_attrs_node(rule_op: RuleOp, context: RuleContextImpl, node: AttrsNode):
     with context.use_state(node=node):
-        rule_op.attrs(context, node)
+        rule_op.validate_attrs(context, node)
         for name, value in node.attrs.items():
             _visit_attr_node(
                 rule_op,
