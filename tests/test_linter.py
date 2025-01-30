@@ -3,7 +3,7 @@ from unittest import TestCase
 
 import xarray as xr
 
-from xrlint.config import Config, ConfigList
+from xrlint.config import Config, ConfigObject
 from xrlint.constants import CORE_PLUGIN_NAME, NODE_ROOT_NAME
 from xrlint.linter import Linter, new_linter
 from xrlint.node import AttrNode, AttrsNode, DataArrayNode, DatasetNode
@@ -16,38 +16,38 @@ from xrlint.rule import RuleContext, RuleExit, RuleOp
 class LinterTest(TestCase):
     def test_default_config_is_empty(self):
         linter = Linter()
-        self.assertEqual(ConfigList(), linter.config)
+        self.assertEqual(Config(), linter.config)
 
     def test_new_linter(self):
         linter = new_linter()
         self.assertIsInstance(linter, Linter)
-        self.assertEqual(1, len(linter.config.configs))
-        config = linter.config.configs[0]
-        self.assertIsInstance(config.plugins, dict)
-        self.assertEqual({CORE_PLUGIN_NAME}, set(config.plugins.keys()))
-        self.assertEqual(None, config.rules)
+        self.assertEqual(1, len(linter.config.objects))
+        config_obj = linter.config.objects[0]
+        self.assertIsInstance(config_obj.plugins, dict)
+        self.assertEqual({CORE_PLUGIN_NAME}, set(config_obj.plugins.keys()))
+        self.assertEqual(None, config_obj.rules)
 
     def test_new_linter_recommended(self):
         linter = new_linter("recommended")
         self.assertIsInstance(linter, Linter)
-        self.assertEqual(2, len(linter.config.configs))
-        config0 = linter.config.configs[0]
-        config1 = linter.config.configs[1]
-        self.assertIsInstance(config0.plugins, dict)
-        self.assertEqual({CORE_PLUGIN_NAME}, set(config0.plugins.keys()))
-        self.assertIsInstance(config1.rules, dict)
-        self.assertIn("coords-for-dims", config1.rules)
+        self.assertEqual(2, len(linter.config.objects))
+        config_obj_0 = linter.config.objects[0]
+        config_obj_1 = linter.config.objects[1]
+        self.assertIsInstance(config_obj_0.plugins, dict)
+        self.assertEqual({CORE_PLUGIN_NAME}, set(config_obj_0.plugins.keys()))
+        self.assertIsInstance(config_obj_1.rules, dict)
+        self.assertIn("coords-for-dims", config_obj_1.rules)
 
     def test_new_linter_all(self):
         linter = new_linter("all")
         self.assertIsInstance(linter, Linter)
-        self.assertEqual(2, len(linter.config.configs))
-        config0 = linter.config.configs[0]
-        config1 = linter.config.configs[1]
-        self.assertIsInstance(config0.plugins, dict)
-        self.assertEqual({CORE_PLUGIN_NAME}, set(config0.plugins.keys()))
-        self.assertIsInstance(config1.rules, dict)
-        self.assertIn("coords-for-dims", config1.rules)
+        self.assertEqual(2, len(linter.config.objects))
+        config_obj_0 = linter.config.objects[0]
+        config_obj_1 = linter.config.objects[1]
+        self.assertIsInstance(config_obj_0.plugins, dict)
+        self.assertEqual({CORE_PLUGIN_NAME}, set(config_obj_0.plugins.keys()))
+        self.assertIsInstance(config_obj_1.rules, dict)
+        self.assertIn("coords-for-dims", config_obj_1.rules)
 
 
 class LinterVerifyConfigTest(TestCase):
@@ -55,7 +55,7 @@ class LinterVerifyConfigTest(TestCase):
         linter = new_linter()
         result = linter.verify_dataset(
             xr.Dataset(),
-            config=ConfigList.from_value([{"rules": {"no-empty-attrs": 2}}]),
+            config=Config.from_value([{"rules": {"no-empty-attrs": 2}}]),
         )
         self.assert_result_ok(result, "Missing metadata, attributes are empty.")
 
@@ -141,7 +141,7 @@ class LinterVerifyTest(TestCase):
             ) -> list[Message]:
                 return messages[0] + messages[1]
 
-        config = Config(plugins={"test": plugin})
+        config = ConfigObject(plugins={"test": plugin})
         self.linter = Linter(config)
         super().setUp()
 
@@ -153,7 +153,7 @@ class LinterVerifyTest(TestCase):
                 "data-var-dim-must-have-coord",
                 "dataset-without-data-vars",
             ],
-            list(self.linter.config.configs[0].plugins["test"].rules.keys()),
+            list(self.linter.config.objects[0].plugins["test"].rules.keys()),
         )
 
     def test_linter_respects_rule_severity_error(self):
@@ -162,7 +162,7 @@ class LinterVerifyTest(TestCase):
         )
         self.assertEqual(
             Result(
-                result.config,
+                config_object=result.config_object,
                 file_path="<dataset>",
                 warning_count=0,
                 error_count=1,
@@ -187,7 +187,7 @@ class LinterVerifyTest(TestCase):
         )
         self.assertEqual(
             Result(
-                result.config,
+                config_object=result.config_object,
                 file_path="<dataset>",
                 warning_count=1,
                 error_count=0,
@@ -212,7 +212,7 @@ class LinterVerifyTest(TestCase):
         )
         self.assertEqual(
             Result(
-                result.config,
+                config_object=result.config_object,
                 file_path="<dataset>",
                 warning_count=0,
                 error_count=0,
@@ -279,7 +279,7 @@ class LinterVerifyTest(TestCase):
         )
         self.assertEqual(
             Result(
-                result.config,
+                config_object=result.config_object,
                 file_path="chl-tsm.zarr",
                 warning_count=1,
                 error_count=3,

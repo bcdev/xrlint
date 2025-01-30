@@ -1,7 +1,7 @@
 from unittest import TestCase
 
 from tests.formatters.helpers import get_context
-from xrlint.config import Config
+from xrlint.config import ConfigObject
 from xrlint.formatters.simple import Simple
 from xrlint.result import Message, Result
 
@@ -9,7 +9,7 @@ from xrlint.result import Message, Result
 class SimpleTest(TestCase):
     errors_and_warnings = [
         Result.new(
-            Config(),
+            config_object=ConfigObject(),
             file_path="test1.nc",
             messages=[
                 Message(message="what", rule_id="rule-1", severity=2),
@@ -21,7 +21,7 @@ class SimpleTest(TestCase):
 
     warnings_only = [
         Result.new(
-            Config(),
+            ConfigObject(),
             file_path="test2.nc",
             messages=[
                 Message(message="what", rule_id="rule-1", severity=1),

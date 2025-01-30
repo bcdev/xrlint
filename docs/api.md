@@ -16,7 +16,7 @@ This chapter provides a plain reference for the XRLint Python API.
   plugin metadata represented by [PluginMeta][xrlint.plugin.PluginMeta].
 - The `config` module provides classes that represent 
   configuration information and provide related functionality:
-  [Config][xrlint.config.Config] and [ConfigList][xrlint.config.ConfigList].
+  [Config][xrlint.config.Config] and [ConfigObject][xrlint.config.ConfigObject].
 - The `rule` module provides rule related classes and functions:
   [Rule][xrlint.rule.Rule] comprising rule metadata, 
   [RuleMeta][xrlint.rule.RuleMeta], the rule validation operations in 
@@ -60,7 +60,11 @@ Note:
 
 ::: xrlint.config.Config
 
-::: xrlint.config.ConfigList
+::: xrlint.config.ConfigObject
+
+::: xrlint.config.ConfigLike
+
+::: xrlint.config.ConfigObjectLike
 
 ::: xrlint.rule.define_rule
 

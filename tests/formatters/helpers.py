@@ -1,4 +1,4 @@
-from xrlint.config import Config
+from xrlint.config import ConfigObject
 from xrlint.formatter import FormatterContext
 from xrlint.plugin import new_plugin
 from xrlint.result import Message, Result, ResultStats
@@ -38,11 +38,11 @@ def get_test_results():
     class Rule2(RuleOp):
         pass
 
-    config = Config(plugins={"test": plugin})
+    config_obj = ConfigObject(plugins={"test": plugin})
 
     return [
         Result.new(
-            config,
+            config_object=config_obj,
             file_path="test.nc",
             messages=[
                 Message(message="message-1", rule_id="test/rule-1", severity=2),
@@ -51,7 +51,7 @@ def get_test_results():
             ],
         ),
         Result.new(
-            config,
+            config_object=config_obj,
             file_path="test-2.nc",
             messages=[
                 Message(message="message-1", rule_id="test/rule-1", severity=1),

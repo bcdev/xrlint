@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from typing import Any, Callable, Literal, Type
 
-from xrlint.config import Config, ConfigList
+from xrlint.config import Config, ConfigLike, ConfigObject
 from xrlint.processor import Processor, ProcessorOp, define_processor
 from xrlint.rule import Rule, RuleOp, define_rule
 from xrlint.util.constructible import MappingConstructible
@@ -54,7 +54,7 @@ class Plugin(MappingConstructible, JsonSerializable):
     """A dictionary containing named processors.
     """
 
-    configs: dict[str, list[Config]] = field(default_factory=dict)
+    configs: dict[str, list[ConfigObject]] = field(default_factory=dict)
     """A dictionary containing named configuration lists."""
 
     def define_rule(
@@ -103,26 +103,21 @@ class Plugin(MappingConstructible, JsonSerializable):
             registry=self.processors,
         )
 
-    def define_config(
-        self,
-        name: str,
-        value: list[Config | dict[str, Any]] | Config | dict[str, Any],
-    ) -> list[Config]:
+    def define_config(self, name: str, config: ConfigLike) -> Config:
         """Define a named configuration.
 
         Args:
             name: The name of the configuration.
-            value: The configuration-like object or list.
-                A configuration-like object is either a
-                [Config][xrlint.config.Config] or a `dict` that
-                represents a configuration.
+            config: A configuration-like value.
+                For more information see the
+                [ConfigLike][xrlint.config.ConfigLike] type alias.
 
         Returns:
-            A list of `Config` objects.
+            The configuration.
         """
-        configs = ConfigList.from_value(value).configs
-        self.configs[name] = configs
-        return configs
+        config = Config.from_value(config)
+        self.configs[name] = list(config.objects)
+        return config
 
     @classmethod
     def _from_str(cls, value: str, value_name: str) -> "Plugin":
@@ -152,7 +147,7 @@ def new_plugin(
     ref: str | None = None,
     rules: dict[str, Rule] | None = None,
     processors: dict[str, Processor] | None = None,
-    configs: dict[str, Config] | None = None,
+    configs: dict[str, ConfigObject] | None = None,
 ) -> Plugin:
     """Create a new plugin object that can contribute rules, processors,
     and predefined configurations to XRLint.

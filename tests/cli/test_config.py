@@ -5,8 +5,8 @@ from unittest import TestCase
 
 import pytest
 
-from xrlint.cli.config import ConfigError, read_config_list
-from xrlint.config import Config, ConfigList
+from xrlint.cli.config import ConfigError, read_config
+from xrlint.config import Config, ConfigObject
 from xrlint.rule import RuleConfig
 
 from .helpers import text_file
@@ -58,24 +58,24 @@ class CliConfigTest(TestCase):
 
     def test_read_config_yaml(self):
         with text_file("config.yaml", yaml_text) as config_path:
-            config = read_config_list(config_path)
+            config = read_config(config_path)
             self.assert_config_ok(config, "yaml-test")
 
     def test_read_config_json(self):
         with text_file("config.json", json_text) as config_path:
-            config = read_config_list(config_path)
+            config = read_config(config_path)
             self.assert_config_ok(config, "json-test")
 
     def test_read_config_py(self):
         with text_file(self.new_config_py(), py_text) as config_path:
-            config = read_config_list(config_path)
+            config = read_config(config_path)
             self.assert_config_ok(config, "py-test")
 
     def assert_config_ok(self, config: Any, name: str):
         self.assertEqual(
-            ConfigList(
+            Config(
                 [
-                    Config(
+                    ConfigObject(
                         name=name,
                         rules={
                             "rule-1": RuleConfig(2),
@@ -94,7 +94,7 @@ class CliConfigTest(TestCase):
             match="configuration file must be of type str|Path|PathLike, but got None",
         ):
             # noinspection PyTypeChecker
-            read_config_list(None)
+            read_config(None)
 
     def test_read_config_json_with_format_error(self):
         with text_file("config.json", "{") as config_path:
@@ -106,7 +106,7 @@ class CliConfigTest(TestCase):
                     " line 1 column 2 \\(char 1\\)"
                 ),
             ):
-                read_config_list(config_path)
+                read_config(config_path)
 
     def test_read_config_yaml_with_format_error(self):
         with text_file("config.yaml", "}") as config_path:
@@ -114,26 +114,26 @@ class CliConfigTest(TestCase):
                 ConfigError,
                 match="config.yaml: while parsing a block node",
             ):
-                read_config_list(config_path)
+                read_config(config_path)
 
     def test_read_config_yaml_with_type_error(self):
         with text_file("config.yaml", "97") as config_path:
             with pytest.raises(
                 ConfigError,
                 match=(
-                    r"config\.yaml\: config_list must be of"
-                    r" type ConfigList \| list\[Config \| dict \| str\],"
+                    r"config\.yaml\: config must be of type"
+                    r" Config \| ConfigObjectLike \| str \| Sequence\[ConfigObjectLike \| str\],"
                     r" but got int"
                 ),
             ):
-                read_config_list(config_path)
+                read_config(config_path)
 
     def test_read_config_with_unknown_format(self):
         with pytest.raises(
             ConfigError,
             match="config.toml: unsupported configuration file format",
         ):
-            read_config_list("config.toml")
+            read_config("config.toml")
 
     def test_read_config_py_no_export(self):
         py_code = "x = 42\n"
@@ -145,7 +145,7 @@ class CliConfigTest(TestCase):
                     " not found in module 'config_1002'"
                 ),
             ):
-                read_config_list(config_path)
+                read_config(config_path)
 
     def test_read_config_py_with_value_error(self):
         py_code = "def export_config():\n    raise ValueError('value is useless!')\n"
@@ -154,7 +154,7 @@ class CliConfigTest(TestCase):
                 ValueError,
                 match="value is useless!",
             ):
-                read_config_list(config_path)
+                read_config(config_path)
 
     def test_read_config_py_with_os_error(self):
         py_code = "def export_config():\n    raise OSError('where is my hat?')\n"
@@ -163,7 +163,7 @@ class CliConfigTest(TestCase):
                 ConfigError,
                 match="where is my hat?",
             ):
-                read_config_list(config_path)
+                read_config(config_path)
 
     def test_read_config_py_with_invalid_config_list(self):
         py_code = "def export_config():\n    return 42\n"
@@ -171,39 +171,39 @@ class CliConfigTest(TestCase):
             with pytest.raises(
                 ConfigError,
                 match=(
-                    r"\.py: return value of export_config\(\):"
-                    r" config_list must be of type"
-                    r" ConfigList \| list\[Config\ | dict \| str\],"
+                    r"\.py: failed converting value of 'config_1003:export_config':"
+                    r" config must be of type"
+                    r" Config \| ConfigObjectLike \| str \| Sequence\[ConfigObjectLike \| str\],"
                     r" but got int"
                 ),
             ):
-                read_config_list(config_path)
+                read_config(config_path)
 
 
 class CliConfigResolveTest(unittest.TestCase):
     def test_read_config_py(self):
         self.assert_ok(
-            read_config_list(Path(__file__).parent / "configs" / "recommended.py")
+            read_config(Path(__file__).parent / "configs" / "recommended.py")
         )
 
     def test_read_config_json(self):
         self.assert_ok(
-            read_config_list(Path(__file__).parent / "configs" / "recommended.json")
+            read_config(Path(__file__).parent / "configs" / "recommended.json")
         )
 
     def test_read_config_yaml(self):
         self.assert_ok(
-            read_config_list(Path(__file__).parent / "configs" / "recommended.yaml")
+            read_config(Path(__file__).parent / "configs" / "recommended.yaml")
         )
 
-    def assert_ok(self, config_list: ConfigList):
-        self.assertIsInstance(config_list, ConfigList)
-        self.assertEqual(7, len(config_list.configs))
-        config = config_list.compute_config("test.zarr")
+    def assert_ok(self, config: Config):
         self.assertIsInstance(config, Config)
-        self.assertEqual(None, config.name)
-        self.assertIsInstance(config.plugins, dict)
-        self.assertEqual({"xcube"}, set(config.plugins.keys()))
-        self.assertIsInstance(config.rules, dict)
-        self.assertIn("coords-for-dims", config.rules)
-        self.assertIn("xcube/cube-dims-order", config.rules)
+        self.assertEqual(7, len(config.objects))
+        config_obj = config.compute_config_object("test.zarr")
+        self.assertIsInstance(config_obj, ConfigObject)
+        self.assertEqual(None, config_obj.name)
+        self.assertIsInstance(config_obj.plugins, dict)
+        self.assertEqual({"xcube"}, set(config_obj.plugins.keys()))
+        self.assertIsInstance(config_obj.rules, dict)
+        self.assertIn("coords-for-dims", config_obj.rules)
+        self.assertIn("xcube/cube-dims-order", config_obj.rules)

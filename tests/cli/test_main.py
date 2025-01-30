@@ -78,6 +78,24 @@ class CliMainTest(TestCase):
         self.assertIn("Warning: no configuration file found.\n", result.output)
         self.assertEqual(1, result.exit_code)
 
+    def test_files_no_config_lookup(self):
+        with text_file(DEFAULT_CONFIG_FILE_YAML, self.ok_config_yaml):
+            result = self.xrlint("--no-config-lookup", "--no-color", *self.files)
+            self.assertEqual(
+                "\n"
+                "dataset1.zarr:\n"
+                "dataset  error  No rules configured or applicable.\n\n"
+                "dataset1.nc:\n"
+                "dataset  error  No rules configured or applicable.\n\n"
+                "dataset2.zarr:\n"
+                "dataset  error  No rules configured or applicable.\n\n"
+                "dataset2.nc:\n"
+                "dataset  error  No rules configured or applicable.\n\n"
+                "4 errors\n\n",
+                result.output,
+            )
+            self.assertEqual(1, result.exit_code)
+
     def test_files_one_rule(self):
         with text_file(DEFAULT_CONFIG_FILE_YAML, self.ok_config_yaml):
             result = self.xrlint("--no-color", *self.files)
