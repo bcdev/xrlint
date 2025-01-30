@@ -11,7 +11,7 @@ from xrlint.util.formatting import format_item
     description="Dimensions of data variables should have corresponding coordinates.",
 )
 class CoordsForDims(RuleOp):
-    def dataset(self, ctx: RuleContext, node: DatasetNode):
+    def validate_dataset(self, ctx: RuleContext, node: DatasetNode):
         dataset = node.dataset
 
         # Get data variable dimensions

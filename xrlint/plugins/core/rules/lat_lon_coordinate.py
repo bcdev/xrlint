@@ -30,7 +30,7 @@ LON_UNITS_ALIASES = {"degree_east", "degree_E", "degrees_E", "degreeE", "degrees
     ),
 )
 class LatCoordinate(RuleOp):
-    def data_array(self, ctx: RuleContext, node: DataArrayNode):
+    def validate_data_array(self, ctx: RuleContext, node: DataArrayNode):
         if node.name in ctx.dataset.coords and _is_lat_var(
             str(node.name), node.data_array
         ):
@@ -55,7 +55,7 @@ class LatCoordinate(RuleOp):
     ),
 )
 class LonCoordinate(RuleOp):
-    def data_array(self, ctx: RuleContext, node: DataArrayNode):
+    def validate_data_array(self, ctx: RuleContext, node: DataArrayNode):
         if node.name in ctx.dataset.coords and _is_lon_var(
             str(node.name), node.data_array
         ):

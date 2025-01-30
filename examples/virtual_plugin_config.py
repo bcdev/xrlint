@@ -10,7 +10,7 @@ from xrlint.rule import RuleContext, RuleOp, define_rule
 
 @define_rule("good-title", description="Dataset title should be 'Hello World!'.")
 class GoodTitle(RuleOp):
-    def dataset(self, ctx: RuleContext, node: DatasetNode):
+    def validate_dataset(self, ctx: RuleContext, node: DatasetNode):
         good_title = "Hello World!"
         if node.dataset.attrs.get("title") != good_title:
             ctx.report(

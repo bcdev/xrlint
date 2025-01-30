@@ -74,7 +74,7 @@ class ContentDesc(RuleOp):
             re.compile(p) for p in params.get("ignored_vars", DEFAULT_IGNORED_VARS)
         ]
 
-    def dataset(self, ctx: RuleContext, node: DatasetNode):
+    def validate_dataset(self, ctx: RuleContext, node: DatasetNode):
         dataset_attrs = node.dataset.attrs
         attr_names = (
             self.global_attrs + self.common_attrs
@@ -85,7 +85,7 @@ class ContentDesc(RuleOp):
             if attr_name not in dataset_attrs:
                 ctx.report(f"Missing attribute {attr_name!r}.")
 
-    def data_array(self, ctx: RuleContext, node: DataArrayNode):
+    def validate_data_array(self, ctx: RuleContext, node: DataArrayNode):
         if self.skip_vars:
             # Since dataset() has already been processed,
             # no need to check other nodes.

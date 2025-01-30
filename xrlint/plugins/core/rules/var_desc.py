@@ -37,7 +37,7 @@ class VarDesc(RuleOp):
     def __init__(self, attrs: list[str] | None = None):
         self._attrs = attrs if attrs is not None else DEFAULT_ATTRS
 
-    def data_array(self, ctx: RuleContext, node: DataArrayNode):
+    def validate_data_array(self, ctx: RuleContext, node: DataArrayNode):
         if node.name not in ctx.dataset.data_vars:
             # This rule applies to data variables only
             return

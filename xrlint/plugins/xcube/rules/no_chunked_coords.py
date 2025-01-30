@@ -36,7 +36,7 @@ class NoChunkedCoords(RuleOp):
     def __init__(self, limit: int = DEFAULT_LIMIT):
         self.limit = limit
 
-    def data_array(self, ctx: RuleContext, node: DataArrayNode):
+    def validate_data_array(self, ctx: RuleContext, node: DataArrayNode):
         if node.name not in ctx.dataset.coords or node.data_array.ndim != 1:
             return
 

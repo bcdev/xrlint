@@ -16,7 +16,7 @@ from xrlint.util.formatting import format_count, format_seq
     ),
 )
 class IncreasingTime(RuleOp):
-    def data_array(self, ctx: RuleContext, node: DataArrayNode):
+    def validate_data_array(self, ctx: RuleContext, node: DataArrayNode):
         array = node.data_array
         if node.in_coords() and node.name == "time" and array.dims == ("time",):
             diff_array: np.ndarray = array.diff("time").values

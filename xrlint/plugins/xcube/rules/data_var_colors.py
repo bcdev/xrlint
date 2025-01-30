@@ -16,7 +16,7 @@ from xrlint.rule import RuleContext, RuleOp
     ),
 )
 class DataVarColors(RuleOp):
-    def data_array(self, ctx: RuleContext, node: DataArrayNode):
+    def validate_data_array(self, ctx: RuleContext, node: DataArrayNode):
         array = node.data_array
         if not node.in_data_vars() or not is_spatial_var(array):
             return

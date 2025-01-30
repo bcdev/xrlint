@@ -48,7 +48,7 @@ def apply_rule(
 
 def _visit_dataset_node(rule_op: RuleOp, context: RuleContextImpl, node: DatasetNode):
     with context.use_state(node=node):
-        rule_op.dataset(context, node)
+        rule_op.validate_dataset(context, node)
         _visit_attrs_node(
             rule_op,
             context,
@@ -86,7 +86,7 @@ def _visit_data_array_node(
     rule_op: RuleOp, context: RuleContextImpl, node: DataArrayNode
 ):
     with context.use_state(node=node):
-        rule_op.data_array(context, node)
+        rule_op.validate_data_array(context, node)
         _visit_attrs_node(
             rule_op,
             context,
@@ -116,4 +116,4 @@ def _visit_attrs_node(rule_op: RuleOp, context: RuleContextImpl, node: AttrsNode
 
 def _visit_attr_node(rule_op: RuleOp, context: RuleContextImpl, node: AttrNode):
     with context.use_state(node=node):
-        rule_op.attr(context, node)
+        rule_op.validate_attr(context, node)

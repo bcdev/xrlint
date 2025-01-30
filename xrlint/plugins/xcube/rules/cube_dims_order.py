@@ -17,7 +17,7 @@ from xrlint.rule import RuleContext, RuleOp
     ),
 )
 class CubeDimsOrder(RuleOp):
-    def data_array(self, ctx: RuleContext, node: DataArrayNode):
+    def validate_data_array(self, ctx: RuleContext, node: DataArrayNode):
         if node.in_data_vars():
             dims = list(node.data_array.dims)
             indexes = {d: i for i, d in enumerate(node.data_array.dims)}

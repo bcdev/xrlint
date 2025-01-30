@@ -33,7 +33,7 @@ class Conventions(RuleOp):
     def __init__(self, match: str | None = None):
         self.match = re.compile(match) if match else None
 
-    def dataset(self, ctx: RuleContext, node: DatasetNode):
+    def validate_dataset(self, ctx: RuleContext, node: DatasetNode):
         if "Conventions" not in node.dataset.attrs:
             ctx.report("Missing attribute 'Conventions'.")
         else:

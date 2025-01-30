@@ -95,7 +95,7 @@ class LinterValidateTest(TestCase):
 
         @plugin.define_rule("no-space-in-attr-name")
         class AttrVer(RuleOp):
-            def attr(self, ctx: RuleContext, node: AttrNode):
+            def validate_attr(self, ctx: RuleContext, node: AttrNode):
                 if " " in node.name:
                     ctx.report(f"Attribute name with space: {node.name!r}")
 
@@ -107,7 +107,7 @@ class LinterValidateTest(TestCase):
 
         @plugin.define_rule("data-var-dim-must-have-coord")
         class DataArrayVer(RuleOp):
-            def data_array(self, ctx: RuleContext, node: DataArrayNode):
+            def validate_data_array(self, ctx: RuleContext, node: DataArrayNode):
                 if node.in_data_vars():
                     for dim_name in node.data_array.dims:
                         if dim_name not in ctx.dataset.coords:
@@ -119,7 +119,7 @@ class LinterValidateTest(TestCase):
 
         @plugin.define_rule("dataset-without-data-vars")
         class DatasetVer(RuleOp):
-            def dataset(self, ctx: RuleContext, node: DatasetNode):
+            def validate_dataset(self, ctx: RuleContext, node: DatasetNode):
                 if len(node.dataset.data_vars) == 0:
                     ctx.report("Dataset does not have data variables")
                     raise RuleExit  # no need to traverse further

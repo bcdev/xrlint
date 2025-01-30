@@ -11,7 +11,7 @@ from xrlint.rule import RuleContext, RuleOp
     docs_url="https://cfconventions.org/cf-conventions/cf-conventions.html#units",
 )
 class VarUnits(RuleOp):
-    def data_array(self, ctx: RuleContext, node: DataArrayNode):
+    def validate_data_array(self, ctx: RuleContext, node: DataArrayNode):
         data_array = node.data_array
         units = data_array.attrs.get("units")
         if units is None:

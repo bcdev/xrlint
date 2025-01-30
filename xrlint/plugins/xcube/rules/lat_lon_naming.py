@@ -18,7 +18,7 @@ INVALID_LON_NAMES = {"lng", "long", "longitude"}
     docs_url="https://xcube.readthedocs.io/en/latest/cubespec.html#spatial-reference",
 )
 class LatLonNaming(RuleOp):
-    def dataset(self, ctx: RuleContext, node: DatasetNode):
+    def validate_dataset(self, ctx: RuleContext, node: DatasetNode):
         lon_ok = _check(
             ctx, "variable", node.dataset.variables.keys(), INVALID_LON_NAMES, LON_NAME
         )

@@ -17,14 +17,14 @@ from xrlint.rule import RuleContext, RuleExit, RuleOp
     ),
 )
 class NoEmptyChunks(RuleOp):
-    def dataset(self, ctx: RuleContext, node: DataArrayNode):
+    def validate_dataset(self, ctx: RuleContext, node: DataArrayNode):
         source = ctx.dataset.encoding.get("source")
         is_zarr = isinstance(source, str) and source.endswith(".zarr")
         if not is_zarr:
             # if not a Zarr, no need to check further
             raise RuleExit
 
-    def data_array(self, ctx: RuleContext, node: DataArrayNode):
+    def validate_data_array(self, ctx: RuleContext, node: DataArrayNode):
         if (
             "write_empty_chunks" not in node.data_array.encoding
             and "chunks" in node.data_array.encoding

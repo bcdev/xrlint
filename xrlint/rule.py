@@ -75,7 +75,7 @@ class RuleExit(Exception):
 class RuleOp(ABC):
     """Define the specific rule validation operations."""
 
-    def dataset(self, context: RuleContext, node: DatasetNode) -> None:
+    def validate_dataset(self, context: RuleContext, node: DatasetNode) -> None:
         """Validate the given dataset node.
 
         Args:
@@ -86,7 +86,7 @@ class RuleOp(ABC):
             RuleExit: to exit rule logic and further node traversal
         """
 
-    def data_array(self, context: RuleContext, node: DataArrayNode) -> None:
+    def validate_data_array(self, context: RuleContext, node: DataArrayNode) -> None:
         """Validate the given data array (variable) node.
 
         Args:
@@ -108,7 +108,7 @@ class RuleOp(ABC):
             RuleExit: to exit rule logic and further node traversal
         """
 
-    def attr(self, context: RuleContext, node: AttrNode) -> None:
+    def validate_attr(self, context: RuleContext, node: AttrNode) -> None:
         """Validate the given attribute node.
 
         Args:

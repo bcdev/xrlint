@@ -52,7 +52,7 @@ _RE_TZ = re.compile(r"^[+-]\d{1,2}:\d{1,2}$")
     ),
 )
 class TimeCoordinate(RuleOp):
-    def data_array(self, ctx: RuleContext, node: DataArrayNode):
+    def validate_data_array(self, ctx: RuleContext, node: DataArrayNode):
         array = node.data_array
         attrs = array.attrs
         encoding = array.encoding

@@ -12,7 +12,7 @@ from xrlint.rule import RuleContext, RuleOp
     ),
 )
 class GridMappings(RuleOp):
-    def dataset(self, ctx: RuleContext, node: DatasetNode):
+    def validate_dataset(self, ctx: RuleContext, node: DatasetNode):
         dataset = node.dataset
 
         # Get the mapping of grid mapping names to grid-mapped variables
