@@ -3373,7 +3373,10 @@ It represents the highest level component in the Python API.</p>
 <span class="normal">248</span>
 <span class="normal">249</span>
 <span class="normal">250</span>
-<span class="normal">251</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">XRLint</span><span class="p">(</span><span class="n">FormatterContext</span><span class="p">):</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">XRLint</span><span class="p">(</span><span class="n">FormatterContext</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;This class provides the engine behind the XRLint</span>
 <span class="sd">    CLI application.</span>
 <span class="sd">    It represents the highest level component in the Python API.</span>
@@ -3507,7 +3510,7 @@ It represents the highest level component in the Python API.</p>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            An iterator of pairs comprising a file or directory path</span>
-<span class="sd">              and its computed configuration.</span>
+<span class="sd">                and its computed configuration.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">config_list</span><span class="p">,</span> <span class="n">global_filter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config_list</span><span class="o">.</span><span class="n">split_global_filter</span><span class="p">(</span>
             <span class="n">default</span><span class="o">=</span><span class="n">DEFAULT_GLOBAL_FILTER</span>
@@ -3519,6 +3522,7 @@ It represents the highest level component in the Python API.</p>
         <span class="k">for</span> <span class="n">file_path</span> <span class="ow">in</span> <span class="n">file_paths</span><span class="p">:</span>
             <span class="n">_fs</span><span class="p">,</span> <span class="n">root</span> <span class="o">=</span> <span class="n">fsspec</span><span class="o">.</span><span class="n">url_to_fs</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
             <span class="n">fs</span><span class="p">:</span> <span class="n">fsspec</span><span class="o">.</span><span class="n">AbstractFileSystem</span> <span class="o">=</span> <span class="n">_fs</span>
+            <span class="n">is_local</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fs</span><span class="p">,</span> <span class="n">fsspec</span><span class="o">.</span><span class="n">implementations</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">LocalFileSystem</span><span class="p">)</span>
 
             <span class="n">config</span> <span class="o">=</span> <span class="n">compute_config</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">config</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -3529,6 +3533,7 @@ It represents the highest level component in the Python API.</p>
                 <span class="k">for</span> <span class="n">path</span><span class="p">,</span> <span class="n">dirs</span><span class="p">,</span> <span class="n">files</span> <span class="ow">in</span> <span class="n">fs</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">topdown</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
                     <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">dirs</span><span class="p">):</span>
                         <span class="n">d_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">d</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="n">d_path</span> <span class="o">=</span> <span class="n">d_path</span> <span class="k">if</span> <span class="n">is_local</span> <span class="k">else</span> <span class="n">fs</span><span class="o">.</span><span class="n">unstrip_protocol</span><span class="p">(</span><span class="n">d_path</span><span class="p">)</span>
                         <span class="n">c</span> <span class="o">=</span> <span class="n">compute_config</span><span class="p">(</span><span class="n">d_path</span><span class="p">)</span>
                         <span class="k">if</span> <span class="n">c</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                             <span class="n">dirs</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
@@ -3536,6 +3541,7 @@ It represents the highest level component in the Python API.</p>
 
                     <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
                         <span class="n">f_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">f</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="n">f_path</span> <span class="o">=</span> <span class="n">f_path</span> <span class="k">if</span> <span class="n">is_local</span> <span class="k">else</span> <span class="n">fs</span><span class="o">.</span><span class="n">unstrip_protocol</span><span class="p">(</span><span class="n">f_path</span><span class="p">)</span>
                         <span class="n">c</span> <span class="o">=</span> <span class="n">compute_config</span><span class="p">(</span><span class="n">f_path</span><span class="p">)</span>
                         <span class="k">if</span> <span class="n">c</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                             <span class="k">yield</span> <span class="n">f_path</span><span class="p">,</span> <span class="n">c</span>
@@ -4149,7 +4155,10 @@ and its computed configuration.</p>
 <span class="normal">194</span>
 <span class="normal">195</span>
 <span class="normal">196</span>
-<span class="normal">197</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_files</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_paths</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Config</span><span class="p">]]:</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_files</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_paths</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Config</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Provide an iterator for the list of files or directories and their</span>
 <span class="sd">    computed configurations.</span>
 
@@ -4161,7 +4170,7 @@ and its computed configuration.</p>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        An iterator of pairs comprising a file or directory path</span>
-<span class="sd">          and its computed configuration.</span>
+<span class="sd">            and its computed configuration.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">config_list</span><span class="p">,</span> <span class="n">global_filter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config_list</span><span class="o">.</span><span class="n">split_global_filter</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="n">DEFAULT_GLOBAL_FILTER</span>
@@ -4173,6 +4182,7 @@ and its computed configuration.</p>
     <span class="k">for</span> <span class="n">file_path</span> <span class="ow">in</span> <span class="n">file_paths</span><span class="p">:</span>
         <span class="n">_fs</span><span class="p">,</span> <span class="n">root</span> <span class="o">=</span> <span class="n">fsspec</span><span class="o">.</span><span class="n">url_to_fs</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
         <span class="n">fs</span><span class="p">:</span> <span class="n">fsspec</span><span class="o">.</span><span class="n">AbstractFileSystem</span> <span class="o">=</span> <span class="n">_fs</span>
+        <span class="n">is_local</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fs</span><span class="p">,</span> <span class="n">fsspec</span><span class="o">.</span><span class="n">implementations</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">LocalFileSystem</span><span class="p">)</span>
 
         <span class="n">config</span> <span class="o">=</span> <span class="n">compute_config</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">config</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -4183,6 +4193,7 @@ and its computed configuration.</p>
             <span class="k">for</span> <span class="n">path</span><span class="p">,</span> <span class="n">dirs</span><span class="p">,</span> <span class="n">files</span> <span class="ow">in</span> <span class="n">fs</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">topdown</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
                 <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">dirs</span><span class="p">):</span>
                     <span class="n">d_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">d</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="n">d_path</span> <span class="o">=</span> <span class="n">d_path</span> <span class="k">if</span> <span class="n">is_local</span> <span class="k">else</span> <span class="n">fs</span><span class="o">.</span><span class="n">unstrip_protocol</span><span class="p">(</span><span class="n">d_path</span><span class="p">)</span>
                     <span class="n">c</span> <span class="o">=</span> <span class="n">compute_config</span><span class="p">(</span><span class="n">d_path</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">c</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                         <span class="n">dirs</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
@@ -4190,6 +4201,7 @@ and its computed configuration.</p>
 
                 <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
                     <span class="n">f_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">f</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="n">f_path</span> <span class="o">=</span> <span class="n">f_path</span> <span class="k">if</span> <span class="n">is_local</span> <span class="k">else</span> <span class="n">fs</span><span class="o">.</span><span class="n">unstrip_protocol</span><span class="p">(</span><span class="n">f_path</span><span class="p">)</span>
                     <span class="n">c</span> <span class="o">=</span> <span class="n">compute_config</span><span class="p">(</span><span class="n">f_path</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">c</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                         <span class="k">yield</span> <span class="n">f_path</span><span class="p">,</span> <span class="n">c</span>
@@ -4268,10 +4280,7 @@ and its computed configuration.</p>
 
             <details class="quote">
               <summary>Source code in <code>xrlint\cli\engine.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">199</span>
-<span class="normal">200</span>
-<span class="normal">201</span>
-<span class="normal">202</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">202</span>
 <span class="normal">203</span>
 <span class="normal">204</span>
 <span class="normal">205</span>
@@ -4299,7 +4308,10 @@ and its computed configuration.</p>
 <span class="normal">227</span>
 <span class="normal">228</span>
 <span class="normal">229</span>
-<span class="normal">230</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">format_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">results</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Result</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">format_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">results</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Result</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Format the given results.</span>
 
 <span class="sd">    Args:</span>
@@ -4352,14 +4364,14 @@ and its computed configuration.</p>
 
             <details class="quote">
               <summary>Source code in <code>xrlint\cli\engine.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">232</span>
-<span class="normal">233</span>
-<span class="normal">234</span>
-<span class="normal">235</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">235</span>
 <span class="normal">236</span>
 <span class="normal">237</span>
 <span class="normal">238</span>
-<span class="normal">239</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">write_report</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">report</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">write_report</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">report</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Write the validation report provided as plain text.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_path</span><span class="p">:</span>
         <span class="k">with</span> <span class="n">fsspec</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_path</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
@@ -4393,17 +4405,17 @@ The file is written into the current working directory.</p>
 
             <details class="quote">
               <summary>Source code in <code>xrlint\cli\engine.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">241</span>
-<span class="normal">242</span>
-<span class="normal">243</span>
-<span class="normal">244</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">244</span>
 <span class="normal">245</span>
 <span class="normal">246</span>
 <span class="normal">247</span>
 <span class="normal">248</span>
 <span class="normal">249</span>
 <span class="normal">250</span>
-<span class="normal">251</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">init_config_file</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Write an initial configuration file.</span>
 <span class="sd">    The file is written into the current working directory.</span>
@@ -12180,7 +12192,30 @@ This property is None if this message does not have any suggestions.</p>
 <span class="normal">247</span>
 <span class="normal">248</span>
 <span class="normal">249</span>
-<span class="normal">250</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">RuleTester</span><span class="p">:</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span>
+<span class="normal">257</span>
+<span class="normal">258</span>
+<span class="normal">259</span>
+<span class="normal">260</span>
+<span class="normal">261</span>
+<span class="normal">262</span>
+<span class="normal">263</span>
+<span class="normal">264</span>
+<span class="normal">265</span>
+<span class="normal">266</span>
+<span class="normal">267</span>
+<span class="normal">268</span>
+<span class="normal">269</span>
+<span class="normal">270</span>
+<span class="normal">271</span>
+<span class="normal">272</span>
+<span class="normal">273</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">RuleTester</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Utility that helps to test rules.</span>
 
 <span class="sd">    Args:</span>
@@ -12258,13 +12293,36 @@ This property is None if this message does not have any suggestions.</p>
         <span class="n">valid</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">RuleTest</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">invalid</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">RuleTest</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span> <span class="o">|</span> <span class="kc">None</span><span class="p">],</span> <span class="kc">None</span><span class="p">]]:</span>
-        <span class="k">def</span> <span class="nf">make_args</span><span class="p">(</span><span class="n">tests</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">RuleTest</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;valid&quot;</span><span class="p">,</span> <span class="s2">&quot;invalid&quot;</span><span class="p">]):</span>
-            <span class="k">return</span> <span class="p">[(</span><span class="n">test</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span> <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">test</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tests</span> <span class="ow">or</span> <span class="p">[])]</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">rule_op_class</span><span class="p">,</span> <span class="s2">&quot;meta&quot;</span><span class="p">):</span>
+            <span class="n">tests</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_create_name_test</span><span class="p">(</span><span class="n">rule_name</span><span class="p">,</span> <span class="n">rule_op_class</span><span class="p">)])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">tests</span> <span class="o">=</span> <span class="p">{}</span>
 
-        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="k">def</span> <span class="nf">make_args</span><span class="p">(</span><span class="n">checks</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">RuleTest</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;valid&quot;</span><span class="p">,</span> <span class="s2">&quot;invalid&quot;</span><span class="p">]):</span>
+            <span class="k">return</span> <span class="p">[(</span><span class="n">check</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span> <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">check</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">checks</span> <span class="ow">or</span> <span class="p">[])]</span>
+
+        <span class="n">tests</span> <span class="o">|=</span> <span class="nb">dict</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_create_test</span><span class="p">(</span><span class="n">rule_name</span><span class="p">,</span> <span class="n">rule_op_class</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">args</span> <span class="ow">in</span> <span class="n">make_args</span><span class="p">(</span><span class="n">valid</span><span class="p">,</span> <span class="s2">&quot;valid&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="n">make_args</span><span class="p">(</span><span class="n">invalid</span><span class="p">,</span> <span class="s2">&quot;invalid&quot;</span><span class="p">)</span>
         <span class="p">)</span>
+        <span class="k">return</span> <span class="n">tests</span>
+
+    <span class="c1"># noinspection PyMethodMayBeStatic</span>
+    <span class="k">def</span> <span class="nf">_create_name_test</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">rule_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">rule_op_class</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">RuleOp</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">]:</span>
+        <span class="n">test_id</span> <span class="o">=</span> <span class="s2">&quot;test_rule_meta&quot;</span>
+
+        <span class="k">def</span> <span class="nf">test_fn</span><span class="p">(</span><span class="n">_self</span><span class="p">:</span> <span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+            <span class="n">rule_meta</span><span class="p">:</span> <span class="n">RuleMeta</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">rule_op_class</span><span class="p">,</span> <span class="s2">&quot;meta&quot;</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="n">rule_meta</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">rule_name</span><span class="p">,</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;rule name expected to be </span><span class="si">{</span><span class="n">rule_name</span><span class="si">!r}</span><span class="s2">, but was </span><span class="si">{</span><span class="n">rule_meta</span><span class="o">.</span><span class="n">name</span><span class="si">!r}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">test_fn</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">=</span> <span class="n">test_id</span>
+        <span class="k">return</span> <span class="n">test_id</span><span class="p">,</span> <span class="n">test_fn</span>
 
     <span class="k">def</span> <span class="nf">_create_test</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>

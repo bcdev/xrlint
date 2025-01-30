@@ -464,6 +464,13 @@
 <li>use mkdocstrings ref syntax in docstrings</li>
 <li>provide configuration examples (use as tests?)</li>
 <li>add <code>docs_url</code> to all existing rules </li>
+<li>API changes for v0.5:</li>
+<li>clarify when users can pass configuration objects like values 
+    and when configuration like values</li>
+<li>config class naming is confusing, 
+    change <code>Config</code> -&gt; <code>ConfigObject</code>, <code>ConfigList</code> -&gt; <code>Config</code></li>
+<li>Change <code>verify</code> -&gt; <code>validate</code>, 
+    prefix <code>RuleOp</code> methods by <code>validate_</code> for clarity.</li>
 </ul>
 <h2 id="desired">Desired</h2>
 <ul>

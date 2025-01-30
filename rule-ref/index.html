@@ -369,6 +369,24 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#content-desc" class="md-nav__link">
+    <span class="md-ellipsis">
+      content-desc
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#conventions" class="md-nav__link">
+    <span class="md-ellipsis">
+      conventions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#coords-for-dims" class="md-nav__link">
     <span class="md-ellipsis">
       coords-for-dims
@@ -381,15 +399,6 @@
   <a href="#dataset-title-attr" class="md-nav__link">
     <span class="md-ellipsis">
       dataset-title-attr
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#flags" class="md-nav__link">
-    <span class="md-ellipsis">
-      flags
     </span>
   </a>
   
@@ -450,9 +459,27 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#var-units-attr" class="md-nav__link">
+  <a href="#var-desc" class="md-nav__link">
     <span class="md-ellipsis">
-      var-units-attr
+      var-desc
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#var-flags" class="md-nav__link">
+    <span class="md-ellipsis">
+      var-flags
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#var-units" class="md-nav__link">
+    <span class="md-ellipsis">
+      var-units
     </span>
   </a>
   
@@ -691,6 +718,24 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#content-desc" class="md-nav__link">
+    <span class="md-ellipsis">
+      content-desc
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#conventions" class="md-nav__link">
+    <span class="md-ellipsis">
+      conventions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#coords-for-dims" class="md-nav__link">
     <span class="md-ellipsis">
       coords-for-dims
@@ -703,15 +748,6 @@
   <a href="#dataset-title-attr" class="md-nav__link">
     <span class="md-ellipsis">
       dataset-title-attr
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#flags" class="md-nav__link">
-    <span class="md-ellipsis">
-      flags
     </span>
   </a>
   
@@ -772,9 +808,27 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#var-units-attr" class="md-nav__link">
+  <a href="#var-desc" class="md-nav__link">
     <span class="md-ellipsis">
-      var-units-attr
+      var-desc
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#var-flags" class="md-nav__link">
+    <span class="md-ellipsis">
+      var-flags
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#var-units" class="md-nav__link">
+    <span class="md-ellipsis">
+      var-units
     </span>
   </a>
   
@@ -930,16 +984,27 @@
 <p>This page is auto-generated from XRLint's builtin rules (<code>python -m mkruleref</code>).
 New rules will be added by upcoming XRLint releases.</p>
 <h2 id="core-rules">Core Rules</h2>
+<h3 id="content-desc"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7M9 21a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-1H9z"/></svg></span> <code>content-desc</code></h3>
+<p>A dataset should provide information about where the data came from and what has been done to it. This information is mainly for the benefit of human readers. The rule accepts the following configuration parameters:</p>
+<ul>
+<li><code>globals</code>: list of names of required global attributes. Defaults to <code>['title', 'history']</code>.</li>
+<li><code>commons</code>: list of names of required variable attributes that can also be defined globally. Defaults to <code>['institution', 'source', 'references', 'comment']</code>.</li>
+<li><code>no_vars</code>: do not check variables at all. Defaults to <code>False</code>.</li>
+<li><code>ignored_vars</code>: list of ignored variables (regex patterns). Defaults to <code>['crs', 'spatial_ref']</code>.</li>
+</ul>
+<p><a href="https://cfconventions.org/cf-conventions/cf-conventions.html#description-of-file-contents"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.5 4A1.5 1.5 0 0 0 12 5.5 1.5 1.5 0 0 0 13.5 7 1.5 1.5 0 0 0 15 5.5 1.5 1.5 0 0 0 13.5 4m-.36 4.77c-1.19.1-4.44 2.69-4.44 2.69-.2.15-.14.14.02.42.16.27.14.29.33.16.2-.13.53-.34 1.08-.68 2.12-1.36.34 1.78-.57 7.07-.36 2.62 2 1.27 2.61.87.6-.39 2.21-1.5 2.37-1.61.22-.15.06-.27-.11-.52-.12-.17-.24-.05-.24-.05-.65.43-1.84 1.33-2 .76-.19-.57 1.03-4.48 1.7-7.17.11-.64.41-2.04-.75-1.94"/></svg></span></a></p>
+<p>Contained in:  <code>all</code>-<span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 15H6l7-14v8h5l-7 14z"/></svg></span> <code>recommended</code>-<span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 14h-2V9h2m0 9h-2v-2h2M1 21h22L12 2z"/></svg></span></p>
+<h3 id="conventions"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7M9 21a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-1H9z"/></svg></span> <code>conventions</code></h3>
+<p>Datasets should identify the applicable conventions using the <code>Conventions</code> attribute.
+ The rule has an optional configuration parameter <code>match</code> which is a regex pattern that the value of the <code>Conventions</code> attribute must match, if any. If not provided, the rule just verifies that the attribute exists and whether it is a character string.
+<a href="https://cfconventions.org/cf-conventions/cf-conventions.html#identification-of-conventions"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.5 4A1.5 1.5 0 0 0 12 5.5 1.5 1.5 0 0 0 13.5 7 1.5 1.5 0 0 0 15 5.5 1.5 1.5 0 0 0 13.5 4m-.36 4.77c-1.19.1-4.44 2.69-4.44 2.69-.2.15-.14.14.02.42.16.27.14.29.33.16.2-.13.53-.34 1.08-.68 2.12-1.36.34 1.78-.57 7.07-.36 2.62 2 1.27 2.61.87.6-.39 2.21-1.5 2.37-1.61.22-.15.06-.27-.11-.52-.12-.17-.24-.05-.24-.05-.65.43-1.84 1.33-2 .76-.19-.57 1.03-4.48 1.7-7.17.11-.64.41-2.04-.75-1.94"/></svg></span></a></p>
+<p>Contained in:  <code>all</code>-<span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 15H6l7-14v8h5l-7 14z"/></svg></span> <code>recommended</code>-<span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 14h-2V9h2m0 9h-2v-2h2M1 21h22L12 2z"/></svg></span></p>
 <h3 id="coords-for-dims"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14 12h-4v-2h4m0 6h-4v-2h4m6-6h-2.81a6 6 0 0 0-1.82-1.96L17 4.41 15.59 3l-2.17 2.17a6 6 0 0 0-2.83 0L8.41 3 7 4.41l1.62 1.63C7.88 6.55 7.26 7.22 6.81 8H4v2h2.09c-.05.33-.09.66-.09 1v1H4v2h2v1c0 .34.04.67.09 1H4v2h2.81c1.04 1.79 2.97 3 5.19 3s4.15-1.21 5.19-3H20v-2h-2.09c.05-.33.09-.66.09-1v-1h2v-2h-2v-1c0-.34-.04-.67-.09-1H20z"/></svg></span> <code>coords-for-dims</code></h3>
 <p>Dimensions of data variables should have corresponding coordinates.</p>
 <p>Contained in:  <code>all</code>-<span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 15H6l7-14v8h5l-7 14z"/></svg></span> <code>recommended</code>-<span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 15H6l7-14v8h5l-7 14z"/></svg></span></p>
 <h3 id="dataset-title-attr"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7M9 21a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-1H9z"/></svg></span> <code>dataset-title-attr</code></h3>
 <p>Datasets should be given a non-empty title.</p>
 <p>Contained in:  <code>all</code>-<span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 15H6l7-14v8h5l-7 14z"/></svg></span> <code>recommended</code>-<span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 14h-2V9h2m0 9h-2v-2h2M1 21h22L12 2z"/></svg></span></p>
-<h3 id="flags"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7M9 21a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-1H9z"/></svg></span> <code>flags</code></h3>
-<p>Validate attributes 'flag_values', 'flag_masks' and 'flag_meanings' that make variables that contain flag values self describing. 
-<a href="https://cfconventions.org/cf-conventions/cf-conventions.html#flags"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.5 4A1.5 1.5 0 0 0 12 5.5 1.5 1.5 0 0 0 13.5 7 1.5 1.5 0 0 0 15 5.5 1.5 1.5 0 0 0 13.5 4m-.36 4.77c-1.19.1-4.44 2.69-4.44 2.69-.2.15-.14.14.02.42.16.27.14.29.33.16.2-.13.53-.34 1.08-.68 2.12-1.36.34 1.78-.57 7.07-.36 2.62 2 1.27 2.61.87.6-.39 2.21-1.5 2.37-1.61.22-.15.06-.27-.11-.52-.12-.17-.24-.05-.24-.05-.65.43-1.84 1.33-2 .76-.19-.57 1.03-4.48 1.7-7.17.11-.64.41-2.04-.75-1.94"/></svg></span></a></p>
-<p>Contained in:  <code>all</code>-<span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 15H6l7-14v8h5l-7 14z"/></svg></span> <code>recommended</code>-<span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 15H6l7-14v8h5l-7 14z"/></svg></span></p>
 <h3 id="grid-mappings"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14 12h-4v-2h4m0 6h-4v-2h4m6-6h-2.81a6 6 0 0 0-1.82-1.96L17 4.41 15.59 3l-2.17 2.17a6 6 0 0 0-2.83 0L8.41 3 7 4.41l1.62 1.63C7.88 6.55 7.26 7.22 6.81 8H4v2h2.09c-.05.33-.09.66-.09 1v1H4v2h2v1c0 .34.04.67.09 1H4v2h2.81c1.04 1.79 2.97 3 5.19 3s4.15-1.21 5.19-3H20v-2h-2.09c.05-.33.09-.66.09-1v-1h2v-2h-2v-1c0-.34-.04-.67-.09-1H20z"/></svg></span> <code>grid-mappings</code></h3>
 <p>Grid mappings, if any, shall have valid grid mapping coordinate variables.</p>
 <p>Contained in:  <code>all</code>-<span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 15H6l7-14v8h5l-7 14z"/></svg></span> <code>recommended</code>-<span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 15H6l7-14v8h5l-7 14z"/></svg></span></p>
@@ -962,8 +1027,17 @@ New rules will be added by upcoming XRLint releases.</p>
 <p>Time coordinates should have valid and unambiguous time units encoding.
 <a href="https://cfconventions.org/cf-conventions/cf-conventions.html#time-coordinate"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.5 4A1.5 1.5 0 0 0 12 5.5 1.5 1.5 0 0 0 13.5 7 1.5 1.5 0 0 0 15 5.5 1.5 1.5 0 0 0 13.5 4m-.36 4.77c-1.19.1-4.44 2.69-4.44 2.69-.2.15-.14.14.02.42.16.27.14.29.33.16.2-.13.53-.34 1.08-.68 2.12-1.36.34 1.78-.57 7.07-.36 2.62 2 1.27 2.61.87.6-.39 2.21-1.5 2.37-1.61.22-.15.06-.27-.11-.52-.12-.17-.24-.05-.24-.05-.65.43-1.84 1.33-2 .76-.19-.57 1.03-4.48 1.7-7.17.11-.64.41-2.04-.75-1.94"/></svg></span></a></p>
 <p>Contained in:  <code>all</code>-<span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 15H6l7-14v8h5l-7 14z"/></svg></span> <code>recommended</code>-<span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 15H6l7-14v8h5l-7 14z"/></svg></span></p>
-<h3 id="var-units-attr"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7M9 21a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-1H9z"/></svg></span> <code>var-units-attr</code></h3>
-<p>Every variable should have a valid 'units' attribute.</p>
+<h3 id="var-desc"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7M9 21a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-1H9z"/></svg></span> <code>var-desc</code></h3>
+<p>Check that each data variable provides an identification and description of the content. The rule can be configured by parameter <code>attrs</code> which is a list of names of attributes that provides descriptive information. It defaults to <code>['standard_name', 'long_name']</code>.
+<a href="https://cfconventions.org/cf-conventions/cf-conventions.html#standard-name"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.5 4A1.5 1.5 0 0 0 12 5.5 1.5 1.5 0 0 0 13.5 7 1.5 1.5 0 0 0 15 5.5 1.5 1.5 0 0 0 13.5 4m-.36 4.77c-1.19.1-4.44 2.69-4.44 2.69-.2.15-.14.14.02.42.16.27.14.29.33.16.2-.13.53-.34 1.08-.68 2.12-1.36.34 1.78-.57 7.07-.36 2.62 2 1.27 2.61.87.6-.39 2.21-1.5 2.37-1.61.22-.15.06-.27-.11-.52-.12-.17-.24-.05-.24-.05-.65.43-1.84 1.33-2 .76-.19-.57 1.03-4.48 1.7-7.17.11-.64.41-2.04-.75-1.94"/></svg></span></a></p>
+<p>Contained in:  <code>all</code>-<span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 15H6l7-14v8h5l-7 14z"/></svg></span> <code>recommended</code>-<span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 14h-2V9h2m0 9h-2v-2h2M1 21h22L12 2z"/></svg></span></p>
+<h3 id="var-flags"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7M9 21a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-1H9z"/></svg></span> <code>var-flags</code></h3>
+<p>Validate attributes 'flag_values', 'flag_masks' and 'flag_meanings' that make variables that contain flag values self describing. 
+<a href="https://cfconventions.org/cf-conventions/cf-conventions.html#flags"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.5 4A1.5 1.5 0 0 0 12 5.5 1.5 1.5 0 0 0 13.5 7 1.5 1.5 0 0 0 15 5.5 1.5 1.5 0 0 0 13.5 4m-.36 4.77c-1.19.1-4.44 2.69-4.44 2.69-.2.15-.14.14.02.42.16.27.14.29.33.16.2-.13.53-.34 1.08-.68 2.12-1.36.34 1.78-.57 7.07-.36 2.62 2 1.27 2.61.87.6-.39 2.21-1.5 2.37-1.61.22-.15.06-.27-.11-.52-.12-.17-.24-.05-.24-.05-.65.43-1.84 1.33-2 .76-.19-.57 1.03-4.48 1.7-7.17.11-.64.41-2.04-.75-1.94"/></svg></span></a></p>
+<p>Contained in:  <code>all</code>-<span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 15H6l7-14v8h5l-7 14z"/></svg></span> <code>recommended</code>-<span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 15H6l7-14v8h5l-7 14z"/></svg></span></p>
+<h3 id="var-units"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7M9 21a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-1H9z"/></svg></span> <code>var-units</code></h3>
+<p>Every variable should provide a description of its units.
+<a href="https://cfconventions.org/cf-conventions/cf-conventions.html#units"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.5 4A1.5 1.5 0 0 0 12 5.5 1.5 1.5 0 0 0 13.5 7 1.5 1.5 0 0 0 15 5.5 1.5 1.5 0 0 0 13.5 4m-.36 4.77c-1.19.1-4.44 2.69-4.44 2.69-.2.15-.14.14.02.42.16.27.14.29.33.16.2-.13.53-.34 1.08-.68 2.12-1.36.34 1.78-.57 7.07-.36 2.62 2 1.27 2.61.87.6-.39 2.21-1.5 2.37-1.61.22-.15.06-.27-.11-.52-.12-.17-.24-.05-.24-.05-.65.43-1.84 1.33-2 .76-.19-.57 1.03-4.48 1.7-7.17.11-.64.41-2.04-.75-1.94"/></svg></span></a></p>
 <p>Contained in:  <code>all</code>-<span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 15H6l7-14v8h5l-7 14z"/></svg></span> <code>recommended</code>-<span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 14h-2V9h2m0 9h-2v-2h2M1 21h22L12 2z"/></svg></span></p>
 <h2 id="xcube-rules">xcube Rules</h2>
 <h3 id="any-spatial-data-var"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14 12h-4v-2h4m0 6h-4v-2h4m6-6h-2.81a6 6 0 0 0-1.82-1.96L17 4.41 15.59 3l-2.17 2.17a6 6 0 0 0-2.83 0L8.41 3 7 4.41l1.62 1.63C7.88 6.55 7.26 7.22 6.81 8H4v2h2.09c-.05.33-.09.66-.09 1v1H4v2h2v1c0 .34.04.67.09 1H4v2h2.81c1.04 1.79 2.97 3 5.19 3s4.15-1.21 5.19-3H20v-2h-2.09c.05-.33.09-.66.09-1v-1h2v-2h-2v-1c0-.34-.04-.67-.09-1H20z"/></svg></span> <code>any-spatial-data-var</code></h3>
