@@ -2,7 +2,7 @@ import re
 
 from xrlint.node import DataArrayNode, DatasetNode
 from xrlint.plugins.core.plugin import plugin
-from xrlint.rule import RuleContext, RuleOp, RuleExit
+from xrlint.rule import RuleContext, RuleExit, RuleOp
 from xrlint.util.schema import schema
 
 DEFAULT_GLOBAL_ATTRS = ["title", "history"]
