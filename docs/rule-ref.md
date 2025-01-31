@@ -69,7 +69,7 @@ Contained in:  `all`-:material-lightning-bolt: `recommended`-:material-alert:
 Empty chunks should not be encoded and written. The rule currently applies to Zarr format only.
 [:material-information-variant:](https://docs.xarray.dev/en/stable/generated/xarray.Dataset.to_zarr.html#xarray-dataset-to-zarr)
 
-Contained in:  `all`-:material-lightning-bolt: `recommended`-:material-alert:
+Contained in:  `all`-:material-lightning-bolt: `recommended`-:material-circle-off-outline:
 
 ### :material-bug: `time-coordinate`
 

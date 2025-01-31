@@ -1,16 +1,28 @@
 import numpy as np
 import xarray as xr
 
-nx = 2
-ny = 3
-nt = 4
+nx = 720
+ny = 360
+nt = 5
+
+ncx = 180
+ncy = 180
+nct = 1
 
 
 def make_dataset() -> xr.Dataset:
     """Create a dataset that passes xrlint core rules."""
 
     return xr.Dataset(
-        attrs=dict(title="SST-Climatology Subset"),
+        attrs=dict(
+            Conventions="CF-1.10",
+            title="SST-Climatology Subset",
+            history="2025-01-31 17:31:00 - created;",
+            institution="BC",
+            source="SST CCI L4",
+            references="https://climate.esa.int/en/projects/sea-surface-temperature/",
+            comment="Demo dataset",
+        ),
         coords={
             "x": xr.DataArray(
                 np.linspace(-180, 180, nx),
@@ -53,15 +65,25 @@ def make_dataset() -> xr.Dataset:
             "sst": xr.DataArray(
                 np.random.random((nt, ny, nx)),
                 dims=["time", "y", "x"],
-                attrs={"units": "kelvin", "grid_mapping": "spatial_ref"},
+                attrs={
+                    "standard_name": "sea_surface_temperature",
+                    "long_name": "sea surface temperature",
+                    "units": "kelvin",
+                    "grid_mapping": "spatial_ref",
+                },
             ),
             "sst_anomaly": xr.DataArray(
                 np.random.random((nt, ny, nx)),
                 dims=["time", "y", "x"],
-                attrs={"units": "kelvin", "grid_mapping": "spatial_ref"},
+                attrs={
+                    "standard_name": "sea_surface_temperature_anomaly",
+                    "long_name": "sea surface temperature anomaly",
+                    "units": "kelvin",
+                    "grid_mapping": "spatial_ref",
+                },
             ),
         },
-    )
+    ).chunk(time=nct, y=ncy, x=ncx)
 
 
 def make_dataset_with_issues() -> xr.Dataset:
