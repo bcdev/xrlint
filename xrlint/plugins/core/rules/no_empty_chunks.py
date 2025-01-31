@@ -1,4 +1,4 @@
-from xrlint.node import DataArrayNode
+from xrlint.node import DatasetNode
 from xrlint.plugins.core.plugin import plugin
 from xrlint.rule import RuleContext, RuleExit, RuleOp
 
@@ -17,23 +17,18 @@ from xrlint.rule import RuleContext, RuleExit, RuleOp
     ),
 )
 class NoEmptyChunks(RuleOp):
-    def dataset(self, ctx: RuleContext, node: DataArrayNode):
-        source = ctx.dataset.encoding.get("source")
+    def dataset(self, ctx: RuleContext, node: DatasetNode):
+        source = node.dataset.encoding.get("source")
         is_zarr = isinstance(source, str) and source.endswith(".zarr")
-        if not is_zarr:
-            # if not a Zarr, no need to check further
-            raise RuleExit
-
-    def data_array(self, ctx: RuleContext, node: DataArrayNode):
-        if node.name in ctx.dataset.coords:
-            return
-
-        array = node.data_array
-        encoding = array.encoding
-        if (
-            "write_empty_chunks" not in encoding
-            and "_FillValue" in encoding
-            and "chunks" in encoding
-            and tuple(encoding.get("chunks")) != tuple(array.shape)
-        ):
-            ctx.report("Consider writing with 'write_empty_chunks=False'.")
+        if is_zarr:
+            for var in node.dataset.data_vars.values():
+                is_chunked_in_storage = (
+                    "_FillValue" in var.encoding
+                    and "chunks" in var.encoding
+                    and tuple(var.encoding.get("chunks")) != tuple(var.shape)
+                )
+                if is_chunked_in_storage:
+                    ctx.report("Consider writing with `write_empty_chunks=False`.")
+                    break
+        # no need to traverse further
+        raise RuleExit

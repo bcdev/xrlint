@@ -2,6 +2,11 @@
 
 ## Version 0.4.2 (in development)
 
+- Rule `no-empty-chunks` has taken off the `"recommended"` settings 
+  as there is no easy/efficient way to tell whether a dataset has 
+  been written using `write_emtpy_chunks` option or not.
+  The rule message itself has been fixed. (#45) 
+
 ## Version 0.4.1 (from 2025-01-31)
 
 ### Changes
