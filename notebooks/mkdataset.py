@@ -9,6 +9,7 @@ ncx = 180
 ncy = 180
 nct = 1
 
+
 def make_dataset() -> xr.Dataset:
     """Create a dataset that passes xrlint core rules."""
 
@@ -77,7 +78,7 @@ def make_dataset() -> xr.Dataset:
                 attrs={
                     "standard_name": "sea_surface_temperature_anomaly",
                     "long_name": "sea surface temperature anomaly",
-                    "units": "kelvin", 
+                    "units": "kelvin",
                     "grid_mapping": "spatial_ref",
                 },
             ),
