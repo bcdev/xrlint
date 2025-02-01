@@ -24,7 +24,6 @@
 
 ## Nice to have
 
-- add some more tests so we reach 100% coverage
 - support `autofix` feature
 - support `md` (markdown) output format
 - support formatter op args/kwargs and apply validation schema

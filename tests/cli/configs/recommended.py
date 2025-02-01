@@ -14,7 +14,7 @@ def export_config():
         *xcube.configs["recommended"],
         {
             "rules": {
-                "dataset-title-attr": "error",
+                "xcube/dataset-title": "error",
                 "xcube/single-grid-mapping": "off",
             }
         },

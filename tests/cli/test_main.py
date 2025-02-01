@@ -24,13 +24,16 @@ no_match_config_yaml = """
 class CliMainTest(TestCase):
     files = ["dataset1.zarr", "dataset1.nc", "dataset2.zarr", "dataset2.nc"]
 
-    ok_config_yaml = "- rules:\n    dataset-title-attr: error\n"
-    fail_config_yaml = "- rules:\n    no-empty-attrs: error\n"
+    ok_config_yaml = "- rules:\n    var-units: error\n"
+    fail_config_yaml = "- rules:\n    conventions: error\n"
+    # noinspection SpellCheckingInspection
+    invalid_config_yaml = "- recommentet\n"
 
     datasets = dict(
         dataset1=xr.Dataset(attrs={"title": "Test 1"}),
         dataset2=xr.Dataset(
-            attrs={"title": "Test 2"}, data_vars={"v": xr.DataArray([1, 2, 3])}
+            attrs={"title": "Test 2"},
+            data_vars={"v": xr.DataArray([1, 2, 3], attrs={"units": "m/s"})},
         ),
     )
 
@@ -80,20 +83,8 @@ class CliMainTest(TestCase):
 
     def test_files_no_config_lookup(self):
         with text_file(DEFAULT_CONFIG_FILE_YAML, self.ok_config_yaml):
-            result = self.xrlint("--no-config-lookup", "--no-color", *self.files)
-            self.assertEqual(
-                "\n"
-                "dataset1.zarr:\n"
-                "dataset  error  No rules configured or applicable.\n\n"
-                "dataset1.nc:\n"
-                "dataset  error  No rules configured or applicable.\n\n"
-                "dataset2.zarr:\n"
-                "dataset  error  No rules configured or applicable.\n\n"
-                "dataset2.nc:\n"
-                "dataset  error  No rules configured or applicable.\n\n"
-                "4 errors\n\n",
-                result.output,
-            )
+            result = self.xrlint("--no-config-lookup", *self.files)
+            self.assertEqual("Error: no rules configured\n", result.output)
             self.assertEqual(1, result.exit_code)
 
     def test_files_one_rule(self):
@@ -112,8 +103,7 @@ class CliMainTest(TestCase):
 
         with text_file(DEFAULT_CONFIG_FILE_YAML, self.fail_config_yaml):
             result = self.xrlint(*self.files)
-            self.assertIn("Missing metadata, attributes are empty.", result.output)
-            self.assertIn("no-empty-attrs", result.output)
+            self.assertIn("Missing attribute 'Conventions'.", result.output)
             self.assertEqual(1, result.exit_code)
 
     def test_dir_one_rule(self):
@@ -129,8 +119,7 @@ class CliMainTest(TestCase):
 
         with text_file(DEFAULT_CONFIG_FILE_YAML, self.fail_config_yaml):
             result = self.xrlint(*self.files)
-            self.assertIn("Missing metadata, attributes are empty.", result.output)
-            self.assertIn("no-empty-attrs", result.output)
+            self.assertIn("Missing attribute 'Conventions'.", result.output)
             self.assertEqual(1, result.exit_code)
 
     def test_color_no_color(self):
@@ -161,10 +150,25 @@ class CliMainTest(TestCase):
             )
             self.assertEqual(0, result.exit_code)
 
+    def test_files_with_invalid_config(self):
+        with text_file(DEFAULT_CONFIG_FILE_YAML, self.invalid_config_yaml):
+            result = self.xrlint("--no-color", *self.files)
+            self.assertEqual(
+                "Error: xrlint_config.yaml: configuration 'recommentet' not found\n",
+                result.output,
+            )
+            self.assertEqual(1, result.exit_code)
+
     def test_files_with_rule_option(self):
-        result = self.xrlint("--rule", "no-empty-attrs: error", *self.files)
-        self.assertIn("Missing metadata, attributes are empty.", result.output)
-        self.assertIn("no-empty-attrs", result.output)
+        result = self.xrlint("--rule", "conventions: error", *self.files)
+        self.assertIn("Missing attribute 'Conventions'.", result.output)
+        self.assertEqual(1, result.exit_code)
+
+    def test_files_with_max_warnings(self):
+        result = self.xrlint(
+            "--rule", "conventions: warn", "--max-warnings", "0", *self.files
+        )
+        self.assertIn("Maximum number of warnings exceeded.", result.output)
         self.assertEqual(1, result.exit_code)
 
     def test_files_with_plugin_and_rule_options(self):
@@ -213,7 +217,7 @@ class CliMainTest(TestCase):
                     '    "__core__": "xrlint.plugins.core:export_plugin"\n'
                     "  },\n"
                     '  "rules": {\n'
-                    '    "dataset-title-attr": 2\n'
+                    '    "var-units": 2\n'
                     "  }\n"
                     "}\n"
                 ),
@@ -222,11 +226,13 @@ class CliMainTest(TestCase):
             self.assertEqual(0, result.exit_code)
 
     def test_files_with_invalid_format_option(self):
-        result = self.xrlint("-f", "foo", *self.files)
-        self.assertIn(
-            "Error: unknown format 'foo'. The available formats are '", result.output
-        )
-        self.assertEqual(1, result.exit_code)
+        with text_file(DEFAULT_CONFIG_FILE_YAML, self.ok_config_yaml):
+            result = self.xrlint("-f", "foo", *self.files)
+            self.assertIn(
+                "Error: unknown format 'foo'. The available formats are '",
+                result.output,
+            )
+            self.assertEqual(1, result.exit_code)
 
     def test_init(self):
         config_file = DEFAULT_CONFIG_FILE_YAML
@@ -256,6 +262,7 @@ class CliMainTest(TestCase):
             self.assertEqual(result.exit_code, 1)
 
 
+# noinspection PyTypeChecker
 class CliMainMetaTest(TestCase):
     def test_help(self):
         runner = CliRunner()

@@ -12,12 +12,20 @@ from xrlint.rule import RuleContext, RuleOp
 )
 class VarUnits(RuleOp):
     def validate_variable(self, ctx: RuleContext, node: VariableNode):
-        data_array = node.array
-        units = data_array.attrs.get("units")
-        if units is None:
-            if "grid_mapping_name" not in data_array.attrs:
-                ctx.report(f"Missing 'units' attribute in variable {node.name!r}.")
+        array = node.array
+        attrs = array.attrs
+
+        if "grid_mapping_name" in attrs:
+            # likely grid mapping variable --> rule "gid-mappings"
+            return
+        if "units" in array.encoding:
+            # likely time coordinate --> rule "time-coordinate"
+            return
+
+        units = attrs.get("units")
+        if "units" not in attrs:
+            ctx.report("Missing attribute 'units'.")
         elif not isinstance(units, str):
-            ctx.report(f"Invalid 'units' attribute in variable {node.name!r}.")
+            ctx.report(f"Invalid attribute 'units': {units!r}")
         elif not units:
-            ctx.report(f"Empty 'units' attribute in variable {node.name!r}.")
+            ctx.report("Empty attribute 'units'.")

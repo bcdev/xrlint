@@ -2,19 +2,32 @@
 
 ## Version 0.5.0 (in development)
 
-### Incompatible API changes:
+### Changes
 
-- Renamed nodes and node properties for consistency and clarity:
-  - renamed `DataArrayNode` into `VariableNode`
-  - renamed `DataArrayNode.data_array` into `VariableNode.array`
+- Rule `no-empty-chunks` has taken off the `"recommended"` settings 
+  as there is no easy/efficient way to tell whether a dataset has 
+  been written using `write_emtpy_chunks` option or not.
+  The rule message itself has been fixed. (#45) 
+
+- Adjusted messages of rules `var-units` and `time-coordinate` 
+  to be consistent with messages of other rules.
+
+- Core rule `dataset-title-attr` has been moved into `xcube` plugin
+  and renamed to `xcube/dataset-title` because the core rule `var-descr` 
+  covers checking for dataset titles.
+
+### Incompatible API changes
 
 - Changed general use of term _verify_ into _validate_: 
   - prefixed `RuleOp` methods by `validate_` for clarity.
   - renamed `XRLint.verify_datasets()` into `validate_files()`
   - renamed `Lint.verify_dataset()` into `validate()`
 
-- Various changes for improved clarity and consistency 
-  regarding configuration management:
+- Renamed nodes and node properties for clarity and consistency:
+  - renamed `DataArrayNode` into `VariableNode`
+  - renamed `DataArrayNode.data_array` into `VariableNode.array`
+
+- Various changes for improved clarity regarding configuration management:
   - introduced type aliases `ConfigLike` and `ConfigObjectLike`.
   - renamed `Config` into `ConfigObject` 
   - renamed `ConfigList.configs` into `config_objects` 
@@ -24,6 +37,10 @@
   - renamed `XRLint.load_config_list()` into `init_config()`
   - added class method `from_config()` to `ConfigList`.
   - removed function `xrlint.config.merge_configs` as it was no longer used.
+
+### Other changes
+
+- Added more tests so we finally reached 100% coverage.
 
 ## Version 0.4.1 (from 2025-01-31)
 

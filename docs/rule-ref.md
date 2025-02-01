@@ -32,12 +32,6 @@ Dimensions of data variables should have corresponding coordinates.
 
 Contained in:  `all`-:material-lightning-bolt: `recommended`-:material-lightning-bolt:
 
-### :material-lightbulb: `dataset-title-attr`
-
-Datasets should be given a non-empty title.
-
-Contained in:  `all`-:material-lightning-bolt: `recommended`-:material-alert:
-
 ### :material-bug: `grid-mappings`
 
 Grid mappings, if any, shall have valid grid mapping coordinate variables.
@@ -69,7 +63,7 @@ Contained in:  `all`-:material-lightning-bolt: `recommended`-:material-alert:
 Empty chunks should not be encoded and written. The rule currently applies to Zarr format only.
 [:material-information-variant:](https://docs.xarray.dev/en/stable/generated/xarray.Dataset.to_zarr.html#xarray-dataset-to-zarr)
 
-Contained in:  `all`-:material-lightning-bolt: `recommended`-:material-alert:
+Contained in:  `all`-:material-lightning-bolt: `recommended`-:material-circle-off-outline:
 
 ### :material-bug: `time-coordinate`
 
@@ -121,6 +115,13 @@ Spatial data variables should encode xcube color mappings in their metadata.
 [:material-information-variant:](https://xcube.readthedocs.io/en/latest/cubespec.html#encoding-of-colors)
 
 Contained in:  `all`-:material-lightning-bolt: `recommended`-:material-alert:
+
+### :material-bug: `dataset-title`
+
+Datasets should be given a non-empty title.
+[:material-information-variant:](https://xcube.readthedocs.io/en/latest/cubespec.html#metadata)
+
+Contained in:  `all`-:material-lightning-bolt: `recommended`-:material-lightning-bolt:
 
 ### :material-lightbulb: `grid-mapping-naming`
 

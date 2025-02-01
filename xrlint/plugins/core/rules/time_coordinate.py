@@ -56,17 +56,26 @@ class TimeCoordinate(RuleOp):
         array = node.array
         attrs = array.attrs
         encoding = array.encoding
+        attrs = array.attrs
 
-        units: str | None = encoding.get("units", attrs.get("units"))
-        if units is None:
+        units: str | None = None
+        source: str | None = None
+        if "units" in encoding:
+            units = encoding["units"]
+            source = "encoding"
+        elif "units" in attrs:
+            units = attrs["units"]
+            source = "attribute"
+
+        if source is None:
             if _is_time_by_name(attrs):
-                ctx.report("Missing 'units' attribute for time coordinate.")
+                ctx.report("Missing encoding/attribute 'units'.")
             # No more to check w.o. time units
             return
         elif not isinstance(units, str):
             if _is_time_by_name(attrs):
                 ctx.report(
-                    f"Invalid 'units' attribute for time coordinate,"
+                    f"Invalid {source} 'units',"
                     f" expected type str, got {type(units).__name__}."
                 )
             # No more to check w.o. time units
@@ -83,11 +92,14 @@ class TimeCoordinate(RuleOp):
             units_ok = False
         else:
             # We have time units
-
-            if not encoding.get("calendar", attrs.get("calendar")):
-                ctx.report(
-                    "Attribute/encoding 'calendar' should be specified.",
-                )
+            calendar: str | None = None
+            if source == "encoding" and "calendar" in encoding:
+                calendar = encoding["calendar"]
+            elif source == "attribute" and "calendar" in attrs:
+                calendar = attrs["calendar"]
+            # Note, we should also check here for valid calendar names
+            if calendar is None:
+                ctx.report(f"Missing {source} 'calendar'.")
 
             uot_part = units_parts[0]
             date_part = units_parts[2]
@@ -97,7 +109,7 @@ class TimeCoordinate(RuleOp):
             if uot_part not in _ALL_UNITS_OF_TIME:
                 ctx.report(
                     f"Unrecognized units of measure for time"
-                    f" in 'units' attribute: {units!r}.",
+                    f" in {source} 'units': {units!r}.",
                     suggestions=[
                         _units_format_suggestion(),
                         _units_of_time_suggestion(),
@@ -106,7 +118,7 @@ class TimeCoordinate(RuleOp):
             elif uot_part in _AMBIGUOUS_UNITS_OF_TIME:
                 ctx.report(
                     f"Ambiguous units of measure for time in"
-                    f" 'units' attribute: {units!r}.",
+                    f" {source} 'units': {units!r}.",
                     suggestions=[
                         _units_format_suggestion(),
                         _units_of_time_suggestion(),
@@ -138,7 +150,7 @@ class TimeCoordinate(RuleOp):
 
             if not tz_part:
                 ctx.report(
-                    f"Missing timezone in 'units' attribute: {units!r}.",
+                    f"Missing timezone in {source} 'units': {units!r}.",
                     suggestions=[
                         _units_format_suggestion(),
                         f"Append timezone specification, e.g., use"
@@ -148,14 +160,14 @@ class TimeCoordinate(RuleOp):
 
         if not units_ok:
             ctx.report(
-                f"Invalid 'units' attribute: {units!r}.",
+                f"Invalid {source} 'units': {units!r}.",
                 suggestions=[_units_format_suggestion()],
             )
 
 
 def _units_format_suggestion():
     use_units_format_msg = (
-        f"Specify 'units' attribute using the UDUNITS format,"
+        f"Specify units using the UDUNITS format,"
         f" e.g., {_EXAMPLE_UNIT_1!r} or {_EXAMPLE_UNIT_2!r}."
     )
     return use_units_format_msg
