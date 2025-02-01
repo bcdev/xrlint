@@ -4,13 +4,14 @@ from xrlint.rule import RuleContext, RuleOp
 
 
 @plugin.define_rule(
-    "dataset-title-attr",
+    "dataset-title",
     version="1.0.0",
     type="suggestion",
     description="Datasets should be given a non-empty title.",
+    docs_url="https://xcube.readthedocs.io/en/latest/cubespec.html#metadata"
 )
-class DatasetTitleAttr(RuleOp):
+class DatasetTitle(RuleOp):
     def dataset(self, ctx: RuleContext, node: DatasetNode):
-        title = node.dataset.attrs.get("title")
-        if not title:
-            ctx.report("Missing 'title' attribute in dataset.")
+        attrs = node.dataset.attrs
+        if "title" not in attrs:
+            ctx.report("Missing attribute 'title'.")
