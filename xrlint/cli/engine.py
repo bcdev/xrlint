@@ -70,7 +70,7 @@ class XRLint(FormatterContext):
         """Get current result statistics."""
         return self._result_stats
 
-    def init_config(self, *configs: ConfigLike) -> None:
+    def init_config(self, *extra_configs: ConfigLike) -> None:
         """Initialize configuration.
         The function will load the configuration list from a specified
         configuration file, if any.
@@ -78,9 +78,11 @@ class XRLint(FormatterContext):
         in the current working directory.
 
         Args:
-            *configs: Variable number of configuration-like arguments.
+            *extra_configs: Variable number of configuration-like arguments.
                 For more information see the
                 [ConfigLike][xrlint.config.ConfigLike] type alias.
+                If provided, `extra_configs` will be appended to configuration
+                read from configration files and passed as command line options.
         """
         plugins = {}
         for plugin_spec in self.plugin_specs:
@@ -92,36 +94,37 @@ class XRLint(FormatterContext):
             rule = yaml.load(rule_spec, Loader=yaml.SafeLoader)
             rules.update(rule)
 
-        config = None
+        file_config = None
 
         if self.config_path:
             try:
-                config = read_config(self.config_path)
+                file_config = read_config(self.config_path)
             except (FileNotFoundError, ConfigError) as e:
                 raise click.ClickException(f"{e}") from e
         elif not self.no_config_lookup:
             for config_path in DEFAULT_CONFIG_FILES:
                 try:
-                    config = read_config(config_path)
+                    file_config = read_config(config_path)
                     break
                 except FileNotFoundError:
                     pass
                 except ConfigError as e:
                     raise click.ClickException(f"{e}") from e
-            if config is None:
+            if file_config is None:
                 click.echo("Warning: no configuration file found.")
 
         core_config_obj = get_core_config_object()
         core_config_obj.plugins.update(plugins)
-        base_configs = [core_config_obj]
-        if config is not None:
-            base_configs += config.objects
+
+        base_configs = []
+        if file_config is not None:
+            base_configs += file_config.objects
         if rules:
             base_configs += [{"rules": rules}]
 
-        self.config = Config.from_config(*base_configs, *configs)
-        if not self.config.objects:
-            raise click.ClickException("no configuration provided")
+        self.config = Config.from_config(core_config_obj, *base_configs, *extra_configs)
+        if not any(co.rules for co in self.config.objects):
+            raise click.ClickException("no rules configured")
 
     def compute_config_for_file(self, file_path: str) -> ConfigObject | None:
         """Compute the configuration object for the given file.

@@ -26,7 +26,6 @@ invalid_dataset_2 = valid_dataset_1.copy()
 invalid_dataset_2.t.attrs = {"units": ""}
 
 
-
 VarUnitsTest = RuleTester.define_test(
     "var-units",
     VarUnits,

@@ -36,7 +36,7 @@ class RequiredPropsContainer(MappingConstructible):
 
 
 class NoTypesContainer(MappingConstructible):
-    def __init__(self, u, v, w):
+    def __init__(self, u, v, w, /):  # positional only!
         self.u = u
         self.v = v
         self.w = w

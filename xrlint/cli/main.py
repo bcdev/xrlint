@@ -156,9 +156,8 @@ def main(
         report = cli_engine.format_results(results)
         cli_engine.write_report(report)
 
-        result_stats = cli_engine.result_stats
-        error_status = result_stats.error_count > 0
-        max_warn_status = result_stats.warning_count > max_warnings
+        error_status = cli_engine.result_stats.error_count > 0
+        max_warn_status = cli_engine.max_warnings_exceeded
         if max_warn_status and not error_status:
             click.echo("Maximum number of warnings exceeded.")
         if max_warn_status or error_status:

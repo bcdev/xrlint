@@ -99,7 +99,7 @@ class TimeCoordinate(RuleOp):
                 calendar = attrs["calendar"]
             # Note, we should also check here for valid calendar names
             if calendar is None:
-                ctx.report(f"Missing {source} 'calendar'."                )
+                ctx.report(f"Missing {source} 'calendar'.")
 
             uot_part = units_parts[0]
             date_part = units_parts[2]

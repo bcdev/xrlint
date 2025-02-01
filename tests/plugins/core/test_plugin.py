@@ -11,7 +11,6 @@ class ExportPluginTest(TestCase):
                 "content-desc",
                 "conventions",
                 "coords-for-dims",
-                "dataset-title-attr",
                 "grid-mappings",
                 "lat-coordinate",
                 "lon-coordinate",

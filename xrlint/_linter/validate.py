@@ -31,9 +31,6 @@ def _validate_dataset(
     assert isinstance(dataset, xr.Dataset)
     assert isinstance(file_path, str)
 
-    if not config_obj.rules:
-        return [new_fatal_message("No rules configured or applicable.")]
-
     context = RuleContextImpl(config_obj, dataset, file_path, file_index)
     for rule_id, rule_config in config_obj.rules.items():
         with context.use_state(rule_id=rule_id):

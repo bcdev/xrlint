@@ -15,7 +15,6 @@ def export_plugin() -> Plugin:
                 "content-desc": "warn",
                 "conventions": "warn",
                 "coords-for-dims": "error",
-                "dataset-title-attr": "warn",
                 "grid-mappings": "error",
                 "lat-coordinate": "error",
                 "lon-coordinate": "error",

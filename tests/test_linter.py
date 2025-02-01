@@ -75,18 +75,21 @@ class LinterValidateWithConfigTest(TestCase):
         )
         self.assert_result_ok(result, "Missing metadata, attributes are empty.")
 
+    def test_config_with_file_not_found(self):
+        linter = new_linter({"rules": {"no-empty-attrs": 2}})
+        result = linter.validate("cube.zarr")
+        self.assert_result_ok(result, "No such file or directory:")
+
     def test_no_config(self):
         linter = Linter()
-        result = linter.validate(
-            xr.Dataset(),
-        )
+        result = linter.validate(xr.Dataset())
         self.assert_result_ok(result, "No configuration given or matches '<dataset>'.")
 
     def assert_result_ok(self, result: Result, expected_message: str):
         self.assertIsInstance(result, Result)
         self.assertEqual(1, len(result.messages))
         self.assertEqual(2, result.messages[0].severity)
-        self.assertEqual(expected_message, result.messages[0].message)
+        self.assertIn(expected_message, result.messages[0].message)
 
 
 class LinterValidateTest(TestCase):

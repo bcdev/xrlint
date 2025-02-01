@@ -89,7 +89,7 @@ class Linter:
 
         config = Config.from_config(self._config, config, config_props)
         config_obj = config.compute_config_object(file_path)
-        if config_obj is None:
+        if config_obj is None or not config_obj.rules:
             return Result.new(
                 config_object=None,
                 file_path=file_path,
