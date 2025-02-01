@@ -2,7 +2,7 @@ from typing import Any
 
 import xarray as xr
 
-from xrlint.node import DataArrayNode
+from xrlint.node import VariableNode
 from xrlint.plugins.core.plugin import plugin
 from xrlint.rule import RuleContext, RuleOp
 
@@ -30,13 +30,11 @@ LON_UNITS_ALIASES = {"degree_east", "degree_E", "degrees_E", "degreeE", "degrees
     ),
 )
 class LatCoordinate(RuleOp):
-    def data_array(self, ctx: RuleContext, node: DataArrayNode):
-        if node.name in ctx.dataset.coords and _is_lat_var(
-            str(node.name), node.data_array
-        ):
+    def validate_variable(self, ctx: RuleContext, node: VariableNode):
+        if node.name in ctx.dataset.coords and _is_lat_var(str(node.name), node.array):
             _maybe_report(
                 ctx,
-                node.data_array.attrs,
+                node.array.attrs,
                 LAT_UNITS,
                 LAT_UNITS_ALIASES,
                 LAT_NAME,
@@ -55,13 +53,11 @@ class LatCoordinate(RuleOp):
     ),
 )
 class LonCoordinate(RuleOp):
-    def data_array(self, ctx: RuleContext, node: DataArrayNode):
-        if node.name in ctx.dataset.coords and _is_lon_var(
-            str(node.name), node.data_array
-        ):
+    def validate_variable(self, ctx: RuleContext, node: VariableNode):
+        if node.name in ctx.dataset.coords and _is_lon_var(str(node.name), node.array):
             _maybe_report(
                 ctx,
-                node.data_array.attrs,
+                node.array.attrs,
                 LON_UNITS,
                 LON_UNITS_ALIASES,
                 LON_NAME,

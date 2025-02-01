@@ -1,4 +1,4 @@
-from xrlint.node import DataArrayNode
+from xrlint.node import VariableNode
 from xrlint.plugins.xcube.plugin import plugin
 from xrlint.plugins.xcube.util import is_spatial_var
 from xrlint.rule import RuleContext, RuleOp
@@ -16,8 +16,8 @@ from xrlint.rule import RuleContext, RuleOp
     ),
 )
 class DataVarColors(RuleOp):
-    def data_array(self, ctx: RuleContext, node: DataArrayNode):
-        array = node.data_array
+    def validate_variable(self, ctx: RuleContext, node: VariableNode):
+        array = node.array
         if not node.in_data_vars() or not is_spatial_var(array):
             return
         attrs = array.attrs

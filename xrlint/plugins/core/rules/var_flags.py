@@ -2,7 +2,7 @@ from typing import Any
 
 import numpy as np
 
-from xrlint.node import DataArrayNode
+from xrlint.node import VariableNode
 from xrlint.plugins.core.plugin import plugin
 from xrlint.rule import RuleContext, RuleOp
 
@@ -22,10 +22,10 @@ FLAG_MASKS = "flag_masks"
     docs_url="https://cfconventions.org/cf-conventions/cf-conventions.html#flags",
 )
 class VarFlags(RuleOp):
-    def data_array(self, ctx: RuleContext, node: DataArrayNode):
-        flag_values = node.data_array.attrs.get(FLAG_VALUES)
-        flag_masks = node.data_array.attrs.get(FLAG_MASKS)
-        flag_meanings = node.data_array.attrs.get(FLAG_MEANINGS)
+    def validate_variable(self, ctx: RuleContext, node: VariableNode):
+        flag_values = node.array.attrs.get(FLAG_VALUES)
+        flag_masks = node.array.attrs.get(FLAG_MASKS)
+        flag_meanings = node.array.attrs.get(FLAG_MEANINGS)
 
         has_values = flag_values is not None
         has_masks = flag_masks is not None
@@ -60,7 +60,7 @@ class VarFlags(RuleOp):
         if has_values and has_masks:
             _validate_variable(
                 ctx,
-                node.data_array.dtype,
+                node.array.dtype,
             )
 
 

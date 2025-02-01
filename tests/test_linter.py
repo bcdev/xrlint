@@ -3,10 +3,10 @@ from unittest import TestCase
 
 import xarray as xr
 
-from xrlint.config import Config, ConfigList
+from xrlint.config import Config, ConfigObject
 from xrlint.constants import CORE_PLUGIN_NAME, NODE_ROOT_NAME
 from xrlint.linter import Linter, new_linter
-from xrlint.node import AttrNode, AttrsNode, DataArrayNode, DatasetNode
+from xrlint.node import AttrNode, AttrsNode, VariableNode, DatasetNode
 from xrlint.plugin import new_plugin
 from xrlint.processor import ProcessorOp
 from xrlint.result import Message, Result
@@ -16,52 +16,52 @@ from xrlint.rule import RuleContext, RuleExit, RuleOp
 class LinterTest(TestCase):
     def test_default_config_is_empty(self):
         linter = Linter()
-        self.assertEqual(ConfigList(), linter.config)
+        self.assertEqual(Config(), linter.config)
 
     def test_new_linter(self):
         linter = new_linter()
         self.assertIsInstance(linter, Linter)
-        self.assertEqual(1, len(linter.config.configs))
-        config = linter.config.configs[0]
-        self.assertIsInstance(config.plugins, dict)
-        self.assertEqual({CORE_PLUGIN_NAME}, set(config.plugins.keys()))
-        self.assertEqual(None, config.rules)
+        self.assertEqual(1, len(linter.config.objects))
+        config_obj = linter.config.objects[0]
+        self.assertIsInstance(config_obj.plugins, dict)
+        self.assertEqual({CORE_PLUGIN_NAME}, set(config_obj.plugins.keys()))
+        self.assertEqual(None, config_obj.rules)
 
     def test_new_linter_recommended(self):
         linter = new_linter("recommended")
         self.assertIsInstance(linter, Linter)
-        self.assertEqual(2, len(linter.config.configs))
-        config0 = linter.config.configs[0]
-        config1 = linter.config.configs[1]
-        self.assertIsInstance(config0.plugins, dict)
-        self.assertEqual({CORE_PLUGIN_NAME}, set(config0.plugins.keys()))
-        self.assertIsInstance(config1.rules, dict)
-        self.assertIn("coords-for-dims", config1.rules)
+        self.assertEqual(2, len(linter.config.objects))
+        config_obj_0 = linter.config.objects[0]
+        config_obj_1 = linter.config.objects[1]
+        self.assertIsInstance(config_obj_0.plugins, dict)
+        self.assertEqual({CORE_PLUGIN_NAME}, set(config_obj_0.plugins.keys()))
+        self.assertIsInstance(config_obj_1.rules, dict)
+        self.assertIn("coords-for-dims", config_obj_1.rules)
 
     def test_new_linter_all(self):
         linter = new_linter("all")
         self.assertIsInstance(linter, Linter)
-        self.assertEqual(2, len(linter.config.configs))
-        config0 = linter.config.configs[0]
-        config1 = linter.config.configs[1]
-        self.assertIsInstance(config0.plugins, dict)
-        self.assertEqual({CORE_PLUGIN_NAME}, set(config0.plugins.keys()))
-        self.assertIsInstance(config1.rules, dict)
-        self.assertIn("coords-for-dims", config1.rules)
+        self.assertEqual(2, len(linter.config.objects))
+        config_obj_0 = linter.config.objects[0]
+        config_obj_1 = linter.config.objects[1]
+        self.assertIsInstance(config_obj_0.plugins, dict)
+        self.assertEqual({CORE_PLUGIN_NAME}, set(config_obj_0.plugins.keys()))
+        self.assertIsInstance(config_obj_1.rules, dict)
+        self.assertIn("coords-for-dims", config_obj_1.rules)
 
 
-class LinterVerifyConfigTest(TestCase):
+class LinterValidateWithConfigTest(TestCase):
     def test_config_with_config_list(self):
         linter = new_linter()
-        result = linter.verify_dataset(
+        result = linter.validate(
             xr.Dataset(),
-            config=ConfigList.from_value([{"rules": {"no-empty-attrs": 2}}]),
+            config=Config.from_value([{"rules": {"no-empty-attrs": 2}}]),
         )
         self.assert_result_ok(result, "Missing metadata, attributes are empty.")
 
     def test_config_with_list_of_config(self):
         linter = new_linter()
-        result = linter.verify_dataset(
+        result = linter.validate(
             xr.Dataset(),
             config=[{"rules": {"no-empty-attrs": 2}}],
         )
@@ -69,7 +69,7 @@ class LinterVerifyConfigTest(TestCase):
 
     def test_config_with_config_obj(self):
         linter = new_linter()
-        result = linter.verify_dataset(
+        result = linter.validate(
             xr.Dataset(),
             config={"rules": {"no-empty-attrs": 2}},
         )
@@ -77,7 +77,7 @@ class LinterVerifyConfigTest(TestCase):
 
     def test_no_config(self):
         linter = Linter()
-        result = linter.verify_dataset(
+        result = linter.validate(
             xr.Dataset(),
         )
         self.assert_result_ok(result, "No configuration given or matches '<dataset>'.")
@@ -89,27 +89,27 @@ class LinterVerifyConfigTest(TestCase):
         self.assertEqual(expected_message, result.messages[0].message)
 
 
-class LinterVerifyTest(TestCase):
+class LinterValidateTest(TestCase):
     def setUp(self):
         plugin = new_plugin(name="test")
 
         @plugin.define_rule("no-space-in-attr-name")
         class AttrVer(RuleOp):
-            def attr(self, ctx: RuleContext, node: AttrNode):
+            def validate_attr(self, ctx: RuleContext, node: AttrNode):
                 if " " in node.name:
                     ctx.report(f"Attribute name with space: {node.name!r}")
 
         @plugin.define_rule("no-empty-attrs")
         class AttrsVer(RuleOp):
-            def attrs(self, ctx: RuleContext, node: AttrsNode):
+            def validate_attrs(self, ctx: RuleContext, node: AttrsNode):
                 if not node.attrs:
                     ctx.report("Empty attributes")
 
         @plugin.define_rule("data-var-dim-must-have-coord")
         class DataArrayVer(RuleOp):
-            def data_array(self, ctx: RuleContext, node: DataArrayNode):
+            def validate_variable(self, ctx: RuleContext, node: VariableNode):
                 if node.in_data_vars():
-                    for dim_name in node.data_array.dims:
+                    for dim_name in node.array.dims:
                         if dim_name not in ctx.dataset.coords:
                             ctx.report(
                                 f"Dimension {dim_name!r}"
@@ -119,7 +119,7 @@ class LinterVerifyTest(TestCase):
 
         @plugin.define_rule("dataset-without-data-vars")
         class DatasetVer(RuleOp):
-            def dataset(self, ctx: RuleContext, node: DatasetNode):
+            def validate_dataset(self, ctx: RuleContext, node: DatasetNode):
                 if len(node.dataset.data_vars) == 0:
                     ctx.report("Dataset does not have data variables")
                     raise RuleExit  # no need to traverse further
@@ -141,7 +141,7 @@ class LinterVerifyTest(TestCase):
             ) -> list[Message]:
                 return messages[0] + messages[1]
 
-        config = Config(plugins={"test": plugin})
+        config = ConfigObject(plugins={"test": plugin})
         self.linter = Linter(config)
         super().setUp()
 
@@ -153,16 +153,16 @@ class LinterVerifyTest(TestCase):
                 "data-var-dim-must-have-coord",
                 "dataset-without-data-vars",
             ],
-            list(self.linter.config.configs[0].plugins["test"].rules.keys()),
+            list(self.linter.config.objects[0].plugins["test"].rules.keys()),
         )
 
     def test_linter_respects_rule_severity_error(self):
-        result = self.linter.verify_dataset(
+        result = self.linter.validate(
             xr.Dataset(), rules={"test/dataset-without-data-vars": 2}
         )
         self.assertEqual(
             Result(
-                result.config,
+                config_object=result.config_object,
                 file_path="<dataset>",
                 warning_count=0,
                 error_count=1,
@@ -182,12 +182,12 @@ class LinterVerifyTest(TestCase):
         )
 
     def test_linter_respects_rule_severity_warn(self):
-        result = self.linter.verify_dataset(
+        result = self.linter.validate(
             xr.Dataset(), rules={"test/dataset-without-data-vars": 1}
         )
         self.assertEqual(
             Result(
-                result.config,
+                config_object=result.config_object,
                 file_path="<dataset>",
                 warning_count=1,
                 error_count=0,
@@ -207,12 +207,12 @@ class LinterVerifyTest(TestCase):
         )
 
     def test_linter_respects_rule_severity_off(self):
-        result = self.linter.verify_dataset(
+        result = self.linter.validate(
             xr.Dataset(), rules={"test/dataset-without-data-vars": 0}
         )
         self.assertEqual(
             Result(
-                result.config,
+                config_object=result.config_object,
                 file_path="<dataset>",
                 warning_count=0,
                 error_count=0,
@@ -225,9 +225,7 @@ class LinterVerifyTest(TestCase):
         )
 
     def test_linter_recognized_unknown_rule(self):
-        result = self.linter.verify_dataset(
-            xr.Dataset(), rules={"test/dataset-is-fast": 2}
-        )
+        result = self.linter.validate(xr.Dataset(), rules={"test/dataset-is-fast": 2})
         self.assertEqual(
             [
                 Message(
@@ -266,7 +264,7 @@ class LinterVerifyTest(TestCase):
         )
         dataset.encoding["source"] = "chl-tsm.zarr"
 
-        result = self.linter.verify_dataset(
+        result = self.linter.validate(
             dataset,
             config={
                 "rules": {
@@ -279,7 +277,7 @@ class LinterVerifyTest(TestCase):
         )
         self.assertEqual(
             Result(
-                result.config,
+                config_object=result.config_object,
                 file_path="chl-tsm.zarr",
                 warning_count=1,
                 error_count=3,
@@ -325,7 +323,7 @@ class LinterVerifyTest(TestCase):
         )
 
     def test_processor_ok(self):
-        result = self.linter.verify_dataset(
+        result = self.linter.validate(
             "test.levels",
             config={
                 "processor": "test/multi-level-dataset",
@@ -352,7 +350,7 @@ class LinterVerifyTest(TestCase):
         )
 
     def test_processor_fail(self):
-        result = self.linter.verify_dataset(
+        result = self.linter.validate(
             "bad.levels",
             config={
                 "processor": "test/multi-level-dataset",

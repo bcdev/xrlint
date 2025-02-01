@@ -4,76 +4,66 @@ from typing import Any
 
 import xarray as xr
 
-from xrlint.config import Config, ConfigList, get_core_config
+from xrlint.config import Config, ConfigLike, get_core_config_object
 from xrlint.result import Result
 
-from ._linter.verify import new_fatal_message, verify_dataset
+from ._linter.validate import new_fatal_message, validate_dataset
 from .constants import MISSING_DATASET_FILE_PATH
 
 
-def new_linter(
-    *configs: Config | dict[str, Any] | str | None,
-    **config_kwargs: Any,
-) -> "Linter":
-    """Create a new `Linter` with the given configuration.
+def new_linter(*configs: ConfigLike, **config_props: Any) -> "Linter":
+    """Create a new `Linter` with the core plugin included and the
+     given additional configuration.
 
     Args:
-        configs: Configuration objects or named configurations.
-            Use `"recommended"` if the recommended configuration
-            of the builtin rules should be used, or `"all"` if all rules
-            shall be used.
-        config_kwargs: Individual [Config][xrlint.config.Config] properties
-            of an additional configuration object.
+        *configs: Variable number of configuration-like arguments.
+            For more information see the
+            [ConfigLike][xrlint.config.ConfigLike] type alias.
+        **config_props: Individual configuration object properties.
+            For more information refer to the properties of a
+            [ConfigObject][xrlint.config.ConfigObject].
 
     Returns:
         A new linter instance
     """
-    return Linter(get_core_config(), *configs, **config_kwargs)
+    return Linter(get_core_config_object(), *configs, **config_props)
 
 
 class Linter:
     """The linter.
 
     Using the constructor directly creates an empty linter
-    with no configuration - even without default rules loaded.
-    If you want a linter with core rules loaded
-    use the `new_linter()` function.
+    with no configuration - even without the core plugin and
+    its predefined rule configurations.
+    If you want a linter with core plugin included use the
+    `new_linter()` function.
 
     Args:
-        configs: Configuration objects or named configurations.
-            Use `"recommended"` if the recommended configuration
-            of the builtin rules should be used, or `"all"` if all rules
-            shall be used.
-        config_kwargs: Individual [Config][xrlint.config.Config] properties
-            of an additional configuration object.
+        *configs: Variable number of configuration-like arguments.
+            For more information see the
+            [ConfigLike][xrlint.config.ConfigLike] type alias.
+        **config_props: Individual configuration object properties.
+            For more information refer to the properties of a
+            [ConfigObject][xrlint.config.ConfigObject].
     """
 
-    def __init__(
-        self,
-        *configs: Config | dict[str, Any] | None,
-        **config_kwargs: Any,
-    ):
-        _configs = []
-        if configs:
-            _configs.extend(configs)
-        if config_kwargs:
-            _configs.append(config_kwargs)
-        self._config_list = ConfigList.from_value(_configs)
+    def __init__(self, *configs: ConfigLike, **config_props: Any):
+        self._config = Config.from_config(*configs, config_props)
 
     @property
-    def config(self) -> ConfigList:
+    def config(self) -> Config:
         """Get this linter's configuration."""
-        return self._config_list
+        return self._config
 
-    def verify_dataset(
+    def validate(
         self,
         dataset: Any,
         *,
         file_path: str | None = None,
-        config: ConfigList | list | Config | dict[str, Any] | str | None = None,
-        **config_kwargs: Any,
+        config: ConfigLike = None,
+        **config_props: Any,
     ) -> Result:
-        """Verify a dataset.
+        """Validate a dataset against applicable rules.
 
         Args:
             dataset: The dataset. Can be a `xr.Dataset` instance
@@ -81,13 +71,15 @@ class Linter:
                 using `xarray.open_dataset()`.
             file_path: Optional file path used for formatting
                 messages. Useful if `dataset` is not a file path.
-            config: Optional configuration object or a list of configuration
-                objects that will be added to the current linter configuration.
-            config_kwargs: Individual [Config][xrlint.config.Config] properties
-                of an additional configuration object.
+            config: Optional configuration-like value.
+                For more information see the
+                [ConfigLike][xrlint.config.ConfigLike] type alias.
+            **config_props: Individual configuration object properties.
+                For more information refer to the properties of a
+                [ConfigObject][xrlint.config.ConfigObject].
 
         Returns:
-            Result of the verification.
+            Result of the validation.
         """
         if not file_path:
             if isinstance(dataset, xr.Dataset):
@@ -95,20 +87,11 @@ class Linter:
             else:
                 file_path = file_path or _get_file_path_for_source(dataset)
 
-        config_list = self._config_list
-        if isinstance(config, ConfigList):
-            config_list = ConfigList.from_value([*config_list.configs, *config.configs])
-        elif isinstance(config, list):
-            config_list = ConfigList.from_value([*config_list.configs, *config])
-        elif config:
-            config_list = ConfigList.from_value([*config_list.configs, config])
-        if config_kwargs:
-            config_list = ConfigList.from_value([*config_list.configs, config_kwargs])
-
-        config = config_list.compute_config(file_path)
-        if config is None:
+        config = Config.from_config(self._config, config, config_props)
+        config_obj = config.compute_config_object(file_path)
+        if config_obj is None:
             return Result.new(
-                config=config,
+                config_object=None,
                 file_path=file_path,
                 messages=[
                     new_fatal_message(
@@ -117,7 +100,7 @@ class Linter:
                 ],
             )
 
-        return verify_dataset(config, dataset, file_path)
+        return validate_dataset(config_obj, dataset, file_path)
 
 
 def _get_file_path_for_dataset(dataset: xr.Dataset) -> str:

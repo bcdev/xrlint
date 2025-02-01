@@ -17,7 +17,7 @@ from xrlint.util.formatting import format_seq
     docs_url="https://xcube.readthedocs.io/en/latest/mldatasets.html#definition",
 )
 class MLDatasetTime(RuleOp):
-    def dataset(self, ctx: RuleContext, node: DatasetNode):
+    def validate_dataset(self, ctx: RuleContext, node: DatasetNode):
         level_info = get_dataset_level_info(node.dataset)
         if level_info is None:
             # ok, this rules applies only to level datasets opened

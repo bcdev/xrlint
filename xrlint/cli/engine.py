@@ -4,9 +4,11 @@ from collections.abc import Iterable, Iterator
 
 import click
 import fsspec
+import fsspec.core
+import fsspec.implementations.local
 import yaml
 
-from xrlint.cli.config import ConfigError, read_config_list
+from xrlint.cli.config import ConfigError, read_config
 from xrlint.cli.constants import (
     DEFAULT_CONFIG_FILE_YAML,
     DEFAULT_CONFIG_FILES,
@@ -16,7 +18,7 @@ from xrlint.cli.constants import (
     DEFAULT_OUTPUT_FORMAT,
     INIT_CONFIG_YAML,
 )
-from xrlint.config import Config, ConfigList, get_core_config
+from xrlint.config import Config, ConfigLike, ConfigObject, get_core_config_object
 from xrlint.formatter import FormatterContext
 from xrlint.formatters import export_formatters
 from xrlint.linter import Linter
@@ -56,7 +58,7 @@ class XRLint(FormatterContext):
         self.output_styled = output_styled
         self.max_warnings = max_warnings
         self._result_stats = ResultStats()
-        self.config_list = ConfigList()
+        self.config = Config()
 
     @property
     def max_warnings_exceeded(self) -> bool:
@@ -68,12 +70,17 @@ class XRLint(FormatterContext):
         """Get current result statistics."""
         return self._result_stats
 
-    def load_config_list(self) -> None:
-        """Load configuration list.
+    def init_config(self, *configs: ConfigLike) -> None:
+        """Initialize configuration.
         The function will load the configuration list from a specified
         configuration file, if any.
         Otherwise, it will search for the default configuration files
         in the current working directory.
+
+        Args:
+            *configs: Variable number of configuration-like arguments.
+                For more information see the
+                [ConfigLike][xrlint.config.ConfigLike] type alias.
         """
         plugins = {}
         for plugin_spec in self.plugin_specs:
@@ -85,38 +92,39 @@ class XRLint(FormatterContext):
             rule = yaml.load(rule_spec, Loader=yaml.SafeLoader)
             rules.update(rule)
 
-        config_list = None
+        config = None
 
         if self.config_path:
             try:
-                config_list = read_config_list(self.config_path)
+                config = read_config(self.config_path)
             except (FileNotFoundError, ConfigError) as e:
                 raise click.ClickException(f"{e}") from e
         elif not self.no_config_lookup:
             for config_path in DEFAULT_CONFIG_FILES:
                 try:
-                    config_list = read_config_list(config_path)
+                    config = read_config(config_path)
                     break
                 except FileNotFoundError:
                     pass
                 except ConfigError as e:
                     raise click.ClickException(f"{e}") from e
+            if config is None:
+                click.echo("Warning: no configuration file found.")
 
-        if config_list is None:
-            click.echo("Warning: no configuration file found.")
-
-        core_config = get_core_config()
-        core_config.plugins.update(plugins)
-        configs = [core_config]
-        if config_list is not None:
-            configs += config_list.configs
+        core_config_obj = get_core_config_object()
+        core_config_obj.plugins.update(plugins)
+        base_configs = [core_config_obj]
+        if config is not None:
+            base_configs += config.objects
         if rules:
-            configs += [{"rules": rules}]
+            base_configs += [{"rules": rules}]
 
-        self.config_list = ConfigList.from_value(configs)
+        self.config = Config.from_config(*base_configs, *configs)
+        if not self.config.objects:
+            raise click.ClickException("no configuration provided")
 
-    def get_config_for_file(self, file_path: str) -> Config | None:
-        """Compute configuration for the given file.
+    def compute_config_for_file(self, file_path: str) -> ConfigObject | None:
+        """Compute the configuration object for the given file.
 
         Args:
             file_path: A file path or URL.
@@ -125,20 +133,20 @@ class XRLint(FormatterContext):
             A configuration object or `None` if no item
                 in the configuration list applies.
         """
-        return self.config_list.compute_config(file_path)
+        return self.config.compute_config_object(file_path)
 
     def print_config_for_file(self, file_path: str) -> None:
-        """Print computed configuration for the given file.
+        """Print computed configuration object for the given file.
 
         Args:
             file_path: A file path or URL.
         """
-        config = self.get_config_for_file(file_path)
+        config = self.compute_config_for_file(file_path)
         config_json_obj = config.to_json() if config is not None else None
         click.echo(json.dumps(config_json_obj, indent=2))
 
-    def verify_datasets(self, files: Iterable[str]) -> Iterator[Result]:
-        """Verify given files or directories which may also be given as URLs.
+    def validate_files(self, files: Iterable[str]) -> Iterator[Result]:
+        """Validate given files or directories which may also be given as URLs.
         The function produces a validation result for each file.
 
         Args:
@@ -149,9 +157,11 @@ class XRLint(FormatterContext):
         """
         linter = Linter()
         for file_path, config in self.get_files(files):
-            yield linter.verify_dataset(file_path, config=config)
+            yield linter.validate(file_path, config=config)
 
-    def get_files(self, file_paths: Iterable[str]) -> Iterator[tuple[str, Config]]:
+    def get_files(
+        self, file_paths: Iterable[str]
+    ) -> Iterator[tuple[str, ConfigObject]]:
         """Provide an iterator for the list of files or directories and their
         computed configurations.
 
@@ -165,21 +175,21 @@ class XRLint(FormatterContext):
             An iterator of pairs comprising a file or directory path
                 and its computed configuration.
         """
-        config_list, global_filter = self.config_list.split_global_filter(
+        config, global_filter = self.config.split_global_filter(
             default=DEFAULT_GLOBAL_FILTER
         )
 
-        def compute_config(p: str):
-            return config_list.compute_config(p) if global_filter.accept(p) else None
+        def compute_config_object(p: str):
+            return config.compute_config_object(p) if global_filter.accept(p) else None
 
         for file_path in file_paths:
             _fs, root = fsspec.url_to_fs(file_path)
             fs: fsspec.AbstractFileSystem = _fs
             is_local = isinstance(fs, fsspec.implementations.local.LocalFileSystem)
 
-            config = compute_config(file_path)
-            if config is not None:
-                yield file_path, config
+            config_obj = compute_config_object(file_path)
+            if config_obj is not None:
+                yield file_path, config_obj
                 continue
 
             if fs.isdir(root):
@@ -187,7 +197,7 @@ class XRLint(FormatterContext):
                     for d in list(dirs):
                         d_path = f"{path}/{d}"
                         d_path = d_path if is_local else fs.unstrip_protocol(d_path)
-                        c = compute_config(d_path)
+                        c = compute_config_object(d_path)
                         if c is not None:
                             dirs.remove(d)
                             yield d_path, c
@@ -195,7 +205,7 @@ class XRLint(FormatterContext):
                     for f in files:
                         f_path = f"{path}/{f}"
                         f_path = f_path if is_local else fs.unstrip_protocol(f_path)
-                        c = compute_config(f_path)
+                        c = compute_config_object(f_path)
                         if c is not None:
                             yield f_path, c
 

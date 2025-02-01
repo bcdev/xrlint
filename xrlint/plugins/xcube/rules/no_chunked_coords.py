@@ -1,6 +1,6 @@
 import math
 
-from xrlint.node import DataArrayNode
+from xrlint.node import VariableNode
 from xrlint.plugins.xcube.plugin import plugin
 from xrlint.rule import RuleContext, RuleOp
 from xrlint.util.schema import schema
@@ -36,13 +36,13 @@ class NoChunkedCoords(RuleOp):
     def __init__(self, limit: int = DEFAULT_LIMIT):
         self.limit = limit
 
-    def data_array(self, ctx: RuleContext, node: DataArrayNode):
-        if node.name not in ctx.dataset.coords or node.data_array.ndim != 1:
+    def validate_variable(self, ctx: RuleContext, node: VariableNode):
+        if node.name not in ctx.dataset.coords or node.array.ndim != 1:
             return
 
-        chunks = node.data_array.encoding.get("chunks")
+        chunks = node.array.encoding.get("chunks")
         if isinstance(chunks, (list, tuple)) and len(chunks) == 1:
-            num_chunks = math.ceil(node.data_array.size / chunks[0])
+            num_chunks = math.ceil(node.array.size / chunks[0])
             if num_chunks > self.limit:
                 ctx.report(
                     f"Number of chunks exceeds limit: {num_chunks} > {self.limit}.",

@@ -1,5 +1,5 @@
 from xrlint.cli.engine import XRLint
-from xrlint.config import Config, ConfigList
+from xrlint.config import Config, ConfigLike, ConfigObject, ConfigObjectLike
 from xrlint.formatter import (
     Formatter,
     FormatterContext,
@@ -8,7 +8,7 @@ from xrlint.formatter import (
     FormatterRegistry,
 )
 from xrlint.linter import Linter, new_linter
-from xrlint.node import AttrNode, AttrsNode, DataArrayNode, DatasetNode, Node
+from xrlint.node import AttrNode, AttrsNode, VariableNode, DatasetNode, Node
 from xrlint.plugin import Plugin, PluginMeta, new_plugin
 from xrlint.processor import Processor, ProcessorMeta, ProcessorOp, define_processor
 from xrlint.result import (
@@ -33,7 +33,9 @@ from xrlint.version import version
 __all__ = [
     "XRLint",
     "Config",
-    "ConfigList",
+    "ConfigLike",
+    "ConfigObject",
+    "ConfigObjectLike",
     "Linter",
     "new_linter",
     "EditInfo",
@@ -48,7 +50,7 @@ __all__ = [
     "FormatterRegistry",
     "AttrNode",
     "AttrsNode",
-    "DataArrayNode",
+    "VariableNode",
     "DatasetNode",
     "Node",
     "Plugin",

@@ -9,6 +9,31 @@
 
 - Adjusted messages of rule `var-units` to better match other rules.
 
+## Version 0.5.0 (in development)
+
+### Incompatible API changes:
+
+- Renamed nodes and node properties for consistency and clarity:
+  - renamed `DataArrayNode` into `VariableNode`
+  - renamed `DataArrayNode.data_array` into `VariableNode.array`
+
+- Changed general use of term _verify_ into _validate_: 
+  - prefixed `RuleOp` methods by `validate_` for clarity.
+  - renamed `XRLint.verify_datasets()` into `validate_files()`
+  - renamed `Lint.verify_dataset()` into `validate()`
+
+- Various changes for improved clarity and consistency 
+  regarding configuration management:
+  - introduced type aliases `ConfigLike` and `ConfigObjectLike`.
+  - renamed `Config` into `ConfigObject` 
+  - renamed `ConfigList.configs` into `config_objects` 
+  - renamed `ConfigList` into `Config` 
+  - renamed `ConfigList.compute_config()` into `compute_config_object()` 
+  - renamed `Result.config` into `config_object` 
+  - renamed `XRLint.load_config_list()` into `init_config()`
+  - added class method `from_config()` to `ConfigList`.
+  - removed function `xrlint.config.merge_configs` as it was no longer used.
+
 ## Version 0.4.1 (from 2025-01-31)
 
 ### Changes

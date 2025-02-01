@@ -16,7 +16,7 @@ from xrlint.util.formatting import format_problems
 from xrlint.util.serializable import JsonSerializable
 
 if TYPE_CHECKING:  # pragma: no cover
-    from xrlint.config import Config
+    from xrlint.config import ConfigObject
     from xrlint.rule import RuleMeta
 
 
@@ -85,12 +85,14 @@ class Message(JsonSerializable):
     """
 
 
-@dataclass()
+@dataclass(kw_only=True)
 class Result(JsonSerializable):
     """The aggregated information of linting a dataset."""
 
-    config: Union["Config", None] = None
-    """Configuration."""
+    config_object: Union["ConfigObject", None] = None
+    """The configuration object that produced this result 
+    together with `file_path`.
+    """
 
     file_path: str = MISSING_DATASET_FILE_PATH
     """The absolute path to the file of this result.
@@ -126,12 +128,12 @@ class Result(JsonSerializable):
     @classmethod
     def new(
         cls,
-        config: Union["Config", None] = None,
+        config_object: Union["ConfigObject", None] = None,
         file_path: str | None = None,
         messages: list[Message] | None = None,
     ):
         result = Result(
-            config=config,
+            config_object=config_object,
             file_path=file_path or MISSING_DATASET_FILE_PATH,
             messages=messages or [],
         )
@@ -183,7 +185,7 @@ def get_rules_meta_for_results(results: list[Result]) -> dict[str, "RuleMeta"]:
     for result in results:
         for message in result.messages:
             if message.rule_id:
-                rule = result.config.get_rule(message.rule_id)
+                rule = result.config_object.get_rule(message.rule_id)
                 rules_meta[message.rule_id] = rule.meta
     return rules_meta
 

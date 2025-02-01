@@ -11,7 +11,7 @@ from xrlint.rule import RuleContext, RuleOp
     docs_url="https://xcube.readthedocs.io/en/latest/cubespec.html#metadata"
 )
 class DatasetTitle(RuleOp):
-    def dataset(self, ctx: RuleContext, node: DatasetNode):
+    def validate_dataset(self, ctx: RuleContext, node: DatasetNode):
         attrs = node.dataset.attrs
         if "title" not in attrs:
             ctx.report("Missing attribute 'title'.")

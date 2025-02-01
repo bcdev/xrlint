@@ -17,7 +17,7 @@ from xrlint.rule import RuleContext, RuleExit, RuleOp
     ),
 )
 class NoEmptyChunks(RuleOp):
-    def dataset(self, ctx: RuleContext, node: DatasetNode):
+    def validate_dataset(self, ctx: RuleContext, node: DatasetNode):
         source = node.dataset.encoding.get("source")
         is_zarr = isinstance(source, str) and source.endswith(".zarr")
         if is_zarr:

@@ -1,4 +1,4 @@
-from xrlint.node import DataArrayNode
+from xrlint.node import VariableNode
 from xrlint.plugins.core.plugin import plugin
 from xrlint.rule import RuleContext, RuleOp
 
@@ -11,8 +11,8 @@ from xrlint.rule import RuleContext, RuleOp
     docs_url="https://cfconventions.org/cf-conventions/cf-conventions.html#units",
 )
 class VarUnits(RuleOp):
-    def data_array(self, ctx: RuleContext, node: DataArrayNode):
-        array = node.data_array
+    def validate_variable(self, ctx: RuleContext, node: VariableNode):
+        array = node.array
         attrs = array.attrs
 
         if "grid_mapping_name" in attrs:

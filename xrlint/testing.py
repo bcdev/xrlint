@@ -4,6 +4,7 @@ from typing import Any, Callable, Final, Literal, Type
 
 import xarray as xr
 
+from xrlint.config import ConfigLike
 from xrlint.constants import SEVERITY_ERROR
 from xrlint.linter import Linter
 from xrlint.plugin import new_plugin
@@ -13,6 +14,8 @@ from xrlint.util.formatting import format_count, format_item, format_problems
 from xrlint.util.naming import to_snake_case
 
 _PLUGIN_NAME: Final = "testing"
+
+# TODO: Adapt config argument to Linter(**args, **kwargs)
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -41,14 +44,20 @@ class RuleTest:
 
 
 class RuleTester:
-    """Utility that helps to test rules.
+    """Utility that helps testing rules.
 
     Args:
-        config: optional XRLint configuration.
+        config: Optional configuration-like value.
+            For more information see the
+            [ConfigLike][xrlint.config.ConfigLike] type alias.
+        **config_props: Individual configuration object properties.
+            For more information refer to the properties of a
+            [ConfigObject][xrlint.config.ConfigObject].
     """
 
-    def __init__(self, **config: dict[str, Any]):
+    def __init__(self, *, config: ConfigLike = None, **config_props: Any):
         self._config = config
+        self._config_props = config_props
 
     def run(
         self,
@@ -86,7 +95,8 @@ class RuleTester:
         *,
         valid: list[RuleTest] | None = None,
         invalid: list[RuleTest] | None = None,
-        config: dict[str, Any] | None = None,
+        config: ConfigLike = None,
+        **config_props: Any,
     ) -> Type[unittest.TestCase]:
         """Create a `unittest.TestCase` class for the given rule and tests.
 
@@ -99,12 +109,17 @@ class RuleTester:
             rule_op_class: the class derived from `RuleOp`
             valid: list of tests that expect no reported problems
             invalid: list of tests that expect reported problems
-            config: optional xrlint configuration
+            config: Optional configuration-like value.
+                For more information see the
+                [ConfigLike][xrlint.config.ConfigLike] type alias.
+            **config_props: Individual configuration object properties.
+                For more information refer to the properties of a
+                [ConfigObject][xrlint.config.ConfigObject].
 
         Returns:
             A new class derived from `unittest.TestCase`.
         """
-        tester = RuleTester(**(config or {}))
+        tester = RuleTester(config=config, **config_props)
         tests = tester._create_tests(
             rule_name, rule_op_class, valid=valid, invalid=invalid
         )
@@ -181,8 +196,8 @@ class RuleTester:
         # on the currently configured severity.
         # There is also no way for a rule to obtain the severity.
         severity = SEVERITY_ERROR
-        linter = Linter(**self._config)
-        result = linter.verify_dataset(
+        linter = Linter(self._config, self._config_props)
+        result = linter.validate(
             test.dataset,
             plugins={
                 _PLUGIN_NAME: (
