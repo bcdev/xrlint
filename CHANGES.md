@@ -2,7 +2,10 @@
 
 ## Version 0.5.0 (in development)
 
-### Changes
+### Adjustments and Enhancements
+
+- Added HTML styling for both CLI output (`--format html`) and rendering
+  of `Result` objects in Jupyter notebooks.
 
 - Rule `no-empty-chunks` has taken off the `"recommended"` settings 
   as there is no easy/efficient way to tell whether a dataset has 
@@ -41,6 +44,7 @@
 ### Other changes
 
 - Added more tests so we finally reached 100% coverage.
+- New `PluginMeta.docs_url` property.
 
 ## Version 0.4.1 (from 2025-01-31)
 
