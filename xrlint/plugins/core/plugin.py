@@ -1,4 +1,4 @@
-from xrlint.constants import CORE_PLUGIN_NAME, CORE_DOCS_URL
+from xrlint.constants import CORE_DOCS_URL, CORE_PLUGIN_NAME
 from xrlint.plugin import new_plugin
 from xrlint.version import version
 

@@ -3,8 +3,8 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Literal, Union
 
 from xrlint.constants import (
-    CORE_PLUGIN_NAME,
     CORE_DOCS_URL,
+    CORE_PLUGIN_NAME,
     MISSING_DATASET_FILE_PATH,
     SEVERITY_ERROR,
     SEVERITY_WARN,

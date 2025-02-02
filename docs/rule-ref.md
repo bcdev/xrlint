@@ -65,6 +65,12 @@ Empty chunks should not be encoded and written. The rule currently applies to Za
 
 Contained in:  `all`-:material-lightning-bolt: `recommended`-:material-circle-off-outline:
 
+### :material-bug: `opening-time`
+
+Ensure that the time it takes to open a dataset from its source does a exceed a given `threshold` in seconds. The default threshold is `2.5`.
+
+Contained in:  `all`-:material-lightning-bolt: `recommended`-:material-alert:
+
 ### :material-bug: `time-coordinate`
 
 Time coordinates should have valid and unambiguous time units encoding.
