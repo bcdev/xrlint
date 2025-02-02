@@ -1,4 +1,4 @@
-from xrlint.node import AttrNode, AttrsNode, VariableNode, DatasetNode
+from xrlint.node import AttrNode, AttrsNode, DatasetNode, VariableNode
 from xrlint.rule import RuleConfig, RuleExit, RuleOp
 
 from ..constants import NODE_ROOT_NAME
