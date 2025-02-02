@@ -5,8 +5,6 @@
 - support zarr >= 3 which we do not only because test 
   `tests/plugins/xcube/processors/test_mldataset.py` fails
   (see code TODO)
-- validate `RuleConfig.args/kwargs` against `RuleMeta.schema`
-  (see code TODO)
 - enhance docs
   - complete configuration page
   - provide guide page
@@ -21,11 +19,11 @@
 - add `core` rule checks recommended use of fill value
 - add `xcube` rule that helps to identify chunking issues 
 - apply rule op args/kwargs validation schema 
-- measure time it takes to open a dataset and pass time into rule context 
-  so we can write a configurable rule that checks the opening time
 - allow outputting suggestions, if any, that are emitted by some rules
   - add CLI option
   - expand/collapse messages with suggestions in Jupyter notebooks
+- validate `RuleConfig.args/kwargs` against `RuleMeta.schema`
+  (see code TODO)
 
 ## Nice to have
 
