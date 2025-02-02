@@ -107,7 +107,8 @@ class Simple(FormatterOp):
         rule_text = m.rule_id or ""
         if self.styled and rule_text:
             rule_url = r.get_docs_url_for_rule(m.rule_id)
-            rule_text = format_styled(rule_text, fg="blue", href=rule_url)
+            if rule_url:
+                rule_text = format_styled(rule_text, fg="blue", href=rule_url)
         return rule_text
 
     def _format_summary(self, error_count, warning_count) -> str:

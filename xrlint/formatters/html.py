@@ -57,7 +57,7 @@ class Html(FormatterOp):
                     )
             lines.append("</div>")
 
-        return "\n".join(lines)
+        return HtmlText("\n".join(lines))
 
 
 def format_result(result: Result) -> list[str]:
@@ -130,3 +130,11 @@ def _format_result_data(data: list[list[str]]) -> list[str]:
         lines.append("  </tr>")
     lines.append("</table>")
     return lines
+
+
+class HtmlText(str):
+    """Allow displaying `text` as HTML in Jupyter notebooks."""
+
+    def _repr_html_(self: str) -> str:
+        """Represent HTML text as HTML."""
+        return self

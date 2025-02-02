@@ -194,10 +194,16 @@ class CliMainTest(TestCase):
         self.assertIn("Error: file not found: pippo.py", result.output)
         self.assertEqual(1, result.exit_code)
 
-    def test_files_with_format_option(self):
+    def test_files_with_format_json(self):
         with text_file(DEFAULT_CONFIG_FILE_YAML, self.ok_config_yaml):
             result = self.xrlint("-f", "json", *self.files)
             self.assertIn('"results": [\n', result.output)
+            self.assertEqual(0, result.exit_code)
+
+    def test_files_with_format_html(self):
+        with text_file(DEFAULT_CONFIG_FILE_YAML, self.ok_config_yaml):
+            result = self.xrlint("-f", "html", *self.files)
+            self.assertIn("<h3>Results</h3>", result.output)
             self.assertEqual(0, result.exit_code)
 
     def test_file_does_not_match(self):

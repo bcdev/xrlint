@@ -156,7 +156,7 @@ class Result(JsonSerializable):
             return f"{CORE_DOCS_URL}#{rule_name}"
         try:
             plugin = self.config_object.get_plugin(plugin_name)
-            rule = self.config_object.get_rule(rule_name)
+            rule = self.config_object.get_rule(rule_id)
             return rule.meta.docs_url or plugin.meta.docs_url
         except ValueError:
             return None
