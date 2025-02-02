@@ -1,18 +1,15 @@
-import html
 from collections.abc import Iterable
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Literal, Union
 
-from tabulate import tabulate
-
 from xrlint.constants import (
+    CORE_PLUGIN_NAME,
+    CORE_DOCS_URL,
     MISSING_DATASET_FILE_PATH,
-    SEVERITY_CODE_TO_NAME,
     SEVERITY_ERROR,
     SEVERITY_WARN,
 )
 from xrlint.util.constructible import ValueConstructible
-from xrlint.util.formatting import format_problems
 from xrlint.util.serializable import JsonSerializable
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -69,7 +66,7 @@ class Message(JsonSerializable):
     """
 
     fix: EditInfo | None = None
-    """The EditInfo object of autofix.
+    """The EditInfo object of auto-fix.
     This property is None if this
     message is not fixable.
 
@@ -144,32 +141,25 @@ class Result(JsonSerializable):
         return result
 
     def to_html(self) -> str:
-        text = []
-        escaped_path = html.escape(self.file_path)
-        if not self.messages:
-            text.append(f'<p role="file">{escaped_path} - ok</p>\n')
-        else:
-            text.append(f'<p role="file">{escaped_path}:</p>\n')
-            table_data = []
-            for m in self.messages:
-                table_data.append(
-                    [
-                        m.node_path,
-                        SEVERITY_CODE_TO_NAME.get(m.severity),
-                        m.message,
-                        m.rule_id,
-                    ]
-                )
-            text.append(tabulate(table_data, headers=(), tablefmt="html"))
-            text.append(
-                '<p role="summary">'
-                f"{format_problems(self.error_count, self.warning_count)}"
-                "</p>\n"
-            )
-        return "".join(text)
+        from xrlint.formatters.html import format_result
+
+        return "\n".join(format_result(self))
 
     def _repr_html_(self) -> str:
         return self.to_html()
+
+    def get_docs_url_for_rule(self, rule_id: str) -> str | None:
+        from xrlint.config import split_config_spec
+
+        plugin_name, rule_name = split_config_spec(rule_id)
+        if plugin_name == CORE_PLUGIN_NAME or plugin_name == "xcube":
+            return f"{CORE_DOCS_URL}#{rule_name}"
+        try:
+            plugin = self.config_object.get_plugin(plugin_name)
+            rule = self.config_object.get_rule(rule_name)
+            return rule.meta.docs_url or plugin.meta.docs_url
+        except ValueError:
+            return None
 
 
 def get_rules_meta_for_results(results: list[Result]) -> dict[str, "RuleMeta"]:

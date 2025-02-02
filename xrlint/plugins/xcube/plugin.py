@@ -5,4 +5,5 @@ plugin = new_plugin(
     name="xcube",
     version=version,
     ref="xrlint.plugins.xcube:export_plugin",
+    docs_url="https://xcube.readthedocs.io/en/latest/cubespec.html",
 )

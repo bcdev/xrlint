@@ -1,6 +1,7 @@
 import json
 import os
 from collections.abc import Iterable, Iterator
+from types import MethodType
 
 import click
 import fsspec
@@ -232,7 +233,7 @@ class XRLint(FormatterContext):
                 f" The available formats are"
                 f" {', '.join(repr(k) for k in formatters.keys())}."
             )
-        # TODO: pass and validate format-specific args/kwargs
+        # Here we could pass and validate format-specific args/kwargs
         #   against formatter.meta.schema
         if output_format == "simple":
             formatter_kwargs = {
@@ -243,7 +244,8 @@ class XRLint(FormatterContext):
             formatter_kwargs = {}
         # noinspection PyArgumentList
         formatter_op = formatter.op_class(**formatter_kwargs)
-        return formatter_op.format(self, self._result_stats.collect(results))
+        text = formatter_op.format(self, self._result_stats.collect(results))
+        return _bind_repr_html(text) if output_format == "html" else text
 
     def write_report(self, report: str) -> None:
         """Write the validation report provided as plain text."""
@@ -265,3 +267,14 @@ class XRLint(FormatterContext):
         with open(file_path, "w") as f:
             f.write(INIT_CONFIG_YAML)
         click.echo(f"Configuration template written to {file_path}")
+
+
+def _bind_repr_html(text: str) -> str:
+    """Allow displaying `text` as HTML in Jupyter notebooks."""
+    text._repr_html_ = MethodType(_repr_html_, text)
+    return text
+
+
+def _repr_html_(self: str) -> str:
+    """Method to be bound to `self` for texts that represent HTML."""
+    return self
