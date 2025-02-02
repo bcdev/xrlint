@@ -203,8 +203,9 @@ class CliMainTest(TestCase):
     def test_file_does_not_match(self):
         with text_file(DEFAULT_CONFIG_FILE_YAML, no_match_config_yaml):
             result = self.xrlint("test.zarr")
-            # TODO: make this assertion work
-            # self.assertIn("No configuration matches this file.", result.output)
+            self.assertIn(
+                "No configuration given or matches 'test.zarr'.", result.output
+            )
             self.assertEqual(1, result.exit_code)
 
     def test_print_config_option(self):
