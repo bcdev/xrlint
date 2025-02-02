@@ -77,7 +77,8 @@ dev = [
   "netcdf4",
   "numpy",
   "pandas",
-  "zarr >=2.18,<3",
+  # actually zarr >=2.18,<3.0 | >=3.0.2
+  "zarr",
 ]
 doc = [
   "mkdocs",

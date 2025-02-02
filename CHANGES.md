@@ -46,6 +46,7 @@
 
 ### Other changes
 
+- XRLint now works with zarr >=2,<3 and zarr >=3.0.2
 - Added more tests so we finally reached 100% coverage.
 - New `PluginMeta.docs_url` property.
 
