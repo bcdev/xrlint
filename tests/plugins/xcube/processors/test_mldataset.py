@@ -50,7 +50,7 @@ class MultiLevelDatasetProcessorTest(TestCase):
             self.num_levels, self.x_size, self.y_size, self.time_size
         )
         for level, dataset in enumerate(level_datasets):
-            dataset.to_zarr(f"{self.levels_dir}/{level}.zarr", write_empty_chunks=False)
+            dataset.to_zarr(f"{self.levels_dir}/{level}.zarr")
 
         with self.fs.open(self.meta_path, mode="wt") as stream:
             json.dump(self.meta_content, stream, indent=2)

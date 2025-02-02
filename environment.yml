@@ -1,4 +1,4 @@
-name: xrlint
+name: xrlint-zarr3
 channels:
   - conda-forge
 dependencies:
@@ -24,4 +24,4 @@ dependencies:
   - pandas
   - netcdf4
   - numpy
-  - zarr >=2.18,<3  # tests fail with zarr 3+
+  - zarr >=2.18

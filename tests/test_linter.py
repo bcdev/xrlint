@@ -77,7 +77,7 @@ class LinterValidateWithConfigTest(TestCase):
 
     def test_config_with_file_not_found(self):
         linter = new_linter({"rules": {"no-empty-attrs": 2}})
-        result = linter.validate("cube.zarr")
+        result = linter.validate("cube.nc")
         self.assert_result_ok(result, "No such file or directory:")
 
     def test_no_config(self):
