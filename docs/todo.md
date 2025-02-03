@@ -2,9 +2,6 @@
 
 ## Required
 
-- support zarr >= 3 which we do not only because test 
-  `tests/plugins/xcube/processors/test_mldataset.py` fails
-  (see code TODO)
 - enhance docs
   - complete configuration page
   - provide guide page
