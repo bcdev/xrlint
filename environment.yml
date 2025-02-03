@@ -24,5 +24,4 @@ dependencies:
   - pandas
   - netcdf4
   - numpy
-  # actually zarr >=2.18,<3.0 | >=3.0.2
-  - zarr
+  - zarr >=2.18,!=3.0.0,!=3.0.1
