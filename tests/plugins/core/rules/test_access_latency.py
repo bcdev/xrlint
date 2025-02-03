@@ -7,7 +7,7 @@ import xarray as xr
 from xrlint._linter.rulectx import RuleContextImpl
 from xrlint.config import ConfigObject
 from xrlint.node import DatasetNode
-from xrlint.plugins.core.rules.opening_time import OpeningTime
+from xrlint.plugins.core.rules.access_latency import AccessLatency
 from xrlint.result import Message
 from xrlint.rule import RuleExit
 
@@ -19,14 +19,14 @@ invalid_dataset_0 = xr.Dataset()
 class OpeningTimeTest(TestCase):
     @classmethod
     def invoke_op(
-        cls, dataset: xr.Dataset, opening_time: float, threshold: float | None = None
+        cls, dataset: xr.Dataset, access_latency: float, threshold: float | None = None
     ):
         ctx = RuleContextImpl(
             config=ConfigObject(),
             dataset=dataset,
             file_path="test.zarr",
             file_index=None,
-            opening_time=opening_time,
+            access_latency=access_latency,
         )
         node = DatasetNode(
             path="dataset",
@@ -34,7 +34,9 @@ class OpeningTimeTest(TestCase):
             dataset=ctx.dataset,
         )
         rule_op = (
-            OpeningTime(threshold=threshold) if threshold is not None else OpeningTime()
+            AccessLatency(threshold=threshold)
+            if threshold is not None
+            else AccessLatency()
         )
         with pytest.raises(RuleExit):
             rule_op.validate_dataset(ctx, node)
@@ -52,7 +54,7 @@ class OpeningTimeTest(TestCase):
         self.assertEqual(
             [
                 Message(
-                    message="Opening time exceeds threshold: 3.2 > 2.5 seconds.",
+                    message="Access latency exceeds threshold: 3.2 > 2.5 seconds.",
                     node_path="dataset",
                     severity=2,
                 )
@@ -64,7 +66,7 @@ class OpeningTimeTest(TestCase):
         self.assertEqual(
             [
                 Message(
-                    message="Opening time exceeds threshold: 0.2 > 0.1 seconds.",
+                    message="Access latency exceeds threshold: 0.2 > 0.1 seconds.",
                     node_path="dataset",
                     severity=2,
                 )
