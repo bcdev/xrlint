@@ -8,6 +8,7 @@ class ExportPluginTest(TestCase):
         plugin = export_plugin()
         self.assertEqual(
             {
+                "access-latency",
                 "content-desc",
                 "conventions",
                 "coords-for-dims",
@@ -15,8 +16,8 @@ class ExportPluginTest(TestCase):
                 "lat-coordinate",
                 "lon-coordinate",
                 "no-empty-attrs",
-                "time-coordinate",
                 "no-empty-chunks",
+                "time-coordinate",
                 "var-desc",
                 "var-flags",
                 "var-units",

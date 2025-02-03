@@ -21,7 +21,7 @@ def format_problems(error_count: int, warning_count: int) -> str:
 
 
 def format_count(
-    count: int,
+    count: int | float,
     singular: str,
     plural: str | None = None,
     upper: bool | None = None,
@@ -37,7 +37,10 @@ def format_count(
 
 
 def format_item(
-    count: int, singular: str, plural: str | None = None, upper: bool | None = None
+    count: int | float,
+    singular: str,
+    plural: str | None = None,
+    upper: bool | None = None,
 ) -> str:
     """Format `singular` given it occurs `count` times."""
     if count == 1:

@@ -38,6 +38,13 @@ class RuleContext(ABC):
     def dataset(self) -> xr.Dataset:
         """The current dataset."""
 
+    @property
+    @abstractmethod
+    def access_latency(self) -> float | None:
+        """The time in seconds that it took for opening the dataset.
+        `None` if the dataset has not been opened from `file_path`.
+        """
+
     @abstractmethod
     def report(
         self,
@@ -75,44 +82,44 @@ class RuleExit(Exception):
 class RuleOp(ABC):
     """Define the specific rule validation operations."""
 
-    def validate_dataset(self, context: RuleContext, node: DatasetNode) -> None:
+    def validate_dataset(self, ctx: RuleContext, node: DatasetNode) -> None:
         """Validate the given dataset node.
 
         Args:
-            context: The current rule context.
+            ctx: The current rule context.
             node: The dataset node.
 
         Raises:
             RuleExit: to exit rule logic and further node traversal
         """
 
-    def validate_variable(self, context: RuleContext, node: VariableNode) -> None:
+    def validate_variable(self, ctx: RuleContext, node: VariableNode) -> None:
         """Validate the given data array (variable) node.
 
         Args:
-            context: The current rule context.
+            ctx: The current rule context.
             node: The data array (variable) node.
 
         Raises:
             RuleExit: to exit rule logic and further node traversal
         """
 
-    def validate_attrs(self, context: RuleContext, node: AttrsNode) -> None:
+    def validate_attrs(self, ctx: RuleContext, node: AttrsNode) -> None:
         """Validate the given attributes node.
 
         Args:
-            context: The current rule context.
+            ctx: The current rule context.
             node: The attributes node.
 
         Raises:
             RuleExit: to exit rule logic and further node traversal
         """
 
-    def validate_attr(self, context: RuleContext, node: AttrNode) -> None:
+    def validate_attr(self, ctx: RuleContext, node: AttrNode) -> None:
         """Validate the given attribute node.
 
         Args:
-            context: The current rule context.
+            ctx: The current rule context.
             node: The attribute node.
 
         Raises:

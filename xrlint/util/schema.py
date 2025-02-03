@@ -38,6 +38,8 @@ def schema(
     # "integer", "number"
     minimum: int | float | None = None,
     maximum: int | float | None = None,
+    exclusiveMinimum: int | float | None = None,
+    exclusiveMaximum: int | float | None = None,
     # "array"
     items: list[JsonSchema] | JsonSchema | None = None,
     # "object"
@@ -55,6 +57,8 @@ def schema(
             enum=enum,
             minimum=minimum,
             maximum=maximum,
+            exclusiveMinimum=exclusiveMinimum,
+            exclusiveMaximum=exclusiveMaximum,
             items=items,
             properties=properties,
             additionalProperties=False if additionalProperties is False else None,

@@ -13,15 +13,18 @@ class RuleContextImplTest(TestCase):
     def test_defaults(self):
         config_obj = ConfigObject()
         dataset = xr.Dataset()
-        context = RuleContextImpl(config_obj, dataset, "./ds.zarr", None)
+        context = RuleContextImpl(config_obj, dataset, "./ds.zarr", None, None)
         self.assertIs(config_obj, context.config)
         self.assertIs(dataset, context.dataset)
         self.assertEqual({}, context.settings)
         self.assertEqual("./ds.zarr", context.file_path)
         self.assertEqual(None, context.file_index)
+        self.assertEqual(None, context.access_latency)
 
     def test_report(self):
-        context = RuleContextImpl(ConfigObject(), xr.Dataset(), "./ds.zarr", None)
+        context = RuleContextImpl(
+            ConfigObject(), xr.Dataset(), "./ds.zarr", None, 1.2345
+        )
         with context.use_state(rule_id="no-xxx"):
             context.report(
                 "What the heck do you mean?",
