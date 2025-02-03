@@ -4,7 +4,7 @@
 
 ### Adjustments and Enhancements
 
-- Added a new core rule `opening-time` that can be used to check the
+- Added a new core rule `access-latency` that can be used to check the
   time it takes to open datasets.
 
 - Added HTML styling for both CLI output (`--format html`) and rendering

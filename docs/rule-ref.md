@@ -5,6 +5,12 @@ New rules will be added by upcoming XRLint releases.
 
 ## Core Rules
 
+### :material-bug: `access-latency`
+
+Ensure that the time it takes to open a dataset from its source does a exceed a given `threshold` in seconds. The default threshold is `2.5`.
+
+Contained in:  `all`-:material-lightning-bolt: `recommended`-:material-alert:
+
 ### :material-lightbulb: `content-desc`
 
 A dataset should provide information about where the data came from and what has been done to it. This information is mainly for the benefit of human readers. The rule accepts the following configuration parameters:
@@ -64,12 +70,6 @@ Empty chunks should not be encoded and written. The rule currently applies to Za
 [:material-information-variant:](https://docs.xarray.dev/en/stable/generated/xarray.Dataset.to_zarr.html#xarray-dataset-to-zarr)
 
 Contained in:  `all`-:material-lightning-bolt: `recommended`-:material-circle-off-outline:
-
-### :material-bug: `opening-time`
-
-Ensure that the time it takes to open a dataset from its source does a exceed a given `threshold` in seconds. The default threshold is `2.5`.
-
-Contained in:  `all`-:material-lightning-bolt: `recommended`-:material-alert:
 
 ### :material-bug: `time-coordinate`
 

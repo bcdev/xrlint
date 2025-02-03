@@ -40,7 +40,7 @@ class RuleContext(ABC):
 
     @property
     @abstractmethod
-    def opening_time(self) -> float | None:
+    def access_latency(self) -> float | None:
         """The time in seconds that it took for opening the dataset.
         `None` if the dataset has not been opened from `file_path`.
         """

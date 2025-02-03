@@ -12,6 +12,7 @@ def export_plugin() -> Plugin:
         {
             "name": "recommended",
             "rules": {
+                "access-latency": "warn",
                 "content-desc": "warn",
                 "conventions": "warn",
                 "coords-for-dims": "error",
@@ -20,7 +21,6 @@ def export_plugin() -> Plugin:
                 "lon-coordinate": "error",
                 "no-empty-attrs": "warn",
                 "no-empty-chunks": "off",
-                "opening-time": "warn",
                 "time-coordinate": "error",
                 "var-desc": "warn",
                 "var-flags": "error",

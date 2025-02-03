@@ -19,7 +19,7 @@ class RuleContextImplTest(TestCase):
         self.assertEqual({}, context.settings)
         self.assertEqual("./ds.zarr", context.file_path)
         self.assertEqual(None, context.file_index)
-        self.assertEqual(None, context.opening_time)
+        self.assertEqual(None, context.access_latency)
 
     def test_report(self):
         context = RuleContextImpl(

@@ -27,13 +27,15 @@ def _validate_dataset(
     dataset: xr.Dataset,
     file_path: str,
     file_index: int | None,
-    opening_time: float | None,
+    access_latency: float | None,
 ) -> list[Message]:
     assert isinstance(config_obj, ConfigObject)
     assert isinstance(dataset, xr.Dataset)
     assert isinstance(file_path, str)
 
-    context = RuleContextImpl(config_obj, dataset, file_path, file_index, opening_time)
+    context = RuleContextImpl(
+        config_obj, dataset, file_path, file_index, access_latency
+    )
     for rule_id, rule_config in config_obj.rules.items():
         with context.use_state(rule_id=rule_id):
             apply_rule(context, rule_id, rule_config)
@@ -55,10 +57,10 @@ def _open_and_validate_dataset(
             ds_path_list = processor_op.preprocess(file_path, opener_options)
         except (OSError, ValueError, TypeError) as e:
             return [new_fatal_message(str(e))]
-        opening_time = time.time() - t0
+        access_latency = time.time() - t0
         return processor_op.postprocess(
             [
-                _validate_dataset(config_obj, ds, path, i, opening_time)
+                _validate_dataset(config_obj, ds, path, i, access_latency)
                 for i, (ds, path) in enumerate(ds_path_list)
             ],
             file_path,
@@ -69,9 +71,11 @@ def _open_and_validate_dataset(
             dataset = _open_dataset(ds_source, opener_options, file_path)
         except (OSError, ValueError, TypeError) as e:
             return [new_fatal_message(str(e))]
-        opening_time = time.time() - t0
+        access_latency = time.time() - t0
         with dataset:
-            return _validate_dataset(config_obj, dataset, file_path, None, opening_time)
+            return _validate_dataset(
+                config_obj, dataset, file_path, None, access_latency
+            )
 
 
 def _open_dataset(

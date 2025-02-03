@@ -17,7 +17,7 @@ class RuleContextImpl(RuleContext):
         dataset: xr.Dataset,
         file_path: str,
         file_index: int | None,
-        opening_time: float | None,
+        access_latency: float | None,
     ):
         assert config is not None
         assert dataset is not None
@@ -27,7 +27,7 @@ class RuleContextImpl(RuleContext):
         self._dataset = dataset
         self._file_path = file_path
         self._file_index = file_index
-        self._opening_time = opening_time
+        self._access_latency = access_latency
         self.messages: list[Message] = []
         self.rule_id: str | None = None
         self.severity: Literal[1, 2] = SEVERITY_ERROR
@@ -54,8 +54,8 @@ class RuleContextImpl(RuleContext):
         return self._file_index
 
     @property
-    def opening_time(self) -> float | None:
-        return self._opening_time
+    def access_latency(self) -> float | None:
+        return self._access_latency
 
     def report(
         self,
