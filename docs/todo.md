@@ -2,25 +2,30 @@
 
 ## Required
 
-- populate `core` plugin by more rules, see CF site and `cf-check` tool
-- populate `xcube` plugin by more rules
+- support zarr >= 3 which we do not only because test 
+  `tests/plugins/xcube/processors/test_mldataset.py` fails
+  (see code TODO)
+- validate `RuleConfig.args/kwargs` against `RuleMeta.schema`
+  (see code TODO)
 - enhance docs
   - complete configuration page
   - provide guide page
   - use mkdocstrings ref syntax in docstrings
   - provide configuration examples (use as tests?)
   - add `docs_url` to all existing rules 
+  - rule ref should cover rule parameters
 
 ## Desired
  
 - project logo
+- add `core` rule checks recommended use of fill value
+- add `xcube` rule that helps to identify chunking issues 
 - apply rule op args/kwargs validation schema 
-- provide core rule that checks for configurable list of std attributes
 - measure time it takes to open a dataset and pass time into rule context 
   so we can write a configurable rule that checks the opening time
 - allow outputting suggestions, if any, that are emitted by some rules
-- enhance styling of `Result` representation in Jupyter notebooks
-  (check if we can expand/collapse messages with suggestions)
+  - add CLI option
+  - expand/collapse messages with suggestions in Jupyter notebooks
 
 ## Nice to have
 
@@ -69,4 +74,3 @@ types that can read the data from a file path.
    - call the root element `accept(validator)` that validates the 
      root element `validate.root()` and starts traversal of 
      child elements.
-

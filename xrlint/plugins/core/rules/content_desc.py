@@ -1,6 +1,6 @@
 import re
 
-from xrlint.node import VariableNode, DatasetNode
+from xrlint.node import DatasetNode, VariableNode
 from xrlint.plugins.core.plugin import plugin
 from xrlint.rule import RuleContext, RuleExit, RuleOp
 from xrlint.util.schema import schema

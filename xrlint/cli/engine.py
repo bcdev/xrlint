@@ -232,7 +232,7 @@ class XRLint(FormatterContext):
                 f" The available formats are"
                 f" {', '.join(repr(k) for k in formatters.keys())}."
             )
-        # TODO: pass and validate format-specific args/kwargs
+        # Here we could pass and validate format-specific args/kwargs
         #   against formatter.meta.schema
         if output_format == "simple":
             formatter_kwargs = {

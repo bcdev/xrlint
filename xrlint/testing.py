@@ -15,8 +15,6 @@ from xrlint.util.naming import to_snake_case
 
 _PLUGIN_NAME: Final = "testing"
 
-# TODO: Adapt config argument to Linter(**args, **kwargs)
-
 
 @dataclass(frozen=True, kw_only=True)
 class RuleTest:

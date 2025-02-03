@@ -2,15 +2,15 @@ from collections.abc import Iterable
 
 from tabulate import tabulate
 
-from xrlint.constants import SEVERITY_CODE_TO_NAME
+from xrlint.constants import (
+    SEVERITY_CODE_TO_COLOR,
+    SEVERITY_CODE_TO_NAME,
+)
 from xrlint.formatter import FormatterContext, FormatterOp
 from xrlint.formatters import registry
-from xrlint.result import Result
+from xrlint.result import Message, Result
 from xrlint.util.formatting import format_problems, format_styled
 from xrlint.util.schema import schema
-
-SEVERITY_CODE_TO_COLOR = {2: "red", 1: "blue", 0: "green", None: ""}
-RULE_REF_URL = "https://bcdev.github.io/xrlint/rule-ref/"
 
 
 @registry.define_formatter(
@@ -51,7 +51,7 @@ class Simple(FormatterOp):
             error_count += result.error_count
             warning_count += result.warning_count
 
-        summary_text = self.format_summary(error_count, warning_count)
+        summary_text = self._format_summary(error_count, warning_count)
         if self.output:
             print(summary_text, flush=True, end="")
         text_parts.append(summary_text)
@@ -62,43 +62,56 @@ class Simple(FormatterOp):
         self,
         result: Result,
     ) -> str:
-        file_path_text = result.file_path
-        if self.styled:
-            file_path_text = format_styled(file_path_text, s="underline")
+        file_path_text = self._format_file_path(result)
         if not result.messages:
             return f"\n{file_path_text} - ok\n"
-
         result_parts = [f"\n{file_path_text}:\n"]
         result_data = []
         for message in result.messages:
-            node_text = message.node_path or ""
-            severity_text = SEVERITY_CODE_TO_NAME.get(message.severity, "?")
-            message_text = message.message or ""
-            rule_text = message.rule_id or ""
-            if self.styled:
-                if node_text:
-                    node_text = format_styled(node_text, s="dim")
-                if severity_text:
-                    fg = SEVERITY_CODE_TO_COLOR.get(message.severity, "")
-                    severity_text = format_styled(severity_text, s="bold", fg=fg)
-                if rule_text:
-                    # TODO: get actual URL from metadata of the rule's plugin
-                    href = f"{RULE_REF_URL}#{rule_text}"
-                    rule_text = format_styled(message.rule_id, fg="blue", href=href)
             result_data.append(
                 [
-                    node_text,
-                    severity_text,
-                    message_text,
-                    rule_text,
+                    self._format_node_path(message),
+                    self._format_severity(message),
+                    self._format_message(message),
+                    self._format_rule_id(message, result),
                 ]
             )
-
         result_parts.append(tabulate(result_data, headers=(), tablefmt="plain"))
         result_parts.append("\n")
         return "".join(result_parts)
 
-    def format_summary(self, error_count, warning_count) -> str:
+    def _format_file_path(self, result) -> str:
+        file_path_text = result.file_path
+        if self.styled:
+            file_path_text = format_styled(file_path_text, s="underline")
+        return file_path_text
+
+    def _format_node_path(self, m: Message) -> str:
+        node_text = m.node_path or ""
+        if self.styled and node_text:
+            node_text = format_styled(node_text, s="dim")
+        return node_text
+
+    def _format_severity(self, m: Message) -> str:
+        severity_text = SEVERITY_CODE_TO_NAME.get(m.severity, "?")
+        if self.styled and severity_text:
+            fg = SEVERITY_CODE_TO_COLOR.get(m.severity, "")
+            severity_text = format_styled(severity_text, s="bold", fg=fg)
+        return severity_text
+
+    # noinspection PyMethodMayBeStatic
+    def _format_message(self, m: Message) -> str:
+        return m.message or ""
+
+    def _format_rule_id(self, m: Message, r: Result) -> str:
+        rule_text = m.rule_id or ""
+        if self.styled and rule_text:
+            rule_url = r.get_docs_url_for_rule(m.rule_id)
+            if rule_url:
+                rule_text = format_styled(rule_text, fg="blue", href=rule_url)
+        return rule_text
+
+    def _format_summary(self, error_count, warning_count) -> str:
         summary_parts = []
         problems_text = format_problems(error_count, warning_count)
         if self.styled:

@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from xrlint.formatters.html import Html
+from xrlint.formatters.html import Html, HtmlText
 
 from .helpers import get_context, get_test_results
 
@@ -13,7 +13,8 @@ class HtmlTest(TestCase):
             context=get_context(),
             results=results,
         )
-        self.assertIsInstance(text, str)
+        self.assertIsInstance(text, HtmlText)
+        self.assertIs(text, text._repr_html_())
         self.assertIn("</p>", text)
 
     def test_html_with_meta(self):
@@ -23,5 +24,6 @@ class HtmlTest(TestCase):
             context=get_context(),
             results=results,
         )
-        self.assertIsInstance(text, str)
+        self.assertIsInstance(text, HtmlText)
+        self.assertIs(text, text._repr_html_())
         self.assertIn("</p>", text)

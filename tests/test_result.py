@@ -69,7 +69,8 @@ class ResultTest(TestCase):
         )
         html = result._repr_html_()
         self.assertIsInstance(html, str)
-        self.assertEqual('<p role="file">test.zarr - ok</p>\n', html)
+        self.assertIn("ok", html)
+        self.assertIn("<div", html)
 
         result = Result.new(
             config_object=ConfigObject(),

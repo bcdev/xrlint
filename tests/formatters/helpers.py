@@ -45,8 +45,18 @@ def get_test_results():
             config_object=config_obj,
             file_path="test.nc",
             messages=[
-                Message(message="message-1", rule_id="test/rule-1", severity=2),
-                Message(message="message-2", rule_id="test/rule-2", severity=1),
+                Message(
+                    message="message-1",
+                    rule_id="test/rule-1",
+                    severity=2,
+                    node_path="dataset",
+                ),
+                Message(
+                    message="message-2",
+                    rule_id="test/rule-2",
+                    severity=1,
+                    node_path="dataset",
+                ),
                 Message(message="message-3", fatal=True),
             ],
         ),

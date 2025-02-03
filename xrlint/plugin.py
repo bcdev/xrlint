@@ -26,6 +26,9 @@ class PluginMeta(MappingConstructible, JsonSerializable):
     Must have the form "<module>:<attr>", if given.
     """
 
+    docs_url: str | None = None
+    """Plugin documentation URL."""
+
     @classmethod
     def value_name(cls) -> str:
         return "plugin_meta"
@@ -145,6 +148,7 @@ def new_plugin(
     name: str,
     version: str = "0.0.0",
     ref: str | None = None,
+    docs_url: str | None = None,
     rules: dict[str, Rule] | None = None,
     processors: dict[str, Processor] | None = None,
     configs: dict[str, ConfigObject] | None = None,
@@ -156,12 +160,13 @@ def new_plugin(
         name: Plugin name. Required.
         version: Plugin version. Defaults to `"0.0.0"`.
         ref: Plugin reference. Optional.
+        docs_url: Plugin documentation URL. Optional.
         rules: A dictionary containing the definitions of custom rules. Optional.
         processors: A dictionary containing custom processors. Optional.
         configs: A dictionary containing predefined configurations. Optional.
     """
     return Plugin(
-        meta=PluginMeta(name=name, version=version, ref=ref),
+        meta=PluginMeta(name=name, version=version, ref=ref, docs_url=docs_url),
         rules=rules or {},
         processors=processors or {},
         configs=configs or {},
