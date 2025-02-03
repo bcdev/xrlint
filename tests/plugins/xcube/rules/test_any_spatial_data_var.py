@@ -1,3 +1,7 @@
+#  Copyright © 2025 Brockmann Consult GmbH.
+#  This software is distributed under the terms and conditions of the
+#  MIT license (https://mit-license.org/).
+
 from xrlint.plugins.xcube.rules.any_spatial_data_var import AnySpatialDataVar
 from xrlint.testing import RuleTest, RuleTester
 

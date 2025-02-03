@@ -1,3 +1,7 @@
+#  Copyright © 2025 Brockmann Consult GmbH.
+#  This software is distributed under the terms and conditions of the
+#  MIT license (https://mit-license.org/).
+
 from xrlint.cli.engine import XRLint
 from xrlint.config import Config, ConfigLike, ConfigObject, ConfigObjectLike
 from xrlint.formatter import (

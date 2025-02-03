@@ -5,12 +5,12 @@
 ### Adjustments and Enhancements
 
 - Added a new core rule `access-latency` that can be used to check the
-  time it takes to open datasets.
+  time it takes to open a dataset.
 
 - Added HTML styling for both CLI output (`--format html`) and rendering
   of `Result` objects in Jupyter notebooks.
 
-- Rule `no-empty-chunks` has taken off the `"recommended"` settings 
+- Rule `no-empty-chunks` has been taken off the `"recommended"` settings 
   as there is no easy/efficient way to tell whether a dataset has 
   been written using `write_emtpy_chunks` option or not.
   The rule message itself has been fixed. (#45) 
@@ -19,8 +19,9 @@
   to be consistent with messages of other rules.
 
 - Core rule `dataset-title-attr` has been moved into `xcube` plugin
-  and renamed to `xcube/dataset-title` because the core rule `var-descr` 
-  covers checking for dataset titles.
+  and renamed to `xcube/dataset-title` because the core rule 
+  `content-desc` covers checking for dataset titles and other descriptive 
+  attributes.
 
 ### Incompatible API changes
 
@@ -49,6 +50,7 @@
 - XRLint now works with zarr >=2,<3 and zarr >=3.0.2
 - Added more tests so we finally reached 100% coverage.
 - New `PluginMeta.docs_url` property.
+- Inserted copyright header into all source files.
 
 ## Version 0.4.1 (from 2025-01-31)
 

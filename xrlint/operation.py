@@ -1,3 +1,7 @@
+#  Copyright © 2025 Brockmann Consult GmbH.
+#  This software is distributed under the terms and conditions of the
+#  MIT license (https://mit-license.org/).
+
 from collections.abc import MutableMapping
 from dataclasses import dataclass
 from inspect import getdoc, isclass

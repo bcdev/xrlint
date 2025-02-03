@@ -1,3 +1,7 @@
+#  Copyright © 2025 Brockmann Consult GmbH.
+#  This software is distributed under the terms and conditions of the
+#  MIT license (https://mit-license.org/).
+
 import xarray as xr
 
 from xrlint.plugins.core.rules.coords_for_dims import CoordsForDims

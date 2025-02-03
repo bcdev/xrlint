@@ -1,3 +1,7 @@
+#  Copyright © 2025 Brockmann Consult GmbH.
+#  This software is distributed under the terms and conditions of the
+#  MIT license (https://mit-license.org/).
+
 from abc import ABC, abstractmethod
 from collections.abc import MutableMapping, Sequence
 from dataclasses import dataclass, field

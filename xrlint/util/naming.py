@@ -1,3 +1,8 @@
+#  Copyright © 2025 Brockmann Consult GmbH.
+#  This software is distributed under the terms and conditions of the
+#  MIT license (https://mit-license.org/).
+
+
 def to_kebab_case(name: str) -> str:
     return _to_lc_case(name, "-")
 

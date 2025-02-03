@@ -1,3 +1,7 @@
+#  Copyright © 2025 Brockmann Consult GmbH.
+#  This software is distributed under the terms and conditions of the
+#  MIT license (https://mit-license.org/).
+
 from dataclasses import dataclass, field
 from typing import Any, Literal
 from unittest import TestCase

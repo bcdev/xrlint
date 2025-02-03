@@ -1,3 +1,7 @@
+#  Copyright © 2025 Brockmann Consult GmbH.
+#  This software is distributed under the terms and conditions of the
+#  MIT license (https://mit-license.org/).
+
 from xrlint.plugin import Plugin
 from xrlint.plugins.xcube.constants import ML_FILE_PATTERN
 from xrlint.util.importutil import import_submodules
