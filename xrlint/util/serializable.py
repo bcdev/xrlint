@@ -1,3 +1,7 @@
+#  Copyright © 2025 Brockmann Consult GmbH.
+#  This software is distributed under the terms and conditions of the
+#  MIT license (https://mit-license.org/).
+
 from dataclasses import fields, is_dataclass
 from typing import Any, Final, Mapping, Sequence, TypeAlias
 

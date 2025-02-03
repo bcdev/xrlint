@@ -2,6 +2,10 @@
 This example demonstrates how to develop new rules.
 """
 
+#  Copyright © 2025 Brockmann Consult GmbH.
+#  This software is distributed under the terms and conditions of the
+#  MIT license (https://mit-license.org/).
+
 import xarray as xr
 
 from xrlint.node import DatasetNode

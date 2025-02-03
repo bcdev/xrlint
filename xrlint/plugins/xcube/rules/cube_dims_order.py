@@ -1,3 +1,7 @@
+#  Copyright © 2025 Brockmann Consult GmbH.
+#  This software is distributed under the terms and conditions of the
+#  MIT license (https://mit-license.org/).
+
 from xrlint.node import VariableNode
 from xrlint.plugins.xcube.constants import LAT_NAME, LON_NAME, TIME_NAME, X_NAME, Y_NAME
 from xrlint.plugins.xcube.plugin import plugin

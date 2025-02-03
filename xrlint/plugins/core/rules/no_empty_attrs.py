@@ -1,3 +1,7 @@
+#  Copyright © 2025 Brockmann Consult GmbH.
+#  This software is distributed under the terms and conditions of the
+#  MIT license (https://mit-license.org/).
+
 from xrlint.node import AttrsNode
 from xrlint.plugins.core.plugin import plugin
 from xrlint.result import Suggestion
