@@ -4,8 +4,8 @@
 
 ### Adjustments and Enhancements
 
-- Added a new core rule `var-fill-value` that checks for the recommended 
-  use of a variable's fill value.
+- Added a new core rule `var-missing-data` that checks for the recommended 
+  use of a variable's missing data.
 
 - Added a new core rule `access-latency` that can be used to check the
   time it takes to open a dataset.
