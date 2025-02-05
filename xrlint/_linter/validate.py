@@ -92,7 +92,13 @@ def _open_dataset(
     try:
         t0 = time.time()
         result = xr.open_datatree(ds_source, engine=engine, **(opener_options or {}))
-    except (OSError, ValueError, TypeError):
+        # When opening no-group Zarr datasets we get with xarray 2025.1.2:
+        #
+        #   File "<...>/site-packages/xarray/backends/zarr.py", line 741, in __init__
+        #     self._read_only = self.zarr_group.read_only
+        #                       ^^^^^^^^^^^^^^^^^^^^^^^^^
+        # AttributeError: 'NoneType' object has no attribute 'read_only'
+    except (OSError, ValueError, TypeError, AttributeError):
         t0 = time.time()
         result = xr.open_dataset(ds_source, engine=engine, **(opener_options or {}))
     return result, time.time() - t0
