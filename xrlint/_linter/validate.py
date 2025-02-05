@@ -10,7 +10,7 @@ import xarray as xr
 from xrlint.config import ConfigObject
 from xrlint.result import Message, Result
 
-from ..constants import NODE_ROOT_NAME
+from ..constants import DATASET_ROOT_NAME
 from .apply import apply_rule
 from .rulectx import RuleContextImpl
 
@@ -28,13 +28,13 @@ def validate_dataset(config_obj: ConfigObject, dataset: Any, file_path: str):
 
 def _validate_dataset(
     config_obj: ConfigObject,
-    dataset: xr.Dataset,
+    dataset: xr.Dataset | xr.DataTree,
     file_path: str,
     file_index: int | None,
     access_latency: float | None,
 ) -> list[Message]:
     assert isinstance(config_obj, ConfigObject)
-    assert isinstance(dataset, xr.Dataset)
+    assert isinstance(dataset, (xr.Dataset, xr.DataTree))
     assert isinstance(file_path, str)
 
     context = RuleContextImpl(
@@ -70,12 +70,12 @@ def _open_and_validate_dataset(
             file_path,
         )
     else:
-        t0 = time.time()
         try:
-            dataset = _open_dataset(ds_source, opener_options, file_path)
+            dataset, access_latency = _open_dataset(
+                ds_source, opener_options, file_path
+            )
         except (OSError, ValueError, TypeError) as e:
             return [new_fatal_message(str(e))]
-        access_latency = time.time() - t0
         with dataset:
             return _validate_dataset(
                 config_obj, dataset, file_path, None, access_latency
@@ -84,12 +84,18 @@ def _open_and_validate_dataset(
 
 def _open_dataset(
     ds_source: Any, opener_options: dict[str, Any] | None, file_path: str
-) -> xr.Dataset:
+) -> tuple[xr.Dataset | xr.DataTree, float]:
     """Open a dataset."""
     engine = opener_options.pop("engine", None)
     if engine is None and (file_path.endswith(".zarr") or file_path.endswith(".zarr/")):
         engine = "zarr"
-    return xr.open_dataset(ds_source, engine=engine, **(opener_options or {}))
+    try:
+        t0 = time.time()
+        result = xr.open_datatree(ds_source, engine=engine, **(opener_options or {}))
+    except (OSError, ValueError, TypeError):
+        t0 = time.time()
+        result = xr.open_dataset(ds_source, engine=engine, **(opener_options or {}))
+    return result, time.time() - t0
 
 
 def new_fatal_message(message: str) -> Message:
@@ -97,5 +103,5 @@ def new_fatal_message(message: str) -> Message:
         message=message,
         fatal=True,
         severity=2,
-        node_path=NODE_ROOT_NAME,
+        node_path=DATASET_ROOT_NAME,
     )

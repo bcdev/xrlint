@@ -10,6 +10,7 @@ import xarray as xr
 # noinspection PyProtectedMember
 from xrlint._linter.rulectx import RuleContextImpl
 from xrlint.config import ConfigObject
+from xrlint.constants import DATASET_ROOT_NAME
 from xrlint.node import DatasetNode
 from xrlint.plugins.core.rules.access_latency import AccessLatency
 from xrlint.result import Message
@@ -33,8 +34,9 @@ class OpeningTimeTest(TestCase):
             access_latency=access_latency,
         )
         node = DatasetNode(
-            path="dataset",
             parent=None,
+            path=DATASET_ROOT_NAME,
+            name=DATASET_ROOT_NAME,
             dataset=ctx.dataset,
         )
         rule_op = (
@@ -59,7 +61,7 @@ class OpeningTimeTest(TestCase):
             [
                 Message(
                     message="Access latency exceeds threshold: 3.2 > 2.5 seconds.",
-                    node_path="dataset",
+                    node_path=DATASET_ROOT_NAME,
                     severity=2,
                 )
             ],
@@ -71,7 +73,7 @@ class OpeningTimeTest(TestCase):
             [
                 Message(
                     message="Access latency exceeds threshold: 0.2 > 0.1 seconds.",
-                    node_path="dataset",
+                    node_path=DATASET_ROOT_NAME,
                     severity=2,
                 )
             ],

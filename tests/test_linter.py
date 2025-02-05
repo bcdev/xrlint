@@ -8,7 +8,7 @@ from unittest import TestCase
 import xarray as xr
 
 from xrlint.config import Config, ConfigObject
-from xrlint.constants import CORE_PLUGIN_NAME, NODE_ROOT_NAME
+from xrlint.constants import CORE_PLUGIN_NAME, DATASET_ROOT_NAME
 from xrlint.linter import Linter, new_linter
 from xrlint.node import AttrNode, AttrsNode, DatasetNode, VariableNode
 from xrlint.plugin import new_plugin
@@ -179,7 +179,7 @@ class LinterValidateTest(TestCase):
                 messages=[
                     Message(
                         message="Dataset does not have data variables",
-                        node_path="dataset",
+                        node_path=DATASET_ROOT_NAME,
                         rule_id="test/dataset-without-data-vars",
                         severity=2,
                     )
@@ -204,7 +204,7 @@ class LinterValidateTest(TestCase):
                 messages=[
                     Message(
                         message="Dataset does not have data variables",
-                        node_path="dataset",
+                        node_path=DATASET_ROOT_NAME,
                         rule_id="test/dataset-without-data-vars",
                         severity=1,
                     )
@@ -238,7 +238,7 @@ class LinterValidateTest(TestCase):
                 Message(
                     message="unknown rule 'test/dataset-is-fast'",
                     rule_id="test/dataset-is-fast",
-                    node_path=NODE_ROOT_NAME,
+                    node_path=DATASET_ROOT_NAME,
                     severity=2,
                     fatal=True,
                 )
@@ -294,13 +294,13 @@ class LinterValidateTest(TestCase):
                 messages=[
                     Message(
                         message="Attribute name with space: 'created at'",
-                        node_path="dataset.attrs['created at']",
+                        node_path=f"{DATASET_ROOT_NAME}.attrs['created at']",
                         rule_id="test/no-space-in-attr-name",
                         severity=2,
                     ),
                     Message(
                         message="Empty attributes",
-                        node_path="dataset.data_vars['tsm'].attrs",
+                        node_path=f"{DATASET_ROOT_NAME}.data_vars['tsm'].attrs",
                         rule_id="test/no-empty-attrs",
                         severity=1,
                     ),
@@ -310,7 +310,7 @@ class LinterValidateTest(TestCase):
                             "variable 'chl' is missing a "
                             "coordinate variable"
                         ),
-                        node_path="dataset.data_vars['chl']",
+                        node_path=f"{DATASET_ROOT_NAME}.data_vars['chl']",
                         rule_id="test/data-var-dim-must-have-coord",
                         severity=2,
                     ),
@@ -320,7 +320,7 @@ class LinterValidateTest(TestCase):
                             "variable 'tsm' is missing a "
                             "coordinate variable"
                         ),
-                        node_path="dataset.data_vars['tsm']",
+                        node_path=f"{DATASET_ROOT_NAME}.data_vars['tsm']",
                         rule_id="test/data-var-dim-must-have-coord",
                         severity=2,
                     ),
@@ -342,13 +342,13 @@ class LinterValidateTest(TestCase):
             [
                 Message(
                     message="Dataset does not have data variables",
-                    node_path="dataset[0]",
+                    node_path=f"{DATASET_ROOT_NAME}[0]",
                     rule_id="test/dataset-without-data-vars",
                     severity=1,
                 ),
                 Message(
                     message="Dataset does not have data variables",
-                    node_path="dataset[1]",
+                    node_path=f"{DATASET_ROOT_NAME}[1]",
                     rule_id="test/dataset-without-data-vars",
                     severity=1,
                 ),
@@ -371,7 +371,7 @@ class LinterValidateTest(TestCase):
                     message="bad checksum",
                     severity=2,
                     fatal=True,
-                    node_path=NODE_ROOT_NAME,
+                    node_path=DATASET_ROOT_NAME,
                 )
             ],
             result.messages,

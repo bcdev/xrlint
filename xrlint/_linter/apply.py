@@ -2,15 +2,15 @@
 #  This software is distributed under the terms and conditions of the
 #  MIT license (https://mit-license.org/).
 
-from xrlint.node import AttrNode, AttrsNode, DatasetNode, VariableNode
+from xrlint.node import AttrNode, AttrsNode, DataTreeNode, DatasetNode, VariableNode
 from xrlint.rule import RuleConfig, RuleExit, RuleOp
 
-from ..constants import NODE_ROOT_NAME
+from ..constants import DATASET_ROOT_NAME, DATATREE_ROOT_NAME
 from .rulectx import RuleContextImpl
 
 
 def apply_rule(
-    context: RuleContextImpl,
+    ctx: RuleContextImpl,
     rule_id: str,
     rule_config: RuleConfig,
 ):
@@ -18,40 +18,79 @@ def apply_rule(
     `context` using rule configuration `rule_config`.
     """
     try:
-        rule = context.config.get_rule(rule_id)
+        rule = ctx.config.get_rule(rule_id)
     except ValueError as e:
-        context.report(f"{e}", fatal=True)
+        ctx.report(f"{e}", fatal=True)
         return
 
     if rule_config.severity == 0:
         # rule is off
         return
 
-    with context.use_state(severity=rule_config.severity):
+    with ctx.use_state(severity=rule_config.severity):
         # TODO: validate rule_config.args/kwargs against rule.meta.schema
         # noinspection PyArgumentList
         rule_op: RuleOp = rule.op_class(*rule_config.args, **rule_config.kwargs)
         try:
-            _visit_dataset_node(
-                rule_op,
-                context,
-                DatasetNode(
-                    parent=None,
-                    path=(
-                        NODE_ROOT_NAME
-                        if context.file_index is None
-                        else f"{NODE_ROOT_NAME}[{context.file_index}]"
+            if ctx.datatree is not None:
+                name = (
+                    DATATREE_ROOT_NAME
+                    if ctx.file_index is None
+                    else f"{DATATREE_ROOT_NAME}[{ctx.file_index}]"
+                )
+                _visit_datatree_node(
+                    rule_op,
+                    ctx,
+                    DataTreeNode(
+                        parent=None, path=name, name=name, datatree=ctx.datatree
                     ),
-                    dataset=context.dataset,
-                ),
-            )
+                )
+            else:
+                name = (
+                    DATASET_ROOT_NAME
+                    if ctx.file_index is None
+                    else f"{DATASET_ROOT_NAME}[{ctx.file_index}]"
+                )
+                _visit_dataset_node(
+                    rule_op,
+                    ctx,
+                    DatasetNode(parent=None, path=name, name=name, dataset=ctx.dataset),
+                )
         except RuleExit:
             # This is ok, the rule requested it.
             pass
 
 
-def _visit_dataset_node(rule_op: RuleOp, context: RuleContextImpl, node: DatasetNode):
+def _visit_datatree_node(rule_op: RuleOp, context: RuleContextImpl, node: DataTreeNode):
     with context.use_state(node=node):
+        rule_op.validate_datatree(context, node)
+        if node.datatree.is_leaf:
+            _visit_dataset_node(
+                rule_op,
+                context,
+                DatasetNode(
+                    parent=node,
+                    path=f"{node.path}/{node.datatree.name}",
+                    name=node.datatree.name,
+                    dataset=node.datatree.dataset,
+                ),
+            )
+        else:
+            for name, datatree in node.datatree.children.items():
+                _visit_datatree_node(
+                    rule_op,
+                    context,
+                    DataTreeNode(
+                        parent=node,
+                        path=f"{node.path}/{name}",
+                        name=name,
+                        datatree=datatree,
+                    ),
+                )
+
+
+def _visit_dataset_node(rule_op: RuleOp, context: RuleContextImpl, node: DatasetNode):
+    with context.use_state(dataset=node.dataset, node=node):
         rule_op.validate_dataset(context, node)
         _visit_attrs_node(
             rule_op,

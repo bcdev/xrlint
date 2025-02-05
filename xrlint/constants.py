@@ -7,7 +7,9 @@ from typing import Final
 CORE_PLUGIN_NAME: Final = "__core__"
 CORE_DOCS_URL = "https://bcdev.github.io/xrlint/rule-ref"
 
-NODE_ROOT_NAME: Final = "dataset"
+DATATREE_ROOT_NAME: Final = "dt"
+DATASET_ROOT_NAME: Final = "ds"
+MISSING_DATATREE_FILE_PATH: Final = "<datatree>"
 MISSING_DATASET_FILE_PATH: Final = "<dataset>"
 
 SEVERITY_ERROR: Final = 2

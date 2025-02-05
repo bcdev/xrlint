@@ -70,9 +70,10 @@ class Linter:
         """Validate a dataset against applicable rules.
 
         Args:
-            dataset: The dataset. Can be a `xr.Dataset` instance
-                or a file path, or any dataset source that can be opened
-                using `xarray.open_dataset()`.
+            dataset: The dataset. Can be a `xr.Dataset` or `xr.DataTree`
+                instance or a file path, or any dataset source that can
+                be opened using `xarray.open_dataset()`
+                or `xarray.open_datatree()`.
             file_path: Optional file path used for formatting
                 messages. Useful if `dataset` is not a file path.
             config: Optional configuration-like value.
@@ -86,7 +87,7 @@ class Linter:
             Result of the validation.
         """
         if not file_path:
-            if isinstance(dataset, xr.Dataset):
+            if isinstance(dataset, (xr.Dataset, xr.DataTree)):
                 file_path = file_path or _get_file_path_for_dataset(dataset)
             else:
                 file_path = file_path or _get_file_path_for_source(dataset)
@@ -107,7 +108,7 @@ class Linter:
         return validate_dataset(config_obj, dataset, file_path)
 
 
-def _get_file_path_for_dataset(dataset: xr.Dataset) -> str:
+def _get_file_path_for_dataset(dataset: xr.Dataset | xr.DataTree) -> str:
     ds_source = dataset.encoding.get("source")
     return _get_file_path_for_source(ds_source)
 

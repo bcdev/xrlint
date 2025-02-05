@@ -10,7 +10,7 @@ from typing import Any, Callable, Literal, Type
 import xarray as xr
 
 from xrlint.constants import SEVERITY_ENUM, SEVERITY_ENUM_TEXT
-from xrlint.node import AttrNode, AttrsNode, DatasetNode, VariableNode
+from xrlint.node import AttrNode, AttrsNode, DataTreeNode, DatasetNode, VariableNode
 from xrlint.operation import Operation, OperationMeta
 from xrlint.result import Suggestion
 from xrlint.util.constructible import ValueConstructible
@@ -85,6 +85,17 @@ class RuleExit(Exception):
 
 class RuleOp(ABC):
     """Define the specific rule validation operations."""
+
+    def validate_datatree(self, ctx: RuleContext, node: DataTreeNode) -> None:
+        """Validate the given datatree node.
+
+        Args:
+            ctx: The current rule context.
+            node: The datatree node.
+
+        Raises:
+            RuleExit: to exit rule logic and further node traversal
+        """
 
     def validate_dataset(self, ctx: RuleContext, node: DatasetNode) -> None:
         """Validate the given dataset node.
