@@ -29,6 +29,5 @@ The following plugins provide XRLint's [inbuilt rules](rule-ref.md):
 - `xcube`: implementing the rules for 
   [xcube datasets](https://xcube.readthedocs.io/en/latest/cubespec.html).
   Note, this plugin is fully optional. You must manually configure 
-  it to apply its rules. It may be moved into a separate GitHub repo 
-  once XRLint is mature enough. 
+  it to apply its rules. It may be moved into a separate GitHub repo later. 
 

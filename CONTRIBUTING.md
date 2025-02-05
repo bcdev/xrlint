@@ -52,7 +52,7 @@ sort imports statements according to the default settings of
 Use `typing.TYPE_CHECKING` to resolve forward references 
 and effectively avoid circular dependencies.
 
-## Contributing Rules
+## Contributing a XRLint Rule
 
 ### Rule Naming
 
@@ -81,6 +81,7 @@ The rule naming conventions for XRLint are based ESLint:
   i.e., `<plugin>/rules/<rule>`. The module name should be the rule's name
   with dashes replaced by underscores. 
 
-* Write a comprehensive test for your rule logic using 
-  `xrlint.testing.RuleTester`. It should be defined in a dedicated 
-  test module, i.e., `tests/rules/test_<rule>`.
+* Write a comprehensive test for your rule logic which should be defined 
+  in a dedicated module under `tests`, i.e., `tests/rules/test_<rule>`. 
+  Consider using `xrlint.testing.RuleTester` which can save a lot of
+  time and is used for almost all in-built rules.
