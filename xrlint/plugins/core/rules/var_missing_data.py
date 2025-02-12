@@ -43,7 +43,7 @@ class VarMissingData(RuleOp):
             add_offset = encoding.get("add_offset", attrs.get("add_offset"))
             raw_dtype = encoding.get("dtype")
             if add_offset is not None or scaling_factor is not None:
-                ctx.report("Missing attribute '_FillValue' since data is packed.")
+                ctx.report("Missing attribute '_FillValue' since data packing is used.")
             elif isinstance(raw_dtype, np.dtype) and np.issubdtype(
                 raw_dtype, np.floating
             ):
