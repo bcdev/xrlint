@@ -4,6 +4,11 @@
 
 ### Adjustments and Enhancements
 
+- Added support for validating Zarr and HDF-5 groups and their items. 
+  Rules can now validate `xarray.DataTree` objects originating 
+  from `xarray.open_datatree()` by implementing
+  rule operation method `RuleOp.validate_datatree(ctx, node)`. (#54)
+
 - Added a new core rule `access-latency` that can be used to check the
   time it takes to open a dataset.
 

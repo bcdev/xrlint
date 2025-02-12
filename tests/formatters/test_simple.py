@@ -12,9 +12,9 @@ from xrlint.result import Message, Result
 
 class SimpleTest(TestCase):
     errors_and_warnings = [
-        Result.new(
-            config_object=ConfigObject(),
+        Result(
             file_path="test1.nc",
+            config_object=ConfigObject(),
             messages=[
                 Message(message="what", rule_id="rule-1", severity=2),
                 Message(message="is", fatal=True),
@@ -24,9 +24,9 @@ class SimpleTest(TestCase):
     ]
 
     warnings_only = [
-        Result.new(
-            ConfigObject(),
+        Result(
             file_path="test2.nc",
+            config_object=ConfigObject(),
             messages=[
                 Message(message="what", rule_id="rule-1", severity=1),
                 Message(message="happened?", rule_id="rule-2", severity=1),

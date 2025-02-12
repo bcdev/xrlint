@@ -12,7 +12,7 @@ from xrlint.config import Config, ConfigLike, get_core_config_object
 from xrlint.result import Result
 
 from ._linter.validate import new_fatal_message, validate_dataset
-from .constants import MISSING_DATASET_FILE_PATH
+from .constants import MISSING_DATASET_FILE_PATH, MISSING_DATATREE_FILE_PATH
 
 
 def new_linter(*configs: ConfigLike, **config_props: Any) -> "Linter":
@@ -95,8 +95,7 @@ class Linter:
         config = Config.from_config(self._config, config, config_props)
         config_obj = config.compute_config_object(file_path)
         if config_obj is None or not config_obj.rules:
-            return Result.new(
-                config_object=None,
+            return Result(
                 file_path=file_path,
                 messages=[
                     new_fatal_message(
@@ -110,9 +109,14 @@ class Linter:
 
 def _get_file_path_for_dataset(dataset: xr.Dataset | xr.DataTree) -> str:
     ds_source = dataset.encoding.get("source")
-    return _get_file_path_for_source(ds_source)
+    return _get_file_path_for_source(
+        ds_source,
+        MISSING_DATASET_FILE_PATH
+        if isinstance(dataset, xr.Dataset)
+        else MISSING_DATATREE_FILE_PATH,
+    )
 
 
-def _get_file_path_for_source(ds_source: Any) -> str:
+def _get_file_path_for_source(ds_source: Any, default: str | None = None) -> str:
     file_path = str(ds_source) if isinstance(ds_source, (str, Path, PathLike)) else ""
-    return file_path or MISSING_DATASET_FILE_PATH
+    return file_path or (default or MISSING_DATASET_FILE_PATH)

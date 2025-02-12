@@ -10,7 +10,7 @@ import xarray as xr
 from xrlint.config import Config, ConfigObject
 from xrlint.constants import CORE_PLUGIN_NAME, DATASET_ROOT_NAME
 from xrlint.linter import Linter, new_linter
-from xrlint.node import AttrNode, AttrsNode, DatasetNode, VariableNode
+from xrlint.node import AttrNode, AttrsNode, DatasetNode, VariableNode, DataTreeNode
 from xrlint.plugin import new_plugin
 from xrlint.processor import ProcessorOp
 from xrlint.result import Message, Result
@@ -97,6 +97,7 @@ class LinterValidateWithConfigTest(TestCase):
 
 
 class LinterValidateTest(TestCase):
+    # noinspection PyUnusedLocal
     def setUp(self):
         plugin = new_plugin(name="test")
 
@@ -113,7 +114,7 @@ class LinterValidateTest(TestCase):
                     ctx.report("Empty attributes")
 
         @plugin.define_rule("data-var-dim-must-have-coord")
-        class DataArrayVer(RuleOp):
+        class VariableVer(RuleOp):
             def validate_variable(self, ctx: RuleContext, node: VariableNode):
                 if node.in_data_vars():
                     for dim_name in node.array.dims:
@@ -130,6 +131,12 @@ class LinterValidateTest(TestCase):
                 if len(node.dataset.data_vars) == 0:
                     ctx.report("Dataset does not have data variables")
                     raise RuleExit  # no need to traverse further
+
+        @plugin.define_rule("datatree-without-data-vars")
+        class DataTreeVer(RuleOp):
+            def validate_datatree(self, ctx: RuleContext, node: DataTreeNode):
+                if len(node.datatree.data_vars) == 0:
+                    ctx.report("DataTree does not have data variables")
 
         @plugin.define_processor("multi-level-dataset")
         class MultiLevelDataset(ProcessorOp):
@@ -159,6 +166,7 @@ class LinterValidateTest(TestCase):
                 "no-empty-attrs",
                 "data-var-dim-must-have-coord",
                 "dataset-without-data-vars",
+                "datatree-without-data-vars",
             ],
             list(self.linter.config.objects[0].plugins["test"].rules.keys()),
         )
@@ -171,11 +179,6 @@ class LinterValidateTest(TestCase):
             Result(
                 config_object=result.config_object,
                 file_path="<dataset>",
-                warning_count=0,
-                error_count=1,
-                fatal_error_count=0,
-                fixable_warning_count=0,
-                fixable_error_count=0,
                 messages=[
                     Message(
                         message="Dataset does not have data variables",
@@ -187,6 +190,9 @@ class LinterValidateTest(TestCase):
             ),
             result,
         )
+        self.assertEqual(0, result.warning_count)
+        self.assertEqual(1, result.error_count)
+        self.assertEqual(0, result.fatal_error_count)
 
     def test_linter_respects_rule_severity_warn(self):
         result = self.linter.validate(
@@ -196,11 +202,6 @@ class LinterValidateTest(TestCase):
             Result(
                 config_object=result.config_object,
                 file_path="<dataset>",
-                warning_count=1,
-                error_count=0,
-                fatal_error_count=0,
-                fixable_warning_count=0,
-                fixable_error_count=0,
                 messages=[
                     Message(
                         message="Dataset does not have data variables",
@@ -212,6 +213,9 @@ class LinterValidateTest(TestCase):
             ),
             result,
         )
+        self.assertEqual(1, result.warning_count)
+        self.assertEqual(0, result.error_count)
+        self.assertEqual(0, result.fatal_error_count)
 
     def test_linter_respects_rule_severity_off(self):
         result = self.linter.validate(
@@ -221,15 +225,13 @@ class LinterValidateTest(TestCase):
             Result(
                 config_object=result.config_object,
                 file_path="<dataset>",
-                warning_count=0,
-                error_count=0,
-                fatal_error_count=0,
-                fixable_warning_count=0,
-                fixable_error_count=0,
                 messages=[],
             ),
             result,
         )
+        self.assertEqual(0, result.warning_count)
+        self.assertEqual(0, result.error_count)
+        self.assertEqual(0, result.fatal_error_count)
 
     def test_linter_recognized_unknown_rule(self):
         result = self.linter.validate(xr.Dataset(), rules={"test/dataset-is-fast": 2})
@@ -245,6 +247,66 @@ class LinterValidateTest(TestCase):
             ],
             result.messages,
         )
+
+    def test_linter_recognized_datatree_rule(self):
+        result = self.linter.validate(
+            xr.DataTree(
+                children={
+                    "measurement": xr.DataTree(
+                        children={
+                            "r10m": xr.DataTree(),
+                            "r20m": xr.DataTree(),
+                            "r60m": xr.DataTree(),
+                        }
+                    )
+                }
+            ),
+            rules={"test/datatree-without-data-vars": 2},
+        )
+        self.assertEqual(
+            [
+                Message(
+                    message="DataTree does not have data variables",
+                    node_path="dt",
+                    rule_id="test/datatree-without-data-vars",
+                    severity=2,
+                    fatal=None,
+                    fix=None,
+                    suggestions=None,
+                ),
+                Message(
+                    message="DataTree does not have data variables",
+                    node_path="dt/measurement",
+                    rule_id="test/datatree-without-data-vars",
+                    severity=2,
+                    fatal=None,
+                    fix=None,
+                    suggestions=None,
+                ),
+                Message(
+                    message="DataTree does not have data variables",
+                    node_path="dt/measurement/r10m",
+                    rule_id="test/datatree-without-data-vars",
+                    severity=2,
+                ),
+                Message(
+                    message="DataTree does not have data variables",
+                    node_path="dt/measurement/r20m",
+                    rule_id="test/datatree-without-data-vars",
+                    severity=2,
+                ),
+                Message(
+                    message="DataTree does not have data variables",
+                    node_path="dt/measurement/r60m",
+                    rule_id="test/datatree-without-data-vars",
+                    severity=2,
+                ),
+            ],
+            result.messages,
+        )
+        self.assertEqual(0, result.warning_count)
+        self.assertEqual(5, result.error_count)
+        self.assertEqual(0, result.fatal_error_count)
 
     def test_linter_real_life_scenario(self):
         dataset = xr.Dataset(
@@ -286,11 +348,6 @@ class LinterValidateTest(TestCase):
             Result(
                 config_object=result.config_object,
                 file_path="chl-tsm.zarr",
-                warning_count=1,
-                error_count=3,
-                fatal_error_count=0,
-                fixable_warning_count=0,
-                fixable_error_count=0,
                 messages=[
                     Message(
                         message="Attribute name with space: 'created at'",
@@ -328,6 +385,9 @@ class LinterValidateTest(TestCase):
             ),
             result,
         )
+        self.assertEqual(1, result.warning_count)
+        self.assertEqual(3, result.error_count)
+        self.assertEqual(0, result.fatal_error_count)
 
     def test_processor_ok(self):
         result = self.linter.validate(

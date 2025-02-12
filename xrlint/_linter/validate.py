@@ -19,11 +19,11 @@ def validate_dataset(config_obj: ConfigObject, dataset: Any, file_path: str):
     assert isinstance(config_obj, ConfigObject)
     assert dataset is not None
     assert isinstance(file_path, str)
-    if isinstance(dataset, xr.Dataset):
+    if isinstance(dataset, (xr.Dataset, xr.DataTree)):
         messages = _validate_dataset(config_obj, dataset, file_path, None, None)
     else:
         messages = _open_and_validate_dataset(config_obj, dataset, file_path)
-    return Result.new(config_object=config_obj, messages=messages, file_path=file_path)
+    return Result(file_path=file_path, config_object=config_obj, messages=messages)
 
 
 def _validate_dataset(

@@ -45,9 +45,9 @@ def get_test_results():
     config_obj = ConfigObject(plugins={"test": plugin})
 
     return [
-        Result.new(
-            config_object=config_obj,
+        Result(
             file_path="test.nc",
+            config_object=config_obj,
             messages=[
                 Message(
                     message="message-1",
@@ -64,9 +64,9 @@ def get_test_results():
                 Message(message="message-3", fatal=True),
             ],
         ),
-        Result.new(
+        Result(
+            file_path="test.nc",
             config_object=config_obj,
-            file_path="test-2.nc",
             messages=[
                 Message(message="message-1", rule_id="test/rule-1", severity=1),
                 Message(message="message-2", rule_id="test/rule-2", severity=2),

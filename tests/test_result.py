@@ -32,24 +32,24 @@ class ResultTest(TestCase):
         config_obj = ConfigObject(plugins={"test": plugin})
         rules_meta = get_rules_meta_for_results(
             results=[
-                Result.new(
-                    config_object=config_obj,
+                Result(
                     file_path="test.zarr",
+                    config_object=config_obj,
                     messages=[Message(message="m 1", rule_id="test/my-rule-1")],
                 ),
-                Result.new(
-                    config_object=config_obj,
+                Result(
                     file_path="test.zarr",
+                    config_object=config_obj,
                     messages=[Message(message="m 2", rule_id="test/my-rule-2")],
                 ),
-                Result.new(
-                    config_object=config_obj,
+                Result(
                     file_path="test.zarr",
+                    config_object=config_obj,
                     messages=[Message(message="m 3", rule_id="test/my-rule-1")],
                 ),
-                Result.new(
-                    config_object=config_obj,
+                Result(
                     file_path="test.zarr",
+                    config_object=config_obj,
                     messages=[Message(message="m 4", rule_id="test/my-rule-2")],
                 ),
             ]
@@ -66,9 +66,9 @@ class ResultTest(TestCase):
         )
 
     def test_repr_html(self):
-        result = Result.new(
-            config_object=ConfigObject(),
+        result = Result(
             file_path="test.zarr",
+            config_object=ConfigObject(),
             messages=[],
         )
         html = result._repr_html_()
@@ -76,9 +76,9 @@ class ResultTest(TestCase):
         self.assertIn("ok", html)
         self.assertIn("<div", html)
 
-        result = Result.new(
-            config_object=ConfigObject(),
+        result = Result(
             file_path="test.zarr",
+            config_object=ConfigObject(),
             messages=[Message(message="m 1", rule_id="test/my-rule-1")],
         )
         html = result._repr_html_()
@@ -108,23 +108,26 @@ class ResultStatsTest(TestCase):
         self.assertEqual(0, stats.result_count)
 
         results = [
-            Result.new(
+            Result(
+                file_path="test.zarr",
                 messages=[
                     Message("R1 M1", severity=1),
                     Message("R1 M2", severity=2),
-                ]
+                ],
             ),
-            Result.new(
+            Result(
+                file_path="test.zarr",
                 messages=[
                     Message("R2 M1", severity=2),
-                ]
+                ],
             ),
-            Result.new(
+            Result(
+                file_path="test.zarr",
                 messages=[
                     Message("R3 M1", severity=1),
                     Message("R3 M2", severity=2),
                     Message("R3 M3", severity=2),
-                ]
+                ],
             ),
         ]
 
