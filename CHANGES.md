@@ -50,6 +50,8 @@
   - added class method `from_config()` to `ConfigList`.
   - removed function `xrlint.config.merge_configs` as it was no longer used.
 
+- Removed class method `Result.new()` as it was no longer used.
+
 ### Other changes
 
 - XRLint now works with zarr >=2,<3 and zarr >=3.0.2
