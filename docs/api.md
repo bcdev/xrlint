@@ -26,7 +26,7 @@ This chapter provides a plain reference for the XRLint Python API.
 - The `node` module defines the nodes passed to [RuleOp][xrlint.rule.RuleOp]:
   base classes [None][xrlint.node.Node], [XarrayNode][xrlint.node.XarrayNode],
   and the specific [DatasetNode][xrlint.node.DatasetNode],
-  [DataArray][xrlint.node.DataArrayNode], [AttrsNode][xrlint.node.AttrsNode], 
+  [VariableNode][xrlint.node.VariableNode], [AttrsNode][xrlint.node.AttrsNode], 
   and [AttrNode][xrlint.node.AttrNode] nodes.
 - The `processor` module provides processor related classes and functions:
   [Processor][xrlint.processor.Processor] comprising processor metadata
@@ -84,7 +84,7 @@ Note:
 
 ::: xrlint.node.DatasetNode
 
-::: xrlint.node.DataArrayNode
+::: xrlint.node.VariableNode
 
 ::: xrlint.node.AttrsNode
 

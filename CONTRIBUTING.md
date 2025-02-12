@@ -27,7 +27,7 @@ checklist are addressed in your PR.
   `pytest` must run without errors.
 * Add unit tests for any new code not yet covered by tests.
 * Make sure test coverage stays close to 100% for any change.
-  Use `pytest --cov=zappend --cov-report=html` to verify.
+  Use `pytest --cov=xrlint --cov-report=html` to verify.
 * If your change affects the current project documentation,
   please adjust it and include the change in the PR.
   Run `mkdocs serve` to verify. 
