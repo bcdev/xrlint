@@ -10,7 +10,7 @@ import xarray as xr
 from xrlint.config import Config, ConfigObject
 from xrlint.constants import CORE_PLUGIN_NAME, DATASET_ROOT_NAME
 from xrlint.linter import Linter, new_linter
-from xrlint.node import AttrNode, AttrsNode, DatasetNode, VariableNode, DataTreeNode
+from xrlint.node import AttrNode, AttrsNode, DatasetNode, DataTreeNode, VariableNode
 from xrlint.plugin import new_plugin
 from xrlint.processor import ProcessorOp
 from xrlint.result import Message, Result

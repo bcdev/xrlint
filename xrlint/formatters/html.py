@@ -5,10 +5,7 @@
 import html
 from collections.abc import Iterable
 
-from xrlint.constants import (
-    SEVERITY_CODE_TO_COLOR,
-    SEVERITY_CODE_TO_NAME,
-)
+from xrlint.constants import SEVERITY_CODE_TO_COLOR, SEVERITY_CODE_TO_NAME
 from xrlint.formatter import FormatterContext, FormatterOp
 from xrlint.formatters import registry
 from xrlint.result import Message, Result, get_rules_meta_for_results
