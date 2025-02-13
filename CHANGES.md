@@ -4,6 +4,11 @@
 
 ### Adjustments and Enhancements
 
+- Added support for validating Zarr and HDF-5 groups and their items. 
+  Rules can now validate `xarray.DataTree` objects originating 
+  from `xarray.open_datatree()` by implementing
+  rule operation method `RuleOp.validate_datatree(ctx, node)`. (#54)
+
 - Added a new core rule `var-missing-data` that checks for the recommended 
   use of a variable's missing data.
 
@@ -47,6 +52,8 @@
   - renamed `XRLint.load_config_list()` into `init_config()`
   - added class method `from_config()` to `ConfigList`.
   - removed function `xrlint.config.merge_configs` as it was no longer used.
+
+- Removed class method `Result.new()` as it was no longer used.
 
 ### Other changes
 

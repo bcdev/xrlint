@@ -39,8 +39,22 @@ class XarrayNode(Node):
 
 
 @dataclass(frozen=True, kw_only=True)
+class DataTreeNode(XarrayNode):
+    """DataTree node."""
+
+    name: Hashable
+    """The name of the datatree."""
+
+    datatree: xr.DataTree
+    """The `xarray.DataTree` instance."""
+
+
+@dataclass(frozen=True, kw_only=True)
 class DatasetNode(XarrayNode):
     """Dataset node."""
+
+    name: Hashable
+    """The name of the dataset."""
 
     dataset: xr.Dataset
     """The `xarray.Dataset` instance."""

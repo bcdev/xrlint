@@ -9,7 +9,7 @@ import xarray as xr
 # noinspection PyProtectedMember
 from xrlint._linter.rulectx import RuleContextImpl
 from xrlint.config import ConfigObject
-from xrlint.constants import NODE_ROOT_NAME
+from xrlint.constants import DATASET_ROOT_NAME
 from xrlint.result import Message, Suggestion
 
 
@@ -39,7 +39,7 @@ class RuleContextImplTest(TestCase):
             [
                 Message(
                     message="What the heck do you mean?",
-                    node_path=NODE_ROOT_NAME,
+                    node_path=DATASET_ROOT_NAME,
                     rule_id="no-xxx",
                     severity=2,
                     suggestions=[
@@ -48,7 +48,7 @@ class RuleContextImplTest(TestCase):
                 ),
                 Message(
                     message="You said it.",
-                    node_path=NODE_ROOT_NAME,
+                    node_path=DATASET_ROOT_NAME,
                     rule_id="no-xxx",
                     severity=2,
                     fatal=True,

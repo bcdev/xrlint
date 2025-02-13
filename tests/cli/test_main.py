@@ -66,6 +66,9 @@ class CliMainTest(TestCase):
         runner = CliRunner()
         result = runner.invoke(main, args)
         if not isinstance(result.exception, SystemExit):
+            import traceback
+
+            traceback.print_exception(result.exception)
             self.assertIsNone(result.exception)
         return result
 

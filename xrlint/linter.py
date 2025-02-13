@@ -12,7 +12,7 @@ from xrlint.config import Config, ConfigLike, get_core_config_object
 from xrlint.result import Result
 
 from ._linter.validate import new_fatal_message, validate_dataset
-from .constants import MISSING_DATASET_FILE_PATH
+from .constants import MISSING_DATASET_FILE_PATH, MISSING_DATATREE_FILE_PATH
 
 
 def new_linter(*configs: ConfigLike, **config_props: Any) -> "Linter":
@@ -70,9 +70,10 @@ class Linter:
         """Validate a dataset against applicable rules.
 
         Args:
-            dataset: The dataset. Can be a `xr.Dataset` instance
-                or a file path, or any dataset source that can be opened
-                using `xarray.open_dataset()`.
+            dataset: The dataset. Can be a `xr.Dataset` or `xr.DataTree`
+                instance or a file path, or any dataset source that can
+                be opened using `xarray.open_dataset()`
+                or `xarray.open_datatree()`.
             file_path: Optional file path used for formatting
                 messages. Useful if `dataset` is not a file path.
             config: Optional configuration-like value.
@@ -86,7 +87,7 @@ class Linter:
             Result of the validation.
         """
         if not file_path:
-            if isinstance(dataset, xr.Dataset):
+            if isinstance(dataset, (xr.Dataset, xr.DataTree)):
                 file_path = file_path or _get_file_path_for_dataset(dataset)
             else:
                 file_path = file_path or _get_file_path_for_source(dataset)
@@ -94,8 +95,7 @@ class Linter:
         config = Config.from_config(self._config, config, config_props)
         config_obj = config.compute_config_object(file_path)
         if config_obj is None or not config_obj.rules:
-            return Result.new(
-                config_object=None,
+            return Result(
                 file_path=file_path,
                 messages=[
                     new_fatal_message(
@@ -107,11 +107,16 @@ class Linter:
         return validate_dataset(config_obj, dataset, file_path)
 
 
-def _get_file_path_for_dataset(dataset: xr.Dataset) -> str:
+def _get_file_path_for_dataset(dataset: xr.Dataset | xr.DataTree) -> str:
     ds_source = dataset.encoding.get("source")
-    return _get_file_path_for_source(ds_source)
+    return _get_file_path_for_source(
+        ds_source,
+        MISSING_DATASET_FILE_PATH
+        if isinstance(dataset, xr.Dataset)
+        else MISSING_DATATREE_FILE_PATH,
+    )
 
 
-def _get_file_path_for_source(ds_source: Any) -> str:
+def _get_file_path_for_source(ds_source: Any, default: str | None = None) -> str:
     file_path = str(ds_source) if isinstance(ds_source, (str, Path, PathLike)) else ""
-    return file_path or MISSING_DATASET_FILE_PATH
+    return file_path or (default or MISSING_DATASET_FILE_PATH)

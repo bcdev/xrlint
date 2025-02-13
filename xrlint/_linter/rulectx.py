@@ -8,7 +8,7 @@ from typing import Any, Literal
 import xarray as xr
 
 from xrlint.config import ConfigObject
-from xrlint.constants import NODE_ROOT_NAME, SEVERITY_ERROR
+from xrlint.constants import DATASET_ROOT_NAME, SEVERITY_ERROR
 from xrlint.node import Node
 from xrlint.result import Message, Suggestion
 from xrlint.rule import RuleContext
@@ -18,16 +18,26 @@ class RuleContextImpl(RuleContext):
     def __init__(
         self,
         config: ConfigObject,
-        dataset: xr.Dataset,
+        dataset: xr.Dataset | xr.DataTree,
         file_path: str,
         file_index: int | None,
         access_latency: float | None,
     ):
-        assert config is not None
-        assert dataset is not None
-        assert file_path is not None
+        assert isinstance(config, ConfigObject)
+        assert isinstance(dataset, (xr.Dataset | xr.DataTree))
+        assert isinstance(file_path, str)
         assert file_index is None or isinstance(file_index, int)
+        assert access_latency is None or isinstance(access_latency, float)
+        if isinstance(dataset, xr.DataTree):
+            datatree = dataset
+            dataset = None
+            if datatree.is_leaf:
+                dataset = datatree.dataset
+                datatree = None
+        else:
+            datatree = None
         self._config = config
+        self._datatree = datatree
         self._dataset = dataset
         self._file_path = file_path
         self._file_index = file_index
@@ -46,8 +56,16 @@ class RuleContextImpl(RuleContext):
         return self._config.settings or {}
 
     @property
-    def dataset(self) -> xr.Dataset:
+    def datatree(self) -> xr.DataTree | None:
+        return self._datatree
+
+    @property
+    def dataset(self) -> xr.Dataset | None:
         return self._dataset
+
+    @dataset.setter
+    def dataset(self, value: xr.Dataset) -> None:
+        self._dataset = value
 
     @property
     def file_path(self) -> str:
@@ -76,7 +94,7 @@ class RuleContextImpl(RuleContext):
             fatal=fatal,
             suggestions=suggestions,
             rule_id=self.rule_id,
-            node_path=self.node.path if self.node is not None else NODE_ROOT_NAME,
+            node_path=self.node.path if self.node is not None else DATASET_ROOT_NAME,
             severity=self.severity,
         )
         self.messages.append(m)

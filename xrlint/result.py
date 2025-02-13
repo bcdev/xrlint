@@ -4,12 +4,12 @@
 
 from collections.abc import Iterable
 from dataclasses import dataclass, field
+from functools import cached_property
 from typing import TYPE_CHECKING, Literal, Union
 
 from xrlint.constants import (
     CORE_DOCS_URL,
     CORE_PLUGIN_NAME,
-    MISSING_DATASET_FILE_PATH,
     SEVERITY_ERROR,
     SEVERITY_WARN,
 )
@@ -86,63 +86,41 @@ class Message(JsonSerializable):
     """
 
 
-@dataclass(kw_only=True)
+@dataclass(kw_only=True, frozen=True)
 class Result(JsonSerializable):
     """The aggregated information of linting a dataset."""
 
-    config_object: Union["ConfigObject", None] = None
-    """The configuration object that produced this result 
-    together with `file_path`.
-    """
-
-    file_path: str = MISSING_DATASET_FILE_PATH
+    file_path: str
     """The absolute path to the file of this result.
     This is the string "<dataset>" if the file path is unknown
     (when you didn't pass the `file_path` option to the
     `xrlint.lint_dataset()` method).
     """
 
+    config_object: Union["ConfigObject", None] = None
+    """The configuration object that produced this result 
+    together with `file_path`.
+    """
+
     messages: list[Message] = field(default_factory=list)
     """The array of message objects."""
 
-    fixable_error_count: int = 0
-    """The number of errors that can be fixed automatically
-     by the fix constructor option.
-     """
+    @cached_property
+    def warning_count(self) -> int:
+        """The number of warnings. This includes fixable warnings."""
+        return sum(1 if m.severity == SEVERITY_WARN else 0 for m in self.messages)
 
-    fixable_warning_count: int = 0
-    """The number of warnings that can be fixed automatically
-     by the fix constructor option.
-     """
+    @cached_property
+    def error_count(self) -> int:
+        """The number of errors. This includes fixable errors
+         and fatal errors.
+         """
+        return sum(1 if m.severity == SEVERITY_ERROR else 0 for m in self.messages)
 
-    error_count: int = 0
-    """The number of errors. This includes fixable errors
-     and fatal errors.
-     """
-
-    fatal_error_count: int = 0
-    """The number of fatal errors."""
-
-    warning_count: int = 0
-    """The number of warnings. This includes fixable warnings."""
-
-    @classmethod
-    def new(
-        cls,
-        config_object: Union["ConfigObject", None] = None,
-        file_path: str | None = None,
-        messages: list[Message] | None = None,
-    ):
-        result = Result(
-            config_object=config_object,
-            file_path=file_path or MISSING_DATASET_FILE_PATH,
-            messages=messages or [],
-        )
-        for m in messages:
-            result.warning_count += 1 if m.severity == SEVERITY_WARN else 0
-            result.error_count += 1 if m.severity == SEVERITY_ERROR else 0
-            result.fatal_error_count += 1 if m.fatal else 0
-        return result
+    @cached_property
+    def fatal_error_count(self) -> int:
+        """The number of fatal errors."""
+        return sum(1 if m.fatal else 0 for m in self.messages)
 
     def to_html(self) -> str:
         from xrlint.formatters.html import format_result
