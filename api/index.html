@@ -1234,6 +1234,39 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#xrlint.node.DataTreeNode" class="md-nav__link">
+    <span class="md-ellipsis">
+      DataTreeNode
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="DataTreeNode">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#xrlint.node.DataTreeNode.name" class="md-nav__link">
+    <span class="md-ellipsis">
+      name
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#xrlint.node.DataTreeNode.datatree" class="md-nav__link">
+    <span class="md-ellipsis">
+      datatree
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#xrlint.node.DatasetNode" class="md-nav__link">
     <span class="md-ellipsis">
       DatasetNode
@@ -2639,6 +2672,39 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#xrlint.node.DataTreeNode" class="md-nav__link">
+    <span class="md-ellipsis">
+      DataTreeNode
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="DataTreeNode">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#xrlint.node.DataTreeNode.name" class="md-nav__link">
+    <span class="md-ellipsis">
+      name
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#xrlint.node.DataTreeNode.datatree" class="md-nav__link">
+    <span class="md-ellipsis">
+      datatree
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#xrlint.node.DatasetNode" class="md-nav__link">
     <span class="md-ellipsis">
       DatasetNode
@@ -3204,9 +3270,9 @@
   Decorator <a class="autorefs autorefs-internal" href="#xrlint.rule.define_rule">define_rule</a> allows defining rules.</li>
 <li>The <code>node</code> module defines the nodes passed to <a class="autorefs autorefs-internal" href="#xrlint.rule.RuleOp">RuleOp</a>:
   base classes <a class="autorefs autorefs-internal" href="#xrlint.node.Node">None</a>, <a class="autorefs autorefs-internal" href="#xrlint.node.XarrayNode">XarrayNode</a>,
-  and the specific <a class="autorefs autorefs-internal" href="#xrlint.node.DatasetNode">DatasetNode</a>,
-  <a class="autorefs autorefs-internal" href="#xrlint.node.VariableNode">VariableNode</a>, <a class="autorefs autorefs-internal" href="#xrlint.node.AttrsNode">AttrsNode</a>, 
-  and <a class="autorefs autorefs-internal" href="#xrlint.node.AttrNode">AttrNode</a> nodes.</li>
+  and the specific nodes <a class="autorefs autorefs-internal" href="#xrlint.node.DataTreeNode">DataTreeNode</a>, 
+  <a class="autorefs autorefs-internal" href="#xrlint.node.DatasetNode">DatasetNode</a>, <a class="autorefs autorefs-internal" href="#xrlint.node.VariableNode">VariableNode</a>, 
+  <a class="autorefs autorefs-internal" href="#xrlint.node.AttrsNode">AttrsNode</a>, and <a class="autorefs autorefs-internal" href="#xrlint.node.AttrNode">AttrNode</a>.</li>
 <li>The <code>processor</code> module provides processor related classes and functions:
   <a class="autorefs autorefs-internal" href="#xrlint.processor.Processor">Processor</a> comprising processor metadata
   <a class="autorefs autorefs-internal" href="#xrlint.processor.ProcessorMeta">ProcessorMeta</a>, 
@@ -9196,7 +9262,7 @@ by the rule’s implementation and its configured severity.</p>
                 <code>node</code>
             </td>
             <td>
-                  <code><span title="xrlint.node.DataTreeNode">DataTreeNode</span></code>
+                  <code><a class="autorefs autorefs-internal" title="xrlint.node.DataTreeNode" href="#xrlint.node.DataTreeNode">DataTreeNode</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -10395,6 +10461,117 @@ rule operation <a class="autorefs autorefs-internal" href="#xrlint.rule.RuleOp">
     </div>
 
 </div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="xrlint.node.DataTreeNode" class="doc doc-heading">
+            <code>xrlint.node.DataTreeNode</code>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h2>
+
+
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="xrlint.node.XarrayNode" href="#xrlint.node.XarrayNode">XarrayNode</a></code></p>
+
+
+        <p>DataTree node.</p>
+
+
+
+
+
+
+              <details class="quote">
+                <summary>Source code in <code>xrlint\node.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DataTreeNode</span><span class="p">(</span><span class="n">XarrayNode</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;DataTree node.&quot;&quot;&quot;</span>
+
+    <span class="n">name</span><span class="p">:</span> <span class="n">Hashable</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The name of the datatree.&quot;&quot;&quot;</span>
+
+    <span class="n">datatree</span><span class="p">:</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataTree</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The `xarray.DataTree` instance.&quot;&quot;&quot;</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="xrlint.node.DataTreeNode.name" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">name</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>The name of the datatree.</p>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="xrlint.node.DataTreeNode.datatree" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">datatree</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>The <code>xarray.DataTree</code> instance.</p>
+    </div>
+
+</div>
+
+
 
 
 
