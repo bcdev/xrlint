@@ -5,15 +5,17 @@
 
 # XRLint - A linter for xarray datasets
 
-
 XRLint is a [linting](https://en.wikipedia.org/wiki/Lint_(software)) 
-tool and library for [xarray]() datasets.
-Its design is heavily inspired by the awesome [ESLint](https://eslint.org/).
+tool and library for [xarray](https://docs.xarray.dev/) datasets. 
+Its design is heavily inspired by the awesome [ESLint](https://eslint.org/) tool.
 
 
 ## Features 
 
-- Flexible validation for `xarray.Dataset` objects by configurable rules.
+- Flexible validation for 
+  [`xarray.Dataset`](https://docs.xarray.dev/en/stable/generated/xarray.Dataset.html) and
+  [`xarray.DataTree`](https://docs.xarray.dev/en/stable/generated/xarray.DataTree.html) objects 
+  by configurable rules.
 - Available from CLI and Python API.
 - Custom plugins providing custom rule sets allow addressing 
   different dataset conventions.

@@ -2,4 +2,4 @@
 #  This software is distributed under the terms and conditions of the
 #  MIT license (https://mit-license.org/).
 
-version = "0.5.0"
+version = "0.5.1.dev0"
