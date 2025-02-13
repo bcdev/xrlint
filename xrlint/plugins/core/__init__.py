@@ -28,6 +28,7 @@ def export_plugin() -> Plugin:
                 "time-coordinate": "error",
                 "var-desc": "warn",
                 "var-flags": "error",
+                "var-missing-data": "warn",
                 "var-units": "warn",
             },
         },

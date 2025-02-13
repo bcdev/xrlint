@@ -24,6 +24,7 @@ class ExportPluginTest(TestCase):
                 "time-coordinate",
                 "var-desc",
                 "var-flags",
+                "var-missing-data",
                 "var-units",
             },
             set(plugin.rules.keys()),
