@@ -13,7 +13,6 @@
 ## Desired
  
 - project logo
-- add `core` rule checks recommended use of fill value
 - add `xcube` rule that helps to identify chunking issues 
 - apply rule op args/kwargs validation schema 
 - allow outputting suggestions, if any, that are emitted by some rules
