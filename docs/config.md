@@ -59,7 +59,7 @@ def export_config():
 
 ## Configuration Objects
 
-Each configuration object contains all of the information XRLint needs 
+Each configuration object contains all the information XRLint needs 
 to execute on a set of files. Each configuration object is made up of 
 these properties:
 

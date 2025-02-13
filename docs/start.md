@@ -27,7 +27,7 @@ Initializing a new project with
 xrlint --init
 ```
 
-writes a configuration file `xrlint.config.yaml` 
+writes a configuration file `xrlint_config.yaml` 
 into the current working directory:
 
 ```yaml
@@ -35,7 +35,7 @@ into the current working directory:
 ```
 
 This configuration file tells XRLint to use the predefined configuration
-named `recommeded`.  
+named `recommended`.  
 
 Create a dataset to test XRLint:
 
