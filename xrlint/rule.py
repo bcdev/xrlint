@@ -10,7 +10,7 @@ from typing import Any, Callable, Literal, Type
 import xarray as xr
 
 from xrlint.constants import SEVERITY_ENUM, SEVERITY_ENUM_TEXT
-from xrlint.node import AttrNode, AttrsNode, DataTreeNode, DatasetNode, VariableNode
+from xrlint.node import AttrNode, AttrsNode, DatasetNode, DataTreeNode, VariableNode
 from xrlint.operation import Operation, OperationMeta
 from xrlint.result import Suggestion
 from xrlint.util.constructible import ValueConstructible

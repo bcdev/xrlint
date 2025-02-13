@@ -14,6 +14,10 @@ from xrlint.rule import RuleContext, RuleOp
     description=(
         "Grid mappings, if any, shall have valid grid mapping coordinate variables."
     ),
+    docs_url=(
+        "https://cfconventions.org/cf-conventions/cf-conventions.html"
+        "#grid-mappings-and-projections"
+    ),
 )
 class GridMappings(RuleOp):
     def validate_dataset(self, ctx: RuleContext, node: DatasetNode):

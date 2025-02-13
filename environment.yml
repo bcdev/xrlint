@@ -10,6 +10,7 @@ dependencies:
   - tabulate
   - xarray
   # Dev Dependencies
+  - isort
   - mkdocs
   - mkdocs-autorefs
   - mkdocs-material

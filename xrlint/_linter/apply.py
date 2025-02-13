@@ -2,7 +2,7 @@
 #  This software is distributed under the terms and conditions of the
 #  MIT license (https://mit-license.org/).
 
-from xrlint.node import AttrNode, AttrsNode, DataTreeNode, DatasetNode, VariableNode
+from xrlint.node import AttrNode, AttrsNode, DatasetNode, DataTreeNode, VariableNode
 from xrlint.rule import RuleConfig, RuleExit, RuleOp
 
 from ..constants import DATASET_ROOT_NAME, DATATREE_ROOT_NAME

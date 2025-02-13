@@ -113,8 +113,8 @@ class Result(JsonSerializable):
     @cached_property
     def error_count(self) -> int:
         """The number of errors. This includes fixable errors
-         and fatal errors.
-         """
+        and fatal errors.
+        """
         return sum(1 if m.severity == SEVERITY_ERROR else 0 for m in self.messages)
 
     @cached_property

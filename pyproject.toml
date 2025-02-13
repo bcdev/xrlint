@@ -68,6 +68,7 @@ dev = [
   # Development tools
   "build",
   "hatch",
+  "isort",
   "pytest",
   "pytest-cov",
   "ruff",
