@@ -62,13 +62,11 @@ def _open_and_validate_dataset(
         except (OSError, ValueError, TypeError) as e:
             return [new_fatal_message(str(e))]
         access_latency = time.time() - t0
-        return processor_op.postprocess(
-            [
-                _validate_dataset(config_obj, ds, path, i, access_latency)
-                for i, (ds, path) in enumerate(ds_path_list)
-            ],
-            file_path,
-        )
+        messages = [
+            _validate_dataset(config_obj, ds, path, i, access_latency)
+            for i, (ds, path) in enumerate(ds_path_list)
+        ]
+        return processor_op.postprocess(messages, file_path)
     else:
         try:
             dataset, access_latency = _open_dataset(

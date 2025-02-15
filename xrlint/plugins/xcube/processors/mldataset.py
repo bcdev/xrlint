@@ -12,11 +12,16 @@ import xarray as xr
 
 from xrlint.plugins.xcube.constants import ML_FILE_PATTERN, ML_META_FILENAME
 from xrlint.plugins.xcube.plugin import plugin
-from xrlint.plugins.xcube.util import LevelsMeta, attach_dataset_level_infos, norm_path
+from xrlint.plugins.xcube.util import (
+    LevelsMeta,
+    attach_dataset_level_infos,
+    norm_link_path,
+)
 from xrlint.processor import ProcessorOp
 from xrlint.result import Message
 
 level_pattern = re.compile(r"^(\d+)(?:\.zarr)?$")
+link_pattern = re.compile(r"^(\d+)(?:\.link)?$")
 
 
 @plugin.define_processor("multi-level-dataset")
@@ -25,7 +30,7 @@ class MultiLevelDatasetProcessor(ProcessorOp):
 
     def preprocess(
         self, file_path: str, opener_options: dict[str, Any]
-    ) -> list[tuple[xr.Dataset, str]]:
+    ) -> list[tuple[xr.Dataset | xr.DataTree, str]]:
         fs, fs_path = get_filesystem(file_path, opener_options)
 
         file_names = [
@@ -40,18 +45,17 @@ class MultiLevelDatasetProcessor(ProcessorOp):
             with fs.open(f"{fs_path}/{ML_META_FILENAME}") as stream:
                 meta = LevelsMeta.from_value(json.load(stream))
 
-        # check for optional ".0.link" that locates level 0 somewhere else
-        level_0_path = None
-        if "0.link" in file_names:
-            level_0_path = fs.read_text(f"{fs_path}/0.link")
+        # check for optional ".zgroup"
+        if ".zgroup" in file_names:
+            with fs.open(f"{fs_path}/.zgroup") as stream:
+                group_props = json.load(stream)
 
-        level_names, num_levels = parse_levels(file_names, level_0_path)
+        level_paths, num_levels = parse_levels(fs, fs_path, file_names)
 
         engine = opener_options.pop("engine", "zarr")
 
         level_datasets: list[xr.Dataset | None] = []
-        for level, level_name in level_names.items():
-            level_path = norm_path(f"{file_path}/{level_name}")
+        for level, level_path in level_paths.items():
             level_dataset = xr.open_dataset(level_path, engine=engine, **opener_options)
             level_datasets.append((level_dataset, level_path))
 
@@ -80,22 +84,30 @@ def get_filesystem(file_path: str, opener_options: dict[str, Any]):
 
 
 def parse_levels(
-    file_names: list[str], level_0_path: str | None
+    fs: fsspec.AbstractFileSystem, dataset_path: str, file_names: list[str]
 ) -> tuple[dict[int, str], int]:
-    level_names: dict[int, str] = {0: level_0_path} if level_0_path else {}
-    num_levels = 0
+    level_paths: dict[int, str] = {}
     for file_name in file_names:
+        # check for optional "<level>.link" that locates a level somewhere else
+        m = link_pattern.match(file_name)
+        if m is not None:
+            level = int(m.group(1))
+            link_path = fs.read_text(f"{dataset_path}/{file_name}")
+            level_paths[level] = norm_link_path(dataset_path, link_path)
+        # check for regular "<level>.zarr"
         m = level_pattern.match(file_name)
         if m is not None:
             level = int(m.group(1))
-            level_names[level] = file_name
-            num_levels = max(num_levels, level + 1)
-    if not level_names:
+            level_paths[level] = f"{dataset_path}/{file_name}"
+
+    if not level_paths:
         raise ValueError("empty multi-level dataset")
-    num_levels = max(level_names.keys()) + 1
+
+    num_levels = max(level_paths.keys()) + 1
     for level in range(num_levels):
-        if level not in level_names:
+        if level not in level_paths:
             raise ValueError(
                 f"missing dataset for level {level} in multi-level dataset"
             )
-    return level_names, num_levels
+
+    return level_paths, num_levels
