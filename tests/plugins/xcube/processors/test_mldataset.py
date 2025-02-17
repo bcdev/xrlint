@@ -16,10 +16,6 @@ from xrlint.plugins.xcube.processors.mldataset import MultiLevelDatasetProcessor
 from xrlint.plugins.xcube.util import LevelInfo, LevelsMeta
 from xrlint.result import Message
 
-# TODO: This tests requires zarr >=2, <3, because the test used fsspec's
-#   memory filesystem, which is not async but zarr wants all filesystems
-#   to be async now.
-
 
 class MultiLevelDatasetProcessorTest(TestCase):
     levels_name = "xrlint-test"

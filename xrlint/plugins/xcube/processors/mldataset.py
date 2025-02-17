@@ -15,7 +15,7 @@ from xrlint.plugins.xcube.plugin import plugin
 from xrlint.plugins.xcube.util import (
     LevelsMeta,
     attach_dataset_level_infos,
-    norm_link_path,
+    resolve_path,
 )
 from xrlint.processor import ProcessorOp
 from xrlint.result import Message
@@ -46,11 +46,11 @@ class MultiLevelDatasetProcessor(ProcessorOp):
                 meta = LevelsMeta.from_value(json.load(stream))
 
         # check for optional ".zgroup"
-        if ".zgroup" in file_names:
-            with fs.open(f"{fs_path}/.zgroup") as stream:
-                group_props = json.load(stream)
+        # if ".zgroup" in file_names:
+        #     with fs.open(f"{fs_path}/.zgroup") as stream:
+        #         group_props = json.load(stream)
 
-        level_paths, num_levels = parse_levels(fs, fs_path, file_names)
+        level_paths, num_levels = parse_levels(fs, file_path, file_names)
 
         engine = opener_options.pop("engine", "zarr")
 
@@ -93,7 +93,7 @@ def parse_levels(
         if m is not None:
             level = int(m.group(1))
             link_path = fs.read_text(f"{dataset_path}/{file_name}")
-            level_paths[level] = norm_link_path(dataset_path, link_path)
+            level_paths[level] = resolve_path(link_path, root_path=dataset_path)
         # check for regular "<level>.zarr"
         m = level_pattern.match(file_name)
         if m is not None:

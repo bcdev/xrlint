@@ -95,11 +95,10 @@ def get_spatial_size(
     return None
 
 
-def norm_link_path(dataset_path: str, link_path: str) -> str:
-    if is_absolute_path(link_path):
-        abs_level_path = link_path
-    else:
-        abs_level_path = f"{dataset_path}/{link_path}"
+def resolve_path(path: str, root_path: str | None = None) -> str:
+    abs_level_path = path
+    if root_path is not None and not is_absolute_path(path):
+        abs_level_path = f"{root_path}/{path}"
     parts = abs_level_path.rstrip("/").replace("\\", "/").split("/")
     return "/".join(
         p
