@@ -1,11 +1,19 @@
-"""
-This configuration example shows how to define and use a plugin
-using the `Plugin` class and its `define_rule()` decorator method.
-"""
-
 #  Copyright © 2025 Brockmann Consult GmbH.
 #  This software is distributed under the terms and conditions of the
 #  MIT license (https://mit-license.org/).
+
+"""
+This configuration example shows how to define and use a plugin
+using the `Plugin` class and its `define_rule()` decorator method.
+
+You can use this example directly via the Python API by passing it's
+exported configuration to an instance of the `Linter` class or use
+the XRLint CLI:
+
+```bash
+xrlint -c examples/plugin_config.py <OPTIONS> <FILES>
+```
+"""
 
 from xrlint.node import DatasetNode
 from xrlint.plugin import new_plugin

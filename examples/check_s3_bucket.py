@@ -2,6 +2,11 @@
 #  This software is distributed under the terms and conditions of the
 #  MIT license (https://mit-license.org/).
 
+"""
+This code example shows how to use the high-level
+Python API to validate the contents of an S3 bucket.
+"""
+
 import xrlint.all as xrl
 
 URL = "s3://xcube-test/"

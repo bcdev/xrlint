@@ -46,17 +46,25 @@ Note:
   the `xrlint.all` convenience module exports all of the above from a 
   single module.
   
+## CLI API
+
 ::: xrlint.cli.engine.XRLint
+
+## Linter API
 
 ::: xrlint.linter.new_linter
 
 ::: xrlint.linter.Linter
+
+## Plugin API
 
 ::: xrlint.plugin.new_plugin
 
 ::: xrlint.plugin.Plugin
 
 ::: xrlint.plugin.PluginMeta
+
+## Configuration API
 
 ::: xrlint.config.Config
 
@@ -65,6 +73,8 @@ Note:
 ::: xrlint.config.ConfigLike
 
 ::: xrlint.config.ConfigObjectLike
+
+## Rule API
 
 ::: xrlint.rule.define_rule
 
@@ -77,6 +87,8 @@ Note:
 ::: xrlint.rule.RuleContext
 
 ::: xrlint.rule.RuleExit
+
+## Dataset Node API
 
 ::: xrlint.node.Node
 
@@ -92,6 +104,8 @@ Note:
 
 ::: xrlint.node.AttrNode
 
+## Processor API
+
 ::: xrlint.processor.define_processor
 
 ::: xrlint.processor.Processor
@@ -100,11 +114,15 @@ Note:
  
 ::: xrlint.processor.ProcessorOp
 
+## Result API
+
 ::: xrlint.result.Result
 
 ::: xrlint.result.Message
 
 ::: xrlint.result.Suggestion
+
+## Testing API
 
 ::: xrlint.testing.RuleTester
 
