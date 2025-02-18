@@ -11,6 +11,7 @@ nav:
   - Rule Reference: rule-ref.md
   - CLI: cli.md
   - Python API: api.md
+  - Examples: examples.md
   - About: about.md
 
 theme:
@@ -55,9 +56,16 @@ plugins:
         python:
           options:
             docstring_style: google
+            docstring_section_style: list
+            show_object_full_path: true
             show_root_toc_entry: true
             show_root_heading: true
             show_source: true
-            heading_level: 2
+            show_category_heading: true
+            show_symbol_type_heading: true
+            show_symbol_type_toc: true
+            heading_level: 3
             annotations_path: brief
             members_order: source
+            extra:
+              show_overloads: true

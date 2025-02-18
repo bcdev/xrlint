@@ -2,6 +2,8 @@
 
 ## Version 0.5.1 (in development)
 
+- Enhanced documentation by a new page that compiles
+  the code examples in the `examples` folder.
 
 ## Version 0.5.0 (from 2025-02-13)
 
