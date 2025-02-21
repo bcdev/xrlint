@@ -11,6 +11,7 @@ import click
 from xrlint.cli.constants import (
     DEFAULT_MAX_WARNINGS,
     DEFAULT_OUTPUT_FORMAT,
+    DEFAULT_CONFIG_FILE_YAML,
 )
 from xrlint.version import version
 
@@ -90,7 +91,7 @@ from xrlint.version import version
 @click.option(
     "--init",
     "init_mode",
-    help="Write initial configuration file and exit.",
+    help=f"Write initial configuration file '{DEFAULT_CONFIG_FILE_YAML}' and exit.",
     is_flag=True,
 )
 @click.argument("files", nargs=-1)

@@ -49,7 +49,8 @@ Options:
   --color / --no-color    Force enabling/disabling of color
   --max-warnings COUNT    Number of warnings to trigger nonzero exit code -
                           default: 5
-  --init                  Write initial configuration file and exit.
+  --init                  Write initial configuration file 'xrlint-
+                          config.yaml' and exit.
   --version               Show the version and exit.
   --help                  Show this message and exit.
 
