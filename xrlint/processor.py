@@ -18,7 +18,7 @@ class ProcessorOp(ABC):
     @abstractmethod
     def preprocess(
         self, file_path: str, opener_options: dict[str, Any]
-    ) -> list[tuple[xr.Dataset, str]]:
+    ) -> list[tuple[xr.Dataset | xr.DataTree, str]]:
         """Pre-process a dataset given by its `file_path` and `opener_options`.
         In this method you use the `file_path` to read zero, one, or more
         datasets to lint.
@@ -28,7 +28,7 @@ class ProcessorOp(ABC):
             opener_options: The configuration's `opener_options`.
 
         Returns:
-            A list of (dataset, file_path) pairs
+            A list of (dataset or datatree, file_path) pairs
         """
 
     @abstractmethod

@@ -95,11 +95,26 @@ def get_spatial_size(
     return None
 
 
-def norm_path(level_path: str) -> str:
-    parts = level_path.replace("\\", "/").split("/")
-    level_path = "/".join(
+def resolve_path(path: str, root_path: str | None = None) -> str:
+    abs_level_path = path
+    if root_path is not None and not is_absolute_path(path):
+        abs_level_path = f"{root_path}/{path}"
+    parts = abs_level_path.rstrip("/").replace("\\", "/").split("/")
+    return "/".join(
         p
         for i, p in enumerate(parts)
         if p not in (".", "..") and (i == len(parts) - 1 or parts[i + 1] != "..")
     )
-    return level_path
+
+
+def is_absolute_path(path: str) -> bool:
+    return (
+        # Unix abs path
+        path.startswith("/")
+        # URL
+        or "://" in path
+        # Windows abs paths
+        or path.startswith("\\\\")
+        or path.find(":\\", 1) == 1
+        or path.find(":/", 1) == 1
+    )
