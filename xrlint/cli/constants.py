@@ -4,18 +4,24 @@
 
 from typing import Final
 
-DEFAULT_CONFIG_BASENAME: Final = "xrlint_config"
 
-DEFAULT_CONFIG_FILE_YAML: Final = f"{DEFAULT_CONFIG_BASENAME}.yaml"
-DEFAULT_CONFIG_FILE_JSON: Final = f"{DEFAULT_CONFIG_BASENAME}.json"
-DEFAULT_CONFIG_FILE_PY: Final = f"{DEFAULT_CONFIG_BASENAME}.py"
+_MODULE_BASENAME: Final = "xrlint_config"
+_REGULAR_BASENAME: Final = "xrlint-config"
+
 
 DEFAULT_CONFIG_FILES: Final = [
-    DEFAULT_CONFIG_FILE_YAML,
-    DEFAULT_CONFIG_FILE_JSON,
-    DEFAULT_CONFIG_FILE_PY,
+    # Added in 0.5.1:
+    f"{_REGULAR_BASENAME}.yaml",
+    f"{_REGULAR_BASENAME}.yml",
+    f"{_REGULAR_BASENAME}.json",
+    # Until 0.5.0:
+    f"{_MODULE_BASENAME}.yaml",
+    f"{_MODULE_BASENAME}.yml",
+    f"{_MODULE_BASENAME}.json",
+    f"{_MODULE_BASENAME}.py",
 ]
 
+DEFAULT_CONFIG_FILE_YAML: Final = f"{_REGULAR_BASENAME}.yaml"
 DEFAULT_OUTPUT_FORMAT: Final = "simple"
 DEFAULT_MAX_WARNINGS: Final = 5
 

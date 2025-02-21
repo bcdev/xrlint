@@ -27,7 +27,7 @@ Initializing a new project with
 xrlint --init
 ```
 
-writes a configuration file `xrlint_config.yaml` 
+writes a configuration file `xrlint-config.yaml` 
 into the current working directory:
 
 ```yaml
