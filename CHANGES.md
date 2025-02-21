@@ -2,6 +2,12 @@
 
 ## Version 0.5.1 (in development)
 
+- XRLint now also loads default configuration from files named 
+  `xrlint-config.yaml` and `xrlint-config.json`. (#60) 
+
+- The command `xrlint --init` now writes `xrlint-config.yaml`
+  instead of `xrlint_config.yaml`.  
+
 - Enhanced documentation by a new page that compiles
   the code examples in the `examples` folder.
 

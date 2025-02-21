@@ -160,8 +160,10 @@ class CliMainTest(TestCase):
     def test_files_with_invalid_config(self):
         with text_file(DEFAULT_CONFIG_FILE_YAML, self.invalid_config_yaml):
             result = self.xrlint("--no-color", *self.files)
+            # noinspection SpellCheckingInspection
             self.assertEqual(
-                "Error: xrlint_config.yaml: configuration 'recommentet' not found\n",
+                f"Error: {DEFAULT_CONFIG_FILE_YAML}:"
+                " configuration 'recommentet' not found\n",
                 result.output,
             )
             self.assertEqual(1, result.exit_code)

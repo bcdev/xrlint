@@ -9,9 +9,9 @@ import click
 # Warning: do not import heavy stuff here, it can
 # slow down commands like "xrlint --help" otherwise.
 from xrlint.cli.constants import (
-    DEFAULT_CONFIG_BASENAME,
     DEFAULT_MAX_WARNINGS,
     DEFAULT_OUTPUT_FORMAT,
+    DEFAULT_CONFIG_FILE_YAML,
 )
 from xrlint.version import version
 
@@ -20,17 +20,14 @@ from xrlint.version import version
 @click.option(
     "--no-config-lookup",
     "no_config_lookup",
-    help=f"Disable use of default configuration from {DEFAULT_CONFIG_BASENAME}.*",
+    help="Disable use of default configuration files",
     is_flag=True,
 )
 @click.option(
     "--config",
     "-c",
     "config_path",
-    help=(
-        f"Use this configuration, overriding {DEFAULT_CONFIG_BASENAME}.*"
-        f" config options if present"
-    ),
+    help="Use this configuration instead of looking for a default configuration file",
     metavar="FILE",
 )
 @click.option(
@@ -94,7 +91,7 @@ from xrlint.version import version
 @click.option(
     "--init",
     "init_mode",
-    help="Write initial configuration file and exit.",
+    help=f"Write initial configuration file '{DEFAULT_CONFIG_FILE_YAML}' and exit.",
     is_flag=True,
 )
 @click.argument("files", nargs=-1)
@@ -115,22 +112,33 @@ def main(
 ):
     """Validate the given dataset FILES.
 
-    Reads configuration from './xrlint_config.*' if such file
-    exists and unless '--no-config-lookup' is set or '--config' is
-    provided.
-    It then validates each dataset in FILES against the configuration.
+    When executed, XRLint does the following three things:
+
+    (1) Unless options '--no-config-lookup' or '--config' are used
+    it searches for a default configuration file in the current working
+    directory. Default configuration files are determined by their
+    filename, namely 'xrlint_config.py' or 'xrlint-config.<format>',
+    where <format> refers to the filename extensions
+    'json', 'yaml', and 'yml'. A Python configuration file ('*.py'),
+    is expected to provide XRLInt configuration from a function
+    'export_config()', which may include custom plugins and rules.
+
+    (2) It then validates each dataset in FILES against the configuration.
     The default dataset patters are '**/*.zarr' and '**/.nc'.
     FILES may comprise also directories or URLs. The supported URL
     protocols are the ones supported by xarray. Using remote
     protocols may require installing additional packages such as
     S3Fs (https://s3fs.readthedocs.io/) for the 's3' protocol.
-
     If a directory is provided that not matched by any file pattern,
     it will be traversed recursively.
-    The validation result is dumped to standard output if not otherwise
+
+    (3) The validation result is dumped to standard output if not otherwise
     stated by '--output-file'. The output format is 'simple' by default.
     Other inbuilt formats are 'json' and 'html' which you can specify
     using the '--format' option.
+
+    Please refer to the documentation (https://bcdev.github.io/xrlint/)
+    for more information.
     """
     from xrlint.cli.engine import XRLint
 

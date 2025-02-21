@@ -7,9 +7,9 @@ Many parts have been copied and adjusted as it applies in many similar ways to X
 
 The XRLint configuration file may be named any of the following:
 
-* `xrlint_config.yaml`
-* `xrlint_config.json`
-* `xrlint_config.py`
+* YAML format: `xrlint-config.yaml` (or use extension `.yml`)
+* JSON format: `xrlint-config.json`
+* Python module: `xrlint_config.py` (note the underscore)
 
 It should be placed in the root directory of your project and export 
 an array of [configuration objects](#configuration-objects) or 
@@ -40,7 +40,7 @@ Same using JSON:
 ]
 ```
 
-And as Python script:
+And as Python module:
 
 ```python
 def export_config():
