@@ -463,30 +463,42 @@
 
 <h1 id="command-line-interface">Command Line Interface</h1>
 <p>After installation, the <code>xrlint</code> command can be used from the terminal. 
-The following are the command's options and arguments:</p>
+The following are the command's usage help including a short description 
+of its options and arguments:</p>
 <div class="highlight"><pre><span></span><code>Usage: xrlint [OPTIONS] [FILES]...
 
   Validate the given dataset FILES.
 
-  Reads configuration from &#39;./xrlint_config.*&#39; if such file exists and unless
-  &#39;--no_config_lookup&#39; is set or &#39;--config&#39; is provided. It then validates
-  each dataset in FILES against the configuration. The default dataset patters
-  are &#39;**/*.zarr&#39; and &#39;**/.nc&#39;. FILES may comprise also directories or URLs.
-  The supported URL protocols are the ones supported by xarray. Using remote
-  protocols may require installing additional packages such as S3Fs
-  (https://s3fs.readthedocs.io/) for the &#39;s3&#39; protocol.
+  When executed, XRLint does the following three things:
 
-  If a directory is provided that not matched by any file pattern, it will be
-  traversed recursively. The validation result is dumped to standard output if
-  not otherwise stated by &#39;--output-file&#39;. The output format is &#39;simple&#39; by
-  default. Other inbuilt formats are &#39;json&#39; and &#39;html&#39; which you can specify
-  using the &#39;--format&#39; option.
+  (1) Unless options &#39;--no-config-lookup&#39; or &#39;--config&#39; are used it searches
+  for a default configuration file in the current working directory. Default
+  configuration files are determined by their filename, namely
+  &#39;xrlint_config.py&#39; or &#39;xrlint-config.&lt;format&gt;&#39;, where &lt;format&gt; refers to the
+  filename extensions &#39;json&#39;, &#39;yaml&#39;, and &#39;yml&#39;. A Python configuration file
+  (&#39;*.py&#39;), is expected to provide XRLInt configuration from a function
+  &#39;export_config()&#39;, which may include custom plugins and rules.
+
+  (2) It then validates each dataset in FILES against the configuration. The
+  default dataset patters are &#39;**/*.zarr&#39; and &#39;**/.nc&#39;. FILES may comprise
+  also directories or URLs. The supported URL protocols are the ones supported
+  by xarray. Using remote protocols may require installing additional packages
+  such as S3Fs (https://s3fs.readthedocs.io/) for the &#39;s3&#39; protocol. If a
+  directory is provided that not matched by any file pattern, it will be
+  traversed recursively.
+
+  (3) The validation result is dumped to standard output if not otherwise
+  stated by &#39;--output-file&#39;. The output format is &#39;simple&#39; by default. Other
+  inbuilt formats are &#39;json&#39; and &#39;html&#39; which you can specify using the &#39;--
+  format&#39; option.
+
+  Please refer to the documentation (https://bcdev.github.io/xrlint/) for more
+  information.
 
 Options:
-  --no-config-lookup      Disable use of default configuration from
-                          xrlint_config.*
-  -c, --config FILE       Use this configuration, overriding xrlint_config.*
-                          config options if present
+  --no-config-lookup      Disable use of default configuration files
+  -c, --config FILE       Use this configuration instead of looking for a
+                          default configuration file
   --print-config FILE     Print the configuration for the given file
   --plugin MODULE         Specify plugins. MODULE is the name of Python module
                           that defines an &#39;export_plugin()&#39; function.
@@ -497,7 +509,8 @@ Options:
   --color / --no-color    Force enabling/disabling of color
   --max-warnings COUNT    Number of warnings to trigger nonzero exit code -
                           default: 5
-  --init                  Write initial configuration file and exit.
+  --init                  Write initial configuration file &#39;xrlint-
+                          config.yaml&#39; and exit.
   --version               Show the version and exit.
   --help                  Show this message and exit.
 </code></pre></div>

@@ -722,9 +722,9 @@ Many parts have been copied and adjusted as it applies in many similar ways to X
 <h2 id="configuration-file">Configuration File</h2>
 <p>The XRLint configuration file may be named any of the following:</p>
 <ul>
-<li><code>xrlint_config.yaml</code></li>
-<li><code>xrlint_config.json</code></li>
-<li><code>xrlint_config.py</code></li>
+<li>YAML format: <code>xrlint-config.yaml</code> (or use extension <code>.yml</code>)</li>
+<li>JSON format: <code>xrlint-config.json</code></li>
+<li>Python module: <code>xrlint_config.py</code> (note the underscore)</li>
 </ul>
 <p>It should be placed in the root directory of your project and export 
 an array of <a href="#configuration-objects">configuration objects</a> or 
@@ -748,7 +748,7 @@ references to <a href="#predefined-configuration-objects">predefined configurati
 <span class="w">  </span><span class="s2">&quot;xcube/recommended&quot;</span>
 <span class="p">]</span>
 </code></pre></div>
-<p>And as Python script:</p>
+<p>And as Python module:</p>
 <div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">export_config</span><span class="p">():</span>
     <span class="k">return</span> <span class="p">[</span>
       <span class="p">{</span><span class="s2">&quot;files&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;**/*.zarr&quot;</span><span class="p">,</span> <span class="s2">&quot;**/*.nc&quot;</span><span class="p">]},</span>
