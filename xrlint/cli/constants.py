@@ -25,7 +25,12 @@ DEFAULT_CONFIG_FILE_YAML: Final = f"{_REGULAR_BASENAME}.yaml"
 DEFAULT_OUTPUT_FORMAT: Final = "simple"
 DEFAULT_MAX_WARNINGS: Final = 5
 
-INIT_CONFIG_YAML: Final = "- recommended\n"
+INIT_CONFIG_YAML: Final = (
+    "# XRLint configuration file\n"
+    "# See https://bcdev.github.io/xrlint/config/\n"
+    "\n"
+    "- recommended\n"
+)
 
 DEFAULT_GLOBAL_FILES: Final = ["**/*.zarr", "**/*.nc"]
 DEFAULT_GLOBAL_IGNORES: Final = [".git", "node_modules"]
