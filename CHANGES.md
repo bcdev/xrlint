@@ -1,6 +1,6 @@
 # XRLint Change History
 
-## Version 0.5.1 (in development)
+## Version 0.5.1 (from 2025-02-21)
 
 - XRLint now also loads default configuration from files named 
   `xrlint-config.yaml` and `xrlint-config.json`. (#60) 
@@ -10,6 +10,9 @@
 
 - Enhanced documentation by a new page that compiles
   the code examples in the `examples` folder.
+
+- Fixed `Processor.preprocess()` typing to also accept 
+  `xarray.DataTree` instances.
 
 ## Version 0.5.0 (from 2025-02-13)
 
