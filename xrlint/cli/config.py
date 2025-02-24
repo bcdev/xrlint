@@ -2,7 +2,6 @@
 #  This software is distributed under the terms and conditions of the
 #  MIT license (https://mit-license.org/).
 
-import sys
 from os import PathLike
 from pathlib import Path
 from typing import Any
@@ -11,7 +10,11 @@ import fsspec
 
 from xrlint.config import Config
 from xrlint.util.formatting import format_message_type_of
-from xrlint.util.importutil import ValueImportError, import_value
+from xrlint.util.importutil import (
+    ValueImportError,
+    import_value,
+    register_memory_module,
+)
 
 
 def read_config(config_path: str | Path | PathLike[str]) -> Config:
@@ -78,16 +81,7 @@ def _read_config_json(config_path) -> Any:
 
 
 def _read_config_python(config_path: str) -> Any:
-    module_path = Path(config_path)
-
-    if not module_path.exists():
-        raise FileNotFoundError(f"file not found: {config_path}")
-
-    module_parent = module_path.parent
-    module_name = module_path.stem
-
-    old_sys_path = sys.path
-    sys.path = [module_parent.as_posix()] + sys.path
+    module_name = register_memory_module(config_path)
     try:
         return import_value(
             module_name,
@@ -96,8 +90,6 @@ def _read_config_python(config_path: str) -> Any:
         )[0]
     except ValueImportError as e:
         raise ConfigError(config_path, e) from e
-    finally:
-        sys.path = old_sys_path
 
 
 class ConfigError(Exception):

@@ -3,8 +3,13 @@
 #  MIT license (https://mit-license.org/).
 
 import importlib
+import importlib.machinery
+import importlib.util
 import pathlib
+import sys
 from typing import Any, Callable, Type, TypeVar
+
+import fsspec
 
 from xrlint.util.formatting import format_message_type_of
 
@@ -134,3 +139,39 @@ class ValueImportError(ImportError):
     """Special error that is raised while
     importing an exported value.
     """
+
+
+def register_memory_module(path: str) -> str:
+    module_name = _to_module_name(pathlib.Path(path).stem)
+    with fsspec.open(path, "rt") as stream:
+        module_code = stream.read()
+
+    module_path = f"memory://{module_name}.py"
+
+    fs: fsspec.AbstractFileSystem = fsspec.filesystem("memory")
+    fs.pipe(module_path, module_code.encode("utf-8"))
+
+    class MemoryLoader(importlib.machinery.SourceFileLoader):
+        """Custom loader to read modules from the in-memory filesystem."""
+
+        def get_data(self, _path: str) -> str:
+            with fsspec.open(_path, "rt") as f:
+                return f.read()
+
+    loader = MemoryLoader(module_name, module_path)
+    spec = importlib.util.spec_from_loader(module_name, loader)
+    module = importlib.util.module_from_spec(spec)
+    loader.exec_module(module)
+    sys.modules[module_name] = module
+
+    return module_name
+
+
+def _to_module_name(file_name: str) -> str:
+    """Turn given filename into a Python module name."""
+    module_name = file_name
+    if not module_name.isidentifier():
+        module_name = "".join((c if c.isalnum() else "_") for c in module_name)
+        if module_name[0].isdigit():
+            module_name = "_" + module_name
+    return module_name
