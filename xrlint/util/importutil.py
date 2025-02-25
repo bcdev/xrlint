@@ -141,29 +141,40 @@ class ValueImportError(ImportError):
     """
 
 
-def register_memory_module(path: str) -> str:
-    module_name = _to_module_name(pathlib.Path(path).stem)
-    with fsspec.open(path, "rt") as stream:
-        module_code = stream.read()
+def install_module(code_path: str) -> str:
+    """
+    Installs Python code read from `code_path` using the
+    returned module name even if the basename of `code_path`
+    is not a valid module name.
 
-    module_path = f"memory://{module_name}.py"
+    If the basename used in `code_path` is already a Python identifier,
+    it will be used as-is. Otherwise, the basename will be turned
+    into a valid Python identifier.
 
-    fs: fsspec.AbstractFileSystem = fsspec.filesystem("memory")
-    fs.pipe(module_path, module_code.encode("utf-8"))
+    The function uses a custom `importlib.machinery.SourceFileLoader`
+    to create a Python module and register it in `sys.modules`.
 
-    class MemoryLoader(importlib.machinery.SourceFileLoader):
-        """Custom loader to read modules from the in-memory filesystem."""
+    Args:
+         code_path: Filepath to the Python code. Can be a local file path
+            or URL with a protocol understood by `fsspec`.
 
-        def get_data(self, _path: str) -> str:
-            with fsspec.open(_path, "rt") as f:
-                return f.read()
+    Return:
+        A module name that can be used to import the module.
+    """
+    module_name = _to_module_name(pathlib.Path(code_path).stem)
+    module_path = f"mem://{module_name}.py"  # a virtual URL
 
-    loader = MemoryLoader(module_name, module_path)
+    class _Loader(importlib.machinery.SourceFileLoader):
+        def get_data(self, _module_path: str) -> str:
+            assert _module_path == module_path
+            with fsspec.open(code_path, "rt") as stream:
+                return stream.read()
+
+    loader = _Loader(module_name, module_path)
     spec = importlib.util.spec_from_loader(module_name, loader)
     module = importlib.util.module_from_spec(spec)
     loader.exec_module(module)
     sys.modules[module_name] = module
-
     return module_name
 
 

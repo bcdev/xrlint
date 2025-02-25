@@ -13,7 +13,7 @@ from xrlint.util.formatting import format_message_type_of
 from xrlint.util.importutil import (
     ValueImportError,
     import_value,
-    register_memory_module,
+    install_module,
 )
 
 
@@ -81,7 +81,7 @@ def _read_config_json(config_path) -> Any:
 
 
 def _read_config_python(config_path: str) -> Any:
-    module_name = register_memory_module(config_path)
+    module_name = install_module(config_path)
     try:
         return import_value(
             module_name,
