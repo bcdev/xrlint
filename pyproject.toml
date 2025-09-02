@@ -64,6 +64,11 @@ exclude = ["**/*.ipynb"]
 xrlint = "xrlint.cli.main:main"
 
 [project.optional-dependencies]
+acdd = [
+    "isodate>=0.7.2",
+]
+
+[dependency-groups]
 dev = [
   # Development tools
   "build",
@@ -93,3 +98,6 @@ Documentation = "https://bcdev.github.io/xrlint"
 Repository = "https://github.com/bcdev/xrlint"
 Changelog = "https://github.com/bcdev/xrlint/blob/main/CHANGES.md"
 Issues = "https://github.com/bcdev/xrlint/issues"
+
+[tool.uv.pip]
+all-extras = true
