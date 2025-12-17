@@ -35,12 +35,21 @@ _UNAMBIGUOUS_UNITS_OF_TIME = (
     "second",
     "sec",
     "s",
+    "milliseconds",
+    "millisecond",
+    "ms",
+    "microseconds",
+    "microsecond",
+    "µs",
+    "nanoseconds",
+    "nanosecond",
+    "ns",
 )
 
 _ALL_UNITS_OF_TIME = (*_AMBIGUOUS_UNITS_OF_TIME, *_UNAMBIGUOUS_UNITS_OF_TIME)
 
 _RE_DATE = re.compile(r"^\d{4}-\d{1,2}-\d{1,2}$")
-_RE_TIME = re.compile(r"^\d{1,2}:\d{1,2}:\d{1,2}(\.\d{1,6})?$")
+_RE_TIME = re.compile(r"^\d{1,2}:\d{1,2}:\d{1,2}(\.\d{1,9})?$")
 _RE_TZ = re.compile(r"^[+-]\d{1,2}:\d{1,2}$")
 
 
