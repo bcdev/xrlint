@@ -51,13 +51,37 @@ def get_core_plugin() -> "Plugin":
     return export_plugin()
 
 
-def get_core_config_object() -> "ConfigObject":
-    """Create a configuration object that includes the core plugin.
+def plugins_from_entry_points() -> dict[str, "Plugin"]:
+    """Load plugins from entry points.
+
+    Returns:
+        A dictionary mapping plugin names to plugin instances.
+    """
+    from importlib.metadata import entry_points
+
+    plugins = {}
+
+    for ep in entry_points(group="xrlint.rules"):
+        try:
+            plugin_module = ep.load()
+            plugin = plugin_module.export_plugin()
+            plugins[plugin.meta.name] = plugin
+        except Exception as e:
+            breakpoint()
+            raise ValueError(
+                f"failed to load xrlint plugin from entry point {ep.name!r}: {e}"
+            ) from e
+
+    return plugins
+
+
+def get_entry_point_plugins() -> "ConfigObject":
+    """Create a configuration object that includes the plugins loaded from entry points.
 
     Returns:
         A new `Config` object
     """
-    return ConfigObject(plugins={CORE_PLUGIN_NAME: get_core_plugin()})
+    return ConfigObject(plugins=plugins_from_entry_points())
 
 
 def split_config_spec(config_spec: str) -> tuple[str, str]:
@@ -379,7 +403,7 @@ class Config(ValueConstructible, JsonSerializable):
             new_objects = None
             if isinstance(config_like, str):
                 if CORE_PLUGIN_NAME not in plugins:
-                    plugins.update({CORE_PLUGIN_NAME: get_core_plugin()})
+                    plugins.update(plugins_from_entry_points())
                 new_objects = cls._get_named_config(config_like, plugins).objects
             elif isinstance(config_like, Config):
                 new_objects = config_like.objects

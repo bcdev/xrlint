@@ -8,7 +8,7 @@ from typing import Any
 
 import xarray as xr
 
-from xrlint.config import Config, ConfigLike, get_core_config_object
+from xrlint.config import Config, ConfigLike, get_entry_point_plugins
 from xrlint.result import Result
 
 from ._linter.validate import new_fatal_message, validate_dataset
@@ -30,7 +30,7 @@ def new_linter(*configs: ConfigLike, **config_props: Any) -> "Linter":
     Returns:
         A new linter instance
     """
-    return Linter(get_core_config_object(), *configs, **config_props)
+    return Linter(get_entry_point_plugins(), *configs, **config_props)
 
 
 class Linter:

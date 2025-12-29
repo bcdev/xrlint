@@ -8,7 +8,7 @@ from unittest import TestCase
 import pytest
 import xarray as xr
 
-from xrlint.config import Config, ConfigObject, get_core_config_object
+from xrlint.config import Config, ConfigObject, get_entry_point_plugins
 from xrlint.constants import CORE_PLUGIN_NAME
 from xrlint.plugin import Plugin, new_plugin
 from xrlint.processor import ProcessorOp, define_processor
@@ -35,15 +35,15 @@ class ConfigObjectTest(TestCase):
         self.assertEqual(None, config_obj.rules)
 
     def test_get_plugin(self):
-        config_obj = get_core_config_object()
+        config_obj = get_entry_point_plugins()
         plugin = config_obj.get_plugin(CORE_PLUGIN_NAME)
         self.assertIsInstance(plugin, Plugin)
 
-        with pytest.raises(ValueError, match="unknown plugin 'xcube'"):
-            config_obj.get_plugin("xcube")
+        with pytest.raises(ValueError, match="unknown plugin 'does-not-exist'"):
+            config_obj.get_plugin("does-not-exist")
 
     def test_get_rule(self):
-        config_obj = get_core_config_object()
+        config_obj = get_entry_point_plugins()
         rule = config_obj.get_rule("var-flags")
         self.assertIsInstance(rule, Rule)
 
@@ -195,7 +195,7 @@ class ConfigTest(TestCase):
 
         config = Config.from_config(
             {"ignores": ["**/*.levels"]},
-            get_core_config_object(),
+            get_entry_point_plugins(),
             "recommended",
             {"rules": {"no-empty-chunks": 2}},
         )

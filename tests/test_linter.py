@@ -28,7 +28,7 @@ class LinterTest(TestCase):
         self.assertEqual(1, len(linter.config.objects))
         config_obj = linter.config.objects[0]
         self.assertIsInstance(config_obj.plugins, dict)
-        self.assertEqual({CORE_PLUGIN_NAME}, set(config_obj.plugins.keys()))
+        self.assertIn(CORE_PLUGIN_NAME, config_obj.plugins)
         self.assertEqual(None, config_obj.rules)
 
     def test_new_linter_recommended(self):
@@ -38,7 +38,7 @@ class LinterTest(TestCase):
         config_obj_0 = linter.config.objects[0]
         config_obj_1 = linter.config.objects[1]
         self.assertIsInstance(config_obj_0.plugins, dict)
-        self.assertEqual({CORE_PLUGIN_NAME}, set(config_obj_0.plugins.keys()))
+        self.assertIn(CORE_PLUGIN_NAME, config_obj_0.plugins)
         self.assertIsInstance(config_obj_1.rules, dict)
         self.assertIn("coords-for-dims", config_obj_1.rules)
 
@@ -49,7 +49,7 @@ class LinterTest(TestCase):
         config_obj_0 = linter.config.objects[0]
         config_obj_1 = linter.config.objects[1]
         self.assertIsInstance(config_obj_0.plugins, dict)
-        self.assertEqual({CORE_PLUGIN_NAME}, set(config_obj_0.plugins.keys()))
+        self.assertIn(CORE_PLUGIN_NAME, config_obj_0.plugins)
         self.assertIsInstance(config_obj_1.rules, dict)
         self.assertIn("coords-for-dims", config_obj_1.rules)
 
