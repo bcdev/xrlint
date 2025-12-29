@@ -11,7 +11,7 @@ invalid_dataset_2 = xr.Dataset(attrs={"Conventions": 1.3})
 
 
 ConventionsTest = RuleTester.define_test(
-    "1.3_conventions",
+    "1.3-conventions",
     Conventions,
     valid=[
         RuleTest(dataset=valid_dataset_0),

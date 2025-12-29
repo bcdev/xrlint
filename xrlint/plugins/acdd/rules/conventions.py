@@ -6,6 +6,7 @@ from xrlint.plugins.acdd.plugin import plugin
 @plugin.define_rule(
     "1.3-conventions",
     version="1.3",
+    description="The `Conventions` global attribute should include `ACDD-1.3`.",
     docs_url="https://wiki.esipfed.org/Attribute_Convention_for_Data_Discovery_1-3",
 )
 class Conventions(RuleOp):

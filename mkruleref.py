@@ -27,9 +27,11 @@ read_more_icon = "material-information-variant"
 def write_rule_ref_page():
     import xrlint.plugins.core
     import xrlint.plugins.xcube
+    import xrlint.plugins.acdd
 
     core = xrlint.plugins.core.export_plugin()
     xcube = xrlint.plugins.xcube.export_plugin()
+    acdd = xrlint.plugins.acdd.export_plugin()
     with open("docs/rule-ref.md", "w") as stream:
         stream.write("# Rule Reference\n\n")
         stream.write(
@@ -41,6 +43,8 @@ def write_rule_ref_page():
         write_plugin_rules(stream, core)
         stream.write("## xcube Rules\n\n")
         write_plugin_rules(stream, xcube)
+        stream.write("## ACDD Rules\n\n")
+        write_plugin_rules(stream, acdd)
 
 
 def write_plugin_rules(stream, plugin: Plugin):

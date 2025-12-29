@@ -6,6 +6,7 @@ from xrlint.plugins.acdd.plugin import plugin
 @plugin.define_rule(
     "1.3-no-blanks-in-id",
     version="1.3",
+    description="The `id` attribute should not contain blanks.",
     docs_url="https://wiki.esipfed.org/Attribute_Convention_for_Data_Discovery_1-3",
 )
 class NoBlanksInID(RuleOp):
@@ -20,6 +21,6 @@ class NoBlanksInID(RuleOp):
             return
         if " " in value:
             ctx.report(
-                "There should be no blanks in the id field",
-                suggestions=["There should be no blanks in the id field"],
+                "There should not be blanks in the id field",
+                suggestions=["There should not be blanks in the id field"],
             )

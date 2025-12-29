@@ -117,6 +117,7 @@ class AttributesRule(RuleOp):
 @plugin.define_rule(
     "1.0-attrs-highly-recommended",
     version="1.0",
+    description="Global attributes that are highly reccomended by ACDD-1.0.",
     docs_url="https://wiki.esipfed.org/Category:Attribute_Conventions_Dataset_Discovery",
 )
 class Attributes_1_0_Highly_Reccomended(AttributesRule):
@@ -127,6 +128,7 @@ class Attributes_1_0_Highly_Reccomended(AttributesRule):
 @plugin.define_rule(
     "1.0-attrs-recommended",
     version="1.0",
+    description="Global attributes that are recommended by ACDD-1.0.",
     docs_url="https://wiki.esipfed.org/Category:Attribute_Conventions_Dataset_Discovery",
 )
 class Attributes_1_0_Reccomended(AttributesRule):
@@ -136,6 +138,7 @@ class Attributes_1_0_Reccomended(AttributesRule):
 @plugin.define_rule(
     "1.0-attrs-suggested",
     version="1.0",
+    description="Global attributes that are suggested by ACDD-1.0.",
     docs_url="https://wiki.esipfed.org/Category:Attribute_Conventions_Dataset_Discovery",
 )
 class Attributes_1_0_Suggested(AttributesRule):
@@ -146,6 +149,7 @@ class Attributes_1_0_Suggested(AttributesRule):
 @plugin.define_rule(
     "1.3-attrs-highly-recommended",
     version="1.3",
+    description="Global attributes that are highly recommended by ACDD-1.3.",
     docs_url="https://wiki.esipfed.org/Attribute_Convention_for_Data_Discovery_1-3",
 )
 class Attributes_1_3_Highly_Reccomended(AttributesRule):
@@ -156,6 +160,7 @@ class Attributes_1_3_Highly_Reccomended(AttributesRule):
 @plugin.define_rule(
     "1.3-attrs-recommended",
     version="1.3",
+    description="Global attributes that are recommended by ACDD-1.3.",
     docs_url="https://wiki.esipfed.org/Attribute_Convention_for_Data_Discovery_1-3",
 )
 class Attributes_1_3_Reccomended(AttributesRule):
@@ -165,6 +170,7 @@ class Attributes_1_3_Reccomended(AttributesRule):
 @plugin.define_rule(
     "1.3-attrs-suggested",
     version="1.3",
+    description="Global attributes that are suggested by ACDD 1.3.",
     docs_url="https://wiki.esipfed.org/Attribute_Convention_for_Data_Discovery_1-3",
 )
 class Attributes_1_3_Suggested(AttributesRule):

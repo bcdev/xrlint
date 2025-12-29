@@ -10,7 +10,7 @@ valid_dataset_2 = xr.Dataset()
 invalid_dataset_0 = xr.Dataset(attrs={"metadata_link": "example.com/metadata"})
 
 Metadata_LinkTest = RuleTester.define_test(
-    "1.3_metadata_link",
+    "1.3-metadata-link",
     MetadataLink,
     valid=[
         RuleTest(dataset=valid_dataset_0),

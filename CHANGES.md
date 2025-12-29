@@ -1,5 +1,15 @@
 # XRLint Change History
 
+## Upcoming
+
+- Implements an initial set of [Attribute Conventions Data Discovery (ACCD)](https://wiki.esipfed.org/Category:Attribute_Conventions_Dataset_Discovery) rules adapted from the [IOOS Compliance Checker](https://github.com/ioos/compliance-checker/) library.
+  - Configs for ACDD 1.0, 1.1, and 1.3, and with selectable levels of severity. The reccomended set uses ACDD 1.3 with the highly recomended rules as errors.
+  - Global attribute existance rules.
+  - Checks that ACDD is in the conventions attribute.
+  - Makes sure the date attributes are ISO formatted.
+  - Metadata links are URLs.
+  - The ID attribute should not be blank.
+
 ## Version 0.5.1 (from 2025-02-21)
 
 - XRLint now also loads default configuration from files named 

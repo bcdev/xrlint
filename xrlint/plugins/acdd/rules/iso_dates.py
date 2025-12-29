@@ -20,6 +20,7 @@ def datetime_is_iso(date_str):
 @plugin.define_rule(
     "1.3-dates-iso-format",
     version="1.3",
+    description="ACDD date attributes must be in ISO format.",
     docs_url="https://wiki.esipfed.org/Attribute_Convention_for_Data_Discovery_1-3",
 )
 class IsoDates(RuleOp):

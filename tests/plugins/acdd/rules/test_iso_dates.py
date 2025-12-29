@@ -21,7 +21,7 @@ invalid_dataset_4 = xr.Dataset(
 )  # Invalid hour
 
 IsoDatesTest = RuleTester.define_test(
-    "1.3_dates_iso_format",
+    "1.3-dates-iso-format",
     IsoDates,
     valid=[
         RuleTest(dataset=valid_dataset_0),

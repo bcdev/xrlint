@@ -3,14 +3,14 @@ from xrlint.testing import RuleTest, RuleTester
 
 from xrlint.plugins.acdd.rules.no_id_blanks import NoBlanksInID
 
-valid_dataset_0 = xr.Dataset(attrs={"id": "testind_dataset"})
+valid_dataset_0 = xr.Dataset(attrs={"id": "testing_dataset"})
 
 invalid_dataset_0 = xr.Dataset()
 invalid_dataset_1 = xr.Dataset(attrs={"id": "testing dataset"})
 
 
 IdBlanksTest = RuleTester.define_test(
-    "1.3_no_blanks_in_id",
+    "1.3-no-blanks-in-id",
     NoBlanksInID,
     valid=[RuleTest(dataset=valid_dataset_0)],
     invalid=[
@@ -20,7 +20,7 @@ IdBlanksTest = RuleTester.define_test(
         ),
         RuleTest(
             dataset=invalid_dataset_1,
-            expected=["There should be no blanks in the id field"],
+            expected=["There should not be blanks in the id field"],
         ),
     ],
 )

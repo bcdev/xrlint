@@ -6,6 +6,7 @@ from xrlint.plugins.acdd.plugin import plugin
 @plugin.define_rule(
     "1.3-metadata-link",
     version="1.3",
+    description="The `metadata` attribute should be a URL.",
     docs_url="https://wiki.esipfed.org/Attribute_Convention_for_Data_Discovery_1-3",
 )
 class MetadataLink(RuleOp):

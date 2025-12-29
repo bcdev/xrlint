@@ -7,14 +7,6 @@ def export_plugin() -> Plugin:
 
     import_submodules("xrlint.plugins.acdd.rules")
 
-    common_configs = [
-        {
-            "plugins": {
-                "acdd": plugin,
-            }
-        }
-    ]
-
     rules_1_0 = {
         "acdd/1.0-attrs-highly-recommended": "error",
         "acdd/1.0-attrs-recommended": "warn",
@@ -37,18 +29,13 @@ def export_plugin() -> Plugin:
         "acdd/1.3-dates-iso-format": "warn",
     }
 
-    plugin.define_config(
-        "recommended", [*common_configs, {"name": "recommended", "rules": rules_1_3}]
-    )
+    plugin.define_config("recommended", [{"name": "recommended", "rules": rules_1_3}])
 
-    plugin.define_config(
-        "acdd_1.3", [*common_configs, {"name": "ACDD 1.3", "rules": rules_1_3}]
-    )
+    plugin.define_config("acdd_1.3", [{"name": "ACDD 1.3", "rules": rules_1_3}])
 
     plugin.define_config(
         "acdd_1.3_strict_reccomended",
         [
-            *common_configs,
             {
                 "name": "ACDD 1.3 (strict recommended)",
                 "rules": {
@@ -62,7 +49,6 @@ def export_plugin() -> Plugin:
     plugin.define_config(
         "acdd_1.3_strict",
         [
-            *common_configs,
             {"name": "ACDD 1.3 (strict)", "rules": dict.fromkeys(rules_1_3, "error")},
         ],
     )
@@ -70,7 +56,6 @@ def export_plugin() -> Plugin:
     plugin.define_config(
         "acdd_1.3_warn",
         [
-            *common_configs,
             {
                 "name": "ACDD 1.3 (as warnings)",
                 "rules": dict.fromkeys(rules_1_3, "warn"),
@@ -78,12 +63,8 @@ def export_plugin() -> Plugin:
         ],
     )
 
-    plugin.define_config(
-        "acdd_1.1", [*common_configs, {"name": "ACDD 1.1", "rules": rules_1_1}]
-    )
+    plugin.define_config("acdd_1.1", [{"name": "ACDD 1.1", "rules": rules_1_1}])
 
-    plugin.define_config(
-        "acdd_1.0", [*common_configs, {"name": "ACDD 1.0", "rules": rules_1_0}]
-    )
+    plugin.define_config("acdd_1.0", [{"name": "ACDD 1.0", "rules": rules_1_0}])
 
     return plugin

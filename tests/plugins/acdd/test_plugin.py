@@ -8,16 +8,16 @@ class TestACDDPlugin(TestCase):
         plugin = export_plugin()
         self.assertEqual(
             {
-                "1.3_conventions",
-                "1.0_attrs_suggested",
-                "1.0_attrs_highly_recommended",
-                "1.0_attrs_recommended",
-                "1.3_attrs_recommended",
-                "1.3_attrs_suggested",
-                "1.3_attrs_highly_recommended",
-                "1.3_no_blanks_in_id",
-                "1.3_metadata_link",
-                "1.3_dates_iso_format",
+                "1.3-conventions",
+                "1.0-attrs-suggested",
+                "1.0-attrs-highly-recommended",
+                "1.0-attrs-recommended",
+                "1.3-attrs-recommended",
+                "1.3-attrs-suggested",
+                "1.3-attrs-highly-recommended",
+                "1.3-no-blanks-in-id",
+                "1.3-metadata-link",
+                "1.3-dates-iso-format",
             },
             set(plugin.rules.keys()),
         )
