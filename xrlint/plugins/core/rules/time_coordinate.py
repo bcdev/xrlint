@@ -55,7 +55,7 @@ _RE_TZ = re.compile(r"^[+-]\d{1,2}:\d{1,2}$")
 
 @plugin.define_rule(
     "time-coordinate",
-    version="1.0.0",
+    version="1.0.1",
     type="problem",
     description=(
         "Time coordinates should have valid and unambiguous time units encoding."
