@@ -64,7 +64,18 @@ def apply_rule(
 def _visit_datatree_node(rule_op: RuleOp, context: RuleContextImpl, node: DataTreeNode):
     with context.use_state(node=node):
         rule_op.validate_datatree(context, node)
+
+        current_attrs = node.datatree.attrs.copy()
+
         if node.datatree.is_leaf:
+            dataset_copy = node.datatree.dataset.copy()
+            merged_dataset_attrs = {
+                **current_attrs,
+                **dataset_copy.attrs,
+            }
+
+            dataset_copy.attrs = merged_dataset_attrs
+
             _visit_dataset_node(
                 rule_op,
                 context,
@@ -72,11 +83,18 @@ def _visit_datatree_node(rule_op: RuleOp, context: RuleContextImpl, node: DataTr
                     parent=node,
                     path=f"{node.path}/{node.datatree.name}",
                     name=node.datatree.name,
-                    dataset=node.datatree.dataset,
+                    dataset=dataset_copy,
                 ),
             )
         else:
             for name, datatree in node.datatree.children.items():
+                datatree_copy = datatree.copy()
+
+                datatree_copy.attrs = {
+                    **current_attrs,
+                    **datatree_copy.attrs,
+                }
+
                 _visit_datatree_node(
                     rule_op,
                     context,
@@ -84,7 +102,7 @@ def _visit_datatree_node(rule_op: RuleOp, context: RuleContextImpl, node: DataTr
                         parent=node,
                         path=f"{node.path}/{name}",
                         name=name,
-                        datatree=datatree,
+                        datatree=datatree_copy,
                     ),
                 )
 

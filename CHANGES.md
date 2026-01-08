@@ -1,5 +1,11 @@
 # XRLint Change History
 
+## Version 0.5.2 (in development)
+
+- Fixed propagation of global DataTree attributes to child 
+  Datasets and Variables. (#63)
+
+
 ## Version 0.5.1 (from 2025-02-21)
 
 - XRLint now also loads default configuration from files named 
