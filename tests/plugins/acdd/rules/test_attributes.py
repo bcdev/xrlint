@@ -7,7 +7,7 @@ from xrlint.plugins.acdd.rules.attributes import (
 
 valid_1_3_highly_rec_dataset = xr.Dataset(
     attrs={
-        "title": "Tis only a test",
+        "title": "This is only a test",
         "summary": "This is only a test dataset.",
         "keywords": "test, example, sample",
         "Conventions": "ACDD-1.3",
