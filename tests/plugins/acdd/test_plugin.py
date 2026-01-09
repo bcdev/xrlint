@@ -28,7 +28,7 @@ class TestACDDPlugin(TestCase):
             {
                 "recommended",
                 "acdd_1.3",
-                "acdd_1.3_strict_reccomended",
+                "acdd_1.3_strict_recommended",
                 "acdd_1.3_strict",
                 "acdd_1.3_warn",
                 "acdd_1.1",

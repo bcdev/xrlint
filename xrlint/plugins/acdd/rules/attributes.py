@@ -117,10 +117,10 @@ class AttributesRule(RuleOp):
 @plugin.define_rule(
     "1.0-attrs-highly-recommended",
     version="1.0",
-    description="Global attributes that are highly reccomended by ACDD-1.0.",
+    description="Global attributes that are highly recommended by ACDD-1.0.",
     docs_url="https://wiki.esipfed.org/Category:Attribute_Conventions_Dataset_Discovery",
 )
-class Attributes_1_0_Highly_Reccomended(AttributesRule):
+class Attributes_1_0_Highly_Recommended(AttributesRule):
     attrs = attrs_1_0_high_rec
     level = "highly recommended"
 
@@ -131,7 +131,7 @@ class Attributes_1_0_Highly_Reccomended(AttributesRule):
     description="Global attributes that are recommended by ACDD-1.0.",
     docs_url="https://wiki.esipfed.org/Category:Attribute_Conventions_Dataset_Discovery",
 )
-class Attributes_1_0_Reccomended(AttributesRule):
+class Attributes_1_0_Recommended(AttributesRule):
     attrs = attrs_1_0_rec
 
 
@@ -152,7 +152,7 @@ class Attributes_1_0_Suggested(AttributesRule):
     description="Global attributes that are highly recommended by ACDD-1.3.",
     docs_url="https://wiki.esipfed.org/Attribute_Convention_for_Data_Discovery_1-3",
 )
-class Attributes_1_3_Highly_Reccomended(AttributesRule):
+class Attributes_1_3_Highly_Recommended(AttributesRule):
     attrs = attrs_1_3_high_rec
     level = "highly recommended"
 
@@ -163,7 +163,7 @@ class Attributes_1_3_Highly_Reccomended(AttributesRule):
     description="Global attributes that are recommended by ACDD-1.3.",
     docs_url="https://wiki.esipfed.org/Attribute_Convention_for_Data_Discovery_1-3",
 )
-class Attributes_1_3_Reccomended(AttributesRule):
+class Attributes_1_3_Recommended(AttributesRule):
     attrs = attrs_1_3_rec
 
 

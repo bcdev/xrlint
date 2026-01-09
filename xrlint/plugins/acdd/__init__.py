@@ -34,7 +34,7 @@ def export_plugin() -> Plugin:
     plugin.define_config("acdd_1.3", [{"name": "ACDD 1.3", "rules": rules_1_3}])
 
     plugin.define_config(
-        "acdd_1.3_strict_reccomended",
+        "acdd_1.3_strict_recommended",
         [
             {
                 "name": "ACDD 1.3 (strict recommended)",

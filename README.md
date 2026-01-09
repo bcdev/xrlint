@@ -38,5 +38,7 @@ The following plugins provide XRLint's [inbuilt rules](https://bcdev.github.io/x
   [xcube datasets](https://xcube.readthedocs.io/en/latest/cubespec.html).
   Note, this plugin is fully optional. You must manually configure 
   it to apply its rules. It may be moved into a separate GitHub repo later. 
+- `xrlint.plugins.acdd`: implements rules for [Attribute Conventions Dataset Discovery](https://wiki.esipfed.org/Category:Attribute_Conventions_Dataset_Discovery).
+  Note, this plugin is fully optional. You must manually configure it to apply its rules.
 
 

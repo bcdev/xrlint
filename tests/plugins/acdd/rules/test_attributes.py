@@ -2,7 +2,7 @@ import xarray as xr
 from xrlint.testing import RuleTest, RuleTester
 
 from xrlint.plugins.acdd.rules.attributes import (
-    Attributes_1_3_Highly_Reccomended,
+    Attributes_1_3_Highly_Recommended,
 )
 
 valid_1_3_highly_rec_dataset = xr.Dataset(
@@ -16,9 +16,9 @@ valid_1_3_highly_rec_dataset = xr.Dataset(
 invalid_1_3_highly_rec_dataset = xr.Dataset()
 
 
-Attributes_1_3_Highly_ReccomendedTest = RuleTester.define_test(
+Attributes_1_3_Highly_RecommendedTest = RuleTester.define_test(
     "1.3-attrs-highly-recommended",
-    Attributes_1_3_Highly_Reccomended,
+    Attributes_1_3_Highly_Recommended,
     valid=[RuleTest(dataset=valid_1_3_highly_rec_dataset)],
     invalid=[
         RuleTest(
