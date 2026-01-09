@@ -65,7 +65,7 @@ exclude = ["**/*.ipynb"]
 [project.scripts]
 xrlint = "xrlint.cli.main:main"
 
-[dependency-groups]
+[project.optional-dependencies]
 dev = [
   # Development tools
   "build",
@@ -96,5 +96,9 @@ Repository = "https://github.com/bcdev/xrlint"
 Changelog = "https://github.com/bcdev/xrlint/blob/main/CHANGES.md"
 Issues = "https://github.com/bcdev/xrlint/issues"
 
-[tool.uv.pip]
-all-extras = true
+[tool.uv]
+default-groups = "all"
+
+# [tool.uv.pip]
+# all-extras = true
+
