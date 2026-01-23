@@ -1,10 +1,27 @@
 # XRLint Change History
 
+
 ## Version 0.5.2 (in development)
 
 ### Adjustments and Enhancements
 
 - Core rule 'time-coordinates' now support ms, µs and ns. (#66)
+
+- Implemented an initial set of 
+  [Attribute Conventions Data Discovery (ACCD)](https://wiki.esipfed.org/Category:Attribute_Conventions_Dataset_Discovery) 
+  rules adapted from the [IOOS Compliance Checker](https://github.com/ioos/compliance-checker/) 
+  library (many thanks to @abkfenris):
+  - Configs for ACDD 1.0, 1.1, and 1.3, and with selectable levels of severity. 
+    The recommended set uses ACDD 1.3 with the highly recomended rules as errors.
+  - Global attribute existance rules.
+  - Checks that ACDD is in the conventions attribute.
+  - Makes sure the date attributes are ISO formatted.
+  - Metadata links are URLs.
+  - The ID attribute should not be blank.
+
+- Load plugins from entry points allowing plugins to be discovered from installed libraries.
+  - Automatically generate rule documentation removing the manual need to run `mkruleref.py`.
+
 
 ## Version 0.5.1 (from 2025-02-21)
 

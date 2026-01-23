@@ -6,7 +6,8 @@ build-backend = "setuptools.build_meta"
 name = "xrlint"
 dynamic = ["version", "readme"]
 authors = [
-  {name = "Norman Fomferra (Brockmann Consult GmbH)"}
+  {name = "Norman Fomferra (Brockmann Consult GmbH)"},
+  {name = "Alex Kerney (GMRI / NERACOOS)", email = "akerney@gmri.org"}
 ]
 description = "A linter for xarray datasets."
 keywords = [
@@ -17,6 +18,7 @@ requires-python = ">=3.10"
 dependencies = [
   "click",
   "fsspec",
+  "isodate>=0.7.2",
   "pyyaml",
   "tabulate",
   "xarray",
@@ -93,3 +95,10 @@ Documentation = "https://bcdev.github.io/xrlint"
 Repository = "https://github.com/bcdev/xrlint"
 Changelog = "https://github.com/bcdev/xrlint/blob/main/CHANGES.md"
 Issues = "https://github.com/bcdev/xrlint/issues"
+
+[tool.uv]
+default-groups = "all"
+
+# [tool.uv.pip]
+# all-extras = true
+
