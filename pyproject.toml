@@ -92,7 +92,8 @@ doc = [
   "mkdocs-autorefs",
   "mkdocs-material",
   "mkdocstrings",
-  "mkdocstrings-python"
+  "mkdocstrings-python",
+  "mkdocs-gen-files",
 ]
 
 [project.urls]

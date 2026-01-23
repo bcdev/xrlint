@@ -4,6 +4,7 @@
 
 from xrlint.plugin import Plugin
 from xrlint.rule import RuleConfig
+from xrlint.config import plugins_from_entry_points
 
 # for icons, see
 # https://squidfunk.github.io/mkdocs-material/reference/icons-emojis/
@@ -25,26 +26,27 @@ read_more_icon = "material-information-variant"
 
 
 def write_rule_ref_page():
-    import xrlint.plugins.core
-    import xrlint.plugins.xcube
-    import xrlint.plugins.acdd
+    import mkdocs_gen_files
 
-    core = xrlint.plugins.core.export_plugin()
-    xcube = xrlint.plugins.xcube.export_plugin()
-    acdd = xrlint.plugins.acdd.export_plugin()
-    with open("docs/rule-ref.md", "w") as stream:
+    plugins = plugins_from_entry_points()
+
+    print(f"Generating rule reference for discovered plugins: {list(plugins.keys())}")
+
+    with mkdocs_gen_files.open("rule-ref.md", "w") as stream:
         stream.write("# Rule Reference\n\n")
         stream.write(
             "This page is auto-generated from XRLint's builtin"
-            " rules (`python -m mkruleref`).\n"
+            " rules.\n"
             "New rules will be added by upcoming XRLint releases.\n\n"
         )
-        stream.write("## Core Rules\n\n")
-        write_plugin_rules(stream, core)
-        stream.write("## xcube Rules\n\n")
-        write_plugin_rules(stream, xcube)
-        stream.write("## ACDD Rules\n\n")
-        write_plugin_rules(stream, acdd)
+        for plugin_name in sorted(plugins.keys()):
+            plugin = plugins[plugin_name]
+            stream.write(f"## {plugin.meta.name} Rules\n\n")
+            if plugin.meta.ref:
+                stream.write(f"- `{plugin.meta.ref.removesuffix(':export_plugin')}`\n")
+            if plugin.meta.docs_url:
+                stream.write(f"- [Documentation]({plugin.meta.docs_url})\n\n")
+            write_plugin_rules(stream, plugin)
 
 
 def write_plugin_rules(stream, plugin: Plugin):
@@ -86,5 +88,4 @@ def get_plugin_rule_configs(plugin: Plugin) -> dict[str, dict[str, RuleConfig]]:
     return config_rules
 
 
-if __name__ == "__main__":
-    write_rule_ref_page()
+write_rule_ref_page()

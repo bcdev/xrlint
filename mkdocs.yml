@@ -48,8 +48,15 @@ extra:
     - icon: fontawesome/brands/python
       link: https://pypi.org/project/xrlint/
 
+watch:
+  - xrlint
+
 plugins:
   - search
+  # Build rule reference page
+  - gen-files:
+      scripts:
+        - docs/mkruleref.py
   - autorefs
   - mkdocstrings:
       handlers:
