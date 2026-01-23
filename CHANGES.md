@@ -1,5 +1,11 @@
 # XRLint Change History
 
+## Version 0.5.2 (in development)
+
+### Adjustments and Enhancements
+
+- Core rule 'time-coordinates' now support ms, µs and ns. (#66)
+
 ## Version 0.5.1 (from 2025-02-21)
 
 - XRLint now also loads default configuration from files named 
