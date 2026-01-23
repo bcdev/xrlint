@@ -44,13 +44,6 @@ or a named plugin configuration, or a sequence of the latter two.
 """
 
 
-def get_core_plugin() -> "Plugin":
-    """Get the fully imported, populated core plugin."""
-    from xrlint.plugins.core import export_plugin
-
-    return export_plugin()
-
-
 def plugins_from_entry_points() -> dict[str, "Plugin"]:
     """Load plugins from entry points.
 
@@ -67,7 +60,6 @@ def plugins_from_entry_points() -> dict[str, "Plugin"]:
             plugin = plugin_module.export_plugin()
             plugins[plugin.meta.name] = plugin
         except Exception as e:
-            breakpoint()
             raise ValueError(
                 f"failed to load xrlint plugin from entry point {ep.name!r}: {e}"
             ) from e
