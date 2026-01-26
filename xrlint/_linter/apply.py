@@ -62,20 +62,18 @@ def apply_rule(
 
 
 def _visit_datatree_node(rule_op: RuleOp, context: RuleContextImpl, node: DataTreeNode):
+    # Get a copy of the current node's attrs.
+    # These will be merged into each child's attrs so that attributes
+    # defined on parent nodes are inherited by all descendants.
+    attrs = node.datatree.attrs.copy()
+
     with context.use_state(node=node):
         rule_op.validate_datatree(context, node)
 
-        current_attrs = node.datatree.attrs.copy()
-
         if node.datatree.is_leaf:
-            dataset_copy = node.datatree.dataset.copy()
-            merged_dataset_attrs = {
-                **current_attrs,
-                **dataset_copy.attrs,
-            }
-
-            dataset_copy.attrs = merged_dataset_attrs
-
+            # Inherit attrs from the parent datatree into the child dataset
+            dataset = node.datatree.dataset.copy()
+            dataset.attrs = {**attrs, **dataset.attrs}
             _visit_dataset_node(
                 rule_op,
                 context,
@@ -83,18 +81,14 @@ def _visit_datatree_node(rule_op: RuleOp, context: RuleContextImpl, node: DataTr
                     parent=node,
                     path=f"{node.path}/{node.datatree.name}",
                     name=node.datatree.name,
-                    dataset=dataset_copy,
+                    dataset=dataset,
                 ),
             )
         else:
             for name, datatree in node.datatree.children.items():
-                datatree_copy = datatree.copy()
-
-                datatree_copy.attrs = {
-                    **current_attrs,
-                    **datatree_copy.attrs,
-                }
-
+                # Inherit attrs from the parent datatree into the child datatree
+                datatree = datatree.copy()
+                datatree.attrs = {**attrs, **datatree.attrs}
                 _visit_datatree_node(
                     rule_op,
                     context,
@@ -102,7 +96,7 @@ def _visit_datatree_node(rule_op: RuleOp, context: RuleContextImpl, node: DataTr
                         parent=node,
                         path=f"{node.path}/{name}",
                         name=name,
-                        datatree=datatree_copy,
+                        datatree=datatree,
                     ),
                 )
 

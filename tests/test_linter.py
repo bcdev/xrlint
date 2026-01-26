@@ -138,6 +138,12 @@ class LinterValidateTest(TestCase):
                 if len(node.datatree.data_vars) == 0:
                     ctx.report("DataTree does not have data variables")
 
+        @plugin.define_rule("datatree-children-must-have-title")
+        class DataTreeAttrsVer(RuleOp):
+            def validate_datatree(self, ctx: RuleContext, node: DataTreeNode):
+                if "title" not in node.datatree.attrs:
+                    ctx.report("DataTree must have a least a global title")
+
         @plugin.define_processor("multi-level-dataset")
         class MultiLevelDataset(ProcessorOp):
             def preprocess(
@@ -306,6 +312,109 @@ class LinterValidateTest(TestCase):
         )
         self.assertEqual(0, result.warning_count)
         self.assertEqual(5, result.error_count)
+        self.assertEqual(0, result.fatal_error_count)
+
+    def test_linter_missing_global_datatree_attrs(self):
+        result = self.linter.validate(
+            xr.DataTree(
+                children={
+                    "measurement": xr.DataTree(
+                        children={
+                            "r10m": xr.DataTree(
+                                dataset=xr.Dataset(
+                                    attrs={
+                                        "title": "10m resolution datatree",
+                                    }
+                                )
+                            ),
+                            "r20m": xr.DataTree(),
+                            "r60m": xr.DataTree(),
+                        }
+                    )
+                },
+            ),
+            rules={"test/datatree-children-must-have-title": 2},
+        )
+
+        self.assertEqual(
+            [
+                Message(
+                    message="DataTree must have a least a global title",
+                    node_path="dt",
+                    rule_id="test/datatree-children-must-have-title",
+                    severity=2,
+                    fatal=None,
+                    fix=None,
+                    suggestions=None,
+                ),
+                Message(
+                    message="DataTree must have a least a global title",
+                    node_path="dt/measurement",
+                    rule_id="test/datatree-children-must-have-title",
+                    severity=2,
+                    fatal=None,
+                    fix=None,
+                    suggestions=None,
+                ),
+                Message(
+                    message="DataTree must have a least a global title",
+                    node_path="dt/measurement/r20m",
+                    rule_id="test/datatree-children-must-have-title",
+                    severity=2,
+                    fatal=None,
+                    fix=None,
+                    suggestions=None,
+                ),
+                Message(
+                    message="DataTree must have a least a global title",
+                    node_path="dt/measurement/r60m",
+                    rule_id="test/datatree-children-must-have-title",
+                    severity=2,
+                    fatal=None,
+                    fix=None,
+                    suggestions=None,
+                ),
+            ],
+            result.messages,
+        )
+        self.assertEqual(0, result.warning_count)
+        self.assertEqual(4, result.error_count)
+        self.assertEqual(0, result.fatal_error_count)
+
+    def test_linter_global_datatree_attrs(self):
+        result = self.linter.validate(
+            xr.DataTree(
+                dataset=xr.Dataset(
+                    attrs={
+                        "title": "Global datatree title",
+                    }
+                ),
+                children={
+                    "measurement": xr.DataTree(
+                        children={
+                            "r10m": xr.DataTree(
+                                dataset=xr.Dataset(
+                                    attrs={
+                                        "title": "10m resolution datatree",
+                                    }
+                                )
+                            ),
+                            "r20m": xr.DataTree(),
+                            "r60m": xr.DataTree(),
+                        }
+                    )
+                },
+            ),
+            rules={"test/datatree-children-must-have-title": 2},
+        )
+
+        print(result.messages)
+        self.assertEqual(
+            [],
+            result.messages,
+        )
+        self.assertEqual(0, result.warning_count)
+        self.assertEqual(0, result.error_count)
         self.assertEqual(0, result.fatal_error_count)
 
     def test_linter_real_life_scenario(self):
