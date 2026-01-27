@@ -199,3 +199,75 @@ Time coordinate and dimension should be called 'time'.
 
 Contained in:  `all`-:material-lightning-bolt: `recommended`-:material-lightning-bolt:
 
+## ACDD Rules
+
+### :material-bug: `1.0-attrs-highly-recommended`
+
+Global attributes that are highly reccomended by ACDD-1.0.
+[More...](https://wiki.esipfed.org/Category:Attribute_Conventions_Dataset_Discovery)
+
+Contained in:  `acdd_1.0`-:material-lightning-bolt:
+
+### :material-bug: `1.0-attrs-recommended`
+
+Global attributes that are recommended by ACDD-1.0.
+[More...](https://wiki.esipfed.org/Category:Attribute_Conventions_Dataset_Discovery)
+
+Contained in:  `acdd_1.0`-:material-alert:
+
+### :material-bug: `1.0-attrs-suggested`
+
+Global attributes that are suggested by ACDD-1.0.
+[More...](https://wiki.esipfed.org/Category:Attribute_Conventions_Dataset_Discovery)
+
+Contained in:  `acdd_1.0`-:material-alert:
+
+### :material-bug: `1.3-attrs-highly-recommended`
+
+Global attributes that are highly recommended by ACDD-1.3.
+[More...](https://wiki.esipfed.org/Attribute_Convention_for_Data_Discovery_1-3)
+
+Contained in:  `acdd_1.3`-:material-lightning-bolt: `acdd_1.3_strict`-:material-lightning-bolt: `acdd_1.3_strict_reccomended`-:material-lightning-bolt: `acdd_1.3_warn`-:material-alert: `recommended`-:material-lightning-bolt:
+
+### :material-bug: `1.3-attrs-recommended`
+
+Global attributes that are recommended by ACDD-1.3.
+[More...](https://wiki.esipfed.org/Attribute_Convention_for_Data_Discovery_1-3)
+
+Contained in:  `acdd_1.3`-:material-alert: `acdd_1.3_strict`-:material-lightning-bolt: `acdd_1.3_strict_reccomended`-:material-lightning-bolt: `acdd_1.3_warn`-:material-alert: `recommended`-:material-alert:
+
+### :material-bug: `1.3-attrs-suggested`
+
+Global attributes that are suggested by ACDD 1.3.
+[More...](https://wiki.esipfed.org/Attribute_Convention_for_Data_Discovery_1-3)
+
+Contained in:  `acdd_1.3`-:material-alert: `acdd_1.3_strict`-:material-lightning-bolt: `acdd_1.3_strict_reccomended`-:material-alert: `acdd_1.3_warn`-:material-alert: `recommended`-:material-alert:
+
+### :material-bug: `1.3-conventions`
+
+The `Conventions` global attribute should include `ACDD-1.3`.
+[More...](https://wiki.esipfed.org/Attribute_Convention_for_Data_Discovery_1-3)
+
+Contained in:  `acdd_1.3`-:material-lightning-bolt: `acdd_1.3_strict`-:material-lightning-bolt: `acdd_1.3_strict_reccomended`-:material-lightning-bolt: `acdd_1.3_warn`-:material-alert: `recommended`-:material-lightning-bolt:
+
+### :material-bug: `1.3-dates-iso-format`
+
+ACDD date attributes must be in ISO format.
+[More...](https://wiki.esipfed.org/Attribute_Convention_for_Data_Discovery_1-3)
+
+Contained in:  `acdd_1.3`-:material-alert: `acdd_1.3_strict`-:material-lightning-bolt: `acdd_1.3_strict_reccomended`-:material-alert: `acdd_1.3_warn`-:material-alert: `recommended`-:material-alert:
+
+### :material-bug: `1.3-metadata-link`
+
+The `metadata` attribute should be a URL.
+[More...](https://wiki.esipfed.org/Attribute_Convention_for_Data_Discovery_1-3)
+
+Contained in:  `acdd_1.3`-:material-alert: `acdd_1.3_strict`-:material-lightning-bolt: `acdd_1.3_strict_reccomended`-:material-alert: `acdd_1.3_warn`-:material-alert: `recommended`-:material-alert:
+
+### :material-bug: `1.3-no-blanks-in-id`
+
+The `id` attribute should not contain blanks.
+[More...](https://wiki.esipfed.org/Attribute_Convention_for_Data_Discovery_1-3)
+
+Contained in:  `acdd_1.3`-:material-alert: `acdd_1.3_strict`-:material-lightning-bolt: `acdd_1.3_strict_reccomended`-:material-alert: `acdd_1.3_warn`-:material-alert: `recommended`-:material-alert:
+
