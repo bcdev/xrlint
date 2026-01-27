@@ -22,8 +22,8 @@
 - Load plugins from entry points allowing plugins to be discovered from installed libraries.
   - Automatically generate rule documentation removing the manual need to run `mkruleref.py`.
 
-- Fixed propagation of global DataTree attributes to child 
-  Datasets and Variables. (#63)
+- Fixed passing of global datatree attributes to children: attributes defined
+  on parent datatrees are now inherited by all descendants. (#63)
 
 
 ## Version 0.5.1 (from 2025-02-21)
