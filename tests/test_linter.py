@@ -173,6 +173,7 @@ class LinterValidateTest(TestCase):
                 "data-var-dim-must-have-coord",
                 "dataset-without-data-vars",
                 "datatree-without-data-vars",
+                "datatree-children-must-have-title",
             ],
             list(self.linter.config.objects[0].plugins["test"].rules.keys()),
         )
