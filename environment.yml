@@ -6,6 +6,7 @@ dependencies:
   # Library Dependencies
   - click
   - fsspec
+  - isodate>=0.7.2
   - pyyaml
   - tabulate
   - xarray
