@@ -4,11 +4,17 @@
 
 from typing import Any
 from unittest import TestCase
+from unittest.mock import Mock, patch
 
 import pytest
 import xarray as xr
 
-from xrlint.config import Config, ConfigObject, get_core_config_object
+from xrlint.config import (
+    Config,
+    ConfigObject,
+    get_entry_point_plugins,
+    plugins_from_entry_points,
+)
 from xrlint.constants import CORE_PLUGIN_NAME
 from xrlint.plugin import Plugin, new_plugin
 from xrlint.processor import ProcessorOp, define_processor
@@ -35,20 +41,57 @@ class ConfigObjectTest(TestCase):
         self.assertEqual(None, config_obj.rules)
 
     def test_get_plugin(self):
-        config_obj = get_core_config_object()
+        config_obj = get_entry_point_plugins()
         plugin = config_obj.get_plugin(CORE_PLUGIN_NAME)
         self.assertIsInstance(plugin, Plugin)
 
-        with pytest.raises(ValueError, match="unknown plugin 'xcube'"):
-            config_obj.get_plugin("xcube")
+        with pytest.raises(ValueError, match="unknown plugin 'does-not-exist'"):
+            config_obj.get_plugin("does-not-exist")
 
     def test_get_rule(self):
-        config_obj = get_core_config_object()
+        config_obj = get_entry_point_plugins()
         rule = config_obj.get_rule("var-flags")
         self.assertIsInstance(rule, Rule)
 
         with pytest.raises(ValueError, match="unknown rule 'foo'"):
             config_obj.get_rule("foo")
+
+    def test_plugins_from_entry_points_load_failure(self):
+        """Test that plugins_from_entry_points raises ValueError when entry point fails to load."""
+        # Create a mock entry point that raises an exception when loaded
+        mock_entry_point = Mock()
+        mock_entry_point.name = "failing-plugin"
+        mock_entry_point.load.side_effect = ImportError("Module not found")
+
+        # Mock the entry_points function to return our failing entry point
+        with patch("importlib.metadata.entry_points") as mock_entry_points:
+            mock_entry_points.return_value = [mock_entry_point]
+
+            # Verify it raises the expected ValueError with the proper message
+            with pytest.raises(
+                ValueError,
+                match=r"failed to load xrlint plugin from entry point 'failing-plugin'",
+            ):
+                plugins_from_entry_points()
+
+    def test_plugins_from_entry_points_export_failure(self):
+        """Test when the plugin module loads but export_plugin() fails."""
+        # Create a mock module that loads successfully but export_plugin() fails
+        mock_module = Mock()
+        mock_module.export_plugin.side_effect = AttributeError("missing attribute")
+
+        mock_entry_point = Mock()
+        mock_entry_point.name = "bad-export-plugin"
+        mock_entry_point.load.return_value = mock_module
+
+        with patch("importlib.metadata.entry_points") as mock_entry_points:
+            mock_entry_points.return_value = [mock_entry_point]
+
+            with pytest.raises(
+                ValueError,
+                match=r"failed to load xrlint plugin from entry point 'bad-export-plugin'",
+            ):
+                plugins_from_entry_points()
 
     def test_get_processor_op(self):
         class MyProc(ProcessorOp):
@@ -195,7 +238,7 @@ class ConfigTest(TestCase):
 
         config = Config.from_config(
             {"ignores": ["**/*.levels"]},
-            get_core_config_object(),
+            get_entry_point_plugins(),
             "recommended",
             {"rules": {"no-empty-chunks": 2}},
         )

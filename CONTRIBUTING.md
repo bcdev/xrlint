@@ -85,3 +85,15 @@ The rule naming conventions for XRLint are based ESLint:
   in a dedicated module under `tests`, i.e., `tests/rules/test_<rule>`. 
   Consider using `xrlint.testing.RuleTester` which can save a lot of
   time and is used for almost all in-built rules.
+
+## Contributing an XRLint Plugin
+
+New plugins should be added to the `xrlint.rules` entry point table, which will cause them to be automatically loaded by XRLint, and to be included in the rule documentation.
+
+```toml
+# pyproject.toml
+[project.entry-points."xrlint.rules"]
+core = "xrlint.plugins.core"
+xcube = "xrlint.plugins.xcube"
+acdd = "xrlint.plugins.acdd"
+```

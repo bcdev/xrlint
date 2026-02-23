@@ -22,7 +22,7 @@ from xrlint.cli.constants import (
     DEFAULT_OUTPUT_FORMAT,
     INIT_CONFIG_YAML,
 )
-from xrlint.config import Config, ConfigLike, ConfigObject, get_core_config_object
+from xrlint.config import Config, ConfigLike, ConfigObject, get_entry_point_plugins
 from xrlint.formatter import FormatterContext
 from xrlint.formatters import export_formatters
 from xrlint.linter import Linter
@@ -117,7 +117,7 @@ class XRLint(FormatterContext):
             if file_config is None:
                 click.echo("Warning: no configuration file found.")
 
-        core_config_obj = get_core_config_object()
+        core_config_obj = get_entry_point_plugins()
         core_config_obj.plugins.update(plugins)
 
         base_configs = []

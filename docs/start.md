@@ -64,6 +64,14 @@ rule configurations:
     grid-mappings: error
 ```
 
+!!! note inline end "Built in and auto-loading plugins"
+
+    The included plugins (such as `xcube` in the example configs here) and those from external libraries that are findable via [entry points](https://setuptools.pypa.io/en/latest/userguide/entry_point.html) do not need to be explicitly loaded.
+
+    Run `xrlint --print-config <dataset>` to view the loaded plugins and configured rules.
+
+    Custom plugins, or those that are not loadable via entry points will need to be explcitly loaded via the plugins object.
+
 You can add rules from plugins as well:
 
 ```yaml
@@ -77,8 +85,9 @@ And customize its rules, if desired:
 
 ```yaml
 - recommended
-- plugins:
-    xcube: xrlint.plugins.xcube
+# Explicit loading of included plugins is unneeded, see note
+# - plugins:
+#    xcube: xrlint.plugins.xcube
 - xcube/recommended  
 - rules:
     xcube/grid-mapping-naming: off

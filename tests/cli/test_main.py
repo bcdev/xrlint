@@ -230,7 +230,9 @@ class CliMainTest(TestCase):
                 (
                     "{\n"
                     '  "plugins": {\n'
-                    '    "__core__": "xrlint.plugins.core:export_plugin"\n'
+                    '    "acdd": "xrlint.plugins.acdd:export_plugin",\n'
+                    '    "__core__": "xrlint.plugins.core:export_plugin",\n'
+                    '    "xcube": "xrlint.plugins.xcube:export_plugin"\n'
                     "  },\n"
                     '  "rules": {\n'
                     '    "var-units": 2\n'
