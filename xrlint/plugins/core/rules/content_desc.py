@@ -109,10 +109,8 @@ class ContentDesc(RuleOp):
                 return
 
         var_attrs = node.array.attrs
-        if isinstance(node.parent, DatasetNode):
-            dataset_attrs = hierarchical_attrs(node.parent)
-        else:
-            dataset_attrs = ctx.dataset.attrs
+        assert isinstance(node.parent, DatasetNode)
+        dataset_attrs = hierarchical_attrs(node.parent)
         for attr_name in self.common_attrs:
             if attr_name not in var_attrs and attr_name not in dataset_attrs:
                 ctx.report(f"Missing attribute {attr_name!r}.")
