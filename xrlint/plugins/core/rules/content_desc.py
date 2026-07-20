@@ -6,6 +6,7 @@ import re
 
 from xrlint.node import DatasetNode, VariableNode
 from xrlint.plugins.core.plugin import plugin
+from xrlint.util.attrs import hierarchical_attrs
 from xrlint.rule import RuleContext, RuleExit, RuleOp
 from xrlint.util.schema import schema
 
@@ -24,6 +25,9 @@ DEFAULT_IGNORED_VARS = ["crs", "spatial_ref"]
         "A dataset should provide information about where the data came"
         " from and what has been done to it."
         " This information is mainly for the benefit of human readers."
+        " For `xarray.DataTree` inputs, global and common attributes may"
+        " be defined on parent groups; local dataset attributes take"
+        " precedence over parent attributes."
         " The rule accepts the following configuration parameters:\n\n"
         "- `globals`: list of names of required global attributes."
         f" Defaults to `{DEFAULT_GLOBAL_ATTRS}`.\n"
@@ -79,7 +83,7 @@ class ContentDesc(RuleOp):
         ]
 
     def validate_dataset(self, ctx: RuleContext, node: DatasetNode):
-        dataset_attrs = node.dataset.attrs
+        dataset_attrs = hierarchical_attrs(node)
         attr_names = (
             self.global_attrs + self.common_attrs
             if self.skip_vars
@@ -105,7 +109,10 @@ class ContentDesc(RuleOp):
                 return
 
         var_attrs = node.array.attrs
-        dataset_attrs = ctx.dataset.attrs
+        if isinstance(node.parent, DatasetNode):
+            dataset_attrs = hierarchical_attrs(node.parent)
+        else:
+            dataset_attrs = ctx.dataset.attrs
         for attr_name in self.common_attrs:
             if attr_name not in var_attrs and attr_name not in dataset_attrs:
                 ctx.report(f"Missing attribute {attr_name!r}.")
