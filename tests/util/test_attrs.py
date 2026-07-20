@@ -35,4 +35,4 @@ class HierarchicalAttrsTest(TestCase):
         self.assertEqual(2, len(attrs))
         self.assertNotIn("comment", attrs)
         with self.assertRaises(KeyError):
-            _ = attrs["comment"]
+            attrs["comment"]

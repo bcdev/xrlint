@@ -5,7 +5,7 @@
 from collections.abc import Iterator, Mapping
 from typing import Any
 
-from xrlint.node import DataTreeNode, DatasetNode, Node
+from xrlint.node import DataTreeNode, DatasetNode
 
 
 class HierarchicalAttrs(Mapping[str, Any]):
@@ -13,10 +13,9 @@ class HierarchicalAttrs(Mapping[str, Any]):
 
     def __init__(self, node: DatasetNode):
         self._attrs_by_precedence = [node.dataset.attrs]
-        parent: Node | None = node.parent
-        while parent is not None:
-            if isinstance(parent, DataTreeNode):
-                self._attrs_by_precedence.append(parent.datatree.attrs)
+        parent = node.parent
+        while isinstance(parent, DataTreeNode):
+            self._attrs_by_precedence.append(parent.datatree.attrs)
             parent = parent.parent
 
     def __contains__(self, key: object) -> bool:
