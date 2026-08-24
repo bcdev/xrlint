@@ -22,6 +22,9 @@
 - Load plugins from entry points allowing plugins to be discovered from installed libraries.
   - Automatically generate rule documentation removing the manual need to run `mkruleref.py`.
 
+- Fixed metadata rules for datatrees: global/common attributes defined
+  on parent groups are now considered by the relevant core rules. (#63)
+
 
 ## Version 0.5.1 (from 2025-02-21)
 

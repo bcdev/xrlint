@@ -308,6 +308,52 @@ class LinterValidateTest(TestCase):
         self.assertEqual(5, result.error_count)
         self.assertEqual(0, result.fatal_error_count)
 
+    def test_linter_global_datatree_attrs_from_parent_group(self):
+        global_attrs = {
+            "Conventions": "CF-1.12",
+            "title": "My title",
+            "references": "DOI:1234",
+            "institution": "My institute",
+            "source": "My source",
+            "comment": "My comment",
+            "history": "My history",
+        }
+        temp = xr.DataArray(
+            [1, 2, 3],
+            dims="x",
+            attrs={
+                "units": "K",
+                "long_name": "Air Temperature",
+                "standard_name": "air_temperature",
+            },
+        )
+        x = xr.DataArray([1, 2, 3], dims="x", attrs={"units": "m"})
+        mygroup = xr.Dataset(
+            {"temp": temp}, coords={"x": x}, attrs={"title": "My group"}
+        )
+
+        result = new_linter(
+            rules={
+                "content-desc": 2,
+                "conventions": 2,
+            },
+        ).validate(
+            xr.DataTree.from_dict(
+                {
+                    "/": xr.Dataset(attrs=global_attrs),
+                    "/mygroup": mygroup,
+                }
+            ),
+        )
+
+        self.assertEqual(
+            [],
+            result.messages,
+        )
+        self.assertEqual(0, result.warning_count)
+        self.assertEqual(0, result.error_count)
+        self.assertEqual(0, result.fatal_error_count)
+
     def test_linter_real_life_scenario(self):
         dataset = xr.Dataset(
             attrs={
