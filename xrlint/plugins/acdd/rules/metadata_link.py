@@ -1,3 +1,7 @@
+#  Copyright © 2026 Brockmann Consult GmbH.
+#  This software is distributed under the terms and conditions of the
+#  MIT license (https://mit-license.org/).
+
 from xrlint.node import DatasetNode
 from xrlint.rule import RuleContext, RuleOp
 from xrlint.plugins.acdd.plugin import plugin
