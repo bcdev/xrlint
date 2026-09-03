@@ -35,10 +35,10 @@ class PlainComplexTypesContainer(JsonSerializable):
     def __init__(
         self,
         p: PlainSimpleTypesContainer = PlainSimpleTypesContainer(),
-        q: dict[str, bool] = None,
-        r: dict[str, PlainSimpleTypesContainer] = None,
-        s: list[int] = None,
-        t: list[PlainSimpleTypesContainer] = None,
+        q: dict[str, bool] | None = None,
+        r: dict[str, PlainSimpleTypesContainer] | None = None,
+        s: list[int] | None = None,
+        t: list[PlainSimpleTypesContainer] | None = None,
         u: float | None = None,
     ):
         self.p = p
@@ -104,8 +104,8 @@ class JsonSerializableTest(TestCase):
 
     def test_plain_complex_ok(self):
         container = PlainComplexTypesContainer(
-            q=dict(p=True, q=False),
-            r=dict(u=PlainSimpleTypesContainer(), v=PlainSimpleTypesContainer()),
+            q={"p": True, "q": False},
+            r={"u": PlainSimpleTypesContainer(), "v": PlainSimpleTypesContainer()},
             s=[1, 2, 3],
             t=[
                 PlainSimpleTypesContainer(c=5, d=6.7),
@@ -192,10 +192,11 @@ class JsonSerializableTest(TestCase):
 
     def test_dataclass_complex_ok(self):
         container = DataclassComplexTypesContainer(
-            q=dict(p=True, q=False),
-            r=dict(
-                u=DataclassSimpleTypesContainer(), v=DataclassSimpleTypesContainer()
-            ),
+            q={"p": True, "q": False},
+            r={
+                "u": DataclassSimpleTypesContainer(),
+                "v": DataclassSimpleTypesContainer(),
+            },
             s=[1, 2, 3],
             t=[
                 DataclassSimpleTypesContainer(c=5, d=6.7),

@@ -161,7 +161,7 @@ class OpMixinDefineTest(TestCase):
         class MyThingOp3(ThingOp):
             """This is my 3rd thing."""
 
-        value = Thing.define_operation(MyThingOp3, meta_kwargs=dict(version="1.0"))
+        value = Thing.define_operation(MyThingOp3, meta_kwargs={"version": "1.0"})
         self.assertIsInstance(value, Thing)
         self.assertIsInstance(value.meta, ThingMeta)
         self.assertEqual("my-thing-op-3", value.meta.name)

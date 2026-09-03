@@ -102,7 +102,7 @@ class FormatterRegistry(Mapping[str, Formatter]):
         return Formatter.define_operation(
             None,
             registry=self._registrations,
-            meta_kwargs=dict(name=name, version=version, schema=schema),
+            meta_kwargs={"name": name, "version": version, "schema": schema},
         )
 
     def __getitem__(self, key: str) -> Formatter:

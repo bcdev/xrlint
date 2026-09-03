@@ -166,8 +166,10 @@ class TimeCoordinate(RuleOp):
                     f"Missing timezone in {source} 'units': {units!r}.",
                     suggestions=[
                         _units_format_suggestion(),
-                        f"Append timezone specification, e.g., use"
-                        f" {' '.join(units_parts[:-1] + ['+0:00'])!r}.",
+                        (
+                            f"Append timezone specification, e.g., use"
+                            f" {' '.join(units_parts[:-1] + ['+0:00'])!r}."
+                        ),
                     ],
                 )
 

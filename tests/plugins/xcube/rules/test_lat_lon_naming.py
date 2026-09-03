@@ -13,7 +13,7 @@ def make_dataset(lat_dim: str, lon_dim: str):
     dims = ["time", lat_dim, lon_dim]
     n = 3
     return xr.Dataset(
-        attrs=dict(title="v-data"),
+        attrs={"title": "v-data"},
         coords={
             lon_dim: xr.DataArray(
                 np.linspace(0, 1, n), dims=lon_dim, attrs={"units": "m"}

@@ -41,8 +41,8 @@ class GoodTitle(RuleOp):
 
 tester = RuleTester()
 
-valid_dataset = xr.Dataset(attrs=dict(title="Hello World!"))
-invalid_dataset = xr.Dataset(attrs=dict(title="Hello Hamburg!"))
+valid_dataset = xr.Dataset(attrs={"title": "Hello World!"})
+invalid_dataset = xr.Dataset(attrs={"title": "Hello Hamburg!"})
 
 # You can use the tester to run a test directly
 #

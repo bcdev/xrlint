@@ -329,7 +329,7 @@ class ValueConstructible(Generic[T]):
         return format_message_type_of(value_name, value, cls.value_type_name())
 
 
-class MappingConstructible(Generic[T], ValueConstructible[T]):
+class MappingConstructible(ValueConstructible[T], Generic[T]):
     """A mixin that makes your classes constructible from mappings,
     such as a `dict`.
 

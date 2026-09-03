@@ -107,9 +107,9 @@ class ConfigObjectTest(TestCase):
 
         processor = define_processor("myproc", op_class=MyProc)
         config_obj = ConfigObject(
-            plugins=dict(
-                myplugin=new_plugin("myplugin", processors=dict(myproc=processor))
-            )
+            plugins={
+                "myplugin": new_plugin("myplugin", processors={"myproc": processor})
+            }
         )
 
         processor_op = config_obj.get_processor_op(MyProc())

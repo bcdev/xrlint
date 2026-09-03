@@ -50,12 +50,12 @@ class MultiLevelDatasetProcessor(ProcessorOp):
         #     with fs.open(f"{fs_path}/.zgroup") as stream:
         #         group_props = json.load(stream)
 
-        level_paths, num_levels = parse_levels(fs, file_path, file_names)
+        level_paths, _num_levels = parse_levels(fs, file_path, file_names)
 
         engine = opener_options.pop("engine", "zarr")
 
         level_datasets: list[xr.Dataset | None] = []
-        for level, level_path in level_paths.items():
+        for level_path in level_paths.values():
             level_dataset = xr.open_dataset(level_path, engine=engine, **opener_options)
             level_datasets.append((level_dataset, level_path))
 

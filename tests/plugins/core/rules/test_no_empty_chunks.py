@@ -8,7 +8,7 @@ from xrlint.plugins.core.rules.no_empty_chunks import NoEmptyChunks
 from xrlint.testing import RuleTest, RuleTester
 
 # valid, because it is not chunked
-valid_dataset_0 = xr.Dataset(attrs=dict(title="OC-Climatology"))
+valid_dataset_0 = xr.Dataset(attrs={"title": "OC-Climatology"})
 valid_dataset_0.encoding["source"] = "test.zarr"
 valid_dataset_0["sst"] = xr.DataArray([273, 274, 272], dims="time")
 valid_dataset_0["sst"].encoding["_FillValue"] = 0

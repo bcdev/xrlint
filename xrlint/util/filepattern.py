@@ -40,7 +40,7 @@ class FilePattern:
         self._empty = False
         self._comment = False
         self._negate = False
-        self._dir: Literal[True, None] = None  # we cannot know
+        self._dir: Literal[True] | None = None  # we cannot know
 
         if not pattern:
             self._empty = True
@@ -80,7 +80,7 @@ class FilePattern:
         return self._negate
 
     @property
-    def dir(self) -> Literal[True, None]:
+    def dir(self) -> Literal[True] | None:
         """`True` if this matcher's pattern denotes a directory."""
         return self._dir
 

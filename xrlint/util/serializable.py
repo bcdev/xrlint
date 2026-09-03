@@ -99,5 +99,5 @@ class JsonSerializable:
             isinstance(key, str)
             and key.isidentifier()
             and not key[0].isupper()
-            and not key[0] == "_"
+            and key[0] != "_"
         )

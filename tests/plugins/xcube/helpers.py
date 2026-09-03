@@ -41,61 +41,61 @@ def make_cube(nx: int, ny: int, nt: int | None = None) -> xr.Dataset:
         an in-memory dataset with one 3-d data variable "chl"
             with dimensions ["time",] "lat", "lon".
     """
-    x_attrs = dict(
-        long_name="longitude",
-        standard_name="longitude",
-        units="degrees_east",
-    )
-    y_attrs = dict(
-        long_name="latitude",
-        standard_name="latitude",
-        units="degrees_north",
-    )
+    x_attrs = {
+        "long_name": "longitude",
+        "standard_name": "longitude",
+        "units": "degrees_east",
+    }
+    y_attrs = {
+        "long_name": "latitude",
+        "standard_name": "latitude",
+        "units": "degrees_north",
+    }
 
     dx = 180.0 / nx
     dy = 90.0 / ny
     x_data = np.linspace(-180 + dx, 180 - dx, nx)
     y_data = np.linspace(-90 + dy, 90 - dy, ny)
 
-    chl_attrs = dict(
-        long_name="chlorophyll concentration",
-        standard_name="chlorophyll_concentration",
-        units="mg/m^3",
-        _FillValue=0,
-    )
-    chl_chunks = dict(lat=min(ny, 90), lon=min(nx, 90))
+    chl_attrs = {
+        "long_name": "chlorophyll concentration",
+        "standard_name": "chlorophyll_concentration",
+        "units": "mg/m^3",
+        "_FillValue": 0,
+    }
+    chl_chunks = {"lat": min(ny, 90), "lon": min(nx, 90)}
 
-    ds_attrs = dict(title="Chlorophyll")
+    ds_attrs = {"title": "Chlorophyll"}
 
-    coords = dict(
-        lon=xr.DataArray(x_data, dims="lon", attrs=x_attrs),
-        lat=xr.DataArray(y_data, dims="lat", attrs=y_attrs),
-    )
+    coords = {
+        "lon": xr.DataArray(x_data, dims="lon", attrs=x_attrs),
+        "lat": xr.DataArray(y_data, dims="lat", attrs=y_attrs),
+    }
 
     if nt is None:
         return xr.Dataset(
-            data_vars=dict(
-                chl=xr.DataArray(
+            data_vars={
+                "chl": xr.DataArray(
                     np.zeros((ny, nx)), dims=["lat", "lon"], attrs=chl_attrs
                 ).chunk(**chl_chunks),
-            ),
+            },
             coords=coords,
             attrs=ds_attrs,
         )
     else:
-        time_attrs = dict(
-            long_name="time",
-            standard_name="time",
-            units="days since 2024-06-10:12:00:00 utc",
-            calendar="gregorian",
-        )
+        time_attrs = {
+            "long_name": "time",
+            "standard_name": "time",
+            "units": "days since 2024-06-10:12:00:00 utc",
+            "calendar": "gregorian",
+        }
         coords.update(time=xr.DataArray(range(nt), dims="time", attrs=time_attrs))
         return xr.Dataset(
-            data_vars=dict(
-                chl=xr.DataArray(
+            data_vars={
+                "chl": xr.DataArray(
                     np.zeros((nt, ny, nx)), dims=["time", "lat", "lon"], attrs=chl_attrs
                 ).chunk(time=1, **chl_chunks),
-            ),
+            },
             coords=coords,
             attrs=ds_attrs,
         )

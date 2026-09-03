@@ -142,5 +142,5 @@ def define_processor(
             a class derived from [ProcessorOp][xrlint.processor.ProcessorOp].
     """
     return Processor.define_operation(
-        op_class, registry=registry, meta_kwargs=dict(name=name, version=version)
+        op_class, registry=registry, meta_kwargs={"name": name, "version": version}
     )

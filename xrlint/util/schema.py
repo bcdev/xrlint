@@ -54,22 +54,22 @@ def schema(
     """Helper function so you have keyword-arguments for creating schemas."""
     return {
         k: v
-        for k, v in dict(
-            type=_parse_type(type),
-            default=default,
-            const=const,
-            enum=enum,
-            minimum=minimum,
-            maximum=maximum,
-            exclusiveMinimum=exclusiveMinimum,
-            exclusiveMaximum=exclusiveMaximum,
-            items=items,
-            properties=properties,
-            additionalProperties=False if additionalProperties is False else None,
-            required=required,
-            title=title,
-            description=description,
-        ).items()
+        for k, v in {
+            "type": _parse_type(type),
+            "default": default,
+            "const": const,
+            "enum": enum,
+            "minimum": minimum,
+            "maximum": maximum,
+            "exclusiveMinimum": exclusiveMinimum,
+            "exclusiveMaximum": exclusiveMaximum,
+            "items": items,
+            "properties": properties,
+            "additionalProperties": False if additionalProperties is False else None,
+            "required": required,
+            "title": title,
+            "description": description,
+        }.items()
         if v is not None
     }
 

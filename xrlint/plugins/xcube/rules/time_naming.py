@@ -27,7 +27,7 @@ class TimeNaming(RuleOp):
             for var_name, var in node.dataset.coords.items()
             if var_name != TIME_NAME and _is_time_coord(var_name, var)
         }
-        for var_name, var in time_vars.items():
+        for var_name in time_vars:
             ctx.report(
                 f"The coordinate {var_name!r} should be named {TIME_NAME!r}.",
                 suggestions=[f"Rename {var_name!r} to {TIME_NAME!r}."],

@@ -33,13 +33,13 @@ class CliMainTest(TestCase):
     # noinspection SpellCheckingInspection
     invalid_config_yaml = "- recommentet\n"
 
-    datasets = dict(
-        dataset1=xr.Dataset(attrs={"title": "Test 1"}),
-        dataset2=xr.Dataset(
+    datasets = {
+        "dataset1": xr.Dataset(attrs={"title": "Test 1"}),
+        "dataset2": xr.Dataset(
             attrs={"title": "Test 2"},
             data_vars={"v": xr.DataArray([1, 2, 3], attrs={"units": "m/s"})},
         ),
-    )
+    }
 
     temp_dir: str
     last_cwd: str

@@ -7,11 +7,11 @@ import xarray as xr
 from xrlint.plugins.core.rules.conventions import Conventions
 from xrlint.testing import RuleTest, RuleTester
 
-valid_dataset_0 = xr.Dataset(attrs=dict(Conventions="CF-1.10"))
+valid_dataset_0 = xr.Dataset(attrs={"Conventions": "CF-1.10"})
 
 invalid_dataset_0 = xr.Dataset()
-invalid_dataset_1 = xr.Dataset(attrs=dict(Conventions=1.12))
-invalid_dataset_2 = xr.Dataset(attrs=dict(Conventions="CF 1.10"))
+invalid_dataset_1 = xr.Dataset(attrs={"Conventions": 1.12})
+invalid_dataset_2 = xr.Dataset(attrs={"Conventions": "CF 1.10"})
 
 
 ConventionsTest = RuleTester.define_test(

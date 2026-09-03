@@ -11,7 +11,7 @@ from xrlint.testing import RuleTest, RuleTester
 
 def make_dataset():
     return xr.Dataset(
-        attrs=dict(title="OC Data"),
+        attrs={"title": "OC Data"},
         coords={
             "x": xr.DataArray(np.linspace(0, 1, 4), dims="x", attrs={"units": "m"}),
             "y": xr.DataArray(np.linspace(0, 1, 3), dims="y", attrs={"units": "m"}),

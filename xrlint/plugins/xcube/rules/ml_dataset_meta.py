@@ -43,10 +43,12 @@ class MLDatasetMeta(RuleOp):
             ctx.report(
                 f"Missing {ML_META_FILENAME!r} meta-info file.",
                 suggestions=[
-                    f"Add {ML_META_FILENAME!r} meta-info file."
-                    f" Without the meta-info the dataset cannot be reliably extended"
-                    f" as the aggregation method used for each variable must be"
-                    f" specified."
+                    (
+                        f"Add {ML_META_FILENAME!r} meta-info file."
+                        f" Without the meta-info the dataset cannot be reliably extended"
+                        f" as the aggregation method used for each variable must be"
+                        f" specified."
+                    )
                 ],
             )
             return
@@ -82,7 +84,7 @@ class MLDatasetMeta(RuleOp):
                         f"Missing value for variable {var_name!r}"
                         f" in 'agg_methods' of {ML_META_FILENAME!r} meta-info."
                     )
-            for var_name in meta.agg_methods.keys():
+            for var_name in meta.agg_methods:
                 if var_name not in node.dataset:
                     ctx.report(
                         f"Variable {var_name!r} not found in dataset, but specified"

@@ -85,7 +85,7 @@ def _open_dataset(
 ) -> tuple[xr.Dataset | xr.DataTree, float]:
     """Open a dataset."""
     engine = opener_options.pop("engine", None)
-    if engine is None and (file_path.endswith(".zarr") or file_path.endswith(".zarr/")):
+    if engine is None and (file_path.endswith((".zarr", ".zarr/"))):
         engine = "zarr"
     try:
         t0 = time.time()

@@ -373,12 +373,12 @@ def define_rule(
     return Rule.define_operation(
         op_class,
         registry=registry,
-        meta_kwargs=dict(
-            name=name,
-            version=version,
-            description=description,
-            docs_url=docs_url,
-            type=type if type else "problem",
-            schema=schema,
-        ),
+        meta_kwargs={
+            "name": name,
+            "version": version,
+            "description": description,
+            "docs_url": docs_url,
+            "type": type if type else "problem",
+            "schema": schema,
+        },
     )

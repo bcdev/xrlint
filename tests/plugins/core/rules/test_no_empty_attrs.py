@@ -7,9 +7,9 @@ import xarray as xr
 from xrlint.plugins.core.rules.no_empty_attrs import NoEmptyAttrs
 from xrlint.testing import RuleTest, RuleTester
 
-valid_dataset_1 = xr.Dataset(attrs=dict(title="empty"))
+valid_dataset_1 = xr.Dataset(attrs={"title": "empty"})
 valid_dataset_2 = xr.Dataset(
-    attrs=dict(title="v-data"),
+    attrs={"title": "v-data"},
     coords={"x": xr.DataArray([0, 0.1, 0.2], dims="x", attrs={"units": "s"})},
     data_vars={"v": xr.DataArray([10, 20, 30], dims="x", attrs={"units": "m/s"})},
 )

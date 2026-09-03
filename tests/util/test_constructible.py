@@ -207,7 +207,7 @@ class ValueConstructibleTest(TestCase):
             RequiredPropsContainer.from_value({"x": 12.0, "z": 34.0}, "rpc")
 
     def test_no_types_ok(self):
-        ntc = NoTypesContainer.from_value(dict(u=True, v=654, w="abc"))
+        ntc = NoTypesContainer.from_value({"u": True, "v": 654, "w": "abc"})
         self.assertEqual(True, ntc.u)
         self.assertEqual(654, ntc.v)
         self.assertEqual("abc", ntc.w)
@@ -215,7 +215,15 @@ class ValueConstructibleTest(TestCase):
 
 class MappingConstructibleTest(TestCase):
     def test_simple_ok(self):
-        kwargs = dict(a="?", b=True, c=12, d=34.56, e="uvw", f=bytes, g="on")
+        kwargs = {
+            "a": "?",
+            "b": True,
+            "c": 12,
+            "d": 34.56,
+            "e": "uvw",
+            "f": bytes,
+            "g": "on",
+        }
         container = SimpleTypesContainer(**kwargs)
         self.assertEqual(container, SimpleTypesContainer.from_value(kwargs))
         self.assertIs(container, SimpleTypesContainer.from_value(container))
