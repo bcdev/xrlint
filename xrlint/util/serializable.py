@@ -2,8 +2,9 @@
 #  This software is distributed under the terms and conditions of the
 #  MIT license (https://mit-license.org/).
 
+from collections.abc import Mapping, Sequence
 from dataclasses import fields, is_dataclass
-from typing import Any, Final, Mapping, Sequence, TypeAlias
+from typing import Any, Final, TypeAlias
 
 from xrlint.util.formatting import format_message_type_of
 

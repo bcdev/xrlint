@@ -1,7 +1,7 @@
 import xarray as xr
-from xrlint.testing import RuleTest, RuleTester
 
 from xrlint.plugins.acdd.rules.conventions import Conventions
+from xrlint.testing import RuleTest, RuleTester
 
 valid_dataset_0 = xr.Dataset(attrs={"Conventions": "ACDD-1.3"})
 

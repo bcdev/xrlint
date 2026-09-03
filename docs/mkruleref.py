@@ -2,9 +2,9 @@
 #  This software is distributed under the terms and conditions of the
 #  MIT license (https://mit-license.org/).
 
+from xrlint.config import plugins_from_entry_points
 from xrlint.plugin import Plugin
 from xrlint.rule import RuleConfig
-from xrlint.config import plugins_from_entry_points
 
 # for icons, see
 # https://squidfunk.github.io/mkdocs-material/reference/icons-emojis/

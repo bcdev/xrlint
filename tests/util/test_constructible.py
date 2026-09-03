@@ -2,14 +2,13 @@
 #  This software is distributed under the terms and conditions of the
 #  MIT license (https://mit-license.org/).
 
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 from types import NoneType, UnionType
 from typing import (
     TYPE_CHECKING,
     Any,
     Literal,
-    Mapping,
-    Optional,
     TypeAlias,
     Union,
     get_args,
@@ -84,7 +83,7 @@ class UnresolvedTypesContainer(ComplexTypesContainer, SimpleTypesContainer):
     plugins: dict[str, "Plugin"] = field(default_factory=dict)
 
     @classmethod
-    def forward_refs(cls) -> Optional[Mapping[str, type]]:
+    def forward_refs(cls) -> Mapping[str, type] | None:
         from xrlint.plugin import Plugin
         from xrlint.rule import RuleConfig
 
@@ -94,9 +93,9 @@ class UnresolvedTypesContainer(ComplexTypesContainer, SimpleTypesContainer):
         }
 
 
-T1: TypeAlias = int | str | Union[bool, None] | None
-T2: TypeAlias = Optional[int]
-T3: TypeAlias = Optional[Any]
+T1: TypeAlias = int | str | bool | None
+T2: TypeAlias = int | None
+T3: TypeAlias = Any | None
 
 
 class TypingTest(TestCase):

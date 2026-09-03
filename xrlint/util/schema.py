@@ -40,10 +40,10 @@ def schema(
     title: str | None = None,
     description: str | None = None,
     # "integer", "number"
-    minimum: int | float | None = None,
-    maximum: int | float | None = None,
-    exclusiveMinimum: int | float | None = None,
-    exclusiveMaximum: int | float | None = None,
+    minimum: float | None = None,
+    maximum: float | None = None,
+    exclusiveMinimum: float | None = None,
+    exclusiveMaximum: float | None = None,
     # "array"
     items: list[JsonSchema] | JsonSchema | None = None,
     # "object"

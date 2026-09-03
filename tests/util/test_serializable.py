@@ -39,7 +39,7 @@ class PlainComplexTypesContainer(JsonSerializable):
         r: dict[str, PlainSimpleTypesContainer] = None,
         s: list[int] = None,
         t: list[PlainSimpleTypesContainer] = None,
-        u: int | float | None = None,
+        u: float | None = None,
     ):
         self.p = p
         self.q = q or {}

@@ -1,7 +1,7 @@
 import xarray as xr
-from xrlint.testing import RuleTest, RuleTester
 
 from xrlint.plugins.acdd.rules.no_id_blanks import NoBlanksInID
+from xrlint.testing import RuleTest, RuleTester
 
 valid_dataset_0 = xr.Dataset(attrs={"id": "testing_dataset"})
 

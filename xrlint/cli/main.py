@@ -9,9 +9,9 @@ import click
 # Warning: do not import heavy stuff here, it can
 # slow down commands like "xrlint --help" otherwise.
 from xrlint.cli.constants import (
+    DEFAULT_CONFIG_FILE_YAML,
     DEFAULT_MAX_WARNINGS,
     DEFAULT_OUTPUT_FORMAT,
-    DEFAULT_CONFIG_FILE_YAML,
 )
 from xrlint.version import version
 

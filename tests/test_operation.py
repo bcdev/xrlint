@@ -4,7 +4,6 @@
 
 from abc import ABC
 from dataclasses import dataclass
-from typing import Type
 from unittest import TestCase
 
 import pytest
@@ -25,14 +24,14 @@ class ThingMeta(OperationMeta):
 @dataclass(kw_only=True, frozen=True)
 class Thing(Operation):
     meta: ThingMeta
-    op_class: Type[ThingOp]
+    op_class: type[ThingOp]
 
     @classmethod
-    def meta_class(cls) -> Type:
+    def meta_class(cls) -> type:
         return ThingMeta
 
     @classmethod
-    def op_base_class(cls) -> Type[ThingOp]:
+    def op_base_class(cls) -> type[ThingOp]:
         return ThingOp
 
     @classmethod
@@ -40,7 +39,7 @@ class Thing(Operation):
         return "thing"
 
     @classmethod
-    def define(cls, op_class: Type[ThingOp] | None = None, **kwargs):
+    def define(cls, op_class: type[ThingOp] | None = None, **kwargs):
         return cls.define_operation(op_class, **kwargs)
 
 

@@ -101,24 +101,28 @@ class CliConfigTest(TestCase):
             read_config(None)
 
     def test_read_config_json_with_format_error(self):
-        with text_file("config.json", "{") as config_path:
-            with pytest.raises(
+        with (
+            text_file("config.json", "{") as config_path,
+            pytest.raises(
                 ConfigError,
                 match=(
                     "config.json:"
                     " Expecting property name enclosed in double quotes:"
                     " line 1 column 2 \\(char 1\\)"
                 ),
-            ):
-                read_config(config_path)
+            ),
+        ):
+            read_config(config_path)
 
     def test_read_config_yaml_with_format_error(self):
-        with text_file("config.yaml", "}") as config_path:
-            with pytest.raises(
+        with (
+            text_file("config.yaml", "}") as config_path,
+            pytest.raises(
                 ConfigError,
                 match="config.yaml: while parsing a block node",
-            ):
-                read_config(config_path)
+            ),
+        ):
+            read_config(config_path)
 
     def test_read_config_yaml_with_type_error(self):
         with text_file("config.yaml", "97") as config_path:

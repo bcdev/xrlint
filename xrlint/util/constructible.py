@@ -11,8 +11,6 @@ from typing import (
     Any,
     Generic,
     Literal,
-    Optional,
-    Type,
     TypeVar,
     Union,
     get_args,
@@ -124,7 +122,7 @@ class ValueConstructible(Generic[T]):
         raise TypeError(cls._format_type_error(value, value_name))
 
     @classmethod
-    def _from_class(cls, value: Type, value_name: str) -> T:
+    def _from_class(cls, value: type, value_name: str) -> T:
         """Create an instance of this class from a type value.
         The default implementation raises a `TypeError`.
         Override to implement a different behaviour.
@@ -269,7 +267,7 @@ class ValueConstructible(Generic[T]):
         return get_class_parameters(cls, forward_refs=cls.forward_refs())
 
     @classmethod
-    def forward_refs(cls) -> Optional[Mapping[str, type]]:
+    def forward_refs(cls) -> Mapping[str, type] | None:
         """Get an extra namespace to be used for resolving parameter type hints.
         Called from [ValueConstructible._get_class_parameters][].
 

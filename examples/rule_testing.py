@@ -12,7 +12,6 @@ from xrlint.node import DatasetNode
 from xrlint.rule import RuleContext, RuleOp, define_rule
 from xrlint.testing import RuleTest, RuleTester
 
-
 # ----------------------------------------------------
 # Place the rule implementation code in its own module
 # ----------------------------------------------------

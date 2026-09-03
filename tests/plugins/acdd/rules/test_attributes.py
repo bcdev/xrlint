@@ -1,9 +1,9 @@
 import xarray as xr
-from xrlint.testing import RuleTest, RuleTester
 
 from xrlint.plugins.acdd.rules.attributes import (
     Attributes_1_3_Highly_Recommended,
 )
+from xrlint.testing import RuleTest, RuleTester
 
 valid_1_3_highly_rec_dataset = xr.Dataset(
     attrs={

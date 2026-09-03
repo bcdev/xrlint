@@ -3,9 +3,9 @@
 #  MIT license (https://mit-license.org/).
 
 from abc import ABC, abstractmethod
-from collections.abc import MutableMapping, Sequence
+from collections.abc import Callable, MutableMapping, Sequence
 from dataclasses import dataclass, field
-from typing import Any, Callable, Literal, Type
+from typing import Any, Literal
 
 import xarray as xr
 
@@ -223,17 +223,17 @@ class Rule(Operation):
     meta: RuleMeta
     """Rule metadata of type `RuleMeta`."""
 
-    op_class: Type[RuleOp]
+    op_class: type[RuleOp]
     """The class the implements the rule's validation operation.
     The class must implement the `RuleOp` interface.
     """
 
     @classmethod
-    def meta_class(cls) -> Type:
+    def meta_class(cls) -> type:
         return RuleMeta
 
     @classmethod
-    def op_base_class(cls) -> Type:
+    def op_base_class(cls) -> type:
         return RuleOp
 
     @classmethod
@@ -337,8 +337,8 @@ def define_rule(
     docs_url: str | None = None,
     schema: dict[str, Any] | list[dict[str, Any]] | bool | None = None,
     registry: MutableMapping[str, Rule] | None = None,
-    op_class: Type[RuleOp] | None = None,
-) -> Callable[[Any], Type[RuleOp]] | Rule:
+    op_class: type[RuleOp] | None = None,
+) -> Callable[[Any], type[RuleOp]] | Rule:
     """Define a rule.
 
     This function can be used to decorate your rule operation class

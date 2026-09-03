@@ -3,8 +3,9 @@
 #  MIT license (https://mit-license.org/).
 
 from abc import ABC
+from collections.abc import Hashable
 from dataclasses import dataclass
-from typing import Any, Hashable, Union
+from typing import Any, Union
 
 import xarray as xr
 
