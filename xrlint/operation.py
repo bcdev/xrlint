@@ -2,6 +2,8 @@
 #  This software is distributed under the terms and conditions of the
 #  MIT license (https://mit-license.org/).
 
+from __future__ import annotations
+
 from collections.abc import Callable, MutableMapping
 from dataclasses import dataclass
 from inspect import getdoc, isclass
@@ -153,11 +155,11 @@ class Operation(MappingConstructible["Operation"], JsonSerializable):
         registry: MutableMapping[str, "Operation"] | None = None,
         meta_kwargs: dict[str, Any] | None = None,
         **kwargs,
-    ) -> Callable[[type], type] | "Operation":
+    ) -> Callable[[type], type] | Operation:
         """Defines an operation."""
         meta_kwargs = meta_kwargs or {}
 
-        def _define_op(_op_class: type, decorated=True) -> type | "Operation":
+        def _define_op(_op_class: type, decorated=True) -> type | Operation:
             cls._assert_op_class_ok(
                 f"decorated {cls.value_name()} component", _op_class
             )
