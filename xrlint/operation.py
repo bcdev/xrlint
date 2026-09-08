@@ -84,7 +84,7 @@ class Operation(MappingConstructible["Operation"], JsonSerializable):
         return super().to_json(value_name=value_name)
 
     @classmethod
-    def _from_class(cls, value: type, value_name: str) -> "Operation":
+    def _from_class(cls, value: type, value_name: str) -> Operation:
         # noinspection PyTypeChecker
         if issubclass(value, cls.op_base_class()):
             op_class = value
@@ -104,7 +104,7 @@ class Operation(MappingConstructible["Operation"], JsonSerializable):
         return super()._from_class(value, value_name)
 
     @classmethod
-    def _from_str(cls, value: str, value_name: str) -> "Operation":
+    def _from_str(cls, value: str, value_name: str) -> Operation:
         # noinspection PyTypeChecker
         operator, operator_ref = import_value(
             value,
@@ -152,7 +152,7 @@ class Operation(MappingConstructible["Operation"], JsonSerializable):
         cls,
         op_class: type | None,
         *,
-        registry: MutableMapping[str, "Operation"] | None = None,
+        registry: MutableMapping[str, Operation] | None = None,
         meta_kwargs: dict[str, Any] | None = None,
         **kwargs,
     ) -> Callable[[type], type] | Operation:
