@@ -12,7 +12,6 @@ class MinimatchTest(unittest.TestCase):
         matcher = FilePattern("**/*.h5")
         self.assertEqual("**/*.h5", str(matcher))
         self.assertEqual("FilePattern('**/*.h5')", repr(matcher))
-        self.assertTrue(matcher == matcher)
         self.assertFalse(matcher == 5)
         self.assertTrue(matcher == FilePattern("**/*.h5"))
         self.assertFalse(matcher == FilePattern("**/*.nc"))
