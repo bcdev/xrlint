@@ -26,7 +26,7 @@ link_pattern = re.compile(r"^(\d+)(?:\.link)?$")
 
 @plugin.define_processor("multi-level-dataset")
 class MultiLevelDatasetProcessor(ProcessorOp):
-    f"""This processor should be used with `files: [{ML_FILE_PATTERN}"]`."""
+    f"""This processor should be used with `files: ["{ML_FILE_PATTERN}"]`."""  # noqa: B021
 
     def preprocess(
         self, file_path: str, opener_options: dict[str, Any]
