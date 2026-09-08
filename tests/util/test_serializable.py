@@ -34,14 +34,14 @@ class PlainSimpleTypesContainer(JsonSerializable):
 class PlainComplexTypesContainer(JsonSerializable):
     def __init__(
         self,
-        p: PlainSimpleTypesContainer = PlainSimpleTypesContainer(),
+        p: PlainSimpleTypesContainer | None = None,
         q: dict[str, bool] | None = None,
         r: dict[str, PlainSimpleTypesContainer] | None = None,
         s: list[int] | None = None,
         t: list[PlainSimpleTypesContainer] | None = None,
         u: float | None = None,
     ):
-        self.p = p
+        self.p = p if p is not None else PlainSimpleTypesContainer()
         self.q = q or {}
         self.r = r or {}
         self.s = s or []
