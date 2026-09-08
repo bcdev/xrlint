@@ -26,14 +26,14 @@ no_match_config_yaml = """
 
 # noinspection PyTypeChecker
 class CliMainTest(TestCase):
-    files = ["dataset1.zarr", "dataset1.nc", "dataset2.zarr", "dataset2.nc"]
+    files = ["dataset1.zarr", "dataset1.nc", "dataset2.zarr", "dataset2.nc"]  # noqa: RUF012
 
     ok_config_yaml = "- rules:\n    var-units: error\n"
     fail_config_yaml = "- rules:\n    conventions: error\n"
     # noinspection SpellCheckingInspection
     invalid_config_yaml = "- recommentet\n"
 
-    datasets = {
+    datasets = {  # noqa: RUF012
         "dataset1": xr.Dataset(attrs={"title": "Test 1"}),
         "dataset2": xr.Dataset(
             attrs={"title": "Test 2"},

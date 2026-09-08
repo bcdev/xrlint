@@ -102,7 +102,7 @@ attrs_1_3_sug = {
 
 
 class AttributesRule(RuleOp):
-    attrs = {}
+    attrs = {}  # noqa: RUF012
     level: Literal["highly recommended", "recommended", "suggested"] = "recommended"
 
     def validate_dataset(self, ctx: RuleContext, node: DatasetNode):
