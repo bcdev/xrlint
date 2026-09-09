@@ -10,7 +10,6 @@ from typing import (
     Any,
     Literal,
     TypeAlias,
-    Union,
     get_args,
     get_origin,
 )
@@ -102,9 +101,6 @@ class TypingTest(TestCase):
     def test_assumptions(self):
         # self.assertTrue(isinstance(Any, type))
         self.assertTrue(isinstance(UnionType, type))
-        self.assertTrue(not isinstance(Union, type))
-        self.assertTrue(not isinstance(Union, UnionType))
-        self.assertTrue(Union != UnionType)
 
         self.assertEqual(None, get_origin("NoTypesContainer"))
         self.assertEqual(None, get_origin("dict"))
@@ -113,13 +109,13 @@ class TypingTest(TestCase):
             (str, "NoTypesContainer"), get_args(dict[str, "NoTypesContainer"])
         )
 
-        self.assertEqual(Union, get_origin(T1))
+        self.assertEqual(UnionType, get_origin(T1))
         self.assertEqual({bool, int, str, NoneType}, set(get_args(T1)))
 
-        self.assertEqual(Union, get_origin(T2))
+        self.assertEqual(UnionType, get_origin(T2))
         self.assertEqual({int, NoneType}, set(get_args(T2)))
 
-        self.assertEqual(Union, get_origin(T3))
+        self.assertEqual(UnionType, get_origin(T3))
         self.assertEqual({Any, NoneType}, set(get_args(T3)))
 
 
