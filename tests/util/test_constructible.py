@@ -10,6 +10,7 @@ from typing import (
     Any,
     Literal,
     TypeAlias,
+    Union,
     get_args,
     get_origin,
 )
@@ -115,7 +116,8 @@ class TypingTest(TestCase):
         self.assertEqual(UnionType, get_origin(T2))
         self.assertEqual({int, NoneType}, set(get_args(T2)))
 
-        self.assertEqual(UnionType, get_origin(T3))
+        # Python 3.10 may report Any | None as typing.Union.
+        self.assertIn(get_origin(T3), (Union, UnionType))
         self.assertEqual({Any, NoneType}, set(get_args(T3)))
 
 
