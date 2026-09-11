@@ -18,9 +18,9 @@ from xrlint.util.schema import schema
     version="1.0.0",
     schema=schema(
         "object",
-        properties=dict(
-            with_meta=schema("boolean", default=False),
-        ),
+        properties={
+            "with_meta": schema("boolean", default=False),
+        },
     ),
 )
 class Html(FormatterOp):

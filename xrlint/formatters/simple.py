@@ -19,10 +19,10 @@ from xrlint.util.schema import schema
     version="1.0.0",
     schema=schema(
         "object",
-        properties=dict(
-            styled=schema("boolean", default=True),
-            output=schema("boolean", default=True),
-        ),
+        properties={
+            "styled": schema("boolean", default=True),
+            "output": schema("boolean", default=True),
+        },
     ),
 )
 class Simple(FormatterOp):

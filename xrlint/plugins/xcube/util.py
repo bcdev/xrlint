@@ -85,7 +85,7 @@ def get_spatial_size(
     dataset: xr.Dataset,
 ) -> tuple[tuple[Hashable, int], tuple[Hashable, int]] | None:
     """Return (x_size, y_size) for given dataset."""
-    for k, v in dataset.data_vars.items():
+    for v in dataset.data_vars.values():
         if is_spatial_var(v):
             y_name, x_name = v.dims[-2:]
             x_size = dataset.sizes[x_name]
@@ -110,11 +110,8 @@ def resolve_path(path: str, root_path: str | None = None) -> str:
 def is_absolute_path(path: str) -> bool:
     return (
         # Unix abs path
-        path.startswith("/")
-        # URL
+        path.startswith(("/", "\\\\"))
         or "://" in path
-        # Windows abs paths
-        or path.startswith("\\\\")
         or path.find(":\\", 1) == 1
         or path.find(":/", 1) == 1
     )

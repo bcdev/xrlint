@@ -101,7 +101,7 @@ class RuleContextImpl(RuleContext):
 
     @contextlib.contextmanager
     def use_state(self, **new_state):
-        old_state = {k: getattr(self, k) for k in new_state.keys()}
+        old_state = {k: getattr(self, k) for k in new_state}
         try:
             for k, v in new_state.items():
                 setattr(self, k, v)

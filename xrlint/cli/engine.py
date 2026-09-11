@@ -234,7 +234,7 @@ class XRLint(FormatterContext):
             raise click.ClickException(
                 f"unknown format {output_format!r}."
                 f" The available formats are"
-                f" {', '.join(repr(k) for k in formatters.keys())}."
+                f" {', '.join(repr(k) for k in formatters)}."
             )
         # Here we could pass and validate format-specific args/kwargs
         #   against formatter.meta.schema

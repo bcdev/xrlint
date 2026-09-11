@@ -25,7 +25,7 @@ def format_problems(error_count: int, warning_count: int) -> str:
 
 
 def format_count(
-    count: int | float,
+    count: float,
     singular: str,
     plural: str | None = None,
     upper: bool | None = None,
@@ -41,7 +41,7 @@ def format_count(
 
 
 def format_item(
-    count: int | float,
+    count: float,
     singular: str,
     plural: str | None = None,
     upper: bool | None = None,

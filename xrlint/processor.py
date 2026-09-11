@@ -3,8 +3,9 @@
 #  MIT license (https://mit-license.org/).
 
 from abc import ABC, abstractmethod
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any, Callable, Type
+from typing import Any
 
 import xarray as xr
 
@@ -87,7 +88,7 @@ class Processor(Operation):
     meta: ProcessorMeta
     """Information about the processor."""
 
-    op_class: Type[ProcessorOp]
+    op_class: type[ProcessorOp]
     """A class that implements the processor operations."""
 
     # Not yet:
@@ -95,11 +96,11 @@ class Processor(Operation):
     # """`True` if this processor supports auto-fixing of datasets."""
 
     @classmethod
-    def meta_class(cls) -> Type:
+    def meta_class(cls) -> type:
         return ProcessorMeta
 
     @classmethod
-    def op_base_class(cls) -> Type:
+    def op_base_class(cls) -> type:
         return ProcessorOp
 
     @classmethod
@@ -111,8 +112,8 @@ def define_processor(
     name: str | None = None,
     version: str = "0.0.0",
     registry: dict[str, Processor] | None = None,
-    op_class: Type[ProcessorOp] | None = None,
-) -> Callable[[Any], Type[ProcessorOp]] | Processor:
+    op_class: type[ProcessorOp] | None = None,
+) -> Callable[[Any], type[ProcessorOp]] | Processor:
     """Define a processor.
 
     This function can be used to decorate your processor operation class
@@ -141,5 +142,5 @@ def define_processor(
             a class derived from [ProcessorOp][xrlint.processor.ProcessorOp].
     """
     return Processor.define_operation(
-        op_class, registry=registry, meta_kwargs=dict(name=name, version=version)
+        op_class, registry=registry, meta_kwargs={"name": name, "version": version}
     )

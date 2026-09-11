@@ -3,8 +3,9 @@
 #  MIT license (https://mit-license.org/).
 
 import unittest
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any, Callable, Final, Literal, Type
+from typing import Any, Final, Literal
 
 import xarray as xr
 
@@ -64,7 +65,7 @@ class RuleTester:
     def run(
         self,
         rule_name: str,
-        rule_op_class: Type[RuleOp],
+        rule_op_class: type[RuleOp],
         *,
         valid: list[RuleTest] | None = None,
         invalid: list[RuleTest] | None = None,
@@ -93,13 +94,13 @@ class RuleTester:
     def define_test(
         cls,
         rule_name: str,
-        rule_op_class: Type[RuleOp],
+        rule_op_class: type[RuleOp],
         *,
         valid: list[RuleTest] | None = None,
         invalid: list[RuleTest] | None = None,
         config: ConfigLike = None,
         **config_props: Any,
-    ) -> Type[unittest.TestCase]:
+    ) -> type[unittest.TestCase]:
         """Create a `unittest.TestCase` class for the given rule and tests.
 
         The returned class is derived from `unittest.TestCase`
@@ -131,7 +132,7 @@ class RuleTester:
     def _create_tests(
         self,
         rule_name: str,
-        rule_op_class: Type[RuleOp],
+        rule_op_class: type[RuleOp],
         valid: list[RuleTest] | None,
         invalid: list[RuleTest] | None,
     ) -> dict[str, Callable[[unittest.TestCase | None], None]]:
@@ -153,12 +154,12 @@ class RuleTester:
     def _create_name_test(
         self,
         rule_name: str,
-        rule_op_class: Type[RuleOp],
+        rule_op_class: type[RuleOp],
     ) -> tuple[str, Callable]:
         test_id = "test_rule_meta"
 
         def test_fn(_self: unittest.TestCase):
-            rule_meta: RuleMeta = getattr(rule_op_class, "meta")
+            rule_meta: RuleMeta = rule_op_class.meta
             assert rule_meta.name == rule_name, (
                 f"rule name expected to be {rule_name!r}, but was {rule_meta.name!r}"
             )
@@ -169,7 +170,7 @@ class RuleTester:
     def _create_test(
         self,
         rule_name: str,
-        rule_op_class: Type[RuleOp],
+        rule_op_class: type[RuleOp],
         test: RuleTest,
         test_index: int,
         test_mode: Literal["valid", "invalid"],
@@ -189,7 +190,7 @@ class RuleTester:
     def _test_rule(
         self,
         rule_name: str,
-        rule_op_class: Type[RuleOp],
+        rule_op_class: type[RuleOp],
         test: RuleTest,
         test_id: str,
         test_mode: Literal["valid", "invalid"],

@@ -4,7 +4,8 @@
 
 import importlib
 import pathlib
-from typing import Any, Callable, Type, TypeVar
+from collections.abc import Callable
+from typing import Any, TypeVar
 
 from xrlint.util.formatting import format_message_type_of
 
@@ -48,7 +49,7 @@ def import_value(
     *,
     constant: bool = False,
     factory: Callable[[Any], T] | None = None,
-    expected_type: Type[T] | None = None,
+    expected_type: type[T] | None = None,
 ) -> tuple[T, str]:
     """Import an exported value from given module reference.
 

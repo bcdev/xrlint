@@ -48,7 +48,7 @@ def read_config(config_path: str | Path | PathLike[str]) -> Config:
 
 
 def _read_config_like(config_path: str) -> Any:
-    if config_path.endswith(".yml") or config_path.endswith(".yaml"):
+    if config_path.endswith((".yml", ".yaml")):
         return _read_config_yaml(config_path)
     if config_path.endswith(".json"):
         return _read_config_json(config_path)

@@ -3,8 +3,8 @@
 #  MIT license (https://mit-license.org/).
 
 from xrlint.node import DatasetNode
-from xrlint.rule import RuleContext, RuleOp
 from xrlint.plugins.acdd.plugin import plugin
+from xrlint.rule import RuleContext, RuleOp
 
 
 @plugin.define_rule(

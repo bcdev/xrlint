@@ -2,10 +2,12 @@
 #  This software is distributed under the terms and conditions of the
 #  MIT license (https://mit-license.org/).
 
-from collections.abc import MutableMapping
+from __future__ import annotations
+
+from collections.abc import Callable, MutableMapping
 from dataclasses import dataclass
 from inspect import getdoc, isclass
-from typing import Any, Callable, Type
+from typing import Any
 
 from xrlint.util.constructible import MappingConstructible
 from xrlint.util.importutil import import_value
@@ -82,7 +84,7 @@ class Operation(MappingConstructible["Operation"], JsonSerializable):
         return super().to_json(value_name=value_name)
 
     @classmethod
-    def _from_class(cls, value: Type, value_name: str) -> "Operation":
+    def _from_class(cls, value: type, value_name: str) -> Operation:
         # noinspection PyTypeChecker
         if issubclass(value, cls.op_base_class()):
             op_class = value
@@ -102,7 +104,7 @@ class Operation(MappingConstructible["Operation"], JsonSerializable):
         return super()._from_class(value, value_name)
 
     @classmethod
-    def _from_str(cls, value: str, value_name: str) -> "Operation":
+    def _from_str(cls, value: str, value_name: str) -> Operation:
         # noinspection PyTypeChecker
         operator, operator_ref = import_value(
             value,
@@ -121,14 +123,14 @@ class Operation(MappingConstructible["Operation"], JsonSerializable):
         return f"export_{cls.value_name()}"
 
     @classmethod
-    def meta_class(cls) -> Type:
+    def meta_class(cls) -> type:
         """Get the class of the instances of the `meta` field.
         Defaults to [OperationMeta][xrlint.operation.OperationMeta].
         """
         return OperationMeta
 
     @classmethod
-    def op_base_class(cls) -> Type:
+    def op_base_class(cls) -> type:
         """Get the base class from which all instances of the `op_class`
         must derive from.
         """
@@ -148,16 +150,16 @@ class Operation(MappingConstructible["Operation"], JsonSerializable):
     @classmethod
     def define_operation(
         cls,
-        op_class: Type | None,
+        op_class: type | None,
         *,
-        registry: MutableMapping[str, "Operation"] | None = None,
+        registry: MutableMapping[str, Operation] | None = None,
         meta_kwargs: dict[str, Any] | None = None,
         **kwargs,
-    ) -> Callable[[Type], Type] | "Operation":
+    ) -> Callable[[type], type] | Operation:
         """Defines an operation."""
         meta_kwargs = meta_kwargs or {}
 
-        def _define_op(_op_class: Type, decorated=True) -> Type | "Operation":
+        def _define_op(_op_class: type, decorated=True) -> type | Operation:
             cls._assert_op_class_ok(
                 f"decorated {cls.value_name()} component", _op_class
             )
@@ -206,7 +208,7 @@ class Operation(MappingConstructible["Operation"], JsonSerializable):
         return _define_op
 
     @classmethod
-    def _assert_op_class_ok(cls, value_name: str, op_class: Type):
+    def _assert_op_class_ok(cls, value_name: str, op_class: type):
         if not isclass(op_class):
             raise TypeError(
                 f"{value_name} must be a class, but got {type(op_class).__name__}"

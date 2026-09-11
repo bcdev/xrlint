@@ -10,26 +10,26 @@ from xrlint.testing import RuleTest, RuleTester
 
 valid_dataset_0 = xr.Dataset()
 valid_dataset_1 = xr.Dataset(
-    attrs=dict(title="sensor-data"),
+    attrs={"title": "sensor-data"},
     data_vars={
         "sensor_status_qc": xr.DataArray(
             [1, 3, 5, 2, 0, 5],
             dims="x",
-            attrs=dict(
-                long_name="Sensor Status",
-                standard_name="status_flag",
-                _FillValue=0,
-                valid_range=[1, 15],
-                flag_masks=[1, 2, 12, 12, 12],
-                flag_values=[1, 2, 4, 8, 12],
-                flag_meanings=(
+            attrs={
+                "long_name": "Sensor Status",
+                "standard_name": "status_flag",
+                "_FillValue": 0,
+                "valid_range": [1, 15],
+                "flag_masks": [1, 2, 12, 12, 12],
+                "flag_values": [1, 2, 4, 8, 12],
+                "flag_meanings": (
                     "low_battery"
                     " hardware_fault"
                     " offline_mode"
                     " calibration_mode"
                     " maintenance_mode"
                 ),
-            ),
+            },
         )
     },
 )

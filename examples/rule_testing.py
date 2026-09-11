@@ -12,7 +12,6 @@ from xrlint.node import DatasetNode
 from xrlint.rule import RuleContext, RuleOp, define_rule
 from xrlint.testing import RuleTest, RuleTester
 
-
 # ----------------------------------------------------
 # Place the rule implementation code in its own module
 # ----------------------------------------------------
@@ -42,8 +41,8 @@ class GoodTitle(RuleOp):
 
 tester = RuleTester()
 
-valid_dataset = xr.Dataset(attrs=dict(title="Hello World!"))
-invalid_dataset = xr.Dataset(attrs=dict(title="Hello Hamburg!"))
+valid_dataset = xr.Dataset(attrs={"title": "Hello World!"})
+invalid_dataset = xr.Dataset(attrs={"title": "Hello Hamburg!"})
 
 # You can use the tester to run a test directly
 #

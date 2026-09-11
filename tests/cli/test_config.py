@@ -101,36 +101,42 @@ class CliConfigTest(TestCase):
             read_config(None)
 
     def test_read_config_json_with_format_error(self):
-        with text_file("config.json", "{") as config_path:
-            with pytest.raises(
+        with (
+            text_file("config.json", "{") as config_path,
+            pytest.raises(
                 ConfigError,
                 match=(
                     "config.json:"
                     " Expecting property name enclosed in double quotes:"
                     " line 1 column 2 \\(char 1\\)"
                 ),
-            ):
-                read_config(config_path)
+            ),
+        ):
+            read_config(config_path)
 
     def test_read_config_yaml_with_format_error(self):
-        with text_file("config.yaml", "}") as config_path:
-            with pytest.raises(
+        with (
+            text_file("config.yaml", "}") as config_path,
+            pytest.raises(
                 ConfigError,
                 match="config.yaml: while parsing a block node",
-            ):
-                read_config(config_path)
+            ),
+        ):
+            read_config(config_path)
 
     def test_read_config_yaml_with_type_error(self):
-        with text_file("config.yaml", "97") as config_path:
-            with pytest.raises(
+        with (
+            text_file("config.yaml", "97") as config_path,
+            pytest.raises(
                 ConfigError,
                 match=(
                     r"config\.yaml\: config must be of type"
                     r" Config \| ConfigObjectLike \| str \| Sequence\[ConfigObjectLike \| str\],"
                     r" but got int"
                 ),
-            ):
-                read_config(config_path)
+            ),
+        ):
+            read_config(config_path)
 
     def test_read_config_with_unknown_format(self):
         with pytest.raises(
@@ -141,38 +147,45 @@ class CliConfigTest(TestCase):
 
     def test_read_config_py_no_export(self):
         py_code = "x = 42\n"
-        with text_file(self.new_config_py(), py_code) as config_path:
-            with pytest.raises(
+        with (
+            text_file(self.new_config_py(), py_code) as config_path,
+            pytest.raises(
                 ConfigError,
                 match=(
                     "config_1002.py: attribute 'export_config'"
                     " not found in module 'config_1002'"
                 ),
-            ):
-                read_config(config_path)
+            ),
+        ):
+            read_config(config_path)
 
     def test_read_config_py_with_value_error(self):
         py_code = "def export_config():\n    raise ValueError('value is useless!')\n"
-        with text_file(self.new_config_py(), py_code) as config_path:
-            with pytest.raises(
+        with (
+            text_file(self.new_config_py(), py_code) as config_path,
+            pytest.raises(
                 ValueError,
                 match="value is useless!",
-            ):
-                read_config(config_path)
+            ),
+        ):
+            read_config(config_path)
 
     def test_read_config_py_with_os_error(self):
         py_code = "def export_config():\n    raise OSError('where is my hat?')\n"
-        with text_file(self.new_config_py(), py_code) as config_path:
-            with pytest.raises(
+        with (
+            text_file(self.new_config_py(), py_code) as config_path,
+            pytest.raises(
                 ConfigError,
                 match="where is my hat?",
-            ):
-                read_config(config_path)
+            ),
+        ):
+            read_config(config_path)
 
     def test_read_config_py_with_invalid_config_list(self):
         py_code = "def export_config():\n    return 42\n"
-        with text_file(self.new_config_py(), py_code) as config_path:
-            with pytest.raises(
+        with (
+            text_file(self.new_config_py(), py_code) as config_path,
+            pytest.raises(
                 ConfigError,
                 match=(
                     r"\.py: failed converting value of 'config_1003:export_config':"
@@ -180,8 +193,9 @@ class CliConfigTest(TestCase):
                     r" Config \| ConfigObjectLike \| str \| Sequence\[ConfigObjectLike \| str\],"
                     r" but got int"
                 ),
-            ):
-                read_config(config_path)
+            ),
+        ):
+            read_config(config_path)
 
 
 class CliConfigResolveTest(unittest.TestCase):

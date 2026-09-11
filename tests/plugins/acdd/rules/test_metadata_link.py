@@ -3,9 +3,9 @@
 #  MIT license (https://mit-license.org/).
 
 import xarray as xr
-from xrlint.testing import RuleTest, RuleTester
 
 from xrlint.plugins.acdd.rules.metadata_link import MetadataLink
+from xrlint.testing import RuleTest, RuleTester
 
 valid_dataset_0 = xr.Dataset(attrs={"metadata_link": "http://example.com/metadata"})
 valid_dataset_1 = xr.Dataset(attrs={"metadata_link": "https://example.com/metadata"})

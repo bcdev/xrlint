@@ -5,7 +5,7 @@
 from collections.abc import Iterator, Mapping
 from typing import Any
 
-from xrlint.node import DataTreeNode, DatasetNode
+from xrlint.node import DatasetNode, DataTreeNode
 
 
 class HierarchicalAttrs(Mapping[str, Any]):

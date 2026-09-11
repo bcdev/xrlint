@@ -38,7 +38,7 @@ def export_plugin() -> Plugin:
         "all",
         {
             "name": "all",
-            "rules": {rule_id: "error" for rule_id in plugin.rules.keys()},
+            "rules": {rule_id: "error" for rule_id in plugin.rules},
         },
     )
 

@@ -2,8 +2,9 @@
 #  This software is distributed under the terms and conditions of the
 #  MIT license (https://mit-license.org/).
 
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Any, Callable, Literal, Type
+from typing import Any, Literal
 
 from xrlint.config import Config, ConfigLike, ConfigObject
 from xrlint.processor import Processor, ProcessorOp, define_processor
@@ -72,8 +73,8 @@ class Plugin(MappingConstructible, JsonSerializable):
         type: Literal["problem", "suggestion", "layout"] = "problem",
         description: str | None = None,
         docs_url: str | None = None,
-        op_class: Type[RuleOp] | None = None,
-    ) -> Callable[[Any], Type[RuleOp]] | None:
+        op_class: type[RuleOp] | None = None,
+    ) -> Callable[[Any], type[RuleOp]] | None:
         """Decorator to define a plugin rule.
         The method registers a new rule with the plugin.
 
@@ -95,7 +96,7 @@ class Plugin(MappingConstructible, JsonSerializable):
         self,
         name: str | None = None,
         version: str = "0.0.0",
-        op_class: Type[ProcessorOp] | None = None,
+        op_class: type[ProcessorOp] | None = None,
     ):
         """Decorator to define a plugin processor.
         The method registers a new processor with the plugin.

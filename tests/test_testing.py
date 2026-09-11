@@ -19,10 +19,10 @@ class ForceTitle(RuleOp):
             ctx.report("Datasets must have a title")
 
 
-VALID_DATASET_1 = xr.Dataset(attrs=dict(title="OC-Climatology"))
-VALID_DATASET_2 = xr.Dataset(attrs=dict(title="SST-Climatology"))
+VALID_DATASET_1 = xr.Dataset(attrs={"title": "OC-Climatology"})
+VALID_DATASET_2 = xr.Dataset(attrs={"title": "SST-Climatology"})
 INVALID_DATASET_1 = xr.Dataset()
-INVALID_DATASET_2 = xr.Dataset(attrs=dict(title=""))
+INVALID_DATASET_2 = xr.Dataset(attrs={"title": ""})
 
 
 # noinspection PyMethodMayBeStatic

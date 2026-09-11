@@ -6,8 +6,8 @@ import re
 
 from xrlint.node import DatasetNode, VariableNode
 from xrlint.plugins.core.plugin import plugin
-from xrlint.util.attrs import hierarchical_attrs
 from xrlint.rule import RuleContext, RuleExit, RuleOp
+from xrlint.util.attrs import hierarchical_attrs
 from xrlint.util.schema import schema
 
 DEFAULT_GLOBAL_ATTRS = ["title", "history"]

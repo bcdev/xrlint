@@ -38,7 +38,7 @@ class ExportPluginTest(TestCase):
             },
             set(plugin.configs.keys()),
         )
-        all_rule_names = set(f"xcube/{k}" for k in plugin.rules.keys())
+        all_rule_names = {f"xcube/{k}" for k in plugin.rules}
         self.assertEqual(
             all_rule_names,
             set(plugin.configs["all"][-1].rules.keys()),

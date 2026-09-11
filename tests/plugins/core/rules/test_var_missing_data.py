@@ -9,7 +9,7 @@ from xrlint.testing import RuleTest, RuleTester
 
 valid_dataset_0 = xr.Dataset()
 valid_dataset_1 = xr.Dataset(
-    attrs=dict(title="v-data"),
+    attrs={"title": "v-data"},
     coords={"t": xr.DataArray([0, 1, 2], dims="t", attrs={"units": "seconds"})},
     data_vars={"v": xr.DataArray([10, 20, 30], dims="t", attrs={"units": "m/s"})},
 )

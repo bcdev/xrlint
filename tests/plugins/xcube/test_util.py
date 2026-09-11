@@ -4,8 +4,7 @@
 
 from unittest import TestCase
 
-from xrlint.plugins.xcube.util import is_absolute_path
-from xrlint.plugins.xcube.util import resolve_path
+from xrlint.plugins.xcube.util import is_absolute_path, resolve_path
 
 
 class UtilTest(TestCase):

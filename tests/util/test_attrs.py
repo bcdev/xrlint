@@ -6,7 +6,7 @@ from unittest import TestCase
 
 import xarray as xr
 
-from xrlint.node import DataTreeNode, DatasetNode
+from xrlint.node import DatasetNode, DataTreeNode
 from xrlint.util.attrs import hierarchical_attrs
 
 

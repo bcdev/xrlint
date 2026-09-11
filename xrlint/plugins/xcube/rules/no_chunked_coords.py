@@ -26,14 +26,14 @@ DEFAULT_LIMIT = 5
     ),
     schema=schema(
         "object",
-        properties=dict(
-            limit=schema(
+        properties={
+            "limit": schema(
                 "integer",
                 minimum=0,
                 default=DEFAULT_LIMIT,
                 title="Acceptable number of chunks",
             )
-        ),
+        },
     ),
 )
 class NoChunkedCoords(RuleOp):

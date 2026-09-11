@@ -59,9 +59,7 @@ def export_plugin() -> Plugin:
         [
             *common_configs,
             {
-                "rules": {
-                    f"xcube/{rule_id}": "error" for rule_id in plugin.rules.keys()
-                },
+                "rules": {f"xcube/{rule_id}": "error" for rule_id in plugin.rules},
             },
         ],
     )

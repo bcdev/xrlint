@@ -11,7 +11,7 @@ from xrlint.result import Message, Result
 
 
 class SimpleTest(TestCase):
-    errors_and_warnings = [
+    errors_and_warnings = [  # noqa: RUF012
         Result(
             file_path="test1.nc",
             config_object=ConfigObject(),
@@ -23,7 +23,7 @@ class SimpleTest(TestCase):
         )
     ]
 
-    warnings_only = [
+    warnings_only = [  # noqa: RUF012
         Result(
             file_path="test2.nc",
             config_object=ConfigObject(),

@@ -11,9 +11,9 @@ class AllTest(TestCase):
         from xrlint.all import __all__
 
         # noinspection PyUnresolvedReferences
-        keys = set(
+        keys = {
             k
             for k, v in xrl.__dict__.items()
             if isinstance(k, str) and not k.startswith("_")
-        )
+        }
         self.assertEqual(set(__all__), keys)

@@ -11,7 +11,7 @@ from xrlint.testing import RuleTest, RuleTester
 
 def make_dataset():
     return xr.Dataset(
-        attrs=dict(title="OC Data"),
+        attrs={"title": "OC Data"},
         coords={
             "x": xr.DataArray(np.linspace(0, 1, 4), dims="x", attrs={"units": "m"}),
             "y": xr.DataArray(np.linspace(0, 1, 3), dims="y", attrs={"units": "m"}),
@@ -40,7 +40,7 @@ def make_dataset():
     )
 
 
-valid_dataset_1 = xr.Dataset(attrs=dict(title="Empty"))
+valid_dataset_1 = xr.Dataset(attrs={"title": "Empty"})
 valid_dataset_2 = make_dataset()
 
 invalid_dataset_1 = make_dataset().drop_vars("crs")

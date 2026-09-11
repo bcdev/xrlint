@@ -3,9 +3,9 @@
 #  MIT license (https://mit-license.org/).
 
 import xarray as xr
-from xrlint.testing import RuleTest, RuleTester
 
 from xrlint.plugins.acdd.rules.iso_dates import IsoDates
+from xrlint.testing import RuleTest, RuleTester
 
 valid_dataset_0 = xr.Dataset(attrs={"date_created": "2023-10-05T12:34:56Z"})
 valid_dataset_1 = xr.Dataset(attrs={"date_modified": "2023-10-05"})
