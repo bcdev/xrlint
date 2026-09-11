@@ -2,7 +2,7 @@ site_name: XRLint
 repo_url: https://github.com/bcdev/xrlint
 repo_name: bcdev/xrlint
 
-copyright: Copyright &copy; 2025 Brockmann Consult
+copyright: Copyright &copy; 2026 Brockmann Consult
 
 nav:
   - Overview: index.md

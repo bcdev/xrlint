@@ -1,3 +1,7 @@
+#  Copyright © 2025-2026 Brockmann Consult GmbH and contributors.
+#  This software is distributed under the terms and conditions of the
+#  MIT license (https://mit-license.org/).
+
 import xarray as xr
 
 from xrlint.plugins.acdd.rules.no_id_blanks import NoBlanksInID
