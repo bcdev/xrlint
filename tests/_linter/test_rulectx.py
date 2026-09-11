@@ -1,4 +1,4 @@
-#  Copyright © 2026 Brockmann Consult GmbH.
+#  Copyright © 2026 Brockmann Consult GmbH and contributors.
 #  This software is distributed under the terms and conditions of the
 #  MIT license (https://mit-license.org/).
 
