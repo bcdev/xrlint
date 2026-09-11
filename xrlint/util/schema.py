@@ -40,10 +40,10 @@ def schema(
     title: str | None = None,
     description: str | None = None,
     # "integer", "number"
-    minimum: int | float | None = None,
-    maximum: int | float | None = None,
-    exclusiveMinimum: int | float | None = None,
-    exclusiveMaximum: int | float | None = None,
+    minimum: float | None = None,
+    maximum: float | None = None,
+    exclusiveMinimum: float | None = None,
+    exclusiveMaximum: float | None = None,
     # "array"
     items: list[JsonSchema] | JsonSchema | None = None,
     # "object"
@@ -54,22 +54,22 @@ def schema(
     """Helper function so you have keyword-arguments for creating schemas."""
     return {
         k: v
-        for k, v in dict(
-            type=_parse_type(type),
-            default=default,
-            const=const,
-            enum=enum,
-            minimum=minimum,
-            maximum=maximum,
-            exclusiveMinimum=exclusiveMinimum,
-            exclusiveMaximum=exclusiveMaximum,
-            items=items,
-            properties=properties,
-            additionalProperties=False if additionalProperties is False else None,
-            required=required,
-            title=title,
-            description=description,
-        ).items()
+        for k, v in {
+            "type": _parse_type(type),
+            "default": default,
+            "const": const,
+            "enum": enum,
+            "minimum": minimum,
+            "maximum": maximum,
+            "exclusiveMinimum": exclusiveMinimum,
+            "exclusiveMaximum": exclusiveMaximum,
+            "items": items,
+            "properties": properties,
+            "additionalProperties": False if additionalProperties is False else None,
+            "required": required,
+            "title": title,
+            "description": description,
+        }.items()
         if v is not None
     }
 

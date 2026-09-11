@@ -2,14 +2,13 @@
 #  This software is distributed under the terms and conditions of the
 #  MIT license (https://mit-license.org/).
 
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 from types import NoneType, UnionType
 from typing import (
     TYPE_CHECKING,
     Any,
     Literal,
-    Mapping,
-    Optional,
     TypeAlias,
     Union,
     get_args,
@@ -84,7 +83,7 @@ class UnresolvedTypesContainer(ComplexTypesContainer, SimpleTypesContainer):
     plugins: dict[str, "Plugin"] = field(default_factory=dict)
 
     @classmethod
-    def forward_refs(cls) -> Optional[Mapping[str, type]]:
+    def forward_refs(cls) -> Mapping[str, type] | None:
         from xrlint.plugin import Plugin
         from xrlint.rule import RuleConfig
 
@@ -94,18 +93,15 @@ class UnresolvedTypesContainer(ComplexTypesContainer, SimpleTypesContainer):
         }
 
 
-T1: TypeAlias = int | str | Union[bool, None] | None
-T2: TypeAlias = Optional[int]
-T3: TypeAlias = Optional[Any]
+T1: TypeAlias = int | str | bool | None
+T2: TypeAlias = int | None
+T3: TypeAlias = Any | None
 
 
 class TypingTest(TestCase):
     def test_assumptions(self):
         # self.assertTrue(isinstance(Any, type))
         self.assertTrue(isinstance(UnionType, type))
-        self.assertTrue(not isinstance(Union, type))
-        self.assertTrue(not isinstance(Union, UnionType))
-        self.assertTrue(Union != UnionType)
 
         self.assertEqual(None, get_origin("NoTypesContainer"))
         self.assertEqual(None, get_origin("dict"))
@@ -114,13 +110,14 @@ class TypingTest(TestCase):
             (str, "NoTypesContainer"), get_args(dict[str, "NoTypesContainer"])
         )
 
-        self.assertEqual(Union, get_origin(T1))
+        self.assertEqual(UnionType, get_origin(T1))
         self.assertEqual({bool, int, str, NoneType}, set(get_args(T1)))
 
-        self.assertEqual(Union, get_origin(T2))
+        self.assertEqual(UnionType, get_origin(T2))
         self.assertEqual({int, NoneType}, set(get_args(T2)))
 
-        self.assertEqual(Union, get_origin(T3))
+        # Python 3.10 may report Any | None as typing.Union.
+        self.assertIn(get_origin(T3), (Union, UnionType))
         self.assertEqual({Any, NoneType}, set(get_args(T3)))
 
 
@@ -208,7 +205,7 @@ class ValueConstructibleTest(TestCase):
             RequiredPropsContainer.from_value({"x": 12.0, "z": 34.0}, "rpc")
 
     def test_no_types_ok(self):
-        ntc = NoTypesContainer.from_value(dict(u=True, v=654, w="abc"))
+        ntc = NoTypesContainer.from_value({"u": True, "v": 654, "w": "abc"})
         self.assertEqual(True, ntc.u)
         self.assertEqual(654, ntc.v)
         self.assertEqual("abc", ntc.w)
@@ -216,7 +213,15 @@ class ValueConstructibleTest(TestCase):
 
 class MappingConstructibleTest(TestCase):
     def test_simple_ok(self):
-        kwargs = dict(a="?", b=True, c=12, d=34.56, e="uvw", f=bytes, g="on")
+        kwargs = {
+            "a": "?",
+            "b": True,
+            "c": 12,
+            "d": 34.56,
+            "e": "uvw",
+            "f": bytes,
+            "g": "on",
+        }
         container = SimpleTypesContainer(**kwargs)
         self.assertEqual(container, SimpleTypesContainer.from_value(kwargs))
         self.assertIs(container, SimpleTypesContainer.from_value(container))

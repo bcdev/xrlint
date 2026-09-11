@@ -2,7 +2,8 @@
 #  This software is distributed under the terms and conditions of the
 #  MIT license (https://mit-license.org/).
 
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 
 def merge_values(

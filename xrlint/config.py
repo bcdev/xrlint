@@ -223,7 +223,7 @@ class ConfigObject(MappingConstructible, JsonSerializable):
             raise ValueError(f"unknown processor {processor_spec!r}")
         return processor.op_class()
 
-    def merge(self, config: "ConfigObject", name: str = None) -> "ConfigObject":
+    def merge(self, config: "ConfigObject", name: str | None = None) -> "ConfigObject":
         return ConfigObject(
             name=name,
             files=self._merge_pattern_lists(self.files, config.files),

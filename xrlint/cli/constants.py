@@ -4,7 +4,6 @@
 
 from typing import Final
 
-
 _MODULE_BASENAME: Final = "xrlint_config"
 _REGULAR_BASENAME: Final = "xrlint-config"
 

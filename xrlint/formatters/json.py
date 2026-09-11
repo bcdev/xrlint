@@ -16,10 +16,10 @@ from xrlint.util.schema import schema
     version="1.0.0",
     schema=schema(
         "object",
-        properties=dict(
-            indent=schema("integer", minimum=0, maximum=8, default=2),
-            with_meta=schema("boolean", default=False),
-        ),
+        properties={
+            "indent": schema("integer", minimum=0, maximum=8, default=2),
+            "with_meta": schema("boolean", default=False),
+        },
     ),
 )
 class Json(FormatterOp):

@@ -14,7 +14,7 @@ def make_dataset(time_var: str, time_dim: str | None = None):
     dims = [time_dim, "y", "x"]
     n = 3
     return xr.Dataset(
-        attrs=dict(title="v-data"),
+        attrs={"title": "v-data"},
         coords={
             "x": xr.DataArray(np.linspace(0, 1, n), dims="x", attrs={"units": "m"}),
             "y": xr.DataArray(np.linspace(0, 1, n), dims="y", attrs={"units": "m"}),

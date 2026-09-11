@@ -27,7 +27,7 @@ class MultiLevelDatasetProcessorTest(TestCase):
     num_levels = 4
 
     meta_path = f"{levels_dir}/.zlevels"
-    meta_content = {
+    meta_content = {  # noqa: RUF012
         "version": "1.0",
         "num_levels": num_levels,
         "use_saved_levels": False,

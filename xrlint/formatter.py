@@ -3,9 +3,9 @@
 #  MIT license (https://mit-license.org/).
 
 from abc import ABC, abstractmethod
-from collections.abc import Iterable, Mapping
+from collections.abc import Callable, Iterable, Mapping
 from dataclasses import dataclass
-from typing import Any, Callable, Type
+from typing import Any
 
 from xrlint.operation import Operation, OperationMeta
 from xrlint.result import Result, ResultStats
@@ -72,15 +72,15 @@ class Formatter(Operation):
     meta: FormatterMeta
     """The formatter metadata."""
 
-    op_class: Type[FormatterOp]
+    op_class: type[FormatterOp]
     """The class that implements the format operation."""
 
     @classmethod
-    def meta_class(cls) -> Type:
+    def meta_class(cls) -> type:
         return FormatterMeta
 
     @classmethod
-    def op_base_class(cls) -> Type:
+    def op_base_class(cls) -> type:
         return FormatterOp
 
     @classmethod
@@ -97,12 +97,12 @@ class FormatterRegistry(Mapping[str, Formatter]):
         name: str | None = None,
         version: str | None = None,
         schema: dict[str, Any] | list[dict[str, Any]] | bool | None = None,
-    ) -> Callable[[FormatterOp], Type[FormatterOp]] | Formatter:
+    ) -> Callable[[FormatterOp], type[FormatterOp]] | Formatter:
         """Decorator function."""
         return Formatter.define_operation(
             None,
             registry=self._registrations,
-            meta_kwargs=dict(name=name, version=version, schema=schema),
+            meta_kwargs={"name": name, "version": version, "schema": schema},
         )
 
     def __getitem__(self, key: str) -> Formatter:

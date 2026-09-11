@@ -1,8 +1,8 @@
 from typing import Literal
 
 from xrlint.node import DatasetNode
-from xrlint.rule import RuleContext, RuleOp
 from xrlint.plugins.acdd.plugin import plugin
+from xrlint.rule import RuleContext, RuleOp
 
 attrs_1_0_high_rec = {
     "title": "A short phrase or sentence describing the dataset. In many discovery systems, the title will be displayed in the results list from a search, and therefore should be human readable and reasonable to display in a list of such names. This attribute is also recommended by the NetCDF Users Guide and the CF conventions.",
@@ -102,7 +102,7 @@ attrs_1_3_sug = {
 
 
 class AttributesRule(RuleOp):
-    attrs = {}
+    attrs = {}  # noqa: RUF012
     level: Literal["highly recommended", "recommended", "suggested"] = "recommended"
 
     def validate_dataset(self, ctx: RuleContext, node: DatasetNode):

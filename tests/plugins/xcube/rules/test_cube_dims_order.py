@@ -12,7 +12,7 @@ from xrlint.testing import RuleTest, RuleTester
 def make_dataset(dims: tuple[str, str, str]):
     n = 3
     return xr.Dataset(
-        attrs=dict(title="v-data"),
+        attrs={"title": "v-data"},
         coords={
             "x": xr.DataArray(np.linspace(0, 1, n), dims="x", attrs={"units": "m"}),
             "y": xr.DataArray(np.linspace(0, 1, n), dims="y", attrs={"units": "m"}),

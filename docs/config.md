@@ -45,14 +45,10 @@ And as Python module:
 ```python
 def export_config():
     return [
-      {"files": ["**/*.zarr", "**/*.nc"]},
-      {
-        "plugins": {
-          "xcube": "xrlint.plugins.xcube"
-        }
-      },
-      "recommended",
-      "xcube/recommended"
+        {"files": ["**/*.zarr", "**/*.nc"]},
+        {"plugins": {"xcube": "xrlint.plugins.xcube"}},
+        "recommended",
+        "xcube/recommended",
     ]
 ```
 

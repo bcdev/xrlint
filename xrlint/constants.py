@@ -28,4 +28,4 @@ SEVERITY_CODE_TO_COLOR = {2: "red", 1: "blue", 0: "green", None: ""}
 SEVERITY_ENUM: Final[dict[int | str, int]] = (
     SEVERITY_NAME_TO_CODE | SEVERITY_CODE_TO_CODE
 )
-SEVERITY_ENUM_TEXT: Final = ", ".join(f"{k!r}" for k in SEVERITY_ENUM.keys())
+SEVERITY_ENUM_TEXT: Final = ", ".join(f"{k!r}" for k in SEVERITY_ENUM)

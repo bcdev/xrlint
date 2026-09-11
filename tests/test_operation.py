@@ -4,7 +4,6 @@
 
 from abc import ABC
 from dataclasses import dataclass
-from typing import Type
 from unittest import TestCase
 
 import pytest
@@ -25,14 +24,14 @@ class ThingMeta(OperationMeta):
 @dataclass(kw_only=True, frozen=True)
 class Thing(Operation):
     meta: ThingMeta
-    op_class: Type[ThingOp]
+    op_class: type[ThingOp]
 
     @classmethod
-    def meta_class(cls) -> Type:
+    def meta_class(cls) -> type:
         return ThingMeta
 
     @classmethod
-    def op_base_class(cls) -> Type[ThingOp]:
+    def op_base_class(cls) -> type[ThingOp]:
         return ThingOp
 
     @classmethod
@@ -40,7 +39,7 @@ class Thing(Operation):
         return "thing"
 
     @classmethod
-    def define(cls, op_class: Type[ThingOp] | None = None, **kwargs):
+    def define(cls, op_class: type[ThingOp] | None = None, **kwargs):
         return cls.define_operation(op_class, **kwargs)
 
 
@@ -162,7 +161,7 @@ class OpMixinDefineTest(TestCase):
         class MyThingOp3(ThingOp):
             """This is my 3rd thing."""
 
-        value = Thing.define_operation(MyThingOp3, meta_kwargs=dict(version="1.0"))
+        value = Thing.define_operation(MyThingOp3, meta_kwargs={"version": "1.0"})
         self.assertIsInstance(value, Thing)
         self.assertIsInstance(value.meta, ThingMeta)
         self.assertEqual("my-thing-op-3", value.meta.name)

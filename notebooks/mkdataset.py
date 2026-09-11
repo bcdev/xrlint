@@ -18,15 +18,15 @@ def make_dataset() -> xr.Dataset:
     """Create a dataset that passes xrlint core rules."""
 
     return xr.Dataset(
-        attrs=dict(
-            Conventions="CF-1.10",
-            title="SST-Climatology Subset",
-            history="2025-01-31 17:31:00 - created;",
-            institution="BC",
-            source="SST CCI L4",
-            references="https://climate.esa.int/en/projects/sea-surface-temperature/",
-            comment="Demo dataset",
-        ),
+        attrs={
+            "Conventions": "CF-1.10",
+            "title": "SST-Climatology Subset",
+            "history": "2025-01-31 17:31:00 - created;",
+            "institution": "BC",
+            "source": "SST CCI L4",
+            "references": "https://climate.esa.int/en/projects/sea-surface-temperature/",
+            "comment": "Demo dataset",
+        },
         coords={
             "x": xr.DataArray(
                 np.linspace(-180, 180, nx),

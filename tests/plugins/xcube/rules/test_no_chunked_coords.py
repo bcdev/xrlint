@@ -8,7 +8,7 @@ from tests.plugins.xcube.helpers import make_cube
 from xrlint.plugins.xcube.rules.no_chunked_coords import NoChunkedCoords
 from xrlint.testing import RuleTest, RuleTester
 
-valid_dataset_0 = xr.Dataset(attrs=dict(title="Empty"))
+valid_dataset_0 = xr.Dataset(attrs={"title": "Empty"})
 valid_dataset_1 = make_cube(360, 180, 3)
 valid_dataset_2 = make_cube(90, 45, 20)
 # ok, below default limit 5: ceil(20 / 5) = 4
