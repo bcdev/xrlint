@@ -1,26 +1,44 @@
 # XRLint Change History
 
+## Version 0.7.0 (in development)
+
+### Documentation
+
+- Completed the configuration guide, replacing all "Coming soon" sections with
+  explanations and examples for file filters, opening options, rule settings,
+  presets, custom plugins, rules, and processors.
+- Updated the getting-started, CLI, Python API, example, and contribution guides
+  to match current behavior, including plugin discovery, configuration precedence,
+  exit status, and dataset-tree traversal.
+- Enhanced the generated rule reference with qualified rule identifiers, preset
+  names, option schemas, and a legend for rule categories and severities.
+- Corrected CLI help, API docstrings, and rule descriptions, and documented the
+  ACDD 1.1 and strict-recommended preset limitations, including a working override
+  for the latter.
+
 
 ## Version 0.6.0 (from 2026-09-11)
 
 ### Adjustments and Enhancements
 
-- Core rule 'time-coordinates' now support ms, µs and ns. (#66)
+- Core rule `time-coordinate` now supports ms, µs, and ns datetime precision. (#66)
 
 - Implemented an initial set of 
-  [Attribute Conventions Data Discovery (ACCD)](https://wiki.esipfed.org/Category:Attribute_Conventions_Dataset_Discovery) 
+  [Attribute Convention for Data Discovery (ACDD)](https://wiki.esipfed.org/Category:Attribute_Conventions_Dataset_Discovery)
   rules adapted from the [IOOS Compliance Checker](https://github.com/ioos/compliance-checker/) 
   library (many thanks to @abkfenris):
   - Configs for ACDD 1.0, 1.1, and 1.3, and with selectable levels of severity. 
-    The recommended set uses ACDD 1.3 with the highly recomended rules as errors.
-  - Global attribute existance rules.
+    The recommended set uses ACDD 1.3 with conventions and highly recommended
+    attribute checks as errors; other checks are warnings.
+  - Global attribute existence rules.
   - Checks that ACDD is in the conventions attribute.
   - Makes sure the date attributes are ISO formatted.
   - Metadata links are URLs.
-  - The ID attribute should not be blank.
+  - The `id` attribute should not contain spaces.
 
 - Load plugins from entry points allowing plugins to be discovered from installed libraries.
-  - Automatically generate rule documentation removing the manual need to run `mkruleref.py`.
+  - Automatically generate rule documentation during the MkDocs build,
+    removing the need to run `mkruleref.py` manually.
 
 - Fixed metadata rules for datatrees: global/common attributes defined
   on parent groups are now considered by the relevant core rules. (#63)
@@ -60,7 +78,7 @@
 
 - Rule `no-empty-chunks` has been taken off the `"recommended"` settings 
   as there is no easy/efficient way to tell whether a dataset has 
-  been written using `write_emtpy_chunks` option or not.
+  been written using the `write_empty_chunks` option or not.
   The rule message itself has been fixed. (#45) 
 
 - Adjusted messages of rules `var-units` and `time-coordinate` 
@@ -121,7 +139,7 @@
 
 ## Version 0.4.0 (from 2025-01-27)
 
-- Fixed and enhanced core rule `time-coordinate`. `(#33)
+- Fixed and enhanced core rule `time-coordinate`. (#33)
 - New xcube rule `no-chunked-coords`. (#29)
 - New xcube multi-level dataset rules:
   - `ml-dataset-meta`: verifies that a meta info file exists and is consistent;

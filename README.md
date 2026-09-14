@@ -1,44 +1,92 @@
 [![CI](https://github.com/bcdev/xrlint/actions/workflows/tests.yml/badge.svg)](https://github.com/bcdev/xrlint/actions/workflows/tests.yml)
-[![codecov](https://codecov.io/gh/bcdev/xrlint/graph/badge.svg?token=GVKuJao97t)](https://codecov.io/gh/bcdev/xrlint)
+[![codecov](https://codecov.io/gh/bcdev/xrlint/graph/badge.svg)](https://codecov.io/gh/bcdev/xrlint)
 [![PyPI Version](https://img.shields.io/pypi/v/xrlint)](https://pypi.org/project/xrlint/)
 [![Conda Version](https://anaconda.org/conda-forge/xrlint/badges/version.svg)](https://anaconda.org/conda-forge/xrlint)
-[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/charliermarsh/ruff/main/assets/badge/v0.json)](https://github.com/charliermarsh/ruff)
-[![GitHub License](https://img.shields.io/github/license/bcdev/xrlint)](https://github.com/bcdev/xrlint)
+[![GitHub License](https://img.shields.io/github/license/bcdev/xrlint)](LICENSE)
 
 # XRLint - A linter for xarray datasets
 
-XRLint is a [linting](https://en.wikipedia.org/wiki/Lint_(software)) 
-tool and library for [xarray](https://docs.xarray.dev/) datasets. 
-Its design is heavily inspired by the awesome [ESLint](https://eslint.org/) tool.
+XRLint checks xarray datasets for metadata, structure, and convention issues.
+Use it from the command line to check dataset files, or from Python to validate
+`xarray.Dataset` and `xarray.DataTree` objects. Its configurable rules and plugin
+model are inspired by ESLint.
 
+## Features
 
-## Features 
+- Configurable rules for dataset metadata, coordinates, variables, and groups.
+- YAML, JSON, and Python configurations with file-specific overrides.
+- Local datasets and remote sources supported by the installed xarray backends
+  and fsspec filesystem implementations.
+- Text, JSON, and HTML reports, plus notebook rendering of results.
+- Custom rules, plugins, processors, and reusable configurations.
 
-- Flexible validation for 
-  [`xarray.Dataset`](https://docs.xarray.dev/en/stable/generated/xarray.Dataset.html) and
-  [`xarray.DataTree`](https://docs.xarray.dev/en/stable/generated/xarray.DataTree.html) objects 
-  by configurable rules.
-- Available from CLI and Python API.
-- Custom plugins providing custom rule sets allow addressing 
-  different dataset conventions.
-- Project-specific configurations including configuration of individual 
-  rules and file-specific settings.
-- Works with dataset files in the local filesystem or any of the remote 
-  filesystems supported by xarray.
+XRLint reports findings and suggestions; it does not automatically modify data.
+Its built-in rules cover selected convention requirements, not full compliance
+certification.
 
-## Inbuilt Rules
+## Quick start
 
-The following plugins provide XRLint's [inbuilt rules](https://bcdev.github.io/xrlint/rule-ref/):
+Requires Python 3.10 or newer. Install XRLint and a backend for your data:
 
-- `xrlint.plugins.core`: implementing the rules for
-  [tidy data](https://tutorial.xarray.dev/intermediate/data_cleaning/05.1_intro.html)
-  and the 
-  [CF-Conventions](https://cfconventions.org/cf-conventions/cf-conventions.html).
-- `xrlint.plugins.xcube`: implementing the rules for 
-  [xcube datasets](https://xcube.readthedocs.io/en/latest/cubespec.html).
-  Note, this plugin is fully optional. You must manually configure 
-  it to apply its rules. It may be moved into a separate GitHub repo later. 
-- `xrlint.plugins.acdd`: implements rules for [Attribute Conventions Dataset Discovery](https://wiki.esipfed.org/Category:Attribute_Conventions_Dataset_Discovery).
-  Note, this plugin is fully optional. You must manually configure it to apply its rules.
+```bash
+python -m pip install xrlint netCDF4
+xrlint --init
+xrlint data/example.nc
+```
 
+For Zarr datasets, install `zarr` too. The initial configuration enables the core
+`recommended` preset. No rules are enabled automatically without configuration.
 
+To validate an in-memory dataset:
+
+```python
+import xarray as xr
+from xrlint.linter import new_linter
+
+dataset = xr.Dataset(attrs={"title": "Example dataset"})
+result = new_linter("recommended").validate(dataset)
+
+for message in result.messages:
+    print(message.rule_id, message.node_path, message.message)
+
+print(f"{result.error_count} errors, {result.warning_count} warnings")
+```
+
+This deliberately minimal dataset produces metadata warnings.
+See [Getting Started](https://bcdev.github.io/xrlint/start/) for a complete
+file-based example and installation alternatives.
+
+## Built-in plugins
+
+All three plugins are discovered when XRLint is installed. Select their presets
+or individual rules to enable checks.
+
+| Plugin | Scope | Preset |
+| --- | --- | --- |
+| `core` | General dataset quality and selected CF convention checks | `recommended` |
+| `xcube` | xcube dataset structure and multi-level datasets | `xcube/recommended` |
+| `acdd` | Attribute Convention for Data Discovery (ACDD) metadata | `acdd/recommended` |
+
+For example, enable core and ACDD checks in `xrlint-config.yaml`:
+
+```yaml
+- recommended
+- acdd/recommended
+- rules:
+    var-units: error
+```
+
+## Documentation and contributing
+
+- [Getting Started](https://bcdev.github.io/xrlint/start/)
+- [Configuration](https://bcdev.github.io/xrlint/config/)
+- [Rule Reference](https://bcdev.github.io/xrlint/rule-ref/)
+- [CLI](https://bcdev.github.io/xrlint/cli/) and [Python API](https://bcdev.github.io/xrlint/api/)
+- [Examples](https://bcdev.github.io/xrlint/examples/)
+- [Change history](CHANGES.md)
+
+Report bugs or request features through [GitHub issues](https://github.com/bcdev/xrlint/issues).
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development and documentation setup,
+and follow our [Code of Conduct](CODE_OF_CONDUCT.md).
+
+XRLint is distributed under the [MIT License](LICENSE).

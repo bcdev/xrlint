@@ -91,10 +91,9 @@ class Result(JsonSerializable):
     """The aggregated information of linting a dataset."""
 
     file_path: str
-    """The absolute path to the file of this result.
-    This is the string "<dataset>" if the file path is unknown
-    (when you didn't pass the `file_path` option to the
-    `xrlint.lint_dataset()` method).
+    """The path or label associated with this result, which may be relative.
+    For an in-memory input without a source or explicit `file_path`,
+    `Linter.validate()` uses "<dataset>" or "<datatree>".
     """
 
     config_object: Union["ConfigObject", None] = None

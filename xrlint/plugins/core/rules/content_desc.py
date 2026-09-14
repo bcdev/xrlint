@@ -34,7 +34,7 @@ DEFAULT_IGNORED_VARS = ["crs", "spatial_ref"]
         "- `commons`: list of names of required variable attributes"
         " that can also be defined globally."
         f" Defaults to `{DEFAULT_COMMON_ATTRS}`.\n"
-        "- `no_vars`: do not check variables at all."
+        "- `skip_vars`: do not check variables at all."
         f" Defaults to `{DEFAULT_SKIP_VARS}`.\n"
         "- `ignored_vars`: list of ignored variables (regex patterns)."
         f" Defaults to `{DEFAULT_IGNORED_VARS}`.\n"
