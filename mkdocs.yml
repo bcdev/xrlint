@@ -82,7 +82,7 @@ extra:
     - text: Imprint
       href: https://www.brockmann-consult.de/imprint/
     - text: Privacy Policy
-      href: https://www.brockmann-consult.de/privacy-policy/
+      href: https://www.brockmann-consult.de/privacy-policy-documentation-pages/
 
 extra_css:
   - stylesheet/extra.css
