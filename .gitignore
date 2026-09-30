@@ -34,5 +34,5 @@ notebooks/*.zarr/
 *.sw?
 .idea/
 
-# Downloaded font assets
-docs/assets/fonts/*.ttf
+# Downloaded assets
+docs/assets/downloaded/*
