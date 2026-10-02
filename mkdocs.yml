@@ -18,6 +18,8 @@ theme:
   name: material
   # logo: assets/logo.png
   # favicon: assets/logo-small.png
+  font: false
+  custom_dir: docs/overrides
   palette:
     # Palette toggle for light mode
     - scheme: default
@@ -40,13 +42,6 @@ markdown_extensions:
   - pymdownx.emoji:
       emoji_index: !!python/name:material.extensions.emoji.twemoji
       emoji_generator: !!python/name:material.extensions.emoji.to_svg
-
-extra:
-  social:
-    - icon: fontawesome/brands/github
-      link: https://github.com/bcdev/xrlint
-    - icon: fontawesome/brands/python
-      link: https://pypi.org/project/xrlint/
 
 watch:
   - xrlint
@@ -76,3 +71,21 @@ plugins:
             members_order: source
             extra:
               show_overloads: true
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/bcdev/xrlint
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/project/xrlint/
+  footer_links:
+    - text: Imprint
+      href: https://www.brockmann-consult.de/imprint/
+    - text: Privacy Policy
+      href: https://www.brockmann-consult.de/privacy-policy-documentation-pages/
+
+extra_css:
+  - stylesheet/extra.css
+
+hooks:
+  - docs/hooks/download_fonts.py

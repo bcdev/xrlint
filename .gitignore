@@ -33,3 +33,6 @@ notebooks/*.zarr/
 *.sln
 *.sw?
 .idea/
+
+# Downloaded assets
+docs/assets/downloaded/
