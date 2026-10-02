@@ -35,4 +35,4 @@ notebooks/*.zarr/
 .idea/
 
 # Downloaded assets
-docs/assets/downloaded/*
+docs/assets/downloaded/
