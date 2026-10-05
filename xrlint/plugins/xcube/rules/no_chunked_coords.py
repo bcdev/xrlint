@@ -19,7 +19,7 @@ DEFAULT_LIMIT = 5
     description=(
         "Coordinate variables should not be chunked."
         " Can be used to identify performance issues, where chunked coordinates"
-        " can cause slow opening if datasets due to the many chunk-fetching"
+        " can cause slow opening of datasets due to the many chunk-fetching"
         " requests made to (remote) filesystems with low bandwidth."
         " You can use the `limit` parameter to specify an acceptable number "
         f" of chunks. Its default is {DEFAULT_LIMIT}."

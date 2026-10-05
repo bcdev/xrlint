@@ -1,99 +1,141 @@
-# How to contribute
+# Contributing to XRLint
 
-The XRLint project welcomes contributions of any form
-as long as you respect our [code of conduct](CODE_OF_CONDUCT.md) and stay 
-in line with the following instructions and guidelines.
+We welcome code, documentation, bug reports, and ideas. Please follow our
+[Code of Conduct](CODE_OF_CONDUCT.md).
+Use [GitHub issues](https://github.com/bcdev/xrlint/issues) for bugs and proposals,
+and submit changes through a [pull request](https://github.com/bcdev/xrlint/pulls).
+Code and configuration changes must be linked to a corresponding issue.
 
-If you have suggestions, ideas, feature requests, or if you have identified
-a malfunction or error, then please 
-[post an issue](https://github.com/bcdev/xrlint/issues). 
+## Development setup
 
-If you'd like to submit code or documentation changes, we ask you to provide a 
-pull request (PR) 
-[here](https://github.com/bcdev/xrlint/pulls). 
-For code and configuration changes, your PR must be linked to a 
-corresponding issue. 
+Use Python 3.10 or newer. From the repository root, install the project in
+editable mode with development and documentation dependencies:
 
-To ensure that your code contributions are consistent with our project’s
-coding guidelines, please make sure all applicable items of the following 
-checklist are addressed in your PR.  
+```bash
+python -m pip install -e ".[dev,doc]"
+```
 
-**PR checklist**
+An editable installation also registers the `xrlint` command and built-in plugin
+entry points. Merely adding the source directory to `PYTHONPATH` does not register
+those entry points.
 
-* Format and check code using [ruff](https://docs.astral.sh/ruff/) with 
-  default settings: `ruff format` and `ruff check`. See also section 
-  [code style](#code-style) below.
-* Your change shall not break existing unit tests.
-  `pytest` must run without errors.
-* Add unit tests for any new code not yet covered by tests.
-* Make sure test coverage stays close to 100% for any change.
-  Use `pytest --cov=xrlint --cov-report=html` to verify.
-* If your change affects the current project documentation,
-  please adjust it and include the change in the PR.
-  Run `mkdocs serve` to verify. 
+If using conda or mamba, create and activate the repository environment, then
+install the project and extras to include dependencies declared in
+`pyproject.toml`:
+
+```bash
+conda env create -f environment.yml
+conda activate xrlint
+python -m pip install -e ".[dev,doc]"
+```
+
+## Project layout
+
+| Path | Responsibility |
+| --- | --- |
+| `xrlint/cli/` | Click command, configuration discovery, file traversal, and reporting. |
+| `xrlint/linter.py`, `xrlint/_linter/` | Linter configuration, opening, traversal, and rule execution. |
+| `xrlint/config.py` | Configuration conversion, plugin discovery, and merging. |
+| `xrlint/rule.py`, `node.py`, `plugin.py`, `processor.py` | Extension interfaces and metadata. |
+| `xrlint/plugins/` | Core, xcube, and ACDD rules and presets. |
+| `xrlint/formatters/` | Text, JSON, and HTML reports. |
+| `tests/` | Tests mirroring the package structure. |
+| `examples/` | Custom configurations and API examples. |
+| `docs/` | MkDocs pages and the rule-reference generator. |
+
+## Checks before submitting
+
+Run the checks relevant to your change from the repository root:
+
+```bash
+python -m ruff format --check
+python -m ruff check
+python -m pytest --cov=xrlint --cov-branch --cov-report=html
+python -m mkdocs build --strict
+```
+
+- Keep existing tests passing and add coverage for new or changed behavior.
+- Aim to keep coverage close to 100%; review the report in `htmlcov/index.html`.
+- Update documentation and examples when behavior or configuration changes.
+- For documentation changes, preview the site with `python -m mkdocs serve`
+  and verify links, code blocks, and generated references.
+- Describe the problem, resulting behavior, and validation in the pull request.
 
 ## Code style
 
-The code style of XRLint equals the default settings 
-of [black](https://black.readthedocs.io/). Since black is 
-un-opinionated regarding the order of imports, we group and 
-sort imports statements according to the default settings of 
-[isort](https://pycqa.github.io/isort/) which boils down to
+Use Ruff's formatter and linter with the repository configuration:
 
-0. Future imports
-1. Python standard library imports, e.g., `os`, `typing`, etc
-2. 3rd-party imports, e.g., `xarray`, `zarr`, etc
-3. 1st-party XRLint module imports using absolute paths, 
-   e.g., `from xrlint.a.b.c import d`. 
-4. 1st-party XRLint module imports from local modules: 
-   Relative imports such as `from .c import d` are ok
-   while `..c import d` are not ok.
+```bash
+python -m ruff format
+python -m ruff check
+```
 
-Use `typing.TYPE_CHECKING` to resolve forward references 
-and effectively avoid circular dependencies.
+Group imports in this order: future imports, standard library, third-party
+packages, absolute XRLint imports, and local relative imports. The repository
+configures isort with the Black profile. Same-package imports such as
+`from .module import name` are acceptable; avoid parent-relative imports such as
+`from ..module import name`.
 
-## Contributing a XRLint Rule
+Use `typing.TYPE_CHECKING` for type-only imports to avoid circular dependencies.
+Document public APIs with Google-style docstrings.
 
-### Rule Naming
+## Contributing a rule
 
-The rule naming conventions for XRLint are based ESLint:
+Choose a lowercase, hyphen-separated name describing a single requirement.
+Prefix prohibitions with `no-`, as in `no-empty-attrs`. Plugin namespaces are
+separated with a slash in configuration, such as `xcube/cube-dims-order`.
 
-* Lower-case only.
-* Use dashes between words (kebab-case).
-* The rule name should be chosen based on what shall be
-  achieved, of what shall be regulated. It names a contract.
-* If your rule only disallows something, 
-  prefix it with `no-` such as `no-empty-attrs` for disallowing 
-  empty attributes in dataset nodes.
-* If your rule is enforcing the inclusion of something, 
-  use a short name without a special prefix.
-* Plugins should add a prefix before their rule names
-  separated by a slash, e.g., `xcube/spatial-dims-order`.
+Place the implementation in
+`xrlint/plugins/<plugin>/rules/<rule_name>.py`, replacing hyphens with underscores.
+Derive from `RuleOp`, register with `plugin.define_rule()`, and implement only
+the callbacks needed. Keep the reason for each rule easy to explain.
 
-### Rule Design
+Provide a description, version, relevant documentation URL, and a schema for
+any options. Schemas currently document options; runtime schema validation is
+not implemented. Keep constructor arguments and schema metadata consistent.
+Decide explicitly whether the rule belongs in a recommended preset.
 
-* The reasoning behind a rule should be **easy to grasp**. 
+Place tests in `tests/plugins/<plugin>/rules/test_<rule_name>.py`.
+Use `RuleTester` with valid and invalid datasets, including parameter cases when
+applicable. See the [rule development examples](docs/examples.md#developing-rules)
+and [extension guide](docs/config.md#custom-rules).
 
-* A rule should serve for a **single purpose only**. Try subdividing
-  complex rule logic into multiple rules with simpler logic.
+## Contributing a plugin
 
-* Each rule should be defined in a dedicated module named after the rule, 
-  i.e., `<plugin>/rules/<rule>`. The module name should be the rule's name
-  with dashes replaced by underscores. 
-
-* Write a comprehensive test for your rule logic which should be defined 
-  in a dedicated module under `tests`, i.e., `tests/rules/test_<rule>`. 
-  Consider using `xrlint.testing.RuleTester` which can save a lot of
-  time and is used for almost all in-built rules.
-
-## Contributing an XRLint Plugin
-
-New plugins should be added to the `xrlint.rules` entry point table, which will cause them to be automatically loaded by XRLint, and to be included in the rule documentation.
+Plugins contribute rules, processors, and named configurations. An importable
+plugin module must define `export_plugin()` returning a `Plugin` object.
+For automatic discovery, declare an entry point in the plugin package:
 
 ```toml
-# pyproject.toml
 [project.entry-points."xrlint.rules"]
-core = "xrlint.plugins.core"
-xcube = "xrlint.plugins.xcube"
-acdd = "xrlint.plugins.acdd"
+my_plugin = "my_package.xrlint_plugin"
 ```
+
+The entry point targets the module, not its factory function. Use a consistent
+entry-point name, `PluginMeta.name`, and rule namespace. Install the package to
+register the entry point. Discovery makes rules available; users still enable
+them through presets or rule configuration.
+
+Local Python configurations can use a plugin directly without packaging.
+See [Custom Plugins](docs/config.md#custom-plugins).
+
+## Building documentation
+
+```bash
+python -m mkdocs build --strict
+python -m mkdocs serve
+```
+
+The build writes `site/`. The preview command serves the site locally and
+rebuilds when files change. Edit Markdown pages in `docs/`; update `mkdocs.yml`
+when adding navigation entries.
+
+`docs/mkruleref.py` runs automatically through `mkdocs-gen-files`, generating
+`rule-ref.md` from discovered plugin metadata. Do not create or edit that
+generated page manually. Update rule descriptions and schemas in the source,
+or change the generator for presentation changes. The API page uses
+`mkdocstrings` to render source docstrings.
+
+The plugins installed in the build environment determine the generated rule
+reference. Use a project environment without unrelated third-party XRLint
+plugins when building the project's published documentation.

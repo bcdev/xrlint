@@ -2,7 +2,10 @@
 #  This software is distributed under the terms and conditions of the
 #  MIT license (https://mit-license.org/).
 
+import json
+
 from xrlint.config import plugins_from_entry_points
+from xrlint.constants import CORE_PLUGIN_NAME
 from xrlint.plugin import Plugin
 from xrlint.rule import RuleConfig
 
@@ -21,9 +24,6 @@ rule_type_icons = {
     "layout": "material-text",
 }
 
-# read_more_icon = "material-book-open-outline"
-read_more_icon = "material-information-variant"
-
 
 def write_rule_ref_page():
     import mkdocs_gen_files
@@ -35,13 +35,31 @@ def write_rule_ref_page():
     with mkdocs_gen_files.open("rule-ref.md", "w") as stream:
         stream.write("# Rule Reference\n\n")
         stream.write(
-            "This page is auto-generated from XRLint's builtin"
-            " rules.\n"
-            "New rules will be added by upcoming XRLint releases.\n\n"
+            "This page is generated from plugins discovered through the "
+            "`xrlint.rules` entry-point group in the build environment. "
+            "Installing a plugin makes its rules available; select a preset "
+            "or configure individual rules to enable them.\n\n"
+            "Rule categories: :material-bug: problem, "
+            ":material-lightbulb: suggestion, :material-text: layout. "
+            "Preset severities: :material-lightning-bolt: error, "
+            ":material-alert: warning, :material-circle-off-outline: off.\n\n"
+            "Use rule identifiers in the `rules` mapping. Options follow the "
+            "severity, for example `access-latency: [warn, {threshold: 5.0}]`. "
+            "Schemas below describe option types, defaults, and constraints; "
+            "runtime schema validation is not yet implemented. See "
+            "[Configuring Rules](config.md#configuring-rules).\n\n"
+            "Preset membership below summarizes rules across configuration "
+            "objects; file-specific filters still determine applicability. "
+            "See [Predefined Configuration Objects]"
+            "(config.md#predefined-configuration-objects), including the "
+            "known ACDD preset limitations.\n\n"
         )
         for plugin_name in sorted(plugins.keys()):
             plugin = plugins[plugin_name]
-            stream.write(f"## {plugin.meta.name} Rules\n\n")
+            display_name = (
+                "core" if plugin.meta.name == CORE_PLUGIN_NAME else plugin.meta.name
+            )
+            stream.write(f"## {display_name} Rules\n\n")
             if plugin.meta.ref:
                 stream.write(f"- `{plugin.meta.ref.removesuffix(':export_plugin')}`\n")
             if plugin.meta.docs_url:
@@ -56,20 +74,41 @@ def write_plugin_rules(stream, plugin: Plugin):
         stream.write(
             f"### :{rule_type_icons.get(rule_meta.type)}: `{rule_meta.name}`\n\n"
         )
+        qualified_id = (
+            rule_id
+            if plugin.meta.name == CORE_PLUGIN_NAME
+            else f"{plugin.meta.name}/{rule_id}"
+        )
+        stream.write(f"Rule identifier: `{qualified_id}`\n\n")
         stream.write(rule_meta.description or "_No description._")
         if rule_meta.docs_url:
             stream.write(f"\n[More...]({rule_meta.docs_url})")
         stream.write("\n\n")
         # List the predefined configurations that contain the rule
-        stream.write("Contained in: ")
+        memberships = []
         for config_id in sorted(config_rules.keys()):
             rule_configs = config_rules[config_id]
-            rule_config = rule_configs.get(rule_id) or rule_configs.get(
-                f"{plugin.meta.name}/{rule_id}"
-            )
+            rule_config = rule_configs.get(qualified_id)
+            if rule_config is None and plugin.meta.name == CORE_PLUGIN_NAME:
+                rule_config = rule_configs.get(f"{CORE_PLUGIN_NAME}/{rule_id}")
             if rule_config is not None:
-                stream.write(f" `{config_id}`-:{severity_icons[rule_config.severity]}:")
-        stream.write("\n\n")
+                preset_id = (
+                    config_id
+                    if plugin.meta.name == CORE_PLUGIN_NAME
+                    else f"{plugin.meta.name}/{config_id}"
+                )
+                memberships.append(
+                    f"`{preset_id}` :{severity_icons[rule_config.severity]}:"
+                )
+        stream.write(
+            "Contained in: " + (", ".join(memberships) or "No preset.") + "\n\n"
+        )
+        if rule_meta.schema is not None:
+            stream.write("**Options schema**\n\n```json\n")
+            stream.write(json.dumps(rule_meta.schema, indent=2, ensure_ascii=False))
+            stream.write("\n```\n\n")
+        else:
+            stream.write("No configurable options are declared.\n\n")
 
 
 def get_plugin_rule_configs(plugin: Plugin) -> dict[str, dict[str, RuleConfig]]:

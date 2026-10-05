@@ -16,8 +16,8 @@ from .constants import MISSING_DATASET_FILE_PATH, MISSING_DATATREE_FILE_PATH
 
 
 def new_linter(*configs: ConfigLike, **config_props: Any) -> "Linter":
-    """Create a new `Linter` with the core plugin included and the
-     given additional configuration.
+    """Create a new `Linter` with installed entry-point plugins and the
+    given configuration. Rules must be enabled explicitly.
 
     Args:
         *configs: Variable number of configuration-like arguments.
@@ -39,7 +39,7 @@ class Linter:
     Using the constructor directly creates an empty linter
     with no configuration - even without the core plugin and
     its predefined rule configurations.
-    If you want a linter with core plugin included use the
+    If you want a linter with installed plugins included use the
     `new_linter()` function.
 
     Args:

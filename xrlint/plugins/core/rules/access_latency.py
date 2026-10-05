@@ -18,7 +18,7 @@ DEFAULT_THRESHOLD: Final = 2.5  # seconds
     version="1.0.0",
     description=(
         "Ensure that the time it takes to open a dataset from its source"
-        " does a exceed a given `threshold` in seconds."
+        " does not exceed a given `threshold` in seconds."
         f" The default threshold is `{DEFAULT_THRESHOLD}`."
     ),
     schema=schema(

@@ -71,7 +71,7 @@ def get_entry_point_plugins() -> "ConfigObject":
     """Create a configuration object that includes the plugins loaded from entry points.
 
     Returns:
-        A new `Config` object
+        A new `ConfigObject` containing the discovered plugins.
     """
     return ConfigObject(plugins=plugins_from_entry_points())
 
@@ -110,24 +110,23 @@ class ConfigObject(MappingConstructible, JsonSerializable):
     the configuration object applies to all files matched
     by any other configuration object.
 
-    When a configuration object contains only the files property
-    without accompanying rules or settings, it effectively acts as
-    a _global file filter_. This means that XRLint will recognize
-    and process only the files matching these patterns, thereby
-    limiting its scope to the specified files. The inbuilt
-    global file filters are `["**/*.zarr", "**/*.nc"]`.
+    In CLI discovery, an object containing only file and ignore patterns
+    (optionally with a name) contributes to the global file filter.
+    Its included patterns add to the defaults `["**/*.zarr", "**/*.nc"]`;
+    they do not replace them.
     """
 
     ignores: list[str] | None = None
     """An array of glob patterns indicating the files that the
     configuration object should not apply to. If not specified,
     the configuration object applies to all files matched by `files`.
-    If `ignores` is used without any other keys in the configuration
-    object, then the patterns act as _global ignores_.
+    In CLI discovery, objects containing only file and ignore patterns
+    (optionally with a name) contribute global exclusions. Otherwise,
+    these patterns exclude only this object's contribution.
     """
 
     linter_options: dict[str, Any] | None = None
-    """A dictionary containing options related to the linting process."""
+    """Reserved for linting options. Currently no options are consumed."""
 
     opener_options: dict[str, Any] | None = None
     """A dictionary containing options that are passed to
@@ -347,9 +346,8 @@ class Config(ValueConstructible, JsonSerializable):
             file_path: A dataset file path.
 
         Returns:
-            A `Config` object which may be empty, or `None`
-                if `file_path` is not included by any `files` pattern
-                or intentionally ignored by global `ignores`.
+            A merged `ConfigObject`, or `None` if no object matches.
+                Global filtering is handled separately by CLI discovery.
         """
 
         config_obj = None
