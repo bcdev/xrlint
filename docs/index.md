@@ -1,37 +1,47 @@
 # XRLint - A linter for xarray datasets
 
+XRLint checks xarray datasets for metadata, structure, and convention issues.
+Use the [CLI](cli.md) for files and directories or the [Python API](api.md) for
+`xarray.Dataset` and `xarray.DataTree` objects. Its configurable rules and plugin
+model are inspired by ESLint.
 
-XRLint is a [linting](https://en.wikipedia.org/wiki/Lint_(software)) 
-tool and library for [xarray](https://docs.xarray.dev/) datasets. 
-Its design is heavily inspired by the awesome [ESLint](https://eslint.org/) tool.
+## Features
 
+- Rules for dataset metadata, coordinates, variables, and tree groups.
+- YAML, JSON, or Python configuration, including file-specific settings.
+- Local files and remote sources supported by installed xarray backends and
+  fsspec filesystem implementations.
+- Text, JSON, and HTML reports, with rich result display in notebooks.
+- Custom rules, plugins, processors, and reusable configurations.
 
-## Features 
+XRLint reports findings and suggestions; it does not automatically modify
+datasets. Its rules check selected convention requirements and do not establish
+complete compliance with a convention.
 
-- Flexible validation for 
-  [`xarray.Dataset`](https://docs.xarray.dev/en/stable/generated/xarray.Dataset.html) and
-  [`xarray.DataTree`](https://docs.xarray.dev/en/stable/generated/xarray.DataTree.html) objects 
-  by configurable rules.
-- Available from CLI and Python API.
-- Custom plugins providing custom rule sets allow addressing 
-  different dataset conventions.
-- Project-specific configurations including configuration of individual 
-  rules and file-specific settings.
-- Works with dataset files in the local filesystem or any of the remote 
-  filesystems supported by xarray.
+## Built-in Rules
 
+The [Rule Reference](rule-ref.md) describes all rules discovered during the
+documentation build, including their options and preset membership.
 
-## Inbuilt Rules
+| Plugin | Scope | Preset |
+| --- | --- | --- |
+| `core` | General dataset quality and selected CF convention checks | `recommended` |
+| `xcube` | xcube dataset structure, including multi-level datasets | `xcube/recommended` |
+| `acdd` | Attribute Convention for Data Discovery metadata, with versioned presets | `acdd/recommended` |
 
-The following plugins provide XRLint's [inbuilt rules](rule-ref.md):
+Installed plugins load automatically. Their rules run only when enabled by
+configuration; plugin presets can be combined:
 
-- `core`: implementing the rules for
-  [tidy data](https://tutorial.xarray.dev/intermediate/data_cleaning/05.1_intro.html)
-  and the 
-  [CF-Conventions](https://cfconventions.org/cf-conventions/cf-conventions.html).
-- `xcube`: implementing the rules for 
-  [xcube datasets](https://xcube.readthedocs.io/en/latest/cubespec.html).
-  Note, this plugin is fully optional. You must manually configure 
-  it to apply its rules. It may be moved into a separate GitHub repo later.
-- `acdd`: implements rules for [Attribute Convention for Data Discovery](https://wiki.esipfed.org/Attribute_Convention_for_Data_Discovery_1-3).
+```yaml
+- recommended
+- xcube/recommended
+- acdd/recommended
+```
 
+## Where to start
+
+Follow [Getting Started](start.md) to install XRLint and validate a small dataset.
+Then use [Configuration](config.md) to select rules for your project.
+[Examples](examples.md) covers custom rules, processors, and remote datasets.
+See [About](about.md) for contribution and build instructions and
+[Development Notes](todo.md) for current limitations and possible future work.

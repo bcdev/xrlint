@@ -1,70 +1,47 @@
-# To Do
+# Development Notes
 
-## Required
+This page records limitations and possible future work. It is not a release
+schedule or a list of features currently supported.
 
-- enhance docs
-  - complete configuration page
-  - provide guide page
-  - use mkdocstrings ref syntax in docstrings
-  - provide configuration examples (use as tests?)
-  - add `docs_url` to all existing rules 
-  - rule ref should cover rule parameters
+## Current limitations
 
-## Desired
- 
-- project logo
-- add `xcube` rule that helps to identify chunking issues 
-- apply rule op args/kwargs validation schema 
-- allow outputting suggestions, if any, that are emitted by some rules
-  - add CLI option
-  - expand/collapse messages with suggestions in Jupyter notebooks
-- validate `RuleConfig.args/kwargs` against `RuleMeta.schema`
-  (see code TODO)
+- Rule argument schemas are published as metadata but are not validated before
+  rule construction. See the TODO in `xrlint/_linter/apply.py`.
+- Automatic dataset fixes are not implemented. Suggestions are available in
+  result messages, but there is no CLI option for applying them.
+- The only built-in report formats are `simple`, `json`, and `html`.
+  Formatter-specific constructor options cannot currently be configured by CLI.
+- `linter_options` is reserved and has no operational effect.
+- CLI filesystem discovery does not receive dataset `opener_options`.
+  Anonymous or specially configured remote listing requires a separately
+  configured filesystem.
+- Tree traversal validates dataset contents at leaves. Dataset contents on
+  non-leaf groups are not independently traversed, although the core
+  `conventions` and `content-desc` rules can read parent metadata.
+- In 0.6.0, `acdd/acdd_1.1` references unregistered rules, and
+  `acdd/acdd_1.3_strict_recommended` contains an invalid unprefixed rule name.
+  See the [preset limitations and override](config.md#predefined-configuration-objects).
 
-## Nice to have
+## Potential improvements
 
-- support `autofix` feature
-- support `md` (markdown) output format
-- support formatter op args/kwargs and apply validation schema
+- Validate rule arguments against schemas before execution.
+- Add dedicated, consistent presentation of suggestions in console and notebook
+  reports.
+- Support automatic fixes and Markdown reports.
+- Expose formatter arguments and validate them against formatter schemas.
+- Improve chunking diagnostics and add focused rules where useful.
+- Add documentation URLs for rules that currently lack them.
+- Add a project logo.
 
-# Ideas
+## Design ideas
 
-## Allow for different dataset openers
+A future opener abstraction could separate source selection and opening from
+rule execution. Today, custom [processors](config.md#custom-processors) provide
+the extension point for alternate dataset layouts.
 
-- introduce `dataset_options` config:
-  - `opener: OpenerOp`
-  - `opener_options: dict[str, Any]`
+Additional plugins could cover structured and unstructured grid conventions.
 
-## Other plugins
-
-- `sgrid`: https://sgrid.github.io/sgrid/
-- `ugrid`: https://ugrid-conventions.github.io/ugrid-conventions/
-
-## Generalize data linting
-
-Do not limit validations to `xr.Dataset`.
-However, this requires new rule sets.
-
-To allow for other data models, we need to allow 
-for a specific validator type for a given data type.
-
-The validator validates specific node types
-that are characteristic for a data type.
-
-To do so a traverser must traverse the elements of the data
-and pass each node to the validator.
-
-Note, this is the [_Visitor Pattern_](https://en.wikipedia.org/wiki/Visitor_pattern), 
-where the validator is the _Visitor_ and a node refers to _Element_.
-
-To support the CLI mode, we need different data opener 
-types that can read the data from a file path.
-
-1. open data, if given data is a file path: 
-   - find opener for file path
-   - open data 
-2. validate data
-   - find root element type and visitor type for data 
-   - call the root element `accept(validator)` that validates the 
-     root element `validate.root()` and starts traversal of 
-     child elements.
+Supporting data models beyond xarray would require explicit decisions about
+opening, node types, traversal, and rule compatibility. The current rule
+callbacks use a visitor-style traversal over xarray-specific nodes; a generalized
+design would need an equivalent traversal contract for each supported model.

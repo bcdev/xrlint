@@ -13,6 +13,7 @@ nav:
   - Python API: api.md
   - Examples: examples.md
   - About: about.md
+  - Development Notes: todo.md
 
 theme:
   name: material

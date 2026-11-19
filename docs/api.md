@@ -1,6 +1,88 @@
 # Python API
 
-This chapter provides a plain reference for the XRLint Python API.
+Use `new_linter()` for individual datasets and `XRLint` for file discovery and
+reports. The reference below is generated from the public classes and functions.
+
+## Validate a dataset
+
+```python
+import xarray as xr
+from xrlint.linter import new_linter
+
+linter = new_linter("recommended", rules={"var-units": "error"})
+dataset = xr.Dataset(attrs={"title": "Example dataset"})
+result = linter.validate(dataset, file_path="example.nc")
+
+for message in result.messages:
+    print(message.severity, message.rule_id, message.node_path, message.message)
+
+assert result.fatal_error_count == 0
+```
+
+`new_linter()` loads installed plugins, but enables only the rules you configure.
+It does not read configuration files. `Linter()` alone starts without plugin
+registrations. Both accept configuration objects and named presets; additional
+configuration passed to `validate()` is merged after the linter's configuration.
+
+Pass a source path to open a dataset, for example `linter.validate("example.nc")`.
+The default opener closes files it opens. Existing datasets remain under the
+caller's control. `file_path` labels in-memory results and also determines which
+file-specific configuration objects match.
+
+Findings are returned in `Result.messages`. Severity `1` means warning and `2`
+means error. Inspect `error_count`, `warning_count`, and `fatal_error_count`, and
+use `message.suggestions` for any suggested corrections. Configuration or custom
+rule errors may raise exceptions; not every failure is converted to a result.
+
+`result.to_json()` returns Python JSON-compatible values; use `json.dumps()` to
+encode them. `result.to_html()` returns HTML, and notebooks display the result
+as HTML automatically. This API does not apply the CLI's warning threshold.
+
+## Validate files and write reports
+
+```python
+from xrlint.cli.engine import XRLint
+
+engine = XRLint(
+    no_config_lookup=True,
+    output_format="json",
+    output_path="report.json",
+    max_warnings=0,
+)
+engine.init_config("recommended")
+results = engine.validate_files(["data/"])
+report = engine.format_results(results)
+engine.write_report(report)
+
+failed = engine.result_stats.error_count > 0 or engine.max_warnings_exceeded
+print(f"Checked {engine.result_stats.result_count} datasets; failed={failed}")
+```
+
+`validate_files()` returns an iterator: validation happens as you consume it.
+`format_results()` consumes it and updates `result_stats`. Statistics accumulate
+on the engine, so create a new engine for an independent run. Engine methods do
+not terminate your process; inspect the counts to implement your own exit policy.
+
+To read a specific configuration, construct `XRLint(config_path="config.yaml")`
+and call `init_config()`. With default constructor options, `init_config()` uses
+the same working-directory discovery as the CLI. Arguments to `init_config()`
+are appended after file and command-line rule configuration.
+
+## Dataset trees
+
+Pass an `xr.DataTree` directly to `validate()` to validate grouped data. Tree
+traversal visits group nodes and the datasets at leaves. A tree without children
+is treated as a dataset. Dataset contents on non-leaf groups are not independently
+traversed. The core `conventions` and `content-desc` rules consider inherited
+parent-group attributes, with local attributes taking precedence.
+
+Import tree-specific node types directly:
+
+```python
+from xrlint.node import DataTreeNode, XarrayNode
+```
+
+These types are not currently re-exported by `xrlint.all`.
 
 ## Overview
 
@@ -24,7 +106,7 @@ This chapter provides a plain reference for the XRLint Python API.
   [RuleContext][xrlint.rule.RuleContext] and [RuleExit][xrlint.rule.RuleExit].
   Decorator [define_rule][xrlint.rule.define_rule] allows defining rules.
 - The `node` module defines the nodes passed to [RuleOp][xrlint.rule.RuleOp]:
-  base classes [None][xrlint.node.Node], [XarrayNode][xrlint.node.XarrayNode],
+  base classes [Node][xrlint.node.Node], [XarrayNode][xrlint.node.XarrayNode],
   and the specific nodes [DataTreeNode][xrlint.node.DataTreeNode], 
   [DatasetNode][xrlint.node.DatasetNode], [VariableNode][xrlint.node.VariableNode], 
   [AttrsNode][xrlint.node.AttrsNode], and [AttrNode][xrlint.node.AttrNode].
@@ -43,8 +125,9 @@ This chapter provides a plain reference for the XRLint Python API.
   of [RuleTest][xrlint.testing.RuleTest]s.
 
 Note: 
-  the `xrlint.all` convenience module exports all of the above from a 
-  single module.
+  the `xrlint.all` convenience module exports many common API definitions from
+  one module. Use the direct imports in this reference for definitions it does
+  not export, including `DataTreeNode`, `XarrayNode`, and `ResultStats`.
   
 ## CLI API
 
@@ -81,6 +164,11 @@ Note:
 ::: xrlint.rule.Rule
 
 ::: xrlint.rule.RuleMeta
+
+::: xrlint.rule.RuleConfig
+    options:
+      inherited_members:
+        - from_value
 
 ::: xrlint.rule.RuleOp
 
@@ -121,6 +209,23 @@ Note:
 ::: xrlint.result.Message
 
 ::: xrlint.result.Suggestion
+
+::: xrlint.result.ResultStats
+
+## Formatter API
+
+The CLI provides `simple`, `json`, and `html` formatters. The formatter interfaces
+are also available to applications that need to build their own reports.
+
+::: xrlint.formatter.Formatter
+
+::: xrlint.formatter.FormatterMeta
+
+::: xrlint.formatter.FormatterOp
+
+::: xrlint.formatter.FormatterContext
+
+::: xrlint.formatter.FormatterRegistry
 
 ## Testing API
 

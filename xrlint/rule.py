@@ -159,13 +159,13 @@ class RuleMeta(OperationMeta):
     """Rule documentation URL."""
 
     schema: dict[str, Any] | list[dict[str, Any]] | bool | None = None
-    """JSON Schema used to specify and validate the rule operation
-    options.
+    """JSON Schema describing the rule operation options.
+    Runtime validation against this schema is not yet implemented.
 
     It can take the following values:
 
     - Use `None` (the default) to indicate that the rule operation
-      as no options at all.
+      has no declared options.
     - Use a schema to indicate that the rule operation
       takes keyword arguments only.
       The schema's type must be `"object"`.

@@ -120,16 +120,16 @@ def main(
     filename, namely 'xrlint_config.py' or 'xrlint-config.<format>',
     where <format> refers to the filename extensions
     'json', 'yaml', and 'yml'. A Python configuration file ('*.py'),
-    is expected to provide XRLInt configuration from a function
+    is expected to provide XRLint configuration from a function
     'export_config()', which may include custom plugins and rules.
 
     (2) It then validates each dataset in FILES against the configuration.
-    The default dataset patters are '**/*.zarr' and '**/.nc'.
+    The default dataset patterns are '**/*.zarr' and '**/*.nc'.
     FILES may comprise also directories or URLs. The supported URL
     protocols are the ones supported by xarray. Using remote
     protocols may require installing additional packages such as
     S3Fs (https://s3fs.readthedocs.io/) for the 's3' protocol.
-    If a directory is provided that not matched by any file pattern,
+    If a directory is provided that is not matched by any file pattern,
     it will be traversed recursively.
 
     (3) The validation result is dumped to standard output if not otherwise
