@@ -91,11 +91,12 @@ or `kwargs` to `RuleTest`.
 
 Use `RuleTester.define_test()` to generate a `unittest.TestCase` class discoverable
 by pytest. The [rule_testing.py example](https://github.com/bcdev/xrlint/blob/main/examples/rule_testing.py)
-demonstrates both approaches:
+demonstrates both approaches. Run these commands from the repository root after
+`pixi install`.
 
 ```bash
-python -m examples.rule_testing
-python -m pytest tests/test_examples.py
+pixi run python -m examples.rule_testing
+pixi run tests tests/test_examples.py
 ```
 
 ## API usage

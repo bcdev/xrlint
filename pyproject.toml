@@ -103,9 +103,25 @@ Repository = "https://github.com/bcdev/xrlint"
 Changelog = "https://github.com/bcdev/xrlint/blob/main/CHANGES.md"
 Issues = "https://github.com/bcdev/xrlint/issues"
 
-[tool.uv]
-default-groups = "all"
+[tool.pixi.workspace]
+channels = ["conda-forge"]
+platforms = ["linux-64", "osx-64", "osx-arm64", "win-64"]
 
-# [tool.uv.pip]
-# all-extras = true
+[tool.pixi.pypi-dependencies]
+xrlint = { path = ".", editable = true }
+
+[tool.pixi.feature.ci]
+platforms = ["linux-64", "win-64"]
+
+[tool.pixi.environments]
+default = { features = ["dev"], dependencies = { python = "3.14.*" } }
+py310 = { features = ["dev", "ci"], dependencies = { python = "3.10.*" } }
+py311 = { features = ["dev", "ci"], dependencies = { python = "3.11.*" } }
+py312 = { features = ["dev", "ci"], dependencies = { python = "3.12.*" } }
+py313 = { features = ["dev", "ci"], dependencies = { python = "3.13.*" } }
+
+[tool.pixi.tasks]
+format = "ruff format"
+checks = "ruff check"
+tests = "pytest"
 
