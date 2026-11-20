@@ -1,0 +1,74 @@
+[project]
+site_name = "XRLint"
+repo_url = "https://github.com/bcdev/xrlint"
+repo_name = "bcdev/xrlint"
+copyright = "Copyright &copy; 2025-2026 Brockmann Consult and contributors"
+nav = [
+  { Overview = "index.md" },
+  { "Getting Started" = "start.md" },
+  { Configuration = "config.md" },
+  { "Rule Reference" = "rule-ref.md" },
+  { CLI = "cli.md" },
+  { "Python API" = "api.md" },
+  { Examples = "examples.md" },
+  { About = "about.md" },
+  { "Development Notes" = "todo.md" },
+]
+watch = ["xrlint"]
+extra_css = ["stylesheet/extra.css"]
+
+[project.theme]
+variant = "classic"
+font = false
+custom_dir = "docs/overrides"
+
+[[project.theme.palette]]
+scheme = "default"
+primary = "blue grey"
+toggle = { icon = "material/brightness-7", name = "Switch to dark mode" }
+
+[[project.theme.palette]]
+scheme = "slate"
+primary = "blue grey"
+toggle = { icon = "material/brightness-4", name = "Switch to light mode" }
+
+[project.markdown_extensions]
+attr_list = {}
+admonition = {}
+"pymdownx.details" = {}
+"pymdownx.superfences" = {}
+"pymdownx.emoji" = { emoji_index = "zensical.extensions.emoji.twemoji", emoji_generator = "zensical.extensions.emoji.to_svg" }
+
+[project.plugins.search]
+[project.plugins.autorefs]
+
+[project.plugins.mkdocstrings.handlers.python.options]
+docstring_style = "google"
+docstring_section_style = "list"
+show_object_full_path = true
+show_root_toc_entry = true
+show_root_heading = true
+show_source = true
+show_category_heading = true
+show_symbol_type_heading = true
+show_symbol_type_toc = true
+heading_level = 3
+annotations_path = "brief"
+members_order = "source"
+extra = { show_overloads = true }
+
+[[project.extra.social]]
+icon = "fontawesome/brands/github"
+link = "https://github.com/bcdev/xrlint"
+
+[[project.extra.social]]
+icon = "fontawesome/brands/python"
+link = "https://pypi.org/project/xrlint/"
+
+[[project.extra.footer_links]]
+text = "Imprint"
+href = "https://www.brockmann-consult.de/imprint/"
+
+[[project.extra.footer_links]]
+text = "Privacy Policy"
+href = "https://www.brockmann-consult.de/privacy-policy-documentation-pages/"
