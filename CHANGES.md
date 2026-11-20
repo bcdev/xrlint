@@ -16,6 +16,10 @@
   ACDD 1.1 and strict-recommended preset limitations, including a working override
   for the latter.
 
+### Other Changes
+
+- Now using [Pixi](https://pixi.prefix.dev/latest/) as project management tool. (#80)
+
 
 ## Version 0.6.0 (from 2026-09-11)
 

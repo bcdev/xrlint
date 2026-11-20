@@ -2,6 +2,7 @@
 #  This software is distributed under the terms and conditions of the
 #  MIT license (https://mit-license.org/).
 
+import importlib
 import os
 from contextlib import contextmanager
 
@@ -10,6 +11,8 @@ from contextlib import contextmanager
 def text_file(file_path: str, content: str):
     with open(file_path, mode="w") as f:
         f.write(content)
+    # Make newly written Python configs visible to cached import finders.
+    importlib.invalidate_caches()
     try:
         yield file_path
     finally:
