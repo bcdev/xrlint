@@ -369,9 +369,7 @@ class RequiredTitle(RuleOp):
             )
 
 
-plugin.define_config(
-    "recommended", {"rules": {"project/required-title": "error"}}
-)
+plugin.define_config("recommended", {"rules": {"project/required-title": "error"}})
 
 
 def export_plugin():

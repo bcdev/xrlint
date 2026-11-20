@@ -8,26 +8,22 @@ Code and configuration changes must be linked to a corresponding issue.
 
 ## Development setup
 
-Use Python 3.10 or newer. From the repository root, install the project in
-editable mode with development and documentation dependencies:
+From the repository root, install the development environment with Pixi.
 
 ```bash
-python -m pip install -e ".[dev,doc]"
+pixi install
 ```
 
-An editable installation also registers the `xrlint` command and built-in plugin
-entry points. Merely adding the source directory to `PYTHONPATH` does not register
-those entry points.
-
-If using conda or mamba, create and activate the repository environment, then
-install the project and extras to include dependencies declared in
-`pyproject.toml`:
+Run the development tasks in this order from the same directory.
 
 ```bash
-conda env create -f environment.yml
-conda activate xrlint
-python -m pip install -e ".[dev,doc]"
+pixi run format
+pixi run checks
+pixi run tests
 ```
+
+Pixi installs XRLint in editable mode and registers the `xrlint` command and
+built-in plugin entry points.
 
 ## Project layout
 
@@ -45,29 +41,28 @@ python -m pip install -e ".[dev,doc]"
 
 ## Checks before submitting
 
-Run the checks relevant to your change from the repository root:
+Run the checks relevant to your change from the repository root.
 
 ```bash
-python -m ruff format --check
-python -m ruff check
-python -m pytest --cov=xrlint --cov-branch --cov-report=html
-python -m mkdocs build --strict
+pixi run format --check
+pixi run checks
+pixi run tests --cov=xrlint --cov-branch --cov-report=html
 ```
 
 - Keep existing tests passing and add coverage for new or changed behavior.
 - Aim to keep coverage close to 100%; review the report in `htmlcov/index.html`.
 - Update documentation and examples when behavior or configuration changes.
-- For documentation changes, preview the site with `python -m mkdocs serve`
-  and verify links, code blocks, and generated references.
+- For documentation changes, follow [Building documentation](#building-documentation)
+  to build and preview the site. Verify links, code blocks, and generated references.
 - Describe the problem, resulting behavior, and validation in the pull request.
 
 ## Code style
 
-Use Ruff's formatter and linter with the repository configuration:
+Use the Pixi tasks to run Ruff's formatter and linter with the repository configuration.
 
 ```bash
-python -m ruff format
-python -m ruff check
+pixi run format
+pixi run checks
 ```
 
 Group imports in this order: future imports, standard library, third-party
@@ -121,21 +116,46 @@ See [Custom Plugins](docs/config.md#custom-plugins).
 
 ## Building documentation
 
+The default Pixi environment includes the documentation dependencies. From the
+repository root, build or preview the site with the documentation tasks.
+
 ```bash
-python -m mkdocs build --strict
-python -m mkdocs serve
+pixi run docs-build
+pixi run docs-serve
 ```
 
 The build writes `site/`. The preview command serves the site locally and
-rebuilds when files change. Edit Markdown pages in `docs/`; update `mkdocs.yml`
+rebuilds when files change. Edit Markdown pages in `docs/`; update `zensical.toml`
 when adding navigation entries.
 
-`docs/mkruleref.py` runs automatically through `mkdocs-gen-files`, generating
-`rule-ref.md` from discovered plugin metadata. Do not create or edit that
-generated page manually. Update rule descriptions and schemas in the source,
-or change the generator for presentation changes. The API page uses
-`mkdocstrings` to render source docstrings.
+Both tasks use `docs/scripts/manage.py` to prepare self-hosted Roboto fonts and run
+`docs/scripts/mkruleref.py`, generating the ignored `docs/rule-ref.md` from discovered
+plugin metadata. The build then runs `zensical build --strict`; preview runs
+`zensical serve`. Additional arguments are forwarded, for example
+`pixi run docs-serve --dev-addr 127.0.0.1:8001`.
+
+During preview, a watcher checks Python sources in `xrlint/`, the generator,
+and `pyproject.toml` every half second. Changes regenerate the reference in a
+fresh Python process, and Zensical reloads the page. If an edit temporarily breaks
+generation, the last successful page remains available; fixing the source retries
+generation. Stop preview with Ctrl+C.
+
+Do not create or edit the generated rule page manually. Update rule descriptions
+and schemas in the source, or change the generator for presentation changes.
+The API page uses `mkdocstrings` to render source docstrings. Use these Pixi tasks
+instead of invoking Zensical directly so preparation and regeneration take place.
+See [migration notes](docs/zensical-migration.md) for compatibility limitations.
 
 The plugins installed in the build environment determine the generated rule
 reference. Use a project environment without unrelated third-party XRLint
 plugins when building the project's published documentation.
+
+## Building packages
+
+Build the wheel and source distribution from the repository root.
+
+```bash
+pixi run build
+```
+
+The build writes the distribution files to `dist/`.

@@ -3,6 +3,8 @@
 #  MIT license (https://mit-license.org/).
 
 import json
+from io import StringIO
+from pathlib import Path
 
 from xrlint.config import plugins_from_entry_points
 from xrlint.constants import CORE_PLUGIN_NAME
@@ -10,7 +12,7 @@ from xrlint.plugin import Plugin
 from xrlint.rule import RuleConfig
 
 # for icons, see
-# https://squidfunk.github.io/mkdocs-material/reference/icons-emojis/
+# https://zensical.org/docs/authoring/icons-emojis/
 
 severity_icons = {
     2: "material-lightning-bolt",
@@ -25,14 +27,14 @@ rule_type_icons = {
 }
 
 
-def write_rule_ref_page():
-    import mkdocs_gen_files
-
+def write_rule_ref_page(path: Path | None = None):
+    if path is None:
+        path = Path(__file__).resolve().parent.parent / "rule-ref.md"
     plugins = plugins_from_entry_points()
 
     print(f"Generating rule reference for discovered plugins: {list(plugins.keys())}")
 
-    with mkdocs_gen_files.open("rule-ref.md", "w") as stream:
+    with StringIO() as stream:
         stream.write("# Rule Reference\n\n")
         stream.write(
             "This page is generated from plugins discovered through the "
@@ -65,6 +67,14 @@ def write_rule_ref_page():
             if plugin.meta.docs_url:
                 stream.write(f"- [Documentation]({plugin.meta.docs_url})\n\n")
             write_plugin_rules(stream, plugin)
+
+        content = stream.getvalue()
+
+    # Avoid unnecessary preview rebuilds, and never expose a partially written page.
+    if not path.exists() or path.read_text(encoding="utf-8") != content:
+        temporary = path.with_suffix(".md.tmp")
+        temporary.write_text(content, encoding="utf-8")
+        temporary.replace(path)
 
 
 def write_plugin_rules(stream, plugin: Plugin):
@@ -127,4 +137,5 @@ def get_plugin_rule_configs(plugin: Plugin) -> dict[str, dict[str, RuleConfig]]:
     return config_rules
 
 
-write_rule_ref_page()
+if __name__ == "__main__":
+    write_rule_ref_page()

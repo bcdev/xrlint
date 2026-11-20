@@ -4,6 +4,11 @@
 
 ### Documentation
 
+- Migrated from MkDocs/Material to Zensical with the classic theme and
+  `zensical.toml`. Preserved the existing Pixi documentation commands, self-hosted
+  fonts, API references, and automatic rule-reference regeneration during preview.
+  Moved documentation helpers into `docs/scripts/` and added dated migration notes
+  covering dependency versions and remaining compatibility limitations. (#81)
 - Completed the configuration guide, replacing all "Coming soon" sections with
   explanations and examples for file filters, opening options, rule settings,
   presets, custom plugins, rules, and processors.
@@ -15,6 +20,10 @@
 - Corrected CLI help, API docstrings, and rule descriptions, and documented the
   ACDD 1.1 and strict-recommended preset limitations, including a working override
   for the latter.
+
+### Other Changes
+
+- Now using [Pixi](https://pixi.prefix.dev/latest/) as project management tool. (#80)
 
 
 ## Version 0.6.0 (from 2026-09-11)
