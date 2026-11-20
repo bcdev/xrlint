@@ -116,14 +116,12 @@ See [Custom Plugins](docs/config.md#custom-plugins).
 
 ## Building documentation
 
-Use a Python 3.10 or newer virtual environment for MkDocs. From the repository
-root, install XRLint and its documentation dependencies, then build or preview
-the site.
+The default Pixi environment includes the documentation dependencies. From the
+repository root, build or preview the site with the documentation tasks.
 
 ```bash
-python -m pip install -e ".[doc]"
-python -m mkdocs build --strict
-python -m mkdocs serve
+pixi run docs-build
+pixi run docs-serve
 ```
 
 The build writes `site/`. The preview command serves the site locally and
@@ -139,3 +137,13 @@ or change the generator for presentation changes. The API page uses
 The plugins installed in the build environment determine the generated rule
 reference. Use a project environment without unrelated third-party XRLint
 plugins when building the project's published documentation.
+
+## Building packages
+
+Build the wheel and source distribution from the repository root.
+
+```bash
+pixi run build
+```
+
+The build writes the distribution files to `dist/`.

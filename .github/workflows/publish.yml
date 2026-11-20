@@ -56,7 +56,7 @@ jobs:
         locked: true
 
     - name: Build package
-      run: pixi run --locked python -m build
+      run: pixi run --locked build
 
     - name: Publish package to PyPI
       uses: pypa/gh-action-pypi-publish@27b31702a0e7fc50959f5ad993c78deac1bdfc29
