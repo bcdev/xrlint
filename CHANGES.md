@@ -4,6 +4,11 @@
 
 ### Documentation
 
+- Migrated from MkDocs/Material to Zensical with the classic theme and
+  `zensical.toml`. Preserved the existing Pixi documentation commands, self-hosted
+  fonts, API references, and automatic rule-reference regeneration during preview.
+  Moved documentation helpers into `docs/scripts/` and added dated migration notes
+  covering dependency versions and remaining compatibility limitations. (#81)
 - Completed the configuration guide, replacing all "Coming soon" sections with
   explanations and examples for file filters, opening options, rule settings,
   presets, custom plugins, rules, and processors.

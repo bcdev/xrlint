@@ -89,12 +89,8 @@ dev = [
   "zarr>= 2.18, != 3.0.0, != 3.0.1",
 ]
 doc = [
-  "mkdocs",
-  "mkdocs-autorefs",
-  "mkdocs-material",
-  "mkdocstrings",
+  "zensical>=0.0.74,<0.1",
   "mkdocstrings-python",
-  "mkdocs-gen-files",
 ]
 
 [project.urls]
@@ -130,6 +126,6 @@ tests = "pytest"
 build = "python -m build"
 
 [tool.pixi.feature.doc.tasks]
-docs-build = "mkdocs build --strict"
-docs-serve = "mkdocs serve"
+docs-build = "python docs/scripts/manage.py build --strict"
+docs-serve = "python docs/scripts/manage.py serve"
 

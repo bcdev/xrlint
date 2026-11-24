@@ -20,9 +20,9 @@ DOWNLOADS = (
 )
 
 
-def on_config(config):
-    """Download self-hosted Roboto assets before MkDocs builds the site."""
-    docs_dir = Path(config["docs_dir"])
+def download_fonts():
+    """Prepare self-hosted Roboto assets before building or previewing the site."""
+    docs_dir = Path(__file__).resolve().parent.parent
     font_dir = docs_dir / "assets" / "downloaded" / "fonts"
     font_dir.mkdir(parents=True, exist_ok=True)
 
@@ -41,4 +41,6 @@ def on_config(config):
                 f"{font_dir}."
             ) from exc
 
-    return config
+
+if __name__ == "__main__":
+    download_fonts()

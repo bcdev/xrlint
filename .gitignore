@@ -17,6 +17,8 @@ __pycache__
 coverage.xml
 htmlcov/
 site/
+.cache/
+docs/rule-ref.md
 
 # Jupyter
 .ipynb_checkpoints

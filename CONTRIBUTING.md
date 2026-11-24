@@ -125,14 +125,26 @@ pixi run docs-serve
 ```
 
 The build writes `site/`. The preview command serves the site locally and
-rebuilds when files change. Edit Markdown pages in `docs/`; update `mkdocs.yml`
+rebuilds when files change. Edit Markdown pages in `docs/`; update `zensical.toml`
 when adding navigation entries.
 
-`docs/mkruleref.py` runs automatically through `mkdocs-gen-files`, generating
-`rule-ref.md` from discovered plugin metadata. Do not create or edit that
-generated page manually. Update rule descriptions and schemas in the source,
-or change the generator for presentation changes. The API page uses
-`mkdocstrings` to render source docstrings.
+Both tasks use `docs/scripts/manage.py` to prepare self-hosted Roboto fonts and run
+`docs/scripts/mkruleref.py`, generating the ignored `docs/rule-ref.md` from discovered
+plugin metadata. The build then runs `zensical build --strict`; preview runs
+`zensical serve`. Additional arguments are forwarded, for example
+`pixi run docs-serve --dev-addr 127.0.0.1:8001`.
+
+During preview, a watcher checks Python sources in `xrlint/`, the generator,
+and `pyproject.toml` every half second. Changes regenerate the reference in a
+fresh Python process, and Zensical reloads the page. If an edit temporarily breaks
+generation, the last successful page remains available; fixing the source retries
+generation. Stop preview with Ctrl+C.
+
+Do not create or edit the generated rule page manually. Update rule descriptions
+and schemas in the source, or change the generator for presentation changes.
+The API page uses `mkdocstrings` to render source docstrings. Use these Pixi tasks
+instead of invoking Zensical directly so preparation and regeneration take place.
+See [migration notes](docs/zensical-migration.md) for compatibility limitations.
 
 The plugins installed in the build environment determine the generated rule
 reference. Use a project environment without unrelated third-party XRLint
